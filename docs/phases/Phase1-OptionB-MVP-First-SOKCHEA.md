@@ -538,6 +538,314 @@ log('error', 'Agent failed', { error: error.message, stack: error.stack });
 
 ---
 
+## 🔧 Prerequisites & Environment Setup (Day 0 - Sokchea's Setup)
+
+> **Your Role:** Set up VS Code extension development environment and UI tools.
+
+---
+
+### 📦 Required Manual Installations
+
+**Priority 1: Core Development Tools**
+
+1. **Node.js 18+ LTS**
+   - Download: https://nodejs.org/
+   - Choose LTS (Long Term Support) version
+   - Verify: `node --version` (should show v18+)
+   - **Why:** Required for TypeScript and VS Code extension API
+
+2. **Visual Studio Code**
+   - Download: https://code.visualstudio.com/
+   - Install all recommended extensions when prompted
+   - Verify: `code --version`
+   - **Why:** Your primary development IDE
+
+3. **Git for Windows**
+   - Download: https://git-scm.com/download/win
+   - During install: Choose "Git from command line and 3rd-party software"
+   - Verify: `git --version`
+   - **Why:** Version control and collaboration with Kai
+
+**Priority 2: Optional but Recommended**
+
+4. **Windows Terminal** (Optional)
+   - Microsoft Store: Search "Windows Terminal"
+   - **Why:** Better terminal experience, multiple tabs
+
+5. **Postman** (Optional, for Chunk 3+)
+   - Download: https://www.postman.com/downloads/
+   - **Why:** Test APIs (Ollama, ChromaDB) during integration
+
+---
+
+### ⌨️ Terminal-Based Setup
+
+**Step 1: Verify Node.js Installation**
+```bash
+# Open PowerShell or Command Prompt
+node --version
+# Expected: v18.x.x or higher ✅
+
+npm --version
+# Expected: v9.x.x or higher ✅
+```
+
+**Step 2: Install Global NPM Tools (VS Code Extension Development)**
+```bash
+# Yeoman - Project scaffolding tool
+npm install -g yo
+
+# VS Code Extension Generator
+npm install -g generator-code
+
+# TypeScript Compiler
+npm install -g typescript
+
+# ESLint - Code quality checker
+npm install -g eslint
+
+# Prettier - Code formatter (optional)
+npm install -g prettier
+
+# Verify installations
+yo --version
+# Expected: 4.x.x ✅
+
+generator-code --version
+# Expected: Should not error ✅
+
+tsc --version
+# Expected: 5.x.x ✅
+
+eslint --version
+# Expected: 8.x.x ✅
+```
+
+**Step 3: Configure npm (Optional but Recommended)**
+```bash
+# Set npm to use faster registry (optional)
+npm config set registry https://registry.npmjs.org/
+
+# Check npm config
+npm config list
+```
+
+**Step 4: Install VS Code Extensions (via Terminal)**
+```bash
+# ESLint Extension
+code --install-extension dbaeumer.vscode-eslint
+
+# Prettier Extension
+code --install-extension esbenp.prettier-vscode
+
+# TypeScript Extension Pack
+code --install-extension ms-vscode.vscode-typescript-next
+
+# GitLens (Better Git integration)
+code --install-extension eamodio.gitlens
+
+# Jest Test Explorer (for running tests)
+code --install-extension kavod-io.vscode-jest-test-adapter
+
+# Error Lens (Show errors inline)
+code --install-extension usernamehw.errorlens
+
+# List installed extensions
+code --list-extensions
+```
+
+---
+
+### ✅ Sokchea's Validation Checklist
+
+**Run these commands to verify your setup:**
+
+```bash
+# 1. Node.js check
+node --version
+# ✅ Should show v18+ or v20+
+
+# 2. npm check
+npm --version
+# ✅ Should show v9+ or v10+
+
+# 3. TypeScript check
+tsc --version
+# ✅ Should show version 5.x
+
+# 4. Yeoman check
+yo --version
+# ✅ Should show version
+
+# 5. VS Code check
+code --version
+# ✅ Should show VS Code version
+
+# 6. Git check
+git --version
+# ✅ Should show git version
+
+# 7. ESLint check
+eslint --version
+# ✅ Should show version
+```
+
+**All checks passed?** ✅ You're ready for Day 1!
+
+---
+
+### 🧪 Test VS Code Extension Generator
+
+**Quick test to ensure everything works:**
+
+```bash
+# Create a test directory
+mkdir test-extension
+cd test-extension
+
+# Run extension generator
+yo code
+
+# Follow prompts:
+# ? What type of extension? → New Extension (TypeScript)
+# ? What's the name? → test-extension
+# ? What's the identifier? → test-extension
+# ? What's the description? → Test
+# ? Initialize git? → Yes
+# ? Bundle? → No
+# ? Package manager? → npm
+
+# Wait for npm install to complete...
+
+# Open in VS Code
+code .
+
+# Press F5 to run extension in debug mode
+# A new VS Code window should open with "[Extension Development Host]" in title
+# ✅ Success!
+
+# Cleanup
+cd ..
+rmdir /s test-extension
+```
+
+---
+
+### 🚨 Common Issues & Solutions (Sokchea-Specific)
+
+**Issue 1: `yo: command not found` after installation**
+```bash
+# Solution: npm global packages not in PATH
+npm config get prefix
+# Note the path shown
+
+# Add to PATH:
+# Windows: Search "Environment Variables"
+# → Edit "Path" variable
+# → Add: C:\Users\YourName\AppData\Roaming\npm
+# → Restart terminal
+```
+
+**Issue 2: VS Code extensions won't install**
+```bash
+# Solution: Install manually via VS Code UI
+# 1. Open VS Code
+# 2. Click Extensions icon (Ctrl+Shift+X)
+# 3. Search for extension name
+# 4. Click Install
+```
+
+**Issue 3: `code` command not recognized**
+```bash
+# Solution: Add VS Code to PATH
+# 1. Open VS Code
+# 2. Press Ctrl+Shift+P
+# 3. Type: "Shell Command: Install 'code' command in PATH"
+# 4. Restart terminal
+```
+
+**Issue 4: npm install very slow**
+```bash
+# Solution: Clear npm cache
+npm cache clean --force
+
+# Or use faster registry
+npm config set registry https://registry.npmjs.org/
+```
+
+**Issue 5: TypeScript errors in VS Code**
+```bash
+# Solution: Reload VS Code TypeScript server
+# Press Ctrl+Shift+P
+# Type: "TypeScript: Restart TS Server"
+```
+
+---
+
+### ⏱️ Sokchea's Setup Time Estimate
+
+| Task | Time | Priority |
+|------|------|----------|
+| Download & install software | 30-60min | 🔥 Critical |
+| Terminal setup (npm packages) | 15-30min | 🔥 Critical |
+| VS Code extensions | 10-15min | 🔥 Critical |
+| Test extension generator | 10-15min | 🔥 Critical |
+| Optional tools (Postman, etc.) | 15-30min | 🟡 Optional |
+| **Total** | **1.5-2.5h** | **Do before Day 1** |
+
+---
+
+### 📚 Recommended Reading (Before Day 1)
+
+**Essential (1-2 hours):**
+- VS Code Extension API: https://code.visualstudio.com/api
+  - Read: "Get Started" section
+  - Read: "Extension Anatomy"
+  - Skim: "Common Capabilities"
+
+**Optional (if time permits):**
+- VS Code Webview API: https://code.visualstudio.com/api/extension-guides/webview
+- TypeScript Handbook: https://www.typescriptlang.org/docs/handbook/intro.html
+
+---
+
+### 🤝 Coordination with Kai
+
+**Before Day 1, sync with Kai to ensure:**
+- [ ] Kai has Ollama running (`ollama serve`)
+- [ ] Kai can test granite-code:8b model
+- [ ] Both have Git configured (username, email)
+- [ ] Both can create a test project with `yo code`
+- [ ] Decide on project name and Git repository location
+
+**Quick sync command to verify both setups:**
+```bash
+# Sokchea runs:
+yo --version && code --version && tsc --version
+
+# Kai should also run (his checks):
+ollama list && node --version
+```
+
+---
+
+### ✅ Ready for Day 1?
+
+**Checklist before starting Chunk 1.1:**
+- [x] Node.js 18+ installed and verified
+- [x] VS Code installed with extensions
+- [x] Yeoman and generator-code installed
+- [x] TypeScript and ESLint installed globally
+- [x] Can run `yo code` successfully
+- [x] Tested extension generator (created test extension)
+- [x] Git installed and configured
+- [x] VS Code `code` command works in terminal
+- [x] Synced with Kai on setup status
+
+**All checked?** ✅ Start Day 1 - Extension Bootstrap!
+
+---
+
 ## CHUNK 1: MVP UI (Weeks 1-2)
 
 ### CHUNK 1.1: Extension Bootstrap (Days 1-3, ~24h)

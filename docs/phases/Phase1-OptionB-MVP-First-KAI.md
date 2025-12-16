@@ -5,6 +5,476 @@
 
 ---
 
+## 🔧 Prerequisites & Environment Setup (Day 0 - Kai's Setup)
+
+> **Your Role:** Set up backend development environment, LLM infrastructure, and testing tools.
+
+---
+
+### 📦 Required Manual Installations
+
+**Priority 1: Core Backend Tools**
+
+1. **Node.js 18+ LTS**
+   - Download: https://nodejs.org/
+   - Choose LTS (Long Term Support) version
+   - Verify: `node --version` (should show v18+)
+   - **Why:** Required for TypeScript backend development
+
+2. **Ollama** (Your Primary Tool!)
+   - Download: https://ollama.ai/download
+   - Windows: Run installer, it will auto-start as a service
+   - Verify: `ollama --version`
+   - **Why:** Local LLM inference server - your main backend service
+
+3. **Visual Studio Code**
+   - Download: https://code.visualstudio.com/
+   - Verify: `code --version`
+   - **Why:** IDE for backend development
+
+4. **Git for Windows**
+   - Download: https://git-scm.com/download/win
+   - During install: Choose "Git from command line and 3rd-party software"
+   - Verify: `git --version`
+   - **Why:** Version control and collaboration with Sokchea
+
+**Priority 2: Database Tools (For Chunk 3+)**
+
+5. **Docker Desktop** (Install before Week 4)
+   - Download: https://www.docker.com/products/docker-desktop
+   - Requires: Windows 10/11 Pro, Enterprise, or Education
+   - Alternative: Install WSL2 if on Windows Home
+   - **Why:** Run ChromaDB container for vector database
+   - **Note:** Can skip for now, install before Chunk 3
+
+**Priority 3: Optional Tools**
+
+6. **Postman** (Recommended)
+   - Download: https://www.postman.com/downloads/
+   - **Why:** Test Ollama API and ChromaDB endpoints
+
+7. **DB Browser for SQLite** (Optional, for debugging)
+   - Download: https://sqlitebrowser.org/dl/
+   - **Why:** Inspect ChromaDB data if needed
+
+---
+
+### ⌨️ Terminal-Based Setup
+
+**Step 1: Verify Core Installations**
+```bash
+# Open PowerShell or Command Prompt
+node --version
+# Expected: v18.x.x or higher ✅
+
+npm --version
+# Expected: v9.x.x or higher ✅
+
+git --version
+# Expected: git version 2.x ✅
+
+ollama --version
+# Expected: ollama version x.x.x ✅
+```
+
+**Step 2: Install Global NPM Tools (Backend Development)**
+```bash
+# TypeScript Compiler
+npm install -g typescript
+
+# TS-Node - Run TypeScript directly
+npm install -g ts-node
+
+# Nodemon - Auto-restart on file changes
+npm install -g nodemon
+
+# Jest - Testing framework
+npm install -g jest
+
+# ESLint - Code quality
+npm install -g eslint
+
+# Verify installations
+tsc --version
+# Expected: 5.x.x ✅
+
+ts-node --version
+# Expected: v10.x.x ✅
+
+nodemon --version
+# Expected: 3.x.x ✅
+
+jest --version
+# Expected: 29.x.x ✅
+```
+
+**Step 3: Download and Test Ollama Model (CRITICAL!)**
+```bash
+# This is your main LLM - 5GB download, may take 10-30 minutes
+ollama pull granite-code:8b
+
+# Verify model is downloaded
+ollama list
+# Expected: Should show granite-code:8b with size ~5GB ✅
+
+# Test model interactively
+ollama run granite-code:8b
+# Type: "Write a hello world function in Kotlin"
+# Should generate Kotlin code ✅
+# Press Ctrl+D or type /bye to exit
+```
+
+**Step 4: Test Ollama API (Your Backend Interface)**
+```bash
+# Ensure Ollama server is running
+ollama serve
+# Should say "Listening on 127.0.0.1:11434" or already running
+
+# In a new terminal, test API endpoint
+curl http://localhost:11434/api/tags
+# Expected: JSON response with list of models ✅
+
+# Test generation endpoint (the one you'll use most)
+curl http://localhost:11434/api/generate -d '{
+  "model": "granite-code:8b",
+  "prompt": "Explain NullPointerException in Kotlin",
+  "stream": false
+}'
+# Expected: JSON response with generated text ✅
+```
+
+**Step 5: Install VS Code Extensions (Backend Focus)**
+```bash
+# ESLint
+code --install-extension dbaeumer.vscode-eslint
+
+# TypeScript
+code --install-extension ms-vscode.vscode-typescript-next
+
+# Jest Test Explorer
+code --install-extension kavod-io.vscode-jest-test-adapter
+
+# REST Client (for testing APIs)
+code --install-extension humao.rest-client
+
+# Error Lens
+code --install-extension usernamehw.errorlens
+
+# GitLens
+code --install-extension eamodio.gitlens
+
+# Verify
+code --list-extensions
+```
+
+---
+
+### ✅ Kai's Validation Checklist
+
+**Run these commands to verify your backend setup:**
+
+```bash
+# 1. Node.js ecosystem
+node --version && npm --version && tsc --version
+# ✅ Should show all versions
+
+# 2. Ollama installed
+ollama --version
+# ✅ Should show ollama version
+
+# 3. Ollama model downloaded
+ollama list
+# ✅ Should show granite-code:8b (~5GB)
+
+# 4. Ollama server running
+curl http://localhost:11434/api/tags
+# ✅ Should return JSON with models
+
+# 5. Git configured
+git --version
+# ✅ Should show git version
+
+# 6. VS Code command available
+code --version
+# ✅ Should show VS Code version
+
+# 7. Testing tools
+jest --version && ts-node --version
+# ✅ Should show both versions
+```
+
+**All checks passed?** ✅ You're ready for Day 1!
+
+---
+
+### 🧪 Test Ollama Integration (Quick Backend Test)
+
+**Create a test script to verify Ollama is working:**
+
+```bash
+# Create test directory
+mkdir ollama-test
+cd ollama-test
+
+# Initialize npm project
+npm init -y
+
+# Install node-fetch
+npm install node-fetch
+
+# Create test file: test.mjs
+echo "import fetch from 'node-fetch'; (async () => { const res = await fetch('http://localhost:11434/api/generate', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ model: 'granite-code:8b', prompt: 'Hello', stream: false }) }); console.log(await res.json()); })();" > test.mjs
+
+# Run test
+node test.mjs
+# ✅ Should print JSON with generated response
+
+# Cleanup
+cd ..
+rmdir /s ollama-test
+```
+
+**Alternative: Test with REST Client in VS Code**
+
+1. Create file: `ollama-test.http`
+```http
+### Test Ollama API
+POST http://localhost:11434/api/generate
+Content-Type: application/json
+
+{
+  "model": "granite-code:8b",
+  "prompt": "Explain NullPointerException in Kotlin",
+  "stream": false
+}
+```
+
+2. Click "Send Request" above the POST line
+3. ✅ Should show response in new tab
+
+---
+
+### 🚨 Common Issues & Solutions (Kai-Specific)
+
+**Issue 1: Ollama model download is very slow**
+```bash
+# Solution: Download will be ~5GB, can take 10-60 minutes
+# Check download progress:
+ollama list
+# Shows partial download size
+
+# If stuck, cancel and retry:
+# Ctrl+C to cancel
+ollama pull granite-code:8b
+```
+
+**Issue 2: `ollama: command not found`**
+```bash
+# Solution 1: Restart terminal after Ollama installation
+
+# Solution 2: Check if Ollama service is running
+# Windows: Open Task Manager → Services → Look for "Ollama"
+
+# Solution 3: Add to PATH manually
+# Default install location: C:\Users\YourName\AppData\Local\Programs\Ollama
+# Add to PATH in Environment Variables
+```
+
+**Issue 3: Ollama API not responding**
+```bash
+# Check if server is running
+curl http://localhost:11434/api/tags
+
+# If fails, start manually:
+ollama serve
+# Should start server on port 11434
+
+# Check Windows Firewall:
+# Allow Ollama through firewall if prompted
+```
+
+**Issue 4: Ollama model generation is slow**
+```bash
+# This is normal for CPU-only inference
+# Expected: 15-20s per iteration on CPU
+# Expected: 4-6s per iteration on GPU (RTX 3070 Ti)
+
+# Check GPU usage:
+# Task Manager → Performance → GPU
+# Should show GPU utilization if using GPU
+
+# To force CPU mode (testing):
+OLLAMA_COMPUTE_UNIT=cpu ollama run granite-code:8b
+```
+
+**Issue 5: npm install fails with permission errors**
+```bash
+# Solution: Run as administrator OR fix npm permissions
+
+# Fix npm global directory:
+npm config set prefix "C:\Users\YourName\AppData\Roaming\npm"
+
+# Then retry:
+npm install -g typescript ts-node
+```
+
+**Issue 6: Docker Desktop requires Windows Pro**
+```bash
+# Solution: Install WSL2 on Windows Home
+# 1. Enable WSL:
+wsl --install
+
+# 2. Install Ubuntu from Microsoft Store
+
+# 3. Install Docker Desktop with WSL2 backend
+
+# Note: This is only needed for Chunk 3 (Week 4)
+# Skip for now if issues, revisit later
+```
+
+---
+
+### ⏱️ Kai's Setup Time Estimate
+
+| Task | Time | Priority | Notes |
+|------|------|----------|-------|
+| Download & install software | 30-60min | 🔥 Critical | Node, Ollama, Git, VS Code |
+| Terminal setup (npm packages) | 15-30min | 🔥 Critical | TypeScript, Jest, etc. |
+| Download Ollama model (5GB) | 10-60min | 🔥 Critical | Depends on internet speed |
+| Test Ollama API | 15-30min | 🔥 Critical | Verify everything works |
+| VS Code extensions | 10-15min | 🟡 Medium | Improves dev experience |
+| Docker setup (optional) | 30-60min | 🟢 Low | Only needed in Week 4 |
+| **Total (without Docker)** | **1.5-3h** | **Do before Day 1** | |
+| **Total (with Docker)** | **2-4h** | **Can defer Docker** | |
+
+---
+
+### 📚 Recommended Reading (Before Day 1)
+
+**Essential (1-2 hours):**
+- Ollama API Documentation: https://github.com/ollama/ollama/blob/main/docs/api.md
+  - Read: `/api/generate` endpoint (your main API)
+  - Read: `/api/chat` endpoint (alternative)
+  - Understand: `stream` parameter (true vs false)
+
+- TypeScript for Backend: https://www.typescriptlang.org/docs/handbook/intro.html
+  - Focus: Interfaces, Types, Async/Await
+
+**Optional (if time permits):**
+- Jest Testing: https://jestjs.io/docs/getting-started
+- Prompt Engineering: https://platform.openai.com/docs/guides/prompt-engineering
+  - Applicable to Ollama models too
+
+---
+
+### 🤝 Coordination with Sokchea
+
+**Before Day 1, sync with Sokchea to ensure:**
+- [ ] You have Ollama running and responding
+- [ ] You can demonstrate model generation
+- [ ] Sokchea has VS Code extension generator working
+- [ ] Both have Git configured (username, email)
+- [ ] Agree on project structure and naming
+- [ ] Both can clone/create shared Git repository
+
+**Quick sync command to verify both setups:**
+```bash
+# Kai runs (your checks):
+ollama list && node --version && tsc --version
+# Expected: Shows granite-code:8b, Node v18+, TypeScript v5+ ✅
+
+# Sokchea should also run (his checks):
+yo --version && code --version
+# Expected: Shows Yeoman and VS Code versions ✅
+```
+
+**Test integration point:**
+```typescript
+// Kai creates simple test script:
+// File: test-ollama.ts
+
+import fetch from 'node-fetch';
+
+const response = await fetch('http://localhost:11434/api/generate', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    model: 'granite-code:8b',
+    prompt: 'Hello from Kai',
+    stream: false
+  })
+});
+
+const data = await response.json();
+console.log('Ollama response:', data.response);
+
+// Run with:
+// ts-node test-ollama.ts
+// ✅ Should print generated text
+
+// Sokchea will call this from extension - verify it works!
+```
+
+---
+
+### 🎯 Performance Expectations (Your Hardware)
+
+**Your Setup: RTX 3070 Ti (8GB VRAM), Ryzen 5 5600x, 32GB RAM**
+
+**Expected Ollama Performance:**
+```bash
+# Test generation speed:
+time ollama run granite-code:8b "Write hello world in Kotlin"
+
+# Expected results:
+# - GPU mode: 4-6 seconds per iteration ✅ (FAST)
+# - CPU mode: 15-20 seconds per iteration 🟡 (ACCEPTABLE)
+
+# Your target: <60s for full RCA (8-10 iterations)
+# = 4-6s per iteration × 10 = 40-60s total ✅
+```
+
+**Verify GPU is being used:**
+```bash
+# While running model, check:
+# Task Manager → Performance → GPU
+# Should show:
+# - GPU utilization: 60-90%
+# - Dedicated GPU memory: 4-5GB used
+# - GPU Engine: "Compute_0" active
+```
+
+**If CPU-only (slower):**
+```bash
+# Check NVIDIA drivers:
+nvidia-smi
+# Should show GPU and CUDA version
+
+# If nvidia-smi fails:
+# Download drivers: https://www.nvidia.com/download/index.aspx
+# Select: RTX 3070 Ti → Windows → Download
+```
+
+---
+
+### ✅ Ready for Day 1?
+
+**Checklist before starting Chunk 1.1:**
+- [ ] Node.js 18+ installed and verified
+- [ ] Ollama installed and service running
+- [ ] granite-code:8b model downloaded (~5GB)
+- [ ] Ollama API responding to test requests
+- [ ] TypeScript, ts-node, Jest installed globally
+- [ ] VS Code with backend extensions installed
+- [ ] Git installed and configured
+- [ ] Can demonstrate model generation (<10s)
+- [ ] GPU acceleration working (optional but recommended)
+- [ ] Synced with Sokchea on setup status
+
+**All checked?** ✅ Start Day 1 - Ollama Client Implementation!
+
+---
+
 ## Overview
 
 **What Kai Does:**
