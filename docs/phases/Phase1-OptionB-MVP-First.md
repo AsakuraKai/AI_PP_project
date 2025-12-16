@@ -36,6 +36,234 @@
 
 ---
 
+## 🔧 Prerequisites & Environment Setup (Day 0, ~4-8h)
+
+> **CRITICAL:** Complete this setup BEFORE starting Chunk 1.1. Both developers should work through this together.
+
+### 📦 Required Manual Installations (Cannot be done via terminal)
+
+**Both Developers Must Install:**
+
+1. **Node.js 18+ LTS**
+   - Download: https://nodejs.org/
+   - Verify after install: `node --version` (should show v18+)
+   - Includes npm package manager
+   - **Why:** Required for TypeScript compilation and VS Code extension development
+
+2. **Visual Studio Code**
+   - Download: https://code.visualstudio.com/
+   - Verify after install: `code --version`
+   - **Why:** IDE for extension development and testing
+
+3. **Git**
+   - Download: https://git-scm.com/
+   - Verify after install: `git --version`
+   - **Why:** Version control and collaboration
+
+4. **Ollama** (Kai's primary tool)
+   - Download: https://ollama.ai/download
+   - Windows: Run installer, follow prompts
+   - Verify after install: `ollama --version`
+   - **Why:** Local LLM inference server
+
+5. **Docker Desktop** (Optional, for Chunk 3)
+   - Download: https://www.docker.com/products/docker-desktop
+   - **Why:** ChromaDB container (needed in Week 4)
+   - **Note:** Can skip for now, install before Chunk 3
+
+---
+
+### ⌨️ Terminal-Based Setup (Run these commands)
+
+**Step 1: Verify Prerequisites Installed**
+```bash
+# Check all required software
+node --version          # Should show v18.x.x or higher
+npm --version           # Should show v9.x.x or higher
+git --version           # Should show version
+code --version          # Should show VS Code version
+ollama --version        # Should show Ollama version
+```
+
+**Step 2: Install Global NPM Packages** (Sokchea's tools)
+```bash
+# Yeoman - VS Code extension generator
+npm install -g yo
+
+# VS Code Extension generator
+npm install -g generator-code
+
+# TypeScript compiler (if not included in project)
+npm install -g typescript
+
+# ESLint for code quality
+npm install -g eslint
+
+# Verify installations
+yo --version
+tsc --version
+eslint --version
+```
+
+**Step 3: Download Ollama Model** (Kai's LLM)
+```bash
+# Download granite-code:8b model (~5GB download)
+# This may take 10-30 minutes depending on internet speed
+ollama pull granite-code:8b
+
+# Verify model downloaded
+ollama list
+
+# Test model works
+ollama run granite-code:8b "Write a hello world function in Kotlin"
+# Should return Kotlin code - press Ctrl+D to exit
+```
+
+**Step 4: Test Ollama API** (Kai's backend test)
+```bash
+# Start Ollama server (if not auto-started)
+ollama serve
+
+# In a new terminal, test API endpoint
+curl http://localhost:11434/api/generate -d '{
+  "model": "granite-code:8b",
+  "prompt": "Hello",
+  "stream": false
+}'
+
+# Should return JSON response with generated text
+```
+
+---
+
+### 📚 Optional Tools (Recommended for easier development)
+
+**Install via Terminal:**
+```bash
+# Prettier for code formatting
+npm install -g prettier
+
+# Nodemon for auto-restart during development
+npm install -g nodemon
+
+# Jest for testing (will also be in project dependencies)
+npm install -g jest
+```
+
+**Manual Installations:**
+- **Postman** or **Insomnia** - Test HTTP APIs (Ollama, ChromaDB)
+- **GitKraken** or **GitHub Desktop** - Git GUI (if you prefer visual tools)
+- **Windows Terminal** - Better terminal experience (Microsoft Store)
+
+---
+
+### ✅ Final Validation Checklist
+
+**Run these commands to verify everything works:**
+
+```bash
+# Create test directory
+mkdir rca-test-setup
+cd rca-test-setup
+
+# Test Node.js
+node --version
+# Expected: v18.x.x or higher ✅
+
+# Test npm
+npm --version
+# Expected: v9.x.x or higher ✅
+
+# Test TypeScript
+tsc --version
+# Expected: Version 5.x.x ✅
+
+# Test VS Code
+code --version
+# Expected: Version output ✅
+
+# Test Yeoman
+yo --version
+# Expected: Version output ✅
+
+# Test Ollama
+ollama list
+# Expected: Should show granite-code:8b in list ✅
+
+# Test Ollama API
+curl http://localhost:11434/api/tags
+# Expected: JSON response with models list ✅
+
+# Cleanup
+cd ..
+rmdir rca-test-setup
+```
+
+**All checks passed?** ✅ You're ready to start Chunk 1.1!
+
+**Any failures?** ❌ Review the installation steps for that tool.
+
+---
+
+### 🚨 Common Setup Issues & Solutions
+
+**Issue: `node: command not found`**
+- **Solution:** Node.js not in PATH. Restart terminal or add to PATH manually
+- Windows: Search "Environment Variables" → Edit PATH → Add Node.js install directory
+
+**Issue: `ollama: command not found`**
+- **Solution:** Restart terminal after Ollama installation
+- Windows: Check if Ollama service is running (Task Manager → Services)
+
+**Issue: `yo: command not found` after npm install**
+- **Solution:** Global npm packages not in PATH
+- Run: `npm config get prefix` → Add that directory to PATH
+
+**Issue: Ollama model download fails**
+- **Solution:** Check internet connection, proxy settings, firewall
+- Try: `ollama pull granite-code:8b --insecure` (if behind corporate proxy)
+
+**Issue: Docker Desktop won't start**
+- **Solution:** Enable Hyper-V (Windows) or install WSL2
+- **Note:** Not needed until Chunk 3 (Week 4)
+
+---
+
+### ⏱️ Estimated Setup Time
+
+| Task | Time | Notes |
+|------|------|-------|
+| Download & install software | 1-2h | Depends on internet speed |
+| Terminal setup (npm packages) | 15-30min | Quick installs |
+| Download Ollama model (5GB) | 10-60min | Depends on internet speed |
+| Testing & validation | 15-30min | Running verification commands |
+| **Total** | **2-4h** | **Can be done in parallel by both developers** |
+
+---
+
+### 👥 Division of Responsibilities
+
+**Sokchea's Priority:**
+- ✅ Node.js + npm
+- ✅ VS Code
+- ✅ Yeoman + generator-code
+- ✅ Git
+- ⚠️ Ollama (basic awareness, but Kai will configure)
+
+**Kai's Priority:**
+- ✅ Node.js + npm
+- ✅ Ollama + model download
+- ✅ Test Ollama API thoroughly
+- ✅ Git
+- ⚠️ VS Code (basic awareness, but Sokchea will configure extension)
+
+**Both Together:**
+- Verify all installations
+- Test Ollama is responding
+- Ensure both can run `yo code` successfully
+
+---
+
 ## ⚡ CHUNK 1: Minimal Viable Prototype (Weeks 1-2)
 
 **Priority:** 🔥 CRITICAL - Prove the concept works  
