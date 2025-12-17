@@ -31,15 +31,17 @@
 
 | Requirement ID | Requirement Description | Implementation Files | Test Files | Coverage | Status |
 |----------------|------------------------|---------------------|------------|----------|--------|
-| REQ-001 | Support local LLMs (Ollama) | `src/llm/OllamaClient.ts`, `src/llm/ProviderFactory.ts` | `tests/unit/llm/OllamaClient.test.ts` | - | ⏳ Planned |
-| REQ-002 | Support cloud LLMs (OpenAI, Anthropic, Gemini) | `src/llm/OpenAIClient.ts`, `src/llm/AnthropicClient.ts`, `src/llm/GeminiClient.ts` | `tests/unit/llm/*Client.test.ts` | - | ⏳ Planned |
-| REQ-003 | Kotlin/Android error parsing (NullPointer, lateinit, Compose, Gradle, XML) | `src/utils/ErrorParser.ts`, `src/utils/parsers/KotlinParser.ts`, `src/utils/parsers/AndroidParser.ts` | `tests/unit/utils/ErrorParser.test.ts` | - | ⏳ Planned |
+| REQ-001 | Support local LLMs (Ollama) | `src/llm/OllamaClient.ts` | `tests/unit/OllamaClient.test.ts` | 95% | ✅ Complete |
+| REQ-002 | Support cloud LLMs (OpenAI, Anthropic, Gemini) | `src/llm/ProviderFactory.ts` (planned) | `tests/unit/llm/*Client.test.ts` (planned) | - | ⏳ Planned |
+| REQ-003 | Kotlin/Android error parsing (NullPointer, lateinit, Compose, Gradle, XML) | `src/utils/KotlinNPEParser.ts` (lateinit, NPE complete) | `tests/unit/KotlinNPEParser.test.ts` | 94% | 🟡 Partial (Compose, Gradle, XML pending) |
 | REQ-004 | Vector database integration (ChromaDB) | `src/db/ChromaDBClient.ts`, `src/db/EmbeddingService.ts` | `tests/integration/vectordb.test.ts` | - | ⏳ Planned |
 | REQ-005 | Tool registry with JSON schema validation | `src/tools/ToolRegistry.ts`, `src/tools/ToolBase.ts` | `tests/unit/tools/ToolRegistry.test.ts` | - | ⏳ Planned |
 | REQ-006 | Read workspace files tool | `src/tools/ReadFileTool.ts` | `tests/unit/tools/ReadFileTool.test.ts` | - | ⏳ Planned |
 | REQ-007 | LSP integration for call hierarchy | `src/tools/LSPTool.ts` | `tests/unit/tools/LSPTool.test.ts` | - | ⏳ Planned |
 | REQ-008 | Agent state persistence & checkpoints | `src/agent/StateManager.ts`, `src/agent/Checkpoint.ts` | `tests/unit/agent/StateManager.test.ts` | - | ⏳ Planned |
-| REQ-009 | Result caching (hash-based deduplication) | `src/cache/RCACache.ts`, `src/cache/ErrorHasher.ts` | `tests/unit/cache/RCACache.test.ts` | - | ⏳ Planned |
+| REQ-009 | Result caching (hash-based deduplication) | `src/cache/RCACache.ts` (planned) | `tests/unit/cache/RCACache.test.ts` (planned) | - | ⏳ Planned |
+| REQ-010 | ReAct agent with reasoning loop | `src/agent/MinimalReactAgent.ts` (3-iteration MVP) | `tests/unit/MinimalReactAgent.test.ts` | 88% | ✅ Complete (MVP) |
+| REQ-011 | Performance monitoring & metrics | `src/monitoring/PerformanceTracker.ts` (planned) | `tests/unit/monitoring/PerformanceTracker.test.ts` (planned) | - | ⏳ Planned |
 
 ---
 
