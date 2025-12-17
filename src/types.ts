@@ -114,6 +114,9 @@ export interface AgentState {
   
   /** Error being analyzed */
   error: ParsedError;
+  
+  /** Optional: File content at error location (added in Chunk 1.4) */
+  fileContent?: string | null;
 }
 
 /**

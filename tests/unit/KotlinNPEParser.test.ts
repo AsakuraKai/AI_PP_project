@@ -3,7 +3,6 @@
  */
 
 import { KotlinNPEParser } from '../../src/utils/KotlinNPEParser';
-import { ParsedError } from '../../src/types';
 
 describe('KotlinNPEParser', () => {
   let parser: KotlinNPEParser;

@@ -202,7 +202,7 @@ export async function activate(context: vscode.ExtensionContext) {
       const { MinimalReactAgent } = await import('./agent/MinimalReactAgent');
       const { OllamaClient } = await import('./llm/OllamaClient');
       
-      const llm = await OllamaClient.create({ model: 'granite-code:8b' });
+      const llm = await OllamaClient.create({ model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest' });
       const agent = new MinimalReactAgent(llm);
     })
   );
@@ -813,7 +813,7 @@ npm config set registry https://registry.npmjs.org/
 
 **Before Day 1, sync with Kai to ensure:**
 - [ ] Kai has Ollama running (`ollama serve`)
-- [ ] Kai can test granite-code:8b model
+- [ ] Kai can test hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest model
 - [ ] Both have Git configured (username, email)
 - [ ] Both can create a test project with `yo code`
 - [ ] Decide on project name and Git repository location
@@ -1153,7 +1153,7 @@ async function analyzeWithProgress(parsedError: ParsedError) {
       progress.report({ message: 'Initializing LLM...' });
       
       // Create Kai's components
-      const llm = await OllamaClient.create({ model: 'granite-code:8b' }); // Kai's class
+      const llm = await OllamaClient.create({ model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest' }); // Kai's class
       
       progress.report({ message: 'Analyzing error...' });
       
@@ -2090,7 +2090,7 @@ export class RCAWebview {
 async function analyzeWithWebview(error: ParsedError) {
   const webview = RCAWebview.create(context);
   
-  const llm = await OllamaClient.create({ model: 'granite-code:8b' });
+  const llm = await OllamaClient.create({ model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest' });
   const agent = new ReactAgent(llm); // Kai's agent
   
   // Subscribe to Kai's stream
@@ -2292,7 +2292,7 @@ AI-powered debugging assistant that analyzes your errors and suggests fixes.
 
 ## Prerequisites
 - [Ollama](https://ollama.ai) installed and running
-- Model installed: `ollama pull granite-code:8b`
+- Model installed: `ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest`
 - ChromaDB (optional for learning): `docker run -p 8000:8000 chromadb/chroma`
 
 ## Usage

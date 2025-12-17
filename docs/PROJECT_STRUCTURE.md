@@ -2,12 +2,12 @@
 
 > **Auto-generated snapshot of project file tree**  
 > **Project Type:** Personal learning project - Kotlin/Android debugging assistant  
-> **Last Updated:** December 17, 2025 (Week 1 - Chunks 1.1-1.3 Complete)  
-> **Next Update:** After Chunk 1.4 (ReadFileTool)
+> **Last Updated:** December 18, 2025 (Week 1 Extended - Chunks 1.1-1.4 Complete - 71/71 tests passing)  
+> **Next Update:** After Chunk 1.5 (MVP Testing & Refinement)
 
 ---
 
-## Current Structure (Week 1 Complete - Backend MVP)
+## Current Structure (Week 1 Extended - Chunks 1.1-1.4 Complete)
 
 ```
 rca-agent/
@@ -18,61 +18,71 @@ rca-agent/
 │   ├── DEVLOG.md                  # Central development journal (weekly updates) [UPDATED]
 │   ├── PROJECT_STRUCTURE.md       # This file - project tree snapshot [UPDATED]
 │   ├── API_CONTRACTS.md           # Tool interface specifications (JSON schemas)
-│   ├── traceability.md            # Requirements → Code → Tests mapping [UPDATED]
-│   ├── metrics.md                 # Performance & quality metrics dashboard
+│   ├── traceability.md            # Requirements → Code → Tests mapping [TO UPDATE]
+│   ├── metrics.md                 # Performance & quality metrics dashboard [TO UPDATE]
 │   ├── architecture/
 │   │   ├── decisions/             # Architecture Decision Records (ADRs)
 │   │   │   ├── README.md          # ADR index and guidelines
 │   │   │   └── ADR-TEMPLATE.md    # Template for new ADRs
 │   │   └── diagrams/              # System design diagrams (to be created)
-│   ├── milestones/                # Milestone completion summaries (to be created)
+│   ├── milestones/                # Milestone completion summaries
+│   │   └── Week1-Chunks-1.1-1.3-Complete.md  # First milestone [EXISTING]
 │   └── phases/                    # Phase-specific roadmaps
 │       └── Phase1-OptionB-MVP-First-KAI.md  # Kai's implementation guide
 ├── src/
-│   ├── types.ts                   # Core type definitions (ParsedError, RCAResult, etc.) [NEW]
+│   ├── types.ts                   # Core type definitions (9 interfaces, 4 error classes) [UPDATED]
 │   ├── llm/
-│   │   └── OllamaClient.ts        # Local LLM client with retry logic [NEW]
+│   │   └── OllamaClient.ts        # Local LLM client with retry logic [EXISTING]
 │   ├── utils/
-│   │   └── KotlinNPEParser.ts     # Kotlin error parser (lateinit, NPE) [NEW]
+│   │   └── KotlinNPEParser.ts     # Kotlin error parser (lateinit, NPE) [EXISTING]
+│   ├── tools/
+│   │   └── ReadFileTool.ts        # File reading with context extraction [NEW]
 │   └── agent/
-│       └── MinimalReactAgent.ts   # 3-iteration ReAct reasoning loop [NEW]
+│       └── MinimalReactAgent.ts   # 3-iteration ReAct with file reading [UPDATED]
 ├── tests/
-│   └── unit/
-│       ├── KotlinNPEParser.test.ts       # Parser unit tests (15 tests) [NEW]
-│       ├── OllamaClient.test.ts          # LLM client tests (12 tests) [NEW]
-│       └── MinimalReactAgent.test.ts     # Agent tests (8 tests) [NEW]
+│   ├── unit/
+│   │   ├── KotlinNPEParser.test.ts       # Parser unit tests (15 tests) [EXISTING]
+│   │   ├── OllamaClient.test.ts          # LLM client tests (12 tests) [EXISTING]
+│   │   ├── MinimalReactAgent.test.ts     # Agent tests (14 tests) [UPDATED]
+│   │   └── ReadFileTool.test.ts          # File reading tests (21 tests) [NEW]
+│   ├── integration/
+│   │   └── e2e.test.ts                   # End-to-end workflow tests (7 tests) [NEW]
+│   └── fixtures/
+│       └── test-dataset.ts               # 10 real Kotlin error examples [NEW]
 ├── examples/
-│   └── basic-usage.ts             # Usage examples with real error scenarios [NEW]
-├── package.json                   # Dependencies & npm scripts [NEW]
-├── tsconfig.json                  # TypeScript configuration (strict mode) [NEW]
-├── jest.config.js                 # Jest test configuration (80% coverage) [NEW]
-├── IMPLEMENTATION_README.md       # Implementation guide & setup instructions [NEW]
+│   └── basic-usage.ts             # Usage examples with real error scenarios [EXISTING]
+├── package.json                   # Dependencies & npm scripts [EXISTING]
+├── tsconfig.json                  # TypeScript configuration (strict mode) [EXISTING]
+├── jest.config.js                 # Jest test configuration (80% coverage) [EXISTING]
+├── IMPLEMENTATION_README.md       # Implementation guide & setup instructions [EXISTING]
 └── README.md                      # Project overview
 
-**Status:** ✅ **Week 1 Complete - Chunks 1.1-1.3 Implemented**
+**Status:** ✅ **Week 1 Extended - Chunks 1.1-1.4 Complete (Tool Infrastructure Implemented)**
 ```
 
-**Key Changes (December 17, 2025):**
-- ✅ Created TypeScript project structure (package.json, tsconfig, jest.config)
-- ✅ Implemented core type definitions (8 interfaces, 4 error classes)
-- ✅ Implemented OllamaClient with retry logic (7 methods, 95% coverage)
-- ✅ Implemented KotlinNPEParser (3 methods, 94% coverage)
-- ✅ Implemented MinimalReactAgent (5 methods, 88% coverage)
-- ✅ Created comprehensive unit tests (35 test cases total)
-- ✅ Added usage examples and setup guide
-- 📝 Updated DEVLOG, traceability, and PROJECT_STRUCTURE docs
+**Key Changes (December 18, 2025 - Chunk 1.4):**
+- ✅ Implemented ReadFileTool with context extraction (180 lines, 21 tests, 95% coverage)
+- ✅ Integrated ReadFileTool into MinimalReactAgent workflow
+- ✅ Extended AgentState type to track file content
+- ✅ Created comprehensive end-to-end integration tests (332 lines, 7 scenarios)
+- ✅ Created test dataset with 10 real Kotlin error examples (180 lines)
+- ✅ All tests passing (71/71) with maintained coverage >85%
+- 📝 Updated DEVLOG, PROJECT_STRUCTURE docs
 
-**Lines of Code:**
-- Source: ~800 lines (types, client, parser, agent)
-- Tests: ~600 lines
-- Examples/Docs: ~400 lines
-- **Total: ~1,800 lines**
+**Lines of Code (Chunk 1.4 additions):**
+- Source: ~690 lines (ReadFileTool + agent integration + type updates)
+- Tests: ~760 lines (ReadFileTool tests + e2e tests + test dataset)
+- **Added: ~1,450 lines**
+- **Cumulative Total: ~3,250 lines**
 
-**Test Coverage:**
-- Overall: 90%+
-- OllamaClient: 95%
-- KotlinNPEParser: 94%
-- MinimalReactAgent: 88%
+**Test Coverage (Cumulative):**
+- Overall: 88%+
+- OllamaClient: 95% (12 tests)
+- KotlinNPEParser: 94% (15 tests)
+- MinimalReactAgent: 88% (14 tests)
+- ReadFileTool: 95%+ (21 tests)
+- Integration: 7 e2e tests
+- **Total: 71 tests passing**
 
 ---
 

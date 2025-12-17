@@ -65,8 +65,8 @@
   - Download from: https://ollama.com
   - Verify: `ollama --version`
 - [ ] **Download initial model**
-  - Run: `ollama pull granite-code:8b` (5GB download)
-  - Test: `ollama run granite-code:8b "Hello"`
+  - Run: `ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest` (5GB download)
+  - Test: `ollama run hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest "Hello"`
 - [ ] **Git configured** for version control
   - Set up: `git config --global user.name "Your Name"`
   - Set up: `git config --global user.email "your@email.com"`
@@ -96,7 +96,7 @@ nvidia-smi              # Should show GPU (3070 Ti)
 git --version           # Should show Git installed
 
 # Test Ollama model:
-ollama list             # Should show granite-code:8b
+ollama list             # Should show hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
 ```
 
 **Estimated setup time: 2-4 hours** (including downloads)
@@ -164,7 +164,7 @@ Get working prototype fast, then expand. Best for quick validation.
 #### Deliverables
 - [ ] Extension activates without errors
 - [ ] `rcaAgent.analyzeError` command appears in palette
-- [ ] Ollama client can call granite-code:8b model
+- [ ] Ollama client can call hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest model
 - [ ] ChromaDB running and accepting connections
 - [ ] Can save/load agent state from workspace storage
 
@@ -820,7 +820,7 @@ export function activate(context: vscode.ExtensionContext): void {
 // src/llm/OllamaClient.ts
 export class OllamaClient implements LLMProvider {
   static async create(config: LLMConfig): Promise<OllamaClient> {
-    // Primary: granite-code:8b for Kotlin/Android (5GB VRAM)
+    // Primary: hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest for Kotlin/Android (5GB VRAM)
     // Fallback: qwen-coder:3b for fast mode (2GB VRAM)
     // Uses your 3070 Ti GPU for 4-6s per iteration
   }
@@ -1823,7 +1823,7 @@ export class SetupWizard {
     
     // Step 3: Model Download (if local)
     if (provider === 'ollama') {
-      await this.downloadModel('granite-code:8b');
+      await this.downloadModel('hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest');
     }
     
     // Step 4: Test Analysis
@@ -1901,7 +1901,7 @@ export class SetupWizard {
         cancellable: false,
       },
       async (progress) => {
-        // Execute: ollama pull granite-code:8b
+        // Execute: ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
         const { exec } = require('child_process');
         return new Promise((resolve, reject) => {
           const process = exec(`ollama pull ${modelName}`);
