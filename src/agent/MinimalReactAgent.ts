@@ -1,15 +1,15 @@
 /**
  * MinimalReactAgent - Simplified ReAct loop for MVP
  * 
- * Implements a 3-iteration reasoning loop without tools (tools added in Chunk 1.4+).
+ * Implements a 3-iteration reasoning loop with file reading tool (Chunk 1.4).
  * Uses the ReAct (Reasoning + Acting) paradigm:
  * - Thought: Generate hypothesis about error
- * - Action: (placeholder for now - tools come later)
- * - Observation: (placeholder for now)
+ * - Action: Read file at error location
+ * - Observation: Code context around error
  * 
  * Design Decisions:
  * - Fixed 3 iterations for MVP (will become dynamic later)
- * - No tool execution yet (just reasoning)
+ * - Integrates ReadFileTool for code context
  * - Simple JSON parsing with fallback
  * - Timeout handling (90s default)
  * 
@@ -20,6 +20,7 @@
  */
 
 import { OllamaClient } from '../llm/OllamaClient';
+import { ReadFileTool } from '../tools/ReadFileTool';
 import {
   ParsedError,
   RCAResult,
@@ -31,8 +32,14 @@ import {
 export class MinimalReactAgent {
   private readonly maxIterations = 3;
   private readonly timeout = 90000; // 90 seconds
+  private readonly readFileTool: ReadFileTool;
 
-  constructor(private llm: OllamaClient) {}
+  constructor(
+    private llm: OllamaClient,
+    readFileTool?: ReadFileTool
+  ) {
+    this.readFileTool = readFileTool || new ReadFileTool();
+  }
 
   /**
    * Analyze error and generate Root Cause Analysis
@@ -62,6 +69,18 @@ export class MinimalReactAgent {
     };
 
     try {
+      // Read file context for error location
+      let fileContent: string | null = null;
+      try {
+        fileContent = await this.readFileTool.execute(error.filePath, error.line);
+      } catch (e) {
+        console.warn('Failed to read file, continuing without code context:', e);
+        fileContent = null;
+      }
+
+      // Store file content in state for later use
+      state.fileContent = fileContent;
+
       // Iteration 1: Initial hypothesis
       state.iteration = 1;
       const thought1 = await this.generateThought(state, null);
@@ -70,14 +89,14 @@ export class MinimalReactAgent {
 
       this.checkTimeout(state);
 
-      // Iteration 2: Deeper analysis
+      // Iteration 2: Deeper analysis with code context
       state.iteration = 2;
       const thought2 = await this.generateThought(state, thought1);
       state.thoughts.push(thought2);
 
       this.checkTimeout(state);
 
-      // Iteration 3: Final conclusion
+      // Iteration 3: Final conclusion with full context
       state.iteration = 3;
       const finalOutput = await this.generateFinalAnalysis(state);
 
@@ -132,46 +151,58 @@ export class MinimalReactAgent {
     state: AgentState,
     previousThought: string | null
   ): string {
-    const { error, iteration } = state;
+    const { error, iteration, fileContent } = state;
 
-    return `You are a debugging expert analyzing a Kotlin error. This is iteration ${iteration}/${this.maxIterations}.
+    let prompt = `You are a debugging expert analyzing a Kotlin error. This is iteration ${iteration}/${this.maxIterations}.
 
 ERROR INFORMATION:
 Type: ${error.type}
 Message: ${error.message}
 File: ${error.filePath}
 Line: ${error.line}
-${error.metadata ? `Additional Info: ${JSON.stringify(error.metadata, null, 2)}` : ''}
+${error.metadata ? `Additional Info: ${JSON.stringify(error.metadata, null, 2)}` : ''}`;
 
-${previousThought ? `PREVIOUS ANALYSIS:\n${previousThought}\n\n` : ''}
+    // Include code context if available
+    if (fileContent && iteration >= 2) {
+      prompt += `\n\nCODE CONTEXT:\n${fileContent}\n`;
+    }
+
+    prompt += `\n${previousThought ? `PREVIOUS ANALYSIS:\n${previousThought}\n\n` : ''}
 
 TASK:
 ${iteration === 1 ? 'Generate your initial hypothesis about what caused this error. Focus on Kotlin-specific issues.' : ''}
-${iteration === 2 ? 'Deepen your analysis. What are the likely causes? Consider common Kotlin patterns and mistakes.' : ''}
+${iteration === 2 ? 'Deepen your analysis using the code context. What are the likely causes? Look at the actual code and identify specific issues.' : ''}
 
-Be specific and reference Kotlin concepts. Think step-by-step.
+Be specific and reference the actual code when available. Think step-by-step.
 
 YOUR ANALYSIS:`;
+
+    return prompt;
   }
 
   /**
    * Build prompt for final analysis
    */
   private buildFinalPrompt(state: AgentState): string {
-    const { error, thoughts } = state;
+    const { error, thoughts, fileContent } = state;
 
-    return `Based on your analysis, provide the final root cause and fix guidelines.
+    let prompt = `Based on your analysis, provide the final root cause and fix guidelines.
 
 ERROR: ${error.message}
 
 YOUR REASONING:
-${thoughts.map((t, i) => `Iteration ${i + 1}: ${t}`).join('\n\n')}
+${thoughts.map((t, i) => `Iteration ${i + 1}: ${t}`).join('\n\n')}`;
 
-Respond in this EXACT JSON format (no other text):
+    // Include code context in final analysis
+    if (fileContent) {
+      prompt += `\n\nCODE CONTEXT:\n${fileContent}\n`;
+    }
+
+    prompt += `\nRespond in this EXACT JSON format (no other text):
 {
-  "rootCause": "Clear explanation of what went wrong and why",
+  "rootCause": "Clear explanation of what went wrong and why, referencing specific code when available",
   "fixGuidelines": [
-    "Step 1: Specific action to fix the issue",
+    "Step 1: Specific action to fix the issue (reference line numbers if applicable)",
     "Step 2: Another specific action",
     "Step 3: Best practice to prevent recurrence"
   ],
@@ -179,6 +210,8 @@ Respond in this EXACT JSON format (no other text):
 }
 
 IMPORTANT: Respond ONLY with valid JSON, no other text.`;
+
+    return prompt;
   }
 
   /**

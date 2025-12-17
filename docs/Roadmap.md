@@ -92,7 +92,7 @@ This roadmap is organized into focused, digestible documents:
 
 ```typescript
 // Language-specific model optimization
-await agent.switchModel('granite-code:8b');        // Kotlin/Android (5GB)
+await agent.switchModel('hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest');        // Kotlin/Android (5GB)
 await agent.switchModel('codellama:7b');           // TypeScript (4GB)
 await agent.switchModel('deepseek-coder:6.7b');    // Python (4GB)
 await agent.switchModel('starcoder2:7b');          // Dart/Flutter (4GB)
@@ -164,7 +164,7 @@ for (const model of ['qwen-coder:7b', 'codellama:7b', 'deepseek-coder:6.7b']) {
 ```
 Total Storage Needed: ~40-60GB
 ├── Model Library (15-25GB)
-│   ├── granite-code:8b (5GB) - Kotlin/Android primary
+│   ├── hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest (5GB) - Kotlin/Android primary
 │   ├── codellama:7b (4GB) - General code
 │   ├── qwen-coder:3b (2GB) - Fast mode
 │   └── Future models (4-14GB) - Other languages
@@ -177,19 +177,19 @@ Total Storage Needed: ~40-60GB
 
 ### Quick Setup Checklist
 - [ ] Install Ollama (or LM Studio) for model management
-- [ ] Download granite-code:8b model (Kotlin/Android)
+- [ ] Download hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest model (Kotlin/Android)
 - [ ] Set up Docker for ChromaDB
 - [ ] Verify NVIDIA drivers + CUDA installed
-- [ ] Test model inference with `ollama run granite-code:8b`
+- [ ] Test model inference with `ollama run hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest`
 - [ ] Allocate 50GB free disk space
 
 ### Your Expected Performance
 **Target: Full RCA Analysis Time (Your 3070 Ti)**
 | Mode | Iterations | Model | Your Time | Status |
 |------|-----------|-------|-----------|--------|
-| Standard | 8-10 | granite-code:8b (Q8) | 35-50s | 🟢 Excellent |
+| Standard | 8-10 | hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest (Q8) | 35-50s | 🟢 Excellent |
 | Fast | 6-8 | qwen-coder:3b (Q8) | 16-24s | 🟢 Great |
-| Educational | 8-10 | granite-code:8b (Q8) | 60-80s | 🟢 Good |
+| Educational | 8-10 | hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest (Q8) | 60-80s | 🟢 Good |
 
 ---
 

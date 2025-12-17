@@ -2,7 +2,7 @@
  * OllamaClient - Interface to local Ollama LLM server
  * 
  * Handles communication with Ollama API for LLM inference.
- * Supports granite-code:8b model (primary) with fallback options.
+ * Supports hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest model (primary) with fallback options.
  * 
  * Key Features:
  * - Connection management with health checks
@@ -22,7 +22,7 @@ export interface OllamaConfig {
   /** Base URL for Ollama API (default: http://localhost:11434) */
   baseUrl?: string;
   
-  /** Model to use (default: granite-code:8b) */
+  /** Model to use (default: hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest) */
   model?: string;
   
   /** Request timeout in milliseconds (default: 90000) */
@@ -45,7 +45,7 @@ export class OllamaClient {
 
   constructor(config: OllamaConfig = {}) {
     this.baseUrl = config.baseUrl || 'http://localhost:11434';
-    this.model = config.model || 'granite-code:8b';
+    this.model = config.model || 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest';
     this.timeout = config.timeout || 90000; // 90 seconds
     this.maxRetries = config.maxRetries || 3;
     this.initialRetryDelay = config.initialRetryDelay || 1000;
@@ -71,7 +71,7 @@ export class OllamaClient {
         );
       }
 
-      const data = await response.json();
+      const data = await response.json() as { models?: Array<{ name: string }> };
       const models = data.models || [];
       
       const hasModel = models.some((m: any) => m.name === this.model);
@@ -145,7 +145,7 @@ export class OllamaClient {
         );
       }
 
-      const data = await response.json();
+      const data = await response.json() as { response?: string; eval_count?: number };
       const generationTime = Date.now() - startTime;
 
       return {
@@ -190,7 +190,7 @@ export class OllamaClient {
         return [];
       }
 
-      const data = await response.json();
+      const data = await response.json() as { models?: Array<{ name: string }> };
       return (data.models || []).map((m: any) => m.name);
     } catch {
       return [];

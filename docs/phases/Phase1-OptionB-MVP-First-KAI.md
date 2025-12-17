@@ -111,14 +111,14 @@ jest --version
 **Step 3: Download and Test Ollama Model (CRITICAL!)**
 ```bash
 # This is your main LLM - 5GB download, may take 10-30 minutes
-ollama pull granite-code:8b
+ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
 
 # Verify model is downloaded
 ollama list
-# Expected: Should show granite-code:8b with size ~5GB ✅
+# Expected: Should show hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest with size ~5GB ✅
 
 # Test model interactively
-ollama run granite-code:8b
+ollama run hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
 # Type: "Write a hello world function in Kotlin"
 # Should generate Kotlin code ✅
 # Press Ctrl+D or type /bye to exit
@@ -136,7 +136,7 @@ curl http://localhost:11434/api/tags
 
 # Test generation endpoint (the one you'll use most)
 curl http://localhost:11434/api/generate -d '{
-  "model": "granite-code:8b",
+  "model": "hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest",
   "prompt": "Explain NullPointerException in Kotlin",
   "stream": false
 }'
@@ -184,7 +184,7 @@ ollama --version
 
 # 3. Ollama model downloaded
 ollama list
-# ✅ Should show granite-code:8b (~5GB)
+# ✅ Should show hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest (~5GB)
 
 # 4. Ollama server running
 curl http://localhost:11434/api/tags
@@ -223,7 +223,7 @@ npm init -y
 npm install node-fetch
 
 # Create test file: test.mjs
-echo "import fetch from 'node-fetch'; (async () => { const res = await fetch('http://localhost:11434/api/generate', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ model: 'granite-code:8b', prompt: 'Hello', stream: false }) }); console.log(await res.json()); })();" > test.mjs
+echo "import fetch from 'node-fetch'; (async () => { const res = await fetch('http://localhost:11434/api/generate', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest', prompt: 'Hello', stream: false }) }); console.log(await res.json()); })();" > test.mjs
 
 # Run test
 node test.mjs
@@ -243,7 +243,7 @@ POST http://localhost:11434/api/generate
 Content-Type: application/json
 
 {
-  "model": "granite-code:8b",
+  "model": "hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest",
   "prompt": "Explain NullPointerException in Kotlin",
   "stream": false
 }
@@ -265,7 +265,7 @@ ollama list
 
 # If stuck, cancel and retry:
 # Ctrl+C to cancel
-ollama pull granite-code:8b
+ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
 ```
 
 **Issue 2: `ollama: command not found`**
@@ -304,7 +304,7 @@ ollama serve
 # Should show GPU utilization if using GPU
 
 # To force CPU mode (testing):
-OLLAMA_COMPUTE_UNIT=cpu ollama run granite-code:8b
+OLLAMA_COMPUTE_UNIT=cpu ollama run hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
 ```
 
 **Issue 5: npm install fails with permission errors**
@@ -381,7 +381,7 @@ wsl --install
 ```bash
 # Kai runs (your checks):
 ollama list && node --version && tsc --version
-# Expected: Shows granite-code:8b, Node v18+, TypeScript v5+ ✅
+# Expected: Shows hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest, Node v18+, TypeScript v5+ ✅
 
 # Sokchea should also run (his checks):
 yo --version && code --version
@@ -399,7 +399,7 @@ const response = await fetch('http://localhost:11434/api/generate', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    model: 'granite-code:8b',
+    model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest',
     prompt: 'Hello from Kai',
     stream: false
   })
@@ -424,7 +424,7 @@ console.log('Ollama response:', data.response);
 **Expected Ollama Performance:**
 ```bash
 # Test generation speed:
-time ollama run granite-code:8b "Write hello world in Kotlin"
+time ollama run hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest "Write hello world in Kotlin"
 
 # Expected results:
 # - GPU mode: 4-6 seconds per iteration ✅ (FAST)
@@ -462,7 +462,7 @@ nvidia-smi
 **Checklist before starting Chunk 1.1:**
 - [ ] Node.js 18+ installed and verified
 - [ ] Ollama installed and service running
-- [ ] granite-code:8b model downloaded (~5GB)
+- [ ] hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest model downloaded (~5GB)
 - [ ] Ollama API responding to test requests
 - [ ] TypeScript, ts-node, Jest installed globally
 - [ ] VS Code with backend extensions installed
@@ -1284,7 +1284,7 @@ const embedding2 = await batchEmbedder.add('error message 2');
   - [x] Streaming support (optional for MVP) - Deferred
   - [x] Error handling for connection failures
   - [x] Timeout handling (90s default)
-  - [x] Model selection (granite-code:8b default)
+  - [x] Model selection (hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest default)
   - [x] Retry logic with exponential backoff
 
 - [x] `src/types.ts`
@@ -1390,7 +1390,7 @@ const embedding2 = await batchEmbedder.add('error message 2');
 // src/llm/OllamaClient.ts
 export class OllamaClient {
   private baseUrl: string = 'http://localhost:11434';
-  private model: string = 'granite-code:8b';
+  private model: string = 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest';
   
   async generate(prompt: string, options?: GenerateOptions): Promise<string> {
     const response = await fetch(`${this.baseUrl}/api/generate`, {
@@ -2964,7 +2964,7 @@ docs/
  * 
  * @example
  * ```typescript
- * const llm = await OllamaClient.create({ model: 'granite-code:8b' });
+ * const llm = await OllamaClient.create({ model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest' });
  * const agent = new ReactAgent(llm);
  * 
  * const error: ParsedError = {
@@ -3420,7 +3420,7 @@ export class AgentConfigBuilder {
   build(): AgentConfig {
     // Set defaults
     return {
-      model: this.config.model ?? 'granite-code:8b',
+      model: this.config.model ?? 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest',
       maxIterations: this.config.maxIterations ?? 10,
       timeout: this.config.timeout ?? 90000,
       mode: this.config.mode ?? 'standard',

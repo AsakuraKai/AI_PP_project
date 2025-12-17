@@ -1,3010 +1,4144 @@
-# 🚀 RCA Agent: Local-First Deep Code Analysis
+# 🔧 PHASE 1 OPTION B: KAI'S WORK (Backend Implementation)
 
-> **Mission:** Build a local-first debugging assistant that leverages unlimited context, iterations, and continuous learning to provide deep root cause analysis for code errors - starting with Kotlin/Android development.
-
-> **Core Innovation:** While cloud services like GitHub Copilot are limited by token costs and rate limits, local LLMs can analyze entire codebases, iterate exhaustively, and continuously learn from your specific coding patterns—enabling deeper debugging impossible with cloud solutions.
-
-> **Focus:** Personal hobby project to learn about LLM agents, debugging automation, and local AI deployment. Built for fun and practical use in Android development. **No deadlines, no external validation needed - this is for learning and personal use with heavy AI assistance.**
-
-> **Hardware:** RTX 3070 Ti (8GB VRAM), 32GB RAM, Ryzen 5 5600x - perfect for running 7B-8B models with excellent performance.
-
-> **🎯 Success = Personal Growth & Utility:** This project focuses on learning LLM agent architecture, building a genuinely useful debugging tool, and exploring the advantages of local-first AI development.
+> **Role:** Backend Developer - Implements ALL business logic, algorithms, parsers, tools, and data processing
+> **Responsibility:** No UI work - focus purely on implementation
 
 ---
 
-## 💡 Unique Value Proposition: Local LLM Superpowers
+## 🔧 Prerequisites & Environment Setup (Day 0 - Kai's Setup)
 
-> **What Cloud Services CAN'T Do (But You Can)**
-
-### 🔓 **Advantage 1: Extended Context Windows**
-```typescript
-// GitHub Copilot: Limited to ~8K tokens
-// GPT-4 Turbo: 128K tokens ($$$, rate limited)
-// YOUR Local Model (<10B params): 4K-32K tokens (model dependent, unlimited queries)
-
-async analyzeWithFullContext() {
-  // Intelligent chunking for large codebases
-  const relevantFiles = await this.selectRelevantFiles(errorContext);
-  const contextWindow = await this.buildHierarchicalContext(relevantFiles);
-  
-  // No token anxiety, no cost, unlimited iterations
-  // Use chunking + summarization for very large codebases
-  return await localLLM.analyze({ contextWindow });
-}
-```
-**Enables:** Cross-file dependency analysis, architectural issue detection, complete call graph tracing
-
-**⚖️ Context Window Reality:**
-- **Model limits:** 4K-8K tokens (most 7B models), 16K-32K (specialized models)
-- **Practical sweet spot:** 8K-12K tokens for best performance
-- **For large codebases:** Use hierarchical summarization + relevance filtering
-- **Advantage vs cloud:** Unlimited queries at no cost, not unlimited context per query
-
-### ♾️ **Advantage 2: Unlimited Iterations**
-```typescript
-// Cloud: "5 API calls remaining this hour"
-// Local: "Run 100 iterations until we find root cause"
-
-while (!rootCauseFound && iterations < 100) {
-  const hypothesis = await agent.generateHypothesis();
-  const tests = await agent.generateTests(hypothesis);
-  const results = await agent.runTests(tests);
-  
-  if (!results.pass) iterations++; // No cost, no limits
-}
-```
-**Enables:** Exhaustive hypothesis testing, binary search through error space, deep recursion
-
-### 🔒 **Advantage 3: Complete Privacy**
-```typescript
-// Cloud: "Don't send your code to external servers"
-// Local: "Everything runs on your machine"
-
-await agent.analyze({
-  sourceCode: myCode,           // ✅ Stays local
-  secrets: envFiles,            // ✅ No cloud leaks
-  projectFiles: allFiles        // ✅ Total privacy
-});
-```
-**Enables:** Full codebase access, config analysis, real error context
-
-### 🎓 **Advantage 4: Custom Fine-Tuning (Advanced)**
-```typescript
-// Cloud: "Use our general model"
-// Local: "Fine-tune on YOUR team's specific error patterns"
-
-const teamErrors = await extractFromGitHistory(last6Months);
-await fineTuneLLM({
-  baseModel: '<10B-param-model>',  // Models like 7B-8B size
-  trainingData: teamErrors,
-  focus: 'your_tech_stack',  // Knows YOUR patterns
-  method: 'qlora'  // Efficient 4-bit fine-tuning
-});
-```
-**Enables:** Team-specific error recognition, codebase-aware suggestions, organizational knowledge
-
-**⚠️ Fine-Tuning Reality Check:**
-- **Hardware needed:** 24GB+ VRAM (full fine-tuning) OR 12GB+ (QLoRA/4-bit)
-- **Time investment:** Hours to days of training
-- **Data requirements:** 1000+ quality examples, proper formatting
-- **Expertise:** Understanding LoRA, hyperparameters, evaluation
-- **Simpler alternative:** RAG with vector DB (already included in Phase 1-3)
-- **Recommendation:** Start with RAG, consider fine-tuning in Phase 9-11 if needed
-
-### 📈 **Advantage 5: Persistent Learning**
-```typescript
-// Cloud: "We don't learn from your code"
-// Local: "Every error makes the system smarter"
-
-await vectorDB.add(error, solution, { validated: true });
-// Next similar error = instant solution
-```
-**Enables:** Gets better over time as you use it, learns your coding patterns
-
-### 🔄 **Advantage 6: Free Model Swapping = Unlimited Language Support**
-```typescript
-// Cloud: "You get the model we give you"
-// Local: "Switch between ANY model instantly, zero API cost"
-
-// Language-specific model optimization
-await agent.switchModel('codellama:7b');        // TypeScript errors (4GB)
-await agent.switchModel('deepseek-coder:6.7b'); // Python errors (4GB)
-await agent.switchModel('granite-code:8b');     // Kotlin/Android errors (5GB)
-await agent.switchModel('starcoder2:7b');       // Dart/Flutter errors (4GB)
-
-// Try multiple models on same error for best results
-for (const model of ['qwen-coder:7b', 'codellama:7b', 'deepseek-coder:6.7b']) {
-  const result = await agent.analyze(error, { model });
-  // Pick best result, no API cost
-}
-
-// THE KEY INSIGHT: Language support is NO LONGER LIMITED!
-// Bottleneck = Building parsers/tools, NOT LLM capability
-// Once parser exists → Use ANY specialized model for that language
-```
-**Enables:** 
-- **Unlimited language support** - just add parser + swap to specialized model
-- **Task-specific optimization** - use best model per language
-- **Multi-model validation** - compare solutions from different models
-- **Zero API cost** - experiment freely without usage fees
-
-**💾 Model Swapping: The Full Picture**
-- **Storage required:** 20-40GB for 5-8 model library (each model: 3-8GB)
-- **First-time download:** 4-8GB per model (one-time, cached locally)
-- **Switch latency:** 5-30s model loading time
-- **Memory:** Only one model loaded at a time (~8GB RAM for 7B model)
-- **Best practice:** Choose primary model per project, swap only when needed
-- **Cost comparison:** $0 local storage vs $0.01-0.10 per 1K tokens cloud API
+> **Your Role:** Set up backend development environment, LLM infrastructure, and testing tools.
 
 ---
 
-## 🎯 Project Goals
+### 📦 Required Manual Installations
 
-### **Main Goal:**
-> Build a working local debugging assistant that actually helps with Kotlin/Android development, then expand to other languages **at my own pace**.
+**Priority 1: Core Backend Tools**
 
-### **Success Metrics (Keep It Simple):**
+1. **Node.js 18+ LTS**
+   - Download: https://nodejs.org/
+   - Choose LTS (Long Term Support) version
+   - Verify: `node --version` (should show v18+)
+   - **Why:** Required for TypeScript backend development
 
-**Phase 1: Kotlin/Android Working**
-- ✅ Successfully analyzes common Kotlin errors (NullPointerException, lateinit, etc.)
-- ✅ Handles Android-specific issues (lifecycle, Compose, Gradle)
-- ✅ Completes analysis in <60s on your GPU
-- ✅ Actually useful in real development
-- ✅ Learning about LLM agents and RAG systems
+2. **Ollama** (Your Primary Tool!)
+   - Download: https://ollama.ai/download
+   - Windows: Run installer, it will auto-start as a service
+   - Verify: `ollama --version`
+   - **Why:** Local LLM inference server - your main backend service
 
-**Later Phases: Multi-Language Support (No Timeline)**
-- Add TypeScript/JavaScript support when ready
-- Add Python support when ready
-- Add other languages as desired
-- Each phase is a learning opportunity
+3. **Visual Studio Code**
+   - Download: https://code.visualstudio.com/
+   - Verify: `code --version`
+   - **Why:** IDE for backend development
 
-**Learning & Growth:**
-- Understand LLM agent architecture deeply
-- Master vector databases and RAG systems
-- Learn to work effectively with AI assistants
-- System gets better over time (continuous learning)
-- Build genuinely useful personal tool
+4. **Git for Windows**
+   - Download: https://git-scm.com/download/win
+   - During install: Choose "Git from command line and 3rd-party software"
+   - Verify: `git --version`
+   - **Why:** Version control and collaboration with Sokchea
 
-### **This is for:**
-- **Primary:** Personal learning about LLM agents
-- **Primary:** Practical debugging help in Android dev
-- **Primary:** Fun exploration of local AI capabilities
-- **Secondary:** Portfolio/resume material
-- **Not for:** External validation, research publication, or deadlines
+**Priority 2: Database Tools (For Chunk 3+)**
 
----
+5. **Docker Desktop** (Install before Week 4)
+   - Download: https://www.docker.com/products/docker-desktop
+   - Requires: Windows 10/11 Pro, Enterprise, or Education
+   - Alternative: Install WSL2 if on Windows Home
+   - **Why:** Run ChromaDB container for vector database
+   - **Note:** Can skip for now, install before Chunk 3
 
-## 🚀 Project Overview: What Makes This Different
+**Priority 3: Optional Tools**
 
-### **The Innovation: Exploiting Local LLM Advantages**
+6. **Postman** (Recommended)
+   - Download: https://www.postman.com/downloads/
+   - **Why:** Test Ollama API and ChromaDB endpoints
 
-This project proves that **local LLM deployment** enables code analysis approaches that cloud services **cannot offer** due to business constraints:
-
-| Cloud Services (Copilot, etc.) | Your Local Agent | Advantage |
-|--------------------------------|------------------|-----------|
-| 8K token context limit | **Unlimited** - entire codebase | 30%+ better accuracy |
-| 5 API calls/hour rate limit | **Unlimited** - 50+ iterations | 2x deeper root causes |
-| No sensitive data (privacy) | **Full access** - configs, secrets, PII | 40%+ more production errors solved |
-| General model for everyone | **Fine-tuned** on YOUR team's errors | 50% faster, 25% more accurate |
-| No learning from your code | **Continuous learning** on YOUR patterns | 50%+ improvement over time |
-
-### **Development Approach: Practical & Iterative**
-
-This is a **learning-focused hobby project**:
-- Build features incrementally and test on real code
-- Heavy use of AI assistants for development
-- RAG-first approach with comprehensive vector database
-- Learn by doing - theory validated through practical use
-
-### **Timeline: Completely Flexible, Learning-Focused**
-
-- **Phase 1:** Foundation + Kotlin/Android Support (No specific timeline)
-- **Phase 2:** TypeScript/JavaScript Support (When ready)
-- **Phase 3:** Python Support (When ready)
-- **Phase 4:** Advanced Features & Polish (When ready)
-- **Phase 5+:** Additional languages as desired (Optional)
-
-*Note: Work at your own pace. Use AI assistance heavily. Focus on learning and building something useful, not meeting deadlines.*
-
-### **Development Approach:**
-- **Solo developer** with heavy AI assistant support
-- **AI helps with:** Code generation, debugging, documentation, testing, architecture decisions
-- **Human focuses on:** Learning, integration, design decisions, testing on real projects
-- **Collaborative AI-Human workflow** throughout
+7. **DB Browser for SQLite** (Optional, for debugging)
+   - Download: https://sqlitebrowser.org/dl/
+   - **Why:** Inspect ChromaDB data if needed
 
 ---
 
-## 🏆 Quick Start: Development Tracking System
+### ⌨️ Terminal-Based Setup
 
-**TL;DR:** Five documentation pillars ensure complete audit trail:
-
-| Document | Purpose | Update Frequency | Auto-Generated |
-|----------|---------|------------------|----------------|
-| **[DEVLOG.md](#-devlogmd---central-development-journal)** | Weekly journal of all changes | Every Friday | ❌ Manual |
-| **[PROJECT_STRUCTURE.md](#️-project-structure-snapshot)** | File tree with metadata | Each milestone | ✅ Automated |
-| **[API_CONTRACTS.md](#-api_contractsmd---tool-interface-specifications)** | Tool JSON schemas | When tools change | ❌ Manual |
-| **[ADRs](#️-architecture-decision-records-adrs)** | Design decisions | As decisions made | ❌ Manual |
-| **[Traceability Matrix](#️-traceability-matrix)** | Requirements → Code → Tests | Throughout development | ❌ Manual |
-
-**Essential Commands:**
+**Step 1: Verify Core Installations**
 ```bash
-# Weekly update (every Friday)
-npm run weekly-update              # Runs all automation
+# Open PowerShell or Command Prompt
+node --version
+# Expected: v18.x.x or higher ✅
 
-# Individual automation scripts
-npm run generate-structure         # Update PROJECT_STRUCTURE.md
-npm run validate-contracts         # Check API_CONTRACTS.md completeness
-npm run extract-functions          # Generate function inventory
-npm run perf:benchmark             # Track performance metrics
-npm run quality-check              # Pre-commit validation
+npm --version
+# Expected: v9.x.x or higher ✅
+
+git --version
+# Expected: git version 2.x ✅
+
+ollama --version
+# Expected: ollama version x.x.x ✅
+```
+
+**Step 2: Install Global NPM Tools (Backend Development)**
+```bash
+# TypeScript Compiler
+npm install -g typescript
+
+# TS-Node - Run TypeScript directly
+npm install -g ts-node
+
+# Nodemon - Auto-restart on file changes
+npm install -g nodemon
+
+# Jest - Testing framework
+npm install -g jest
+
+# ESLint - Code quality
+npm install -g eslint
+
+# Verify installations
+tsc --version
+# Expected: 5.x.x ✅
+
+ts-node --version
+# Expected: v10.x.x ✅
+
+nodemon --version
+# Expected: 3.x.x ✅
+
+jest --version
+# Expected: 29.x.x ✅
+```
+
+**Step 3: Download and Test Ollama Model (CRITICAL!)**
+```bash
+# This is your main LLM - 5GB download, may take 10-30 minutes
+ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
+
+# Verify model is downloaded
+ollama list
+# Expected: Should show hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest with size ~5GB ✅
+
+# Test model interactively
+ollama run hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
+# Type: "Write a hello world function in Kotlin"
+# Should generate Kotlin code ✅
+# Press Ctrl+D or type /bye to exit
+```
+
+**Step 4: Test Ollama API (Your Backend Interface)**
+```bash
+# Ensure Ollama server is running
+ollama serve
+# Should say "Listening on 127.0.0.1:11434" or already running
+
+# In a new terminal, test API endpoint
+curl http://localhost:11434/api/tags
+# Expected: JSON response with list of models ✅
+
+# Test generation endpoint (the one you'll use most)
+curl http://localhost:11434/api/generate -d '{
+  "model": "hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest",
+  "prompt": "Explain NullPointerException in Kotlin",
+  "stream": false
+}'
+# Expected: JSON response with generated text ✅
+```
+
+**Step 5: Install VS Code Extensions (Backend Focus)**
+```bash
+# ESLint
+code --install-extension dbaeumer.vscode-eslint
+
+# TypeScript
+code --install-extension ms-vscode.vscode-typescript-next
+
+# Jest Test Explorer
+code --install-extension kavod-io.vscode-jest-test-adapter
+
+# REST Client (for testing APIs)
+code --install-extension humao.rest-client
+
+# Error Lens
+code --install-extension usernamehw.errorlens
+
+# GitLens
+code --install-extension eamodio.gitlens
+
+# Verify
+code --list-extensions
 ```
 
 ---
 
-## 📋 Table of Contents
-- [Unique Value Proposition](#-unique-value-proposition-local-llm-superpowers)
-- [Research Goals & Hypotheses](#-research-goals--hypotheses)
-- [Quick Start: Development Tracking](#-quick-start-development-tracking-system)
-- [Development Tracking System](#-development-tracking-system)
-- [Project Structure](#-project-structure-snapshot)
-- [Phase 1: Foundation & Evaluation Framework](#-phase-1-foundation--evaluation-framework-months-1-2)
-- [Phase 2: Unlimited Context Engine](#-phase-2-unlimited-context-engine-months-3-4)
-- [Phase 3: Deep Iteration Engine](#-phase-3-deep-iteration-engine-months-5-6)
-- [Phase 4: Privacy-Enabled Analysis](#-phase-4-privacy-enabled-analysis-months-7-8)
-- [Phase 5: Custom Fine-Tuning](#-phase-5-custom-fine-tuning-months-9-11)
-- [Phase 6: Long-Term Learning](#-phase-6-long-term-learning-months-12-18)
-- [Phase 7: Multi-Language Validation](#-phase-7-multi-language-validation-months-19-24)
-- [Phase 8: User Interface & Polish](#-phase-8-user-interface--polish-months-13-15)
-- [Best Practices & Standards](#-best-practices--standards)
-- [Complete Audit Trail System](#-complete-development-audit-trail-system)
-- [Research Metrics & Publication](#-research-metrics--publication)
+### ✅ Kai's Validation Checklist
+
+**Run these commands to verify your backend setup:**
+
+```bash
+# 1. Node.js ecosystem
+node --version && npm --version && tsc --version
+# ✅ Should show all versions
+
+# 2. Ollama installed
+ollama --version
+# ✅ Should show ollama version
+
+# 3. Ollama model downloaded
+ollama list
+# ✅ Should show hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest (~5GB)
+
+# 4. Ollama server running
+curl http://localhost:11434/api/tags
+# ✅ Should return JSON with models
+
+# 5. Git configured
+git --version
+# ✅ Should show git version
+
+# 6. VS Code command available
+code --version
+# ✅ Should show VS Code version
+
+# 7. Testing tools
+jest --version && ts-node --version
+# ✅ Should show both versions
+```
+
+**All checks passed?** ✅ You're ready for Day 1!
 
 ---
 
-## 💻 Hardware & Infrastructure Requirements
+### 🧪 Test Ollama Integration (Quick Backend Test)
 
-> **Critical Foundation:** Local LLM performance depends heavily on hardware. Plan infrastructure before development.
+**Create a test script to verify Ollama is working:**
 
-### Minimum Hardware by Model Size
+```bash
+# Create test directory
+mkdir ollama-test
+cd ollama-test
 
-#### **7B-8B Models (Standard Mode - Recommended)**
-| Hardware Type | Specs | Performance | Use Case |
-|--------------|-------|-------------|----------|
-| **CPU-only** | 16GB RAM, 8-core CPU | ~15-20s per iteration | Development, testing |
-| **NVIDIA GPU** | 8GB+ VRAM, 12GB RAM | ~4-6s per iteration | Production use |
-| **Apple Silicon** | M1/M2 16GB+ unified memory | ~6-8s per iteration | Mac development |
-| **AMD GPU** | 8GB+ VRAM (ROCm support) | ~5-7s per iteration | Linux production |
+# Initialize npm project
+npm init -y
 
-#### **Recommended Models for Your Setup**
-| Model Size | VRAM Usage | Your Speed | Best For |
-|-----------|-----------|------------|----------|
-| **7B-8B (Q8)** | ~4-5GB | 4-6s/iter | Main debugging (Kotlin, Android) |
-| **3B-4B (Q8)** | ~2-3GB | 2-3s/iter | Fast feedback loops |
-| **7B-8B (Q4)** | ~2-3GB | 3-4s/iter | Alternative for lighter load |
+# Install node-fetch
+npm install node-fetch
 
-### Quantization for Your 3070 Ti
+# Create test file: test.mjs
+echo "import fetch from 'node-fetch'; (async () => { const res = await fetch('http://localhost:11434/api/generate', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest', prompt: 'Hello', stream: false }) }); console.log(await res.json()); })();" > test.mjs
 
-| Quantization | VRAM Usage | Quality | Your Speed | Use When |
-|-------------|-----------|---------|------------|----------|
-| **Q8 (8-bit)** | ~4-5GB | ~95% | 4-6s/iter | **Primary choice** ✅ |
-| **Q4 (4-bit)** | ~2-3GB | ~85-90% | 3-4s/iter | Need extra VRAM |
+# Run test
+node test.mjs
+# ✅ Should print JSON with generated response
 
-**Your Setup:** Stick with **Q8** - you have enough VRAM for best quality.
-
-### Storage Requirements
-
-```
-Total Storage Needed: ~40-60GB
-├── Model Library (15-25GB)
-│   ├── granite-code:8b (5GB) - Kotlin/Android primary
-│   ├── codellama:7b (4GB) - General code
-│   ├── qwen-coder:3b (2GB) - Fast mode
-│   └── Future models (4-14GB) - Other languages
-├── Vector Database (5-10GB)
-│   └── ChromaDB embeddings
-├── Project Workspace (10-20GB)
-│   └── Code + dependencies
-└── Logs/Cache (5-10GB)
+# Cleanup
+cd ..
+rmdir /s ollama-test
 ```
 
-### Quick Setup Checklist
+**Alternative: Test with REST Client in VS Code**
 
-**Before Starting:**
-- [ ] Install Ollama (or LM Studio) for model management
-- [ ] Download granite-code:8b model (Kotlin/Android)
-- [ ] Set up Docker for ChromaDB
-- [ ] Verify NVIDIA drivers + CUDA installed
-- [ ] Test model inference with `ollama run granite-code:8b`
-- [ ] Allocate 50GB free disk space
+1. Create file: `ollama-test.http`
+```http
+### Test Ollama API
+POST http://localhost:11434/api/generate
+Content-Type: application/json
 
-### Your Expected Performance
-
-**Target: Full RCA Analysis Time (Your 3070 Ti)**
-| Mode | Iterations | Model | Your Time | Status |
-|------|-----------|-------|-----------|--------|
-| Standard | 8-10 | granite-code:8b (Q8) | 35-50s | 🟢 Excellent |
-| Fast | 6-8 | qwen-coder:3b (Q8) | 16-24s | 🟢 Great |
-| Educational | 8-10 | granite-code:8b (Q8) | 60-80s | 🟢 Good |
-
-**Note:** First-time analysis. Repeat similar errors: ~5-10s (cache hit).
-
----
-
-## 🎯 Development Tracking System
-
-> **Philosophy:** Every file, function, and decision must have a clear audit trail for research reproducibility and future maintainability.
-
-### 📖 DEVLOG.md - Central Development Journal
-**Location:** `./docs/DEVLOG.md`  
-**Purpose:** Single source of truth for all development progress, decisions, and changes.  
-**Update Frequency:** End of each week (every Friday)  
-**Mandatory For:** Code reviews, milestone completions, architectural changes
-
-**Structure:**
-```markdown
-# Development Log
-
-## Week [X] - [Phase Name]
-**Date Range:** [Start] - [End]  
-**Milestone:** [Current Milestone Number]  
-**Status:** 🟢 On Track | 🟡 Delayed | 🔴 Blocked
-
-### Files Created/Modified
-| File Path | Purpose | Key Functions/Classes | Status |
-|-----------|---------|----------------------|--------|
-| `src/extension.ts` | Extension entry point | `activate()`, `deactivate()` | ✅ Complete |
-
-### Functions Implemented
-| Function Name | File | Signature | Purpose | Tests | Coverage |
-|---------------|------|-----------|---------|-------|----------|
-| `activate()` | `extension.ts` | `(context: ExtensionContext) => void` | Register commands | ✅ | 95% |
-| `ChromaDBClient.addRCADocument()` | `db/ChromaDBClient.ts` | `async (doc: RCADocument) => Promise<string>` | Store RCA in vector DB | ✅ | 88% |
-
-### Classes/Interfaces Created
-| Name | File | Purpose | Public Methods | Dependencies |
-|------|------|---------|----------------|--------------|
-| `ReactAgent` | `agent/ReactAgent.ts` | Core ReAct loop | `analyze()`, `shouldTerminate()` | LLMProvider, ToolRegistry |
-| `AgentState` | `agent/types.ts` | State machine interface | N/A (interface) | None |
-
-### Architecture Decisions
-- **Decision:** [What was decided]
-- **Rationale:** [Why this approach]
-- **Trade-offs:** [What was sacrificed]
-- **Future Implications:** [How this affects later phases]
-- **Related Files:** [List of affected files]
-
-### Blockers & Solutions
-- **Blocker:** [Description]
-- **Impact:** [Affected milestone]
-- **Solution:** [How resolved]
-- **Lessons Learned:** [Key takeaways]
-- **Time Lost:** [Hours/days]
-
-### Performance Metrics (Per Milestone)
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| RCA Generation Time | <60s | 52s | ✅ |
-| Test Coverage | >80% | 83% | ✅ |
-| Build Time | <30s | 28s | ✅ |
-
-### Next Week Goals
-- [ ] Goal 1
-- [ ] Goal 2
-```
-
-**Key Principles:**
-1. **No Code Without Documentation:** Every new file gets an entry in DEVLOG.md
-2. **Function Signatures Matter:** Document input/output types and purpose
-3. **Test Coverage Tracking:** Report coverage % for each function
-4. **Performance Accountability:** Compare actual vs target metrics weekly
-
-### 🗂️ Project Structure Snapshot
-**Location:** `./docs/PROJECT_STRUCTURE.md` (Auto-generated via script)  
-**Update Frequency:** End of each milestone (Weeks 1, 2, 4, 6, 8, 10, 12)  
-**Generation Command:** `npm run generate-structure`
-
-**Purpose:** 
-- Visual representation of entire codebase
-- File count tracking (detect bloat)
-- Dependency mapping
-- Quick file location reference
-
-**Enhanced Format:**
-```
-rca-agent/
-├── src/
-│   ├── extension.ts              # Entry point, command registration
-│   │                             # Functions: activate(), deactivate()
-│   │                             # Dependencies: vscode, CommandRegistry
-│   │                             # Last Modified: 2025-01-15 | Lines: 87
-│   ├── agent/
-│   │   ├── ReactAgent.ts         # Core ReAct loop implementation
-│   │   │                         # Functions: analyze(), shouldTerminate(), reflectOnHypothesis()
-│   │   │                         # Dependencies: LLMProvider, ToolRegistry, StateManager
-│   │   │                         # Last Modified: 2025-02-03 | Lines: 342 | Tests: ✅ 88%
-│   │   ├── PromptEngine.ts       # System prompts & templates
-│   │   │                         # Functions: getSystemPrompt(), formatFewShot()
-│   │   │                         # Dependencies: None
-│   │   │                         # Last Modified: 2025-02-01 | Lines: 156 | Tests: ✅ 92%
-│   │   └── types.ts              # Agent state interfaces
-│   │                             # Exports: AgentState, ToolCall, ReflectionResult
-│   │                             # Dependencies: None
-│   │                             # Last Modified: 2025-01-28 | Lines: 78 | Tests: N/A
-...
-```
-
-**Auto-Generation Script:**
-```typescript
-// scripts/generate-structure.ts
-import * as fs from 'fs';
-import * as path from 'path';
-
-interface FileMetadata {
-  path: string;
-  purpose: string;
-  functions: string[];
-  dependencies: string[];
-  lastModified: string;
-  lineCount: number;
-  testCoverage?: string;
-}
-
-async function generateStructure(): Promise<void> {
-  // Recursively walk directory
-  // Extract JSDoc comments for purpose
-  // Parse imports for dependencies
-  // Get git last modified date
-  // Count lines of code
-  // Read test coverage from jest/nyc output
-  // Generate markdown tree
-}
-```
-
-### 📋 API_CONTRACTS.md - Tool Interface Specifications
-**Location:** `./docs/API_CONTRACTS.md`  
-**Purpose:** JSON schemas for all tools used by LLM  
-**Update Trigger:** Any tool added/modified
-
-**Format:**
-```markdown
-# Tool API Contracts
-
-## Tool: read_file
-
-**Version:** 1.0.0  
-**Status:** Stable  
-**File:** `src/tools/ReadFileTool.ts`
-
-### Input Schema
-\`\`\`typescript
 {
-  filePath: string;        // Relative path from workspace root
-  lineStart?: number;      // Optional: Starting line (1-indexed)
-  lineEnd?: number;        // Optional: Ending line (inclusive)
+  "model": "hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest",
+  "prompt": "Explain NullPointerException in Kotlin",
+  "stream": false
 }
-\`\`\`
-
-### Output Schema
-\`\`\`typescript
-{
-  success: boolean;
-  content?: string;        // File contents if success
-  error?: string;          // Error message if failed
-  metadata: {
-    encoding: string;      // 'utf-8' | 'binary'
-    size: number;          // Bytes
-    lineCount: number;
-  }
-}
-\`\`\`
-
-### Example Usage
-\`\`\`json
-// Request
-{
-  "tool": "read_file",
-  "parameters": {
-    "filePath": "src/utils/ErrorParser.ts",
-    "lineStart": 45,
-    "lineEnd": 67
-  }
-}
-
-// Response
-{
-  "success": true,
-  "content": "export class ErrorParser {...}",
-  "metadata": {
-    "encoding": "utf-8",
-    "size": 1024,
-    "lineCount": 23
-  }
-}
-\`\`\`
-
-### Validation
-- Schema validated with Zod: ✅
-- Unit tests: ✅ 95% coverage
-- Integration tests: ✅
 ```
 
-### 🏗️ Architecture Decision Records (ADRs)
-**Location:** `./docs/architecture/decisions/`  
-**Naming:** `YYYYMMDD-decision-name.md`  
-**Required For:** Major architectural choices that affect multiple components
+2. Click "Send Request" above the POST line
+3. ✅ Should show response in new tab
 
-**Template:**
-```markdown
-# ADR [Number]: [Title]
+---
 
-**Date:** YYYY-MM-DD  
-**Status:** Proposed | Accepted | Deprecated | Superseded  
-**Supersedes:** [ADR number if replacing another decision]  
-**Superseded By:** [ADR number if this decision was replaced]
+### 🚨 Common Issues & Solutions (Kai-Specific)
 
-## Context
-[What is the situation forcing this decision? Include technical constraints, requirements, and relevant background.]
+**Issue 1: Ollama model download is very slow**
+```bash
+# Solution: Download will be ~5GB, can take 10-60 minutes
+# Check download progress:
+ollama list
+# Shows partial download size
 
-## Decision
-[What is the change we're proposing/have made? State clearly and concisely.]
-
-## Consequences
-
-### Positive
-- [Good outcome 1]
-- [Good outcome 2]
-
-### Negative
-- [Trade-off 1]
-- [Trade-off 2]
-
-### Neutral
-- [Impact that's neither good nor bad]
-
-## Implementation Details
-\`\`\`typescript
-// Concrete example of how this decision manifests in code
-\`\`\`
-
-## Alternatives Considered
-
-### Option 1: [Name]
-- **Pros:** [Benefits]
-- **Cons:** [Drawbacks]
-- **Why Rejected:** [Reason]
-
-### Option 2: [Name]
-- **Pros:** [Benefits]
-- **Cons:** [Drawbacks]
-- **Why Rejected:** [Reason]
-
-## Related Decisions
-- ADR 001: [Related decision]
-- ADR 005: [Related decision]
-
-## References
-- [External documentation]
-- [Research papers]
-- [GitHub issues]
-
-## Notes
-[Any additional context, future reconsideration triggers, or follow-up tasks]
+# If stuck, cancel and retry:
+# Ctrl+C to cancel
+ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
 ```
 
-### 📊 Milestone Completion Checklist
-**Location:** Embedded in DEVLOG.md per milestone  
-**Purpose:** Ensure no steps skipped, maintain quality standards
+**Issue 2: `ollama: command not found`**
+```bash
+# Solution 1: Restart terminal after Ollama installation
 
-**Example (Week 1 Completion):**
-```markdown
-## Week 1 Milestone Completion Checklist
+# Solution 2: Check if Ollama service is running
+# Windows: Open Task Manager → Services → Look for "Ollama"
 
-### Code Quality
-- [x] All TypeScript files have JSDoc comments
-- [x] ESLint passes with zero warnings
-- [x] Prettier formatting applied
-- [x] No `any` types used
-- [x] All public functions have return type annotations
+# Solution 3: Add to PATH manually
+# Default install location: C:\Users\YourName\AppData\Local\Programs\Ollama
+# Add to PATH in Environment Variables
+```
 
-### Testing
-- [x] Unit tests written for all new functions
-- [x] Integration tests cover main workflow
-- [x] Test coverage >80%
-- [x] All tests passing in CI
+**Issue 3: Ollama API not responding**
+```bash
+# Check if server is running
+curl http://localhost:11434/api/tags
 
-### Documentation
-- [x] DEVLOG.md updated with this week's progress
-- [x] PROJECT_STRUCTURE.md regenerated
-- [x] API_CONTRACTS.md updated for new tools
-- [x] Architecture Decision Records written (if applicable)
-- [x] Function signatures documented in DEVLOG
+# If fails, start manually:
+ollama serve
+# Should start server on port 11434
 
-### Performance
-- [x] Build time <30s
-- [x] No memory leaks detected
-- [x] Extension activation time <1s
+# Check Windows Firewall:
+# Allow Ollama through firewall if prompted
+```
 
-### Code Review
-- [x] Self-review completed
-- [x] Code follows established patterns
-- [x] No hardcoded values (use config)
-- [x] Error handling implemented
+**Issue 4: Ollama model generation is slow**
+```bash
+# This is normal for CPU-only inference
+# Expected: 15-20s per iteration on CPU
+# Expected: 4-6s per iteration on GPU (RTX 3070 Ti)
 
-### Git Hygiene
-- [x] Commit messages follow conventional commits
-- [x] Branch named correctly (feature/milestone-1.1)
-- [x] No merge conflicts
-- [x] PR description references milestone
+# Check GPU usage:
+# Task Manager → Performance → GPU
+# Should show GPU utilization if using GPU
+
+# To force CPU mode (testing):
+OLLAMA_COMPUTE_UNIT=cpu ollama run hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
+```
+
+**Issue 5: npm install fails with permission errors**
+```bash
+# Solution: Run as administrator OR fix npm permissions
+
+# Fix npm global directory:
+npm config set prefix "C:\Users\YourName\AppData\Roaming\npm"
+
+# Then retry:
+npm install -g typescript ts-node
+```
+
+**Issue 6: Docker Desktop requires Windows Pro**
+```bash
+# Solution: Install WSL2 on Windows Home
+# 1. Enable WSL:
+wsl --install
+
+# 2. Install Ubuntu from Microsoft Store
+
+# 3. Install Docker Desktop with WSL2 backend
+
+# Note: This is only needed for Chunk 3 (Week 4)
+# Skip for now if issues, revisit later
 ```
 
 ---
 
-## 🏗️ PHASE 1: Kotlin/Android Complete (Flexible Timeline)
+### ⏱️ Kai's Setup Time Estimate
 
-> **Goal:** Build a fully working debugging assistant for Kotlin/Android development. Everything else comes later. **Work at your own pace - this is a learning journey, not a race.**
-
-### What Phase 1 Delivers:
-- ✅ VS Code extension that works
-- ✅ Analyzes Kotlin errors (NullPointerException, lateinit, scope functions, etc.)
-- ✅ Handles Android-specific issues (lifecycle, Jetpack Compose, Gradle builds)
-- ✅ Parses XML layouts and Groovy build scripts
-- ✅ Vector DB learning from your errors
-- ✅ Fast analysis (<60s) on your GPU
-- ✅ Educational mode for learning
-- ✅ Actually useful in real Android projects
-
-**Phase 1 Language Focus:**
-| Language/Format | Coverage | Parser | Priority |
-|----------------|---------|--------|----------|
-| **Kotlin** | Full language support | ✅ VS Code LSP | 🔥 Highest |
-| **Jetpack Compose** | UI errors, recomposition | ✅ Kotlin parser | 🔥 Highest |
-| **XML Layouts** | View inflation, attributes | ✅ Custom parser | High |
-| **Groovy (Gradle)** | Build errors, dependencies | ✅ Basic parser | High |
-| **Kotlin DSL (Gradle)** | Modern build scripts | ✅ Kotlin parser | Medium |
-
-**Android Error Types Covered:**
-- Kotlin null safety errors
-- lateinit property not initialized
-- Jetpack Compose recomposition issues
-- Activity/Fragment lifecycle errors
-- View binding issues
-- Gradle dependency conflicts
-- Manifest merge errors
-- XML layout inflation failures
-
-| Task | Implementation Details | Files Created | Checklist |
-|------|----------------------|---------------|-----------|
-| **1.1.1 Extension Setup** | Initialize TypeScript project with proper tsconfig, ESLint, Prettier | • `package.json`<br>• `tsconfig.json`<br>• `.eslintrc.js`<br>• `src/extension.ts` | ☐ Node.js 18+ installed<br>☐ VS Code Extension API types<br>☐ Build script (`npm run compile`)<br>☐ Watch mode (`npm run watch`) |
-| **1.1.2 Command Registration** | Implement `rcaAgent.analyzeError` command | • `src/commands/AnalyzeErrorCommand.ts` | ☐ Command appears in palette<br>☐ Keybinding configured<br>☐ Context menu integration |
-| **1.1.3 Configuration Schema** | Define user settings for LLM provider, API keys, model selection | • Update `package.json` contributes.configuration | ☐ Local/Cloud toggle<br>☐ API key secure storage<br>☐ **Model dropdown list with free swapping**<br>☐ Hot-swap models without restart<br>☐ Per-project model preferences |
-
-**Key Functions:**
-```typescript
-// src/extension.ts
-export function activate(context: vscode.ExtensionContext): void {
-  const analyzeCommand = vscode.commands.registerCommand(
-    'rcaAgent.analyzeError',
-    async () => { /* Entry point for RCA analysis */ }
-  );
-  context.subscriptions.push(analyzeCommand);
-}
-
-// src/llm/OllamaClient.ts
-export class OllamaClient implements LLMProvider {
-  static async create(config: LLMConfig): Promise<OllamaClient> {
-    // Primary: granite-code:8b for Kotlin/Android (5GB VRAM)
-    // Fallback: qwen-coder:3b for fast mode (2GB VRAM)
-    // Uses your 3070 Ti GPU for 4-6s per iteration
-  }
-  
-  async switchModel(newModel: string): Promise<void> {
-    // Hot-swap between models if needed
-  }
-}
-```
+| Task | Time | Priority | Notes |
+|------|------|----------|-------|
+| Download & install software | 30-60min | 🔥 Critical | Node, Ollama, Git, VS Code |
+| Terminal setup (npm packages) | 15-30min | 🔥 Critical | TypeScript, Jest, etc. |
+| Download Ollama model (5GB) | 10-60min | 🔥 Critical | Depends on internet speed |
+| Test Ollama API | 15-30min | 🔥 Critical | Verify everything works |
+| VS Code extensions | 10-15min | 🟡 Medium | Improves dev experience |
+| Docker setup (optional) | 30-60min | 🟢 Low | Only needed in Week 4 |
+| **Total (without Docker)** | **1.5-3h** | **Do before Day 1** | |
+| **Total (with Docker)** | **2-4h** | **Can defer Docker** | |
 
 ---
 
-#### Milestone 1.2 - Vector Database Integration
-**Deliverable:** ChromaDB connection with dual embedding strategy
+### 📚 Recommended Reading (Before Day 1)
 
-| Task | Implementation Details | Files Created | Checklist |
-|------|----------------------|---------------|-----------|
-| **1.2.1 ChromaDB Setup** | Docker container or local server, collection initialization | • `docker-compose.yml`<br>• `src/db/ChromaDBClient.ts` | ☐ ChromaDB running on localhost:8000<br>☐ Health check endpoint working<br>☐ Collection created: `rca_solutions` |
-| **1.2.2 Embedding Service** | Local embeddings with model versioning | • `src/db/EmbeddingService.ts`<br>• `src/db/embeddings/LocalEmbedder.ts`<br>• `src/db/ModelVersionManager.ts` | ☐ Model download: `all-MiniLM-L6-v2`<br>☐ Fallback model: `paraphrase-MiniLM-L3-v2`<br>☐ Version metadata tracking |
-| **1.2.3 Schema Definition** | Define RCA document structure with quality management | • `src/db/schemas/rca-collection.ts`<br>• `src/db/CollectionManager.ts` | ☐ Fields: error_type, language, stack_trace, solution, confidence, quality_score, user_rating, embedding_version<br>☐ Metadata indexing for filtering<br>☐ Collection merging utility (merge workspace collections) |
+**Essential (1-2 hours):**
+- Ollama API Documentation: https://github.com/ollama/ollama/blob/main/docs/api.md
+  - Read: `/api/generate` endpoint (your main API)
+  - Read: `/api/chat` endpoint (alternative)
+  - Understand: `stream` parameter (true vs false)
 
-**Key Functions:**
-```typescript
-// src/db/ChromaDBClient.ts
-export class ChromaDBClient {
-  async addRCADocument(doc: RCADocument): Promise<string> {
-    // Embed error description + solution
-    // Store with metadata (language, file_path, timestamp)
-  }
-  
-  async queryRelevantRCAs(errorContext: string, k: number = 5): Promise<RCADocument[]> {
-    // Semantic search with hybrid filtering
-  }
-}
+- TypeScript for Backend: https://www.typescriptlang.org/docs/handbook/intro.html
+  - Focus: Interfaces, Types, Async/Await
+
+**Optional (if time permits):**
+- Jest Testing: https://jestjs.io/docs/getting-started
+- Prompt Engineering: https://platform.openai.com/docs/guides/prompt-engineering
+  - Applicable to Ollama models too
+
+---
+
+### 🤝 Coordination with Sokchea
+
+**Before Day 1, sync with Sokchea to ensure:**
+- [ ] You have Ollama running and responding
+- [ ] You can demonstrate model generation
+- [ ] Sokchea has VS Code extension generator working
+- [ ] Both have Git configured (username, email)
+- [ ] Agree on project structure and naming
+- [ ] Both can clone/create shared Git repository
+
+**Quick sync command to verify both setups:**
+```bash
+# Kai runs (your checks):
+ollama list && node --version && tsc --version
+# Expected: Shows hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest, Node v18+, TypeScript v5+ ✅
+
+# Sokchea should also run (his checks):
+yo --version && code --version
+# Expected: Shows Yeoman and VS Code versions ✅
 ```
 
-**End-to-End Test:**
+**Test integration point:**
 ```typescript
-// tests/integration/vectordb.test.ts
-test('Store and retrieve RCA document', async () => {
-  const doc = { error: 'NullPointerException', solution: '...' };
-  const id = await db.addRCADocument(doc);
-  const results = await db.queryRelevantRCAs('NullPointerException', 3);
-  expect(results[0].id).toBe(id);
+// Kai creates simple test script:
+// File: test-ollama.ts
+
+import fetch from 'node-fetch';
+
+const response = await fetch('http://localhost:11434/api/generate', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest',
+    prompt: 'Hello from Kai',
+    stream: false
+  })
 });
+
+const data = await response.json();
+console.log('Ollama response:', data.response);
+
+// Run with:
+// ts-node test-ollama.ts
+// ✅ Should print generated text
+
+// Sokchea will call this from extension - verify it works!
 ```
 
 ---
 
-#### Milestone 1.3 - Tool Infrastructure
-**Deliverable:** Tool registry with JSON schema validation
+### 🎯 Performance Expectations (Your Hardware)
 
-| Task | Implementation Details | Files Created | Checklist |
-|------|----------------------|---------------|-----------|
-| **1.3.1 Tool Registry** | Central registry for tool discovery and execution | • `src/tools/ToolRegistry.ts`<br>• `src/tools/ToolBase.ts` | ☐ Tool registration API<br>☐ Schema validation (Zod/Yup)<br>☐ Error handling wrapper |
-| **1.3.2 Read File Tool** | Access workspace files via VS Code API | • `src/tools/ReadFileTool.ts` | ☐ UTF-8 encoding handling<br>☐ Binary file detection<br>☐ Large file streaming (>1MB)<br>☐ Context window chunking |
-| **1.3.3 Documentation Search Tool** | Search local developer documentation | • `src/tools/LocalDocsSearchTool.ts` | ☐ Index common docs (MDN, Python docs, Kotlin docs, Android docs, Flutter docs, Dart docs)<br>☐ Offline access<br>☐ Language-specific doc routing<br>☐ XML layout reference (Android)<br>☐ Gradle DSL reference |
-| **1.3.4 Android Build Tool** | Analyze Kotlin/Android build errors | • `src/tools/AndroidBuildTool.ts` | ☐ Parse build.gradle (Groovy)<br>☐ Parse build.gradle.kts (Kotlin DSL)<br>☐ Detect dependency conflicts<br>☐ Analyze manifest merge errors<br>☐ Check Android SDK versions<br>☐ XML layout validation |
+**Your Setup: RTX 3070 Ti (8GB VRAM), Ryzen 5 5600x, 32GB RAM**
 
-**Tool Contract Example:**
+**Expected Ollama Performance:**
+```bash
+# Test generation speed:
+time ollama run hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest "Write hello world in Kotlin"
+
+# Expected results:
+# - GPU mode: 4-6 seconds per iteration ✅ (FAST)
+# - CPU mode: 15-20 seconds per iteration 🟡 (ACCEPTABLE)
+
+# Your target: <60s for full RCA (8-10 iterations)
+# = 4-6s per iteration × 10 = 40-60s total ✅
+```
+
+**Verify GPU is being used:**
+```bash
+# While running model, check:
+# Task Manager → Performance → GPU
+# Should show:
+# - GPU utilization: 60-90%
+# - Dedicated GPU memory: 4-5GB used
+# - GPU Engine: "Compute_0" active
+```
+
+**If CPU-only (slower):**
+```bash
+# Check NVIDIA drivers:
+nvidia-smi
+# Should show GPU and CUDA version
+
+# If nvidia-smi fails:
+# Download drivers: https://www.nvidia.com/download/index.aspx
+# Select: RTX 3070 Ti → Windows → Download
+```
+
+---
+
+### ✅ Ready for Day 1?
+
+**Checklist before starting Chunk 1.1:**
+- [ ] Node.js 18+ installed and verified
+- [ ] Ollama installed and service running
+- [ ] hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest model downloaded (~5GB)
+- [ ] Ollama API responding to test requests
+- [ ] TypeScript, ts-node, Jest installed globally
+- [ ] VS Code with backend extensions installed
+- [ ] Git installed and configured
+- [ ] Can demonstrate model generation (<10s)
+- [ ] GPU acceleration working (optional but recommended)
+- [ ] Synced with Sokchea on setup status
+
+**All checked?** ✅ Start Day 1 - Ollama Client Implementation!
+
+---
+
+## Overview
+
+**What Kai Does:**
+- ✅ Implements all business logic and algorithms
+- ✅ Creates all parsers, tools, and analyzers
+- ✅ Builds LLM integration and agent reasoning
+- ✅ Implements database and caching systems
+- ✅ Writes all backend unit tests
+- ✅ Optimizes performance and accuracy
+
+**What Kai Does NOT Do:**
+- ❌ UI/UX design
+- ❌ VS Code extension API integration (Sokchea handles)
+- ❌ Webview HTML/CSS
+- ❌ User-facing documentation (Sokchea handles)
+
+---
+
+## 🎯 Core Development Principles
+
+### 1. **Code Quality First**
+- Write self-documenting code with clear naming
+- Document WHY, not WHAT (code shows what)
+- Keep functions small (<50 lines ideal)
+- Single Responsibility Principle (SRP)
+- DRY (Don't Repeat Yourself)
+
+### 2. **Error Handling Philosophy**
+- **Never swallow errors silently**
+- Always provide context in error messages
+- Use typed errors for different failure modes
+- Implement graceful degradation
+- Log errors with structured data
+
+### 3. **Testing Mindset**
+- Write testable code (dependency injection)
+- Test behavior, not implementation
+- Cover happy path + edge cases + error paths
+- Use descriptive test names (`it('should return null when file not found')`)
+- Mock external dependencies (Ollama, ChromaDB, filesystem)
+
+### 4. **Performance Awareness**
+- Profile before optimizing
+- Measure actual impact (don't guess)
+- Cache aggressively (but invalidate correctly)
+- Use async/await properly (avoid blocking)
+- Batch operations when possible
+
+### 5. **Security Mindset**
+- **Validate all inputs** (never trust LLM output)
+- Sanitize file paths (prevent directory traversal)
+- Handle sensitive data properly (API keys, tokens)
+- Implement rate limiting for LLM calls
+- Prevent prompt injection attacks
+
+---
+
+## 🛡️ Best Practices & Patterns
+
+### Error Handling Strategy
+
+#### Pattern 1: Typed Errors
 ```typescript
-// src/tools/types.ts
-export interface ToolDefinition {
-  name: string;
-  description: string;
-  parameters: z.ZodSchema;  // Zod schema for validation
-  execute: (params: unknown) => Promise<ToolResult>;
+// Define specific error types for different failure modes
+export class ParsingError extends Error {
+  constructor(
+    message: string,
+    public readonly errorText: string,
+    public readonly language: string
+  ) {
+    super(message);
+    this.name = 'ParsingError';
+  }
 }
 
-// src/tools/ReadFileTool.ts
-export const ReadFileTool: ToolDefinition = {
-  name: 'read_file',
-  description: 'Read contents of a file in the workspace',
-  parameters: z.object({
-    filePath: z.string().describe('Relative path from workspace root'),
-    lineStart: z.number().optional(),
-    lineEnd: z.number().optional(),
-  }),
-  execute: async (params) => {
-    // Implementation with VS Code workspace.fs
-  },
-};
+export class LLMError extends Error {
+  constructor(
+    message: string,
+    public readonly statusCode?: number,
+    public readonly retryable: boolean = true
+  ) {
+    super(message);
+    this.name = 'LLMError';
+  }
+}
+
+export class AnalysisTimeoutError extends Error {
+  constructor(
+    message: string,
+    public readonly iteration: number,
+    public readonly maxIterations: number
+  ) {
+    super(message);
+    this.name = 'AnalysisTimeoutError';
+  }
+}
 ```
 
-**API Contracts Documentation:**
-Create `./docs/API_CONTRACTS.md` documenting all tool schemas.
-
----
-
-#### Milestone 1.4 - Persistence & Performance Layer
-**Deliverable:** Agent state persistence, caching system, and performance monitoring
-
-| Task | Implementation Details | Files Created | Checklist |
-|------|----------------------|---------------|-----------||
-| **1.4.1 Agent State Persistence** | Checkpoint agent state after each iteration | • `src/agent/StateManager.ts`<br>• `src/agent/Checkpoint.ts` | ☐ Save state to workspace storage<br>☐ Resume from checkpoint on crash<br>☐ Auto-cleanup old checkpoints |
-| **1.4.2 Result Caching** | Hash-based deduplication of identical errors | • `src/cache/RCACache.ts`<br>• `src/cache/ErrorHasher.ts` | ☐ SHA-256 error signature hashing<br>☐ TTL-based cache expiration (24h)<br>☐ Cache invalidation on feedback |
-| **1.4.3 Performance Monitor** | Track latency, token usage, tool execution times | • `src/monitoring/PerformanceTracker.ts`<br>• `src/monitoring/MetricsCollector.ts` | ☐ Per-tool execution metrics<br>☐ LLM inference time tracking<br>☐ Export metrics to JSON |
-| **1.4.4 Vector DB Quality Manager** | Score and filter low-quality RCAs | • `src/db/QualityScorer.ts`<br>• `src/db/VectorDBMaintenance.ts` | ☐ Automatic quality scoring<br>☐ Expiration policy (6 months)<br>☐ Manual removal interface |
-
-**Key Functions:**
+#### Pattern 2: Error Recovery with Retry Logic
 ```typescript
-// src/agent/StateManager.ts
-export class StateManager {
-  async saveCheckpoint(state: AgentState): Promise<void> {
-    // Persist to workspace storage with timestamp
-    // Keep last 5 checkpoints per error
+// Implement exponential backoff for transient failures
+export class RetryHandler {
+  static async withRetry<T>(
+    operation: () => Promise<T>,
+    options: {
+      maxRetries: number;
+      initialDelay: number;
+      maxDelay: number;
+      retryableErrors?: string[];
+    }
+  ): Promise<T> {
+    let lastError: Error;
+    let delay = options.initialDelay;
+    
+    for (let attempt = 0; attempt <= options.maxRetries; attempt++) {
+      try {
+        return await operation();
+      } catch (error) {
+        lastError = error as Error;
+        
+        // Check if error is retryable
+        const isRetryable = !options.retryableErrors ||
+          options.retryableErrors.includes(error.name);
+        
+        if (!isRetryable || attempt === options.maxRetries) {
+          throw error;
+        }
+        
+        console.warn(`Attempt ${attempt + 1} failed, retrying in ${delay}ms...`);
+        await this.sleep(delay);
+        
+        // Exponential backoff with jitter
+        delay = Math.min(delay * 2, options.maxDelay);
+        delay += Math.random() * 100; // Add jitter
+      }
+    }
+    
+    throw lastError!;
   }
   
-  async loadLatestCheckpoint(errorHash: string): Promise<AgentState | null> {
-    // Resume from last valid checkpoint
-    // Return null if no checkpoint found
+  private static sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
 
-// src/cache/RCACache.ts
-export class RCACache {
-  async get(errorSignature: string): Promise<RCADocument | null> {
-    // Check if identical error analyzed recently
-    // Return cached result if confidence > 0.8
+// Usage Example
+const llmResponse = await RetryHandler.withRetry(
+  () => ollamaClient.generate(prompt),
+  {
+    maxRetries: 3,
+    initialDelay: 1000,
+    maxDelay: 10000,
+    retryableErrors: ['LLMError', 'NetworkError']
+  }
+);
+```
+
+#### Pattern 3: Circuit Breaker for External Services
+```typescript
+// Prevent cascading failures
+export class CircuitBreaker {
+  private state: 'CLOSED' | 'OPEN' | 'HALF_OPEN' = 'CLOSED';
+  private failureCount = 0;
+  private lastFailureTime = 0;
+  
+  constructor(
+    private failureThreshold: number = 5,
+    private timeout: number = 60000, // 1 minute
+    private resetTimeout: number = 300000 // 5 minutes
+  ) {}
+  
+  async execute<T>(operation: () => Promise<T>): Promise<T> {
+    if (this.state === 'OPEN') {
+      if (Date.now() - this.lastFailureTime > this.resetTimeout) {
+        this.state = 'HALF_OPEN';
+      } else {
+        throw new Error('Circuit breaker is OPEN - service unavailable');
+      }
+    }
+    
+    try {
+      const result = await operation();
+      
+      if (this.state === 'HALF_OPEN') {
+        this.reset();
+      }
+      
+      return result;
+    } catch (error) {
+      this.recordFailure();
+      throw error;
+    }
   }
   
-  async set(errorSignature: string, rca: RCADocument): Promise<void> {
-    // Store with 24h TTL
-    // Invalidate on negative user feedback
+  private recordFailure(): void {
+    this.failureCount++;
+    this.lastFailureTime = Date.now();
+    
+    if (this.failureCount >= this.failureThreshold) {
+      this.state = 'OPEN';
+      console.error(`Circuit breaker opened after ${this.failureCount} failures`);
+    }
+  }
+  
+  private reset(): void {
+    this.failureCount = 0;
+    this.state = 'CLOSED';
+    console.log('Circuit breaker reset to CLOSED');
   }
 }
+
+// Usage
+const chromaBreaker = new CircuitBreaker(5, 60000, 300000);
+const result = await chromaBreaker.execute(() => chromaDB.query(...));
 ```
 
----
+### Input Validation & Sanitization
 
-#### Milestone 1.5 - Testing & Validation
-**Deliverable:** Automated test suite for foundation components
-
-| Task | Files Created | Coverage Target |
-|------|---------------|-----------------|
-| **Unit Tests** | • `tests/unit/llm/ProviderFactory.test.ts`<br>• `tests/unit/db/ChromaDBClient.test.ts`<br>• `tests/unit/tools/*.test.ts` | 80%+ |
-| **Integration Tests** | • `tests/integration/end-to-end-storage.test.ts` | Core workflows |
-| **CI Pipeline** | • `.github/workflows/test.yml` | All tests on PR |
-
-**DEVLOG Entry Template (Week 1):**
-```markdown
-## Week 1 - Foundation Setup
-**Status:** 🟢 Complete
-
-### Files Created
-| Path | Purpose | Key Exports |
-|------|---------|-------------|
-| `src/extension.ts` | Entry point | `activate()`, `deactivate()` |
-| `src/llm/OllamaClient.ts` | Local LLM client | `OllamaClient.create()`, `generate()` |
-| `src/agent/StateManager.ts` | State persistence | `saveCheckpoint()`, `loadLatestCheckpoint()` |
-
-### Architecture Decision: Dual LLM Strategy
-- **Decision:** Support both local (Ollama) and cloud (OpenAI) LLMs with runtime switching
-- **Rationale:** Users need cost control (local) and performance (cloud) flexibility
-- **Trade-off:** Increased complexity in provider abstraction
-- **Implementation:** Abstract `LLMProvider` interface with concrete classes
-
-### Blockers
-- None this week
-
-### Week 2 Goals
-- [ ] Implement LSP integration for call hierarchy
-- [ ] Add error parser for 5+ languages
-```
-
----
-
-### Week 2: Language Intelligence Layer
-
-### Week 2-3: Kotlin/Android Language Intelligence
-
-#### Milestone 1.6 - Kotlin/Android Parser Complete
-**Deliverable:** Full Kotlin error parsing + Android-specific handlers
-
-| Task | Implementation Details | Files Created |
-|------|----------------------|---------------|
-| **1.6.1 Kotlin Error Parser** | Full Kotlin error parsing with Android context | • `src/utils/ErrorParser.ts`<br>• `src/utils/parsers/KotlinParser.ts`<br>• `src/utils/parsers/JetpackComposeParser.ts`<br>• `src/utils/parsers/XMLParser.ts` (layouts)<br>• `src/utils/parsers/GradleParser.ts` (build files)<br>• `src/utils/InputSanitizer.ts` |
-| **1.6.2 Language Detector** | Auto-detect Kotlin/Android files | • `src/utils/LanguageDetector.ts` (`.kt`, `.kts`, `.xml`, `.gradle`) |
-| **1.6.3 LSP Integration** | Call hierarchy, definitions, references | • `src/tools/LSPTool.ts` | Via VS Code LSP API |
-| **1.6.4 Input Sanitization** | Prevent prompt injection attacks | • `src/security/PromptSanitizer.ts` | Strip malicious instructions from error text |
-
-**Error Parser Example:**
+#### Pattern 4: Comprehensive Input Validation
 ```typescript
-// src/utils/ErrorParser.ts
-export interface ParsedError {
-  type: 'syntax' | 'runtime' | 'build' | 'linter';
-  message: string;
-  filePath: string;
-  line: number;
-  column?: number;
-  stackTrace?: StackFrame[];
-  language: SupportedLanguage;
-}
-
-export class ErrorParser {
-  static parse(errorText: string, language?: string): ParsedError | null {
-    const lang = language || LanguageDetector.detect(errorText);
-    const parser = this.getParser(lang);
-    return parser.parse(errorText);
+// Always validate inputs before processing
+export class InputValidator {
+  static validateParsedError(error: any): asserts error is ParsedError {
+    if (!error || typeof error !== 'object') {
+      throw new ValidationError('Invalid error object');
+    }
+    
+    if (!error.type || typeof error.type !== 'string') {
+      throw new ValidationError('Error type is required');
+    }
+    
+    if (!error.message || typeof error.message !== 'string') {
+      throw new ValidationError('Error message is required');
+    }
+    
+    if (!error.filePath || typeof error.filePath !== 'string') {
+      throw new ValidationError('File path is required');
+    }
+    
+    // Sanitize file path to prevent directory traversal
+    if (error.filePath.includes('..') || error.filePath.includes('~')) {
+      throw new ValidationError('Invalid file path: directory traversal detected');
+    }
+    
+    if (typeof error.line !== 'number' || error.line < 0) {
+      throw new ValidationError('Line number must be a positive number');
+    }
+    
+    const validLanguages = ['kotlin', 'java', 'xml', 'gradle'];
+    if (!validLanguages.includes(error.language)) {
+      throw new ValidationError(`Unsupported language: ${error.language}`);
+    }
   }
-}
-
-// Language-specific parsers
-// PHASE 1: Kotlin/Android parsers only
-
-class KotlinErrorParser {
-  parse(text: string): ParsedError {
-    // Handle Kotlin-specific errors:
-    // - UninitializedPropertyAccessException
-    // - NullPointerException (with Kotlin null safety hints)
-    // - Unresolved reference errors
-    // - Android lifecycle errors (onCreate, onResume, etc.)
-  }
-}
-
-class JetpackComposeParser {
-  parse(text: string): ParsedError {
-    // Handle Compose-specific errors:
-    // - Recomposition issues
-    // - remember/rememberSaveable misuse
-    // - State hoisting errors
-    // - CompositionLocal errors
-    // - Modifier chain issues
-  }
-}
-
-class JavaParser {
-  parse(text: string): ParsedError {
-    // Handle Java-specific errors:
-    // - NullPointerException (classic Java nulls)
-    // - ClassNotFoundException
-    // - Android Activity/Fragment lifecycle errors
-  }
-}
-
-class XMLParser {
-  parse(text: string): ParsedError {
-    // Handle XML layout errors:
-    // - Missing view IDs
-    // - Attribute errors (layout_width, layout_height)
-    // - Namespace issues (xmlns:android)
-    // - View inflation errors
-  }
-}
-
-class GroovyParser {
-  parse(text: string): ParsedError {
-    // Handle Gradle build.gradle errors:
-    // - Dependency resolution failures
-    // - Plugin conflicts
-    // - buildscript configuration errors
-    // - Repository issues
-  }
-}
-
-// Input Sanitization
-class InputSanitizer {
-  static sanitize(errorText: string): string {
+  
+  static sanitizeLLMOutput(output: string): string {
     // Remove potential prompt injection patterns
-    // Strip: "Ignore previous instructions", "System:", etc.
-    // Escape special tokens used by LLM
-    return errorText
+    let sanitized = output
       .replace(/ignore (previous|all) (instructions|rules)/gi, '[REDACTED]')
       .replace(/system:/gi, '[REDACTED]')
-      .slice(0, 10000); // Max 10K chars
+      .replace(/\<\|endoftext\|\>/g, '')
+      .slice(0, 50000); // Limit output size
+    
+    return sanitized.trim();
+  }
+  
+  static validateFilePath(filePath: string, workspaceRoot: string): string {
+    // Ensure file is within workspace
+    const resolvedPath = path.resolve(workspaceRoot, filePath);
+    
+    if (!resolvedPath.startsWith(workspaceRoot)) {
+      throw new ValidationError('File path outside workspace');
+    }
+    
+    return resolvedPath;
   }
 }
 ```
 
+### Logging & Observability
+
+#### Pattern 5: Structured Logging
+```typescript
+// Implement structured logging for better debugging
+export enum LogLevel {
+  DEBUG = 0,
+  INFO = 1,
+  WARN = 2,
+  ERROR = 3
+}
+
+export class Logger {
+  private static instance: Logger;
+  private minLevel: LogLevel = LogLevel.INFO;
+  
+  static getInstance(): Logger {
+    if (!Logger.instance) {
+      Logger.instance = new Logger();
+    }
+    return Logger.instance;
+  }
+  
+  setLevel(level: LogLevel): void {
+    this.minLevel = level;
+  }
+  
+  debug(message: string, data?: Record<string, any>): void {
+    this.log(LogLevel.DEBUG, message, data);
+  }
+  
+  info(message: string, data?: Record<string, any>): void {
+    this.log(LogLevel.INFO, message, data);
+  }
+  
+  warn(message: string, data?: Record<string, any>): void {
+    this.log(LogLevel.WARN, message, data);
+  }
+  
+  error(message: string, error?: Error, data?: Record<string, any>): void {
+    this.log(LogLevel.ERROR, message, {
+      ...data,
+      error: error?.message,
+      stack: error?.stack
+    });
+  }
+  
+  private log(level: LogLevel, message: string, data?: Record<string, any>): void {
+    if (level < this.minLevel) return;
+    
+    const logEntry = {
+      timestamp: new Date().toISOString(),
+      level: LogLevel[level],
+      message,
+      ...data
+    };
+    
+    const logString = JSON.stringify(logEntry);
+    
+    switch (level) {
+      case LogLevel.ERROR:
+        console.error(logString);
+        break;
+      case LogLevel.WARN:
+        console.warn(logString);
+        break;
+      default:
+        console.log(logString);
+    }
+  }
+}
+
+// Usage
+const logger = Logger.getInstance();
+logger.info('Starting RCA analysis', { errorType: 'lateinit', iteration: 1 });
+logger.error('LLM request failed', error, { attempt: 3, maxAttempts: 5 });
+```
+
+### Async/Await Best Practices
+
+#### Pattern 6: Proper Async Error Handling
+```typescript
+// WRONG: Unhandled promise rejection
+async function badExample() {
+  const result = await someOperation(); // No try-catch!
+  return result;
+}
+
+// CORRECT: Proper error handling
+async function goodExample(): Promise<Result> {
+  try {
+    const result = await someOperation();
+    return result;
+  } catch (error) {
+    logger.error('Operation failed', error as Error);
+    throw new OperationError('Failed to complete operation', { cause: error });
+  }
+}
+
+// CORRECT: Multiple async operations with error handling
+async function multipleOperations(): Promise<void> {
+  const logger = Logger.getInstance();
+  
+  try {
+    // Parallel execution for independent operations
+    const [file1, file2, file3] = await Promise.all([
+      readFile('path1'),
+      readFile('path2'),
+      readFile('path3')
+    ]);
+    
+    logger.info('All files read successfully');
+    
+    // Sequential execution when dependent
+    const parsed = await parseFiles([file1, file2, file3]);
+    const analyzed = await analyzeData(parsed);
+    
+    logger.info('Analysis complete', { resultCount: analyzed.length });
+  } catch (error) {
+    if (error instanceof FileNotFoundError) {
+      logger.warn('Some files missing, continuing with available data');
+      // Implement fallback logic
+    } else {
+      logger.error('Critical error in multipleOperations', error as Error);
+      throw error;
+    }
+  }
+}
+```
+
+#### Pattern 7: Timeout Handling
+```typescript
+// Implement timeout for long-running operations
+export class AsyncUtils {
+  static async withTimeout<T>(
+    promise: Promise<T>,
+    timeoutMs: number,
+    errorMessage: string = 'Operation timed out'
+  ): Promise<T> {
+    let timeoutId: NodeJS.Timeout;
+    
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      timeoutId = setTimeout(() => {
+        reject(new TimeoutError(errorMessage, timeoutMs));
+      }, timeoutMs);
+    });
+    
+    try {
+      const result = await Promise.race([promise, timeoutPromise]);
+      clearTimeout(timeoutId!);
+      return result;
+    } catch (error) {
+      clearTimeout(timeoutId!);
+      throw error;
+    }
+  }
+  
+  static async allSettledWithTimeout<T>(
+    promises: Promise<T>[],
+    timeoutMs: number
+  ): Promise<PromiseSettledResult<T>[]> {
+    const wrappedPromises = promises.map(p =>
+      this.withTimeout(p, timeoutMs).catch(error => ({ error }))
+    );
+    
+    const results = await Promise.allSettled(wrappedPromises);
+    return results;
+  }
+}
+
+// Usage
+const llmResponse = await AsyncUtils.withTimeout(
+  ollamaClient.generate(prompt),
+  90000, // 90 seconds
+  'LLM generation timed out after 90s'
+);
+```
+
+### Memory Management
+
+#### Pattern 8: Prevent Memory Leaks
+```typescript
+// Resource cleanup and memory management
+export class ResourceManager {
+  private resources: Set<Disposable> = new Set();
+  
+  register(resource: Disposable): void {
+    this.resources.add(resource);
+  }
+  
+  async dispose(): Promise<void> {
+    const disposePromises = Array.from(this.resources).map(r => r.dispose());
+    await Promise.allSettled(disposePromises);
+    this.resources.clear();
+  }
+}
+
+export interface Disposable {
+  dispose(): Promise<void> | void;
+}
+
+// Example: Clean up agent resources
+export class ReactAgent implements Disposable {
+  private stream: AgentStateStream;
+  private tools: ToolRegistry;
+  private resourceManager = new ResourceManager();
+  
+  constructor() {
+    this.stream = new AgentStateStream();
+    this.tools = new ToolRegistry();
+    
+    // Register resources for cleanup
+    this.resourceManager.register(this.stream);
+    this.resourceManager.register(this.tools);
+  }
+  
+  async dispose(): Promise<void> {
+    // Clean up all resources
+    await this.resourceManager.dispose();
+    
+    // Remove event listeners
+    this.stream.removeAllListeners();
+    
+    console.log('ReactAgent resources cleaned up');
+  }
+}
+
+// Usage
+const agent = new ReactAgent();
+try {
+  await agent.analyze(error);
+} finally {
+  await agent.dispose(); // Always clean up
+}
+```
+
+### Testing Strategies
+
+#### Pattern 9: Comprehensive Test Structure
+```typescript
+// Use descriptive test structure with AAA pattern (Arrange, Act, Assert)
+describe('KotlinNPEParser', () => {
+  let parser: KotlinNPEParser;
+  
+  beforeEach(() => {
+    // Arrange: Set up test dependencies
+    parser = new KotlinNPEParser();
+  });
+  
+  describe('parse()', () => {
+    describe('when parsing lateinit error', () => {
+      it('should extract property name from error message', () => {
+        // Arrange
+        const errorText = `
+          kotlin.UninitializedPropertyAccessException: 
+          lateinit property user has not been initialized
+          at com.example.MainActivity.onCreate(MainActivity.kt:45)
+        `.trim();
+        
+        // Act
+        const result = parser.parse(errorText);
+        
+        // Assert
+        expect(result).not.toBeNull();
+        expect(result?.type).toBe('lateinit');
+        expect(result?.metadata?.propertyName).toBe('user');
+        expect(result?.filePath).toBe('MainActivity.kt');
+        expect(result?.line).toBe(45);
+      });
+      
+      it('should handle missing file path gracefully', () => {
+        // Arrange
+        const errorText = 'lateinit property user has not been initialized';
+        
+        // Act
+        const result = parser.parse(errorText);
+        
+        // Assert
+        expect(result).not.toBeNull();
+        expect(result?.filePath).toBe('unknown');
+        expect(result?.line).toBe(0);
+      });
+    });
+    
+    describe('when parsing non-Kotlin error', () => {
+      it('should return null', () => {
+        // Arrange
+        const errorText = 'TypeError: Cannot read property of undefined';
+        
+        // Act
+        const result = parser.parse(errorText);
+        
+        // Assert
+        expect(result).toBeNull();
+      });
+    });
+    
+    describe('edge cases', () => {
+      it('should handle empty string', () => {
+        expect(parser.parse('')).toBeNull();
+      });
+      
+      it('should handle multiline stack traces', () => {
+        const errorText = `
+          NullPointerException
+          at MainActivity.kt:45
+          at Fragment.kt:23
+          at Activity.kt:12
+        `.trim();
+        
+        const result = parser.parse(errorText);
+        expect(result?.line).toBe(45); // First occurrence
+      });
+      
+      it('should handle very long error messages (>10K chars)', () => {
+        const longError = 'NullPointerException'.repeat(1000);
+        expect(() => parser.parse(longError)).not.toThrow();
+      });
+    });
+  });
+});
+```
+
+#### Pattern 10: Mocking External Dependencies
+```typescript
+// Mock external services for unit tests
+jest.mock('../llm/OllamaClient');
+jest.mock('../db/ChromaDBClient');
+
+describe('ReactAgent Integration', () => {
+  let agent: ReactAgent;
+  let mockLLM: jest.Mocked<OllamaClient>;
+  let mockDB: jest.Mocked<ChromaDBClient>;
+  
+  beforeEach(() => {
+    // Create mock instances
+    mockLLM = {
+      generate: jest.fn(),
+    } as any;
+    
+    mockDB = {
+      addRCA: jest.fn(),
+      searchSimilar: jest.fn(),
+    } as any;
+    
+    // Inject mocks
+    agent = new ReactAgent(mockLLM, mockDB);
+  });
+  
+  it('should call LLM multiple times during analysis', async () => {
+    // Arrange
+    mockLLM.generate
+      .mockResolvedValueOnce('Hypothesis: lateinit property not initialized')
+      .mockResolvedValueOnce('Analysis: Need to check initialization')
+      .mockResolvedValueOnce(JSON.stringify({
+        rootCause: 'Property accessed before initialization',
+        fixGuidelines: ['Initialize in onCreate()'],
+        confidence: 0.9
+      }));
+    
+    const error: ParsedError = {
+      type: 'lateinit',
+      message: 'lateinit property user has not been initialized',
+      filePath: 'MainActivity.kt',
+      line: 45,
+      language: 'kotlin'
+    };
+    
+    // Act
+    const result = await agent.analyze(error);
+    
+    // Assert
+    expect(mockLLM.generate).toHaveBeenCalledTimes(3);
+    expect(result.rootCause).toContain('Property accessed before initialization');
+    expect(result.confidence).toBe(0.9);
+  });
+  
+  it('should handle LLM errors gracefully', async () => {
+    // Arrange
+    mockLLM.generate.mockRejectedValue(new Error('LLM connection failed'));
+    
+    const error: ParsedError = { /* ... */ };
+    
+    // Act & Assert
+    await expect(agent.analyze(error)).rejects.toThrow('LLM connection failed');
+  });
+});
+```
+
+### Performance Optimization
+
+#### Pattern 11: Caching Strategy
+```typescript
+// Implement multi-level caching
+export class CacheManager {
+  private memoryCache: Map<string, CacheEntry> = new Map();
+  private diskCache: DiskCache;
+  
+  constructor(diskCachePath: string) {
+    this.diskCache = new DiskCache(diskCachePath);
+  }
+  
+  async get<T>(key: string): Promise<T | null> {
+    // L1: Memory cache (fastest)
+    const memoryResult = this.memoryCache.get(key);
+    if (memoryResult && !this.isExpired(memoryResult)) {
+      return memoryResult.value as T;
+    }
+    
+    // L2: Disk cache (slower but persistent)
+    const diskResult = await this.diskCache.get<T>(key);
+    if (diskResult) {
+      // Promote to memory cache
+      this.memoryCache.set(key, {
+        value: diskResult,
+        expires: Date.now() + 24 * 60 * 60 * 1000
+      });
+      return diskResult;
+    }
+    
+    return null;
+  }
+  
+  async set<T>(key: string, value: T, ttl: number = 24 * 60 * 60 * 1000): Promise<void> {
+    const entry: CacheEntry = {
+      value,
+      expires: Date.now() + ttl
+    };
+    
+    // Write to both levels
+    this.memoryCache.set(key, entry);
+    await this.diskCache.set(key, value, ttl);
+  }
+  
+  private isExpired(entry: CacheEntry): boolean {
+    return Date.now() > entry.expires;
+  }
+  
+  // Automatic cleanup of expired entries
+  startCleanup(intervalMs: number = 60000): void {
+    setInterval(() => {
+      const now = Date.now();
+      for (const [key, entry] of this.memoryCache.entries()) {
+        if (this.isExpired(entry)) {
+          this.memoryCache.delete(key);
+        }
+      }
+    }, intervalMs);
+  }
+}
+```
+
+#### Pattern 12: Batch Processing
+```typescript
+// Process multiple items efficiently
+export class BatchProcessor<T, R> {
+  private queue: T[] = [];
+  private processing = false;
+  
+  constructor(
+    private batchSize: number,
+    private processor: (batch: T[]) => Promise<R[]>,
+    private flushInterval: number = 1000
+  ) {
+    // Auto-flush periodically
+    setInterval(() => this.flush(), flushInterval);
+  }
+  
+  async add(item: T): Promise<R> {
+    return new Promise((resolve, reject) => {
+      this.queue.push({
+        item,
+        resolve,
+        reject
+      } as any);
+      
+      if (this.queue.length >= this.batchSize) {
+        this.flush();
+      }
+    });
+  }
+  
+  private async flush(): Promise<void> {
+    if (this.processing || this.queue.length === 0) return;
+    
+    this.processing = true;
+    const batch = this.queue.splice(0, this.batchSize);
+    
+    try {
+      const items = batch.map(b => b.item);
+      const results = await this.processor(items);
+      
+      batch.forEach((b, i) => b.resolve(results[i]));
+    } catch (error) {
+      batch.forEach(b => b.reject(error));
+    } finally {
+      this.processing = false;
+    }
+  }
+}
+
+// Usage: Batch embedding generation
+const embedder = new EmbeddingService();
+const batchEmbedder = new BatchProcessor(
+  10, // Process 10 at a time
+  (texts) => embedder.embedBatch(texts),
+  1000 // Flush every second
+);
+
+const embedding1 = await batchEmbedder.add('error message 1');
+const embedding2 = await batchEmbedder.add('error message 2');
+// ... automatically batched for efficiency
+```
+
 ---
 
-### Week 3-4: Advanced Tooling
+## CHUNK 1: MVP Backend (Weeks 1-2)
 
-#### Milestone 1.7 - LSP-Powered Tools
-**Deliverable:** Call hierarchy, symbol search, dependency analysis, and parallel tool execution
+### CHUNK 1.1: Ollama Client & Types (Days 1-3, ~24h) ✅ COMPLETE
 
-| Tool | Implementation | Use Case |
-|------|----------------|----------|
-| **Get Code Context** | Extract 50 lines with smart chunking for large files | Understanding error environment |
-| **Find Callers** | LSP call hierarchy provider | Trace function dependencies |
-| **Symbol Search** | Workspace symbol provider | Find related classes/functions |
-| **Dependency Graph** | Parse import statements + version check | Identify external package issues |
-| **Parallel Tool Executor** | Execute independent tools concurrently | 3x faster analysis |
-| **Context Window Manager** | Intelligent code summarization for LLM limits | Handle large files (>10K lines) |
+**Goal:** Create foundation for LLM communication
 
+**Status:** ✅ Completed December 18, 2025 - All 12 tests passing
+
+**Tasks:**
+- [x] `src/llm/OllamaClient.ts`
+  - [x] Connection to Ollama server (http://localhost:11434)
+  - [x] `generate()` method for LLM inference
+  - [x] Streaming support (optional for MVP) - Deferred
+  - [x] Error handling for connection failures
+  - [x] Timeout handling (90s default)
+  - [x] Model selection (hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest default)
+  - [x] Retry logic with exponential backoff
+
+- [x] `src/types.ts`
+  - [x] `ParsedError` interface (type, message, filePath, line, language)
+  - [x] `RCAResult` interface (error, rootCause, fixGuidelines, confidence)
+  - [x] `AgentState` interface (iteration, thoughts, actions, observations)
+  - [x] `ToolCall` interface (tool, parameters, timestamp)
+  - [x] Error classes: `LLMError`, `AnalysisTimeoutError`, `ValidationError`
+
+**Implementation Highlights:**
+- Added health checks via `/api/tags` endpoint
+- Implemented `isHealthy()` and `listModels()` helper methods
+- Fetch with timeout support (AbortController)
+- Comprehensive JSDoc documentation
+
+**Tests:**
+- [x] Connection test (Ollama responds) - 100% pass
+- [x] Generate test (returns valid text) - 100% pass
+- [x] Error handling test (network failure) - 100% pass
+- [x] Timeout test (handles slow responses) - 100% pass
+- [x] Retry logic test (exponential backoff) - 100% pass
+
+**Coverage:** 95%
+
+---
+
+### CHUNK 1.2: Kotlin NPE Parser (Days 4-6, ~24h) ✅ COMPLETE
+
+**Goal:** Parse Kotlin NullPointerException errors
+
+**Status:** ✅ Completed December 18, 2025 - All 15 tests passing
+
+**Tasks:**
+- [x] `src/utils/KotlinNPEParser.ts`
+  - [x] Regex patterns for NPE errors
+  - [x] Regex patterns for lateinit errors
+  - [x] Stack trace parsing
+  - [x] File path extraction
+  - [x] Line number extraction
+  - [x] Normalize error messages
+  - [x] Static helper methods
+
+**Implementation Highlights:**
+- Supports both `lateinit property X has not been initialized` and `UninitializedPropertyAccessException` formats
+- Extracts full stack trace with function names and class names
+- Handles multiline stack traces with multiple .kt files
+- Graceful degradation (returns `unknown` file, line 0 if no match)
+- Quick check method: `isKotlinError()` for pre-filtering
+
+**Tests:**
+- [x] Parse lateinit error (extract property name, file, line) - 100% pass
+- [x] Parse NPE error (extract file, line) - 100% pass
+- [x] Handle multiline stack traces - 100% pass
+- [x] Handle missing file path gracefully - 100% pass
+- [x] Return null for non-Kotlin errors - 100% pass
+- [x] Edge cases (empty, null, very long input) - 100% pass
+
+**Coverage:** 94%
+
+---
+
+### CHUNK 1.3: Minimal ReAct Agent (Days 7-9, ~24h) ✅ COMPLETE
+
+**Goal:** 3-iteration reasoning loop (no tools yet)
+
+**Status:** ✅ Completed December 18, 2025 - All 14 tests passing
+
+**Tasks:**
+- [x] `src/agent/MinimalReactAgent.ts`
+  - [x] 3-iteration loop structure
+  - [x] Thought generation (hypothesis about error)
+  - [x] Action placeholder (will add tools later)
+  - [x] Observation placeholder
+  - [x] Structured JSON output parsing
+  - [x] Timeout handling (90s)
+  - [x] Error handling (malformed LLM output)
+  - [x] JSON extraction with regex (handles extra text)
+
+**Implementation Highlights:**
+- Iteration 1: Initial hypothesis
+- Iteration 2: Deeper analysis referencing previous thought
+- Iteration 3: Final conclusion with JSON output
+- Robust JSON parsing: Extracts JSON even if LLM adds extra text
+- Fallback behavior: If JSON invalid, uses raw output with low confidence (0.3)
+- Timeout checks between iterations
+- Propagates LLM errors up the stack
+
+**Tests:**
+- [x] Agent completes 3 iterations - 100% pass
+- [x] Returns structured result - 100% pass
+- [x] Handles LLM timeout - 100% pass
+- [x] Handles malformed JSON output - 100% pass
+- [x] Parses JSON with extra text around it - 100% pass
+- [x] Generates reasonable hypothesis for lateinit error - 100% pass
+- [x] Includes error metadata in prompts - 100% pass
+
+**Coverage:** 88%
+
+---
+
+**Implementation Example:**
+```typescript
+// src/llm/OllamaClient.ts
+export class OllamaClient {
+  private baseUrl: string = 'http://localhost:11434';
+  private model: string = 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest';
+  
+  async generate(prompt: string, options?: GenerateOptions): Promise<string> {
+    const response = await fetch(`${this.baseUrl}/api/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: this.model,
+        prompt,
+        stream: false,
+        options: {
+          temperature: options?.temperature ?? 0.7,
+          num_predict: options?.maxTokens ?? 2000,
+        },
+      }),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Ollama error: ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    return data.response;
+  }
+}
+```
+
+**Tests:**
+- [ ] Connection test (Ollama responds)
+- [ ] Generate test (returns valid text)
+- [ ] Error handling test (network failure)
+- [ ] Timeout test (handles slow responses)
+
+---
+
+### CHUNK 1.2: Kotlin NPE Parser (Days 4-6, ~24h)
+
+**Goal:** Parse Kotlin NullPointerException errors
+
+**Tasks:**
+- [ ] `src/utils/KotlinNPEParser.ts`
+  - [ ] Regex patterns for NPE errors
+  - [ ] Regex patterns for lateinit errors
+  - [ ] Stack trace parsing
+  - [ ] File path extraction
+  - [ ] Line number extraction
+  - [ ] Normalize error messages
+
+**Implementation Example:**
+```typescript
+// src/utils/KotlinNPEParser.ts
+export class KotlinNPEParser {
+  parse(errorText: string): ParsedError | null {
+    // Match: "kotlin.UninitializedPropertyAccessException: lateinit property user has not been initialized"
+    const lateinitMatch = errorText.match(/lateinit property (\w+) has not been initialized/);
+    if (lateinitMatch) {
+      const property = lateinitMatch[1];
+      const fileMatch = errorText.match(/at (.+\.kt):(\d+)/);
+      return {
+        type: 'lateinit',
+        message: errorText.trim(),
+        filePath: fileMatch?.[1] || 'unknown',
+        line: parseInt(fileMatch?.[2] || '0'),
+        language: 'kotlin',
+        metadata: { propertyName: property },
+      };
+    }
+    
+    // Match: "NullPointerException at MyClass.kt:42"
+    const npeMatch = errorText.match(/NullPointerException.*at (.+\.kt):(\d+)/);
+    if (npeMatch) {
+      return {
+        type: 'npe',
+        message: errorText.trim(),
+        filePath: npeMatch[1],
+        line: parseInt(npeMatch[2]),
+        language: 'kotlin',
+      };
+    }
+    
+    return null;
+  }
+}
+```
+
+**Tests:**
+- [ ] Parse lateinit error (extract property name, file, line)
+- [ ] Parse NPE error (extract file, line)
+- [ ] Handle multiline stack traces
+- [ ] Handle missing file path gracefully
+- [ ] Return null for non-Kotlin errors
+
+---
+
+### CHUNK 1.3: Minimal ReAct Agent (Days 7-9, ~24h)
+
+**Goal:** 3-iteration reasoning loop (no tools yet)
+
+**Tasks:**
+- [ ] `src/agent/MinimalReactAgent.ts`
+  - [ ] 3-iteration loop structure
+  - [ ] Thought generation (hypothesis about error)
+  - [ ] Action placeholder (will add tools later)
+  - [ ] Observation placeholder
+  - [ ] Structured JSON output parsing
+  - [ ] Timeout handling (90s)
+  - [ ] Error handling (malformed LLM output)
+
+**Implementation Example:**
+```typescript
+// src/agent/MinimalReactAgent.ts
+export class MinimalReactAgent {
+  private maxIterations = 3;
+  
+  constructor(private llm: OllamaClient) {}
+  
+  async analyze(error: ParsedError): Promise<RCAResult> {
+    const context = {
+      error: error.message,
+      file: error.filePath,
+      line: error.line,
+      type: error.type,
+    };
+    
+    let thought = '';
+    
+    // Iteration 1: Initial hypothesis
+    const prompt1 = this.buildPrompt(context, 1);
+    thought = await this.llm.generate(prompt1);
+    
+    // Iteration 2: Deeper analysis
+    const prompt2 = this.buildPrompt(context, 2, thought);
+    const analysis = await this.llm.generate(prompt2);
+    
+    // Iteration 3: Final conclusion
+    const prompt3 = this.buildFinalPrompt(context, thought, analysis);
+    const finalOutput = await this.llm.generate(prompt3);
+    
+    return this.parseOutput(finalOutput, error);
+  }
+  
+  private buildPrompt(context: any, iteration: number, previousThought?: string): string {
+    return `You are debugging a Kotlin error. This is iteration ${iteration}/3.
+
+ERROR:
+Type: ${context.type}
+Message: ${context.error}
+File: ${context.file}
+Line: ${context.line}
+
+${previousThought ? `Previous thought: ${previousThought}\n\n` : ''}
+
+Generate a hypothesis about what caused this error. Be specific and reference Kotlin concepts.`;
+  }
+  
+  private buildFinalPrompt(context: any, thought: string, analysis: string): string {
+    return `Based on your analysis, provide the final root cause and fix guidelines.
+
+ERROR: ${context.error}
+YOUR HYPOTHESIS: ${thought}
+YOUR ANALYSIS: ${analysis}
+
+Respond in JSON format:
+{
+  "rootCause": "Clear explanation of what went wrong",
+  "fixGuidelines": ["Step 1", "Step 2", "Step 3"],
+  "confidence": 0.8
+}`;
+  }
+  
+  private parseOutput(output: string, error: ParsedError): RCAResult {
+    try {
+      const parsed = JSON.parse(output);
+      return {
+        error: error.message,
+        rootCause: parsed.rootCause,
+        fixGuidelines: parsed.fixGuidelines,
+        confidence: parsed.confidence || 0.5,
+      };
+    } catch (e) {
+      // Fallback if JSON parsing fails
+      return {
+        error: error.message,
+        rootCause: output,
+        fixGuidelines: ['Review the error and code context'],
+        confidence: 0.3,
+      };
+    }
+  }
+}
+```
+
+**Tests:**
+- [ ] Agent completes 3 iterations
+- [ ] Returns structured result
+- [ ] Handles LLM timeout
+- [ ] Handles malformed JSON output
+- [ ] Generates reasonable hypothesis for lateinit error
+
+---
+
+### CHUNK 1.4: File Reading Tool (Days 10-12, ~24h) ✅ COMPLETE
+
+**Goal:** Read code at error location to improve analysis
+
+**Status:** ✅ Completed December 18, 2025 - All 71 tests passing (21 new for ReadFileTool + 7 e2e)
+
+**Tasks:**
+- [x] `src/tools/ReadFileTool.ts`
+  - [x] Read file using Node.js filesystem (not VS Code API for testing)
+  - [x] Extract 50 lines around error line (±25, configurable)
+  - [x] Handle file not found errors gracefully
+  - [x] Handle binary files (detect and skip)
+  - [x] UTF-8 encoding handling
+  - [x] Large file performance (10MB limit)
+
+- [x] Update `MinimalReactAgent.ts`
+  - [x] Integrate ReadFileTool into workflow
+  - [x] Pass file content to LLM in prompts (iteration 2+ and final)
+  - [x] Handle file reading failures gracefully
+
+- [x] Create comprehensive tests
+  - [x] ReadFileTool unit tests (21 tests)
+  - [x] End-to-end integration tests (7 tests)
+  - [x] Test dataset with 10 real Kotlin error examples
+
+**Implementation Highlights:**
+- Binary detection: Scans first 8KB for null bytes
+- Context window: ±25 lines default (configurable)
+- Size limits: 10MB maximum file size
+- Graceful degradation: Returns null on failure, agent continues
+- Integration: Agent reads file before iterations, includes in prompts
+
+**Tests:**
+- [x] Read file successfully (50 lines context) - 100% pass
+- [x] Handle file not found gracefully - 100% pass
+- [x] Handle out-of-bounds line numbers - 100% pass
+- [x] Handle small files (<50 lines) - 100% pass
+- [x] Binary file detection and rejection - 100% pass
+- [x] Large file handling (10MB limit) - 100% pass
+- [x] Custom options (context size, entire file) - 100% pass
+- [x] Edge cases (CRLF, empty, special chars) - 100% pass
+- [x] Agent includes code context in analysis - 100% pass
+- [x] End-to-end integration tests - 100% pass
+
+**Coverage:** 95%+ (ReadFileTool), 88% overall maintained
+
+**Implementation Example:**
+```typescript
+// src/tools/ReadFileTool.ts
+import * as vscode from 'vscode';
+
+export class ReadFileTool {
+  async execute(filePath: string, errorLine: number): Promise<string> {
+    try {
+      const uri = vscode.Uri.file(filePath);
+      const doc = await vscode.workspace.openTextDocument(uri);
+      
+      const startLine = Math.max(0, errorLine - 25);
+      const endLine = Math.min(doc.lineCount, errorLine + 25);
+      
+      const range = new vscode.Range(startLine, 0, endLine, 0);
+      const content = doc.getText(range);
+      
+      return `Lines ${startLine}-${endLine} of ${filePath}:\n${content}`;
+    } catch (error) {
+      return `Error reading file: ${error.message}`;
+    }
+  }
+}
+
+// Update MinimalReactAgent
+export class MinimalReactAgent {
+  private readFileTool = new ReadFileTool();
+  
+  async analyze(error: ParsedError): Promise<RCAResult> {
+    // ... existing code ...
+    
+    // NEW: Read file before final analysis
+    const fileContent = await this.readFileTool.execute(error.filePath, error.line);
+    
+    // Include file content in final prompt
+    const prompt3 = this.buildFinalPromptWithCode(context, thought, analysis, fileContent);
+    // ...
+  }
+}
+```
+
+**Tests:**
+- [ ] Read file successfully (50 lines)
+- [ ] Handle file not found
+- [ ] Handle out-of-bounds line numbers
+- [ ] Handle small files (<50 lines)
+- [ ] Agent includes code context in analysis
+
+---
+
+### CHUNK 1.5: MVP Testing & Refinement (Days 13-14, ~16h)
+
+**Goal:** Validate MVP accuracy and fix bugs
+
+**Tasks:**
+- [ ] Create test dataset (10 real Kotlin NPE errors)
+- [ ] Run analysis on all test cases
+- [ ] Measure accuracy (does root cause make sense?)
+- [ ] Fix parser bugs found during testing
+- [ ] Optimize prompts for better accuracy
+- [ ] Document accuracy metrics
+
+**Tests:**
+- [ ] End-to-end test (parse → analyze → result)
+- [ ] Accuracy: 6/10 errors analyzed correctly
+- [ ] Latency: <90s per analysis
+- [ ] No crashes or unhandled exceptions
+
+---
+
+## CHUNK 2: Core Tools Backend (Week 3)
+
+### CHUNK 2.1: Full Error Parser (Days 1-3, ~24h)
+
+**Goal:** Parse 5+ Kotlin error types
+
+**Tasks:**
+- [ ] `src/utils/ErrorParser.ts`
+  - [ ] Router for language-specific parsers
+  - [ ] Error type detection
+  
+- [ ] `src/utils/parsers/KotlinParser.ts`
+  - [ ] Extend KotlinNPEParser
+  - [ ] Unresolved reference errors
+  - [ ] Type mismatch errors
+  - [ ] Compilation errors
+  - [ ] Import errors
+  
+- [ ] `src/utils/parsers/GradleParser.ts`
+  - [ ] Build failure errors
+  - [ ] Dependency resolution errors
+  - [ ] Syntax errors in build.gradle
+  
+- [ ] `src/utils/LanguageDetector.ts`
+  - [ ] Detect language from error text
+  - [ ] Detect language from file extension
+  - [ ] Heuristics for ambiguous errors
+
+**Tests:**
+- [ ] Parse 5 Kotlin error types correctly
+- [ ] Parse 3 Gradle error types
+- [ ] Language detector identifies Kotlin vs Gradle
+- [ ] 15+ unit tests total
+
+---
+
+### CHUNK 2.2: LSP Integration & Tool Registry (Days 4-5, ~16h)
+
+**Goal:** Add LSP-powered code analysis tools
+
+**Tasks:**
+- [ ] `src/tools/ToolRegistry.ts`
+  - [ ] Tool registration system
+  - [ ] Tool discovery (list available tools)
+  - [ ] Tool execution with error handling
+  - [ ] Schema validation (Zod)
+  
+- [ ] `src/tools/LSPTool.ts`
+  - [ ] Find function callers (call hierarchy)
+  - [ ] Find function definition
+  - [ ] Get symbol information
+  - [ ] Search workspace symbols
+  
+- [ ] Update agent to use multiple tools
+  - [ ] Tool selection logic
+  - [ ] Tool execution in agent workflow
+  - [ ] Format tool results for LLM
+
+**Implementation Example:**
 ```typescript
 // src/tools/LSPTool.ts
-export const FindCallersTool: ToolDefinition = {
-  name: 'find_callers_of_function',
-  description: 'Find all functions that call the specified function',
-  parameters: z.object({
-    functionName: z.string(),
-    filePath: z.string(),
-  }),
-  execute: async ({ functionName, filePath }) => {
+export class LSPTool {
+  async findCallers(functionName: string, filePath: string): Promise<string[]> {
     const uri = vscode.Uri.file(filePath);
-    const position = await findFunctionPosition(uri, functionName);
+    const doc = await vscode.workspace.openTextDocument(uri);
+    
+    // Find function position
+    const text = doc.getText();
+    const funcRegex = new RegExp(`fun ${functionName}\\(`);
+    const match = funcRegex.exec(text);
+    if (!match) return [];
+    
+    const position = doc.positionAt(match.index);
+    
+    // Use VS Code LSP API
     const calls = await vscode.commands.executeCommand<vscode.CallHierarchyItem[]>(
       'vscode.prepareCallHierarchy',
       uri,
       position
     );
-    return { callers: calls.map(c => c.name) };
-  },
-};
-
-// Parallel Tool Execution
-export class ParallelToolExecutor {
-  async executeParallel(tools: ToolCall[]): Promise<ToolResult[]> {
-    // Build dependency graph
-    const independent = tools.filter(t => !this.hasDependencies(t));
-    const dependent = tools.filter(t => this.hasDependencies(t));
     
-    // Execute independent tools in parallel
-    const results = await Promise.all(
-      independent.map(tool => this.executeSingle(tool))
+    if (!calls || calls.length === 0) return [];
+    
+    const incomingCalls = await vscode.commands.executeCommand<vscode.CallHierarchyIncomingCall[]>(
+      'vscode.provideIncomingCalls',
+      calls[0]
     );
     
-    // Execute dependent tools sequentially
-    for (const tool of dependent) {
-      results.push(await this.executeSingle(tool));
-    }
-    
-    return results;
-  }
-}
-
-// Context Window Management
-export class ContextWindowManager {
-  async chunkLargeFile(filePath: string, focusLine: number): Promise<string[]> {
-    const content = await readFile(filePath);
-    if (content.length < 8000) return [content]; // Fits in context
-    
-    // Extract: focus area (500 lines) + function signatures (rest of file)
-    const focusChunk = this.extractLines(content, focusLine - 250, focusLine + 250);
-    const signatures = this.extractFunctionSignatures(content);
-    
-    return [focusChunk, signatures];
+    return incomingCalls?.map(call => call.from.name) || [];
   }
 }
 ```
+
+**Tests:**
+- [ ] Tool registry registers tools
+- [ ] LSP tool finds callers correctly
+- [ ] Agent executes tool successfully
+- [ ] Tool errors handled gracefully
 
 ---
 
-## 🧠 Phase 2: Agent Intelligence (Weeks 5-8)
+### CHUNK 2.3: Prompt Engineering (Days 6-7, ~16h)
 
-### Week 5: LLM Agent Core
+**Goal:** Improve analysis quality with better prompts
 
-#### Milestone 2.1 - ReAct Loop Implementation
-**Deliverable:** Thought-Action-Observation loop with termination logic
+**Tasks:**
+- [ ] `src/agent/PromptEngine.ts`
+  - [ ] System prompts with guidelines
+  - [ ] Few-shot examples (3-5 per error type)
+  - [ ] Structured output templates
+  - [ ] Chain-of-thought prompting
+  
+- [ ] Update agent to use PromptEngine
+- [ ] Create example library (good RCAs)
+- [ ] A/B test prompts (measure accuracy improvement)
 
-| Task | Implementation Details | Files Created |
-|------|----------------------|---------------|
-| **2.1.1 Agent State Machine** | Manage iteration count, timeout, convergence detection | • `src/agent/ReactAgent.ts`<br>• `src/agent/AgentState.ts` |
-| **2.1.2 Prompt Engine** | System prompts + few-shot examples | • `src/agent/PromptEngine.ts`<br>• `src/agent/prompts/system.ts`<br>• `src/agent/prompts/examples.ts` |
-| **2.1.3 Tool Executor** | Parse LLM tool calls, execute, format observations | • `src/agent/ToolExecutor.ts` |
-
-**Agent State Interface:**
+**Implementation Example:**
 ```typescript
-// src/agent/types.ts
-export interface AgentState {
-  iteration: number;
-  maxIterations: number;  // Dynamic: 6-12 based on complexity
-  startTime: number;
-  timeout: number;  // 60000ms (standard), 90000ms (educational sync), 60000ms (educational async)
-  mode: 'standard' | 'educational' | 'fast';
-  educationalAsync: boolean;  // If true, generate explanations after analysis
-  thoughts: string[];
-  actions: ToolCall[];
-  observations: ToolResult[];
-  hypothesis: string | null;
-  rootCause: string | null;
-  converged: boolean;
-  complexityScore: number;  // 0-1, determines iteration budget
-  educationalExplanations: string[];  // Step-by-step learning notes (sync) or final (async)
-  pendingExplanations: Array<{ thought: string; iteration: number }>;  // For async mode
-  checkpointId?: string;  // For state persistence
-}
-
-export interface ToolCall {
-  tool: string;
-  parameters: Record<string, unknown>;
-  timestamp: number;
-}
-```
-
-**ReAct Loop:**
-```typescript
-// src/agent/ReactAgent.ts
-export class ReactAgent {
-  async analyze(errorContext: ErrorContext, mode: 'standard' | 'educational' | 'fast' = 'standard'): Promise<RCADocument> {
-    const state = this.initializeState(errorContext, mode);
-    const stateManager = new StateManager();
-    
-    while (!this.shouldTerminate(state)) {
-      // 1. THOUGHT: LLM reasons about next step
-      const thought = await this.generateThought(state);
-      state.thoughts.push(thought);
-      
-      // Educational Mode: Add learning explanation
-      if (state.mode === 'educational') {
-        if (state.educationalAsync) {
-          // Async mode: Generate explanations after analysis completes
-          state.pendingExplanations.push({ thought, iteration: state.iteration });
-        } else {
-          // Sync mode: Generate explanation immediately
-          const explanation = await this.generateEducationalNote(thought, state);
-          state.educationalExplanations.push(explanation);
-        }
-      }
-      
-      // 2. ACTION: LLM selects tool and parameters (with parallel execution)
-      const actions = await this.selectActions(thought, state);
-      if (!actions.length) break;  // LLM decided to terminate
-      
-      // 3. OBSERVATION: Execute tools (parallel when possible)
-      const observations = await this.executeToolsParallel(actions);
-      state.observations.push(...observations);
-      
-      // 4. SELF-REFLECTION: Evaluate hypothesis quality
-      const reflection = await this.reflectOnHypothesis(state);
-      if (reflection.shouldBacktrack) {
-        state.hypothesis = reflection.revisedHypothesis;
-        state.thoughts.push(`[BACKTRACK] ${reflection.reason}`);
-      }
-      
-      // 5. UPDATE: Check convergence + save checkpoint
-      state.converged = await this.checkConvergence(state);
-      state.iteration++;
-      await stateManager.saveCheckpoint(state);
-      
-      // Dynamic iteration adjustment
-      if (state.complexityScore > 0.7 && state.iteration === state.maxIterations - 2) {
-        state.maxIterations += 2;  // Extend for complex errors
-      }
-    }
-    
-    return this.synthesizeFinalRCA(state);
-  }
-  
-  private shouldTerminate(state: AgentState): boolean {
-    return (
-      state.iteration >= state.maxIterations ||
-      Date.now() - state.startTime > state.timeout ||
-      state.converged
-    );
-  }
-  
-  private async generateEducationalNote(thought: string, state: AgentState): Promise<string> {
-    // Generate beginner-friendly explanation of current reasoning
-    const prompt = `Explain this debugging step to a junior developer: ${thought}`;
-    return await this.llm.generate(prompt);
-  }
-  
-  private async reflectOnHypothesis(state: AgentState): Promise<ReflectionResult> {
-    // Self-evaluate: Does evidence support current hypothesis?
-    const recentEvidence = state.observations.slice(-3);
-    const prompt = `
-      Current Hypothesis: ${state.hypothesis}
-      Recent Evidence: ${JSON.stringify(recentEvidence)}
-      
-      Does the evidence contradict the hypothesis? Should we backtrack?
-    `;
-    const reflection = await this.llm.generate(prompt);
-    return this.parseReflection(reflection);
-  }
-  
-  private calculateComplexity(errorContext: ErrorContext): number {
-    // Score 0-1 based on: stack trace depth, file count, dependency count
-    const factors = [
-      errorContext.stackTrace.length / 20,  // Deep traces = complex
-      errorContext.involvedFiles.length / 10,
-      errorContext.externalDependencies.length / 15,
-    ];
-    return Math.min(factors.reduce((a, b) => a + b, 0) / factors.length, 1.0);
-  }
-  
-  private initializeState(errorContext: ErrorContext, mode: string): AgentState {
-    const complexity = this.calculateComplexity(errorContext);
-    return {
-      iteration: 0,
-      maxIterations: mode === 'fast' ? 6 : Math.ceil(8 + complexity * 4), // 8-12 iterations
-      timeout: mode === 'educational' ? 90000 : 60000,
-      mode,
-      complexityScore: complexity,
-      // ... rest of state
-    };
-  }
-}
-```
-
----
-
-### Week 6: Prompt Engineering
-
-#### Milestone 2.2 - System Prompts & Chain-of-Thought
-**Deliverable:** Optimized prompts for RCA workflow
-
-**System Prompt Structure:**
-```typescript
-// src/agent/prompts/system.ts
-export const getSystemPrompt = (mode: 'standard' | 'educational' | 'fast') => `
-You are an expert Root Cause Analysis agent for software errors.
-Mode: ${mode.toUpperCase()}
-
-${mode === 'educational' ? `
-EDUCATIONAL MODE GUIDELINES:
-- Explain each reasoning step in beginner-friendly terms
-- Define technical terms when first used
-- Show both "what" and "why" for each action
-- Use analogies to explain complex concepts
-- Highlight common mistakes and how to avoid them
-` : ''}
+// src/agent/PromptEngine.ts
+export class PromptEngine {
+  getSystemPrompt(): string {
+    return `You are an expert Kotlin debugging assistant.
 
 WORKFLOW:
-1. HYPOTHESIS: Form initial theory about error cause
-2. INVESTIGATE: Use tools to gather evidence
-3. VALIDATE: Test hypothesis with code context and dependencies
-4. REFLECT: Evaluate if evidence supports hypothesis, backtrack if needed
-5. ITERATE: Refine understanding until root cause identified
+1. Form hypothesis about error cause
+2. Use tools to gather evidence (read_file, find_callers)
+3. Validate hypothesis with code context
+4. Provide clear root cause and fix steps
 
-AVAILABLE TOOLS:
-${JSON.stringify(ToolRegistry.getAllTools(), null, 2)}
+ANALYSIS RULES:
+- Always explain WHY the error happened, not just WHAT it is
+- Reference specific code when possible (variable names, function names)
+- Provide actionable fix guidelines
+- Be concise but thorough
 
-TERMINATION:
-Stop when you have:
-- Identified root cause with 80%+ confidence
-- Traced error to specific file/line/function
-- Found similar past solutions (if available)
-- Validated hypothesis with code evidence
-
-OUTPUT FORMAT:
+OUTPUT FORMAT: JSON
 {
-  "thought": "Current reasoning step",
-  "action": {
-    "tool": "tool_name",
-    "parameters": { ... }
-  },
-  "confidence": 0.0-1.0
-}
-
-Or to finish:
+  "thought": "Your reasoning about the error",
+  "action": { "tool": "tool_name", "parameters": {...} } or null if done,
+  "rootCause": "Clear explanation" (when done),
+  "fixGuidelines": ["Step 1", "Step 2"] (when done),
+  "confidence": 0.0-1.0 (when done)
+}`;
+  }
+  
+  getFewShotExamples(errorType: string): string {
+    const examples = {
+      lateinit: `
+EXAMPLE:
+Error: "lateinit property user has not been initialized at UserActivity.kt:45"
+Thought: "The lateinit property 'user' is accessed before initialization. Need to check where it should be initialized."
+Action: { "tool": "read_file", "parameters": { "filePath": "UserActivity.kt", "line": 45 } }
+Observation: "Line 45: val name = user.name // user is lateinit var declared at line 12"
+Final Analysis:
 {
-  "thought": "Final analysis",
-  "action": null,
-  "root_cause": "Detailed explanation",
-  "fix_guidelines": ["Step 1", "Step 2", ...]
-}
-`;
-
-// Few-shot examples
-export const FEW_SHOT_EXAMPLES = [
-  {
-    error: 'TypeError: Cannot read property "map" of undefined',
-    workflow: [
-      {
-        thought: 'Error suggests accessing .map() on undefined value. Need to find where this occurs.',
-        action: { tool: 'read_file', parameters: { filePath: 'error.stack.file' } },
-      },
-      {
-        thought: 'Line 45 has `data.map()` but data comes from API response. Need to check API function.',
-        action: { tool: 'find_callers_of_function', parameters: { functionName: 'fetchData' } },
-      },
-      // ... more steps
-    ],
-  },
-];
-```
-
----
-
-### Week 7: Tool Ecosystem Completion
-
-#### Milestone 2.3 - Advanced Tools
-**Deliverable:** Full toolset with vector search, local documentation, and quality management
-
-| Tool | Purpose | API Integration |
-|------|---------|-----------------||
-| **Vector Search** | Query past RCAs with quality filtering | ChromaDB semantic search + quality scores |
-| **Local Docs Search** | Offline documentation lookup | Indexed MDN, Python docs, Kotlin docs, Android SDK, Jetpack Compose, Java docs, Flutter docs, Dart docs, XML layout reference, Gradle DSL, C++, Rust (later) |
-| **Git Blame** | Find code authors | Git CLI wrapper |
-| **Dependency Checker** | Verify package versions | npm/pip/gradle/go.mod APIs |
-| **Fix Validator** | Verify suggested fixes compile | Language-specific syntax checkers |
-
-```typescript
-// src/tools/VectorSearchTool.ts
-export const VectorSearchTool: ToolDefinition = {
-  name: 'vector_search_db',
-  description: 'Search past RCA solutions for similar errors',
-  parameters: z.object({
-    query: z.string().describe('Error description or stack trace'),
-    language: z.string().optional(),
-    limit: z.number().default(5),
-  }),
-  execute: async ({ query, language, limit }) => {
-    const db = ChromaDBClient.getInstance();
-    const results = await db.queryRelevantRCAs(query, limit);
-    
-    // Filter by language if specified
-    const filtered = language 
-      ? results.filter(r => r.metadata.language === language)
-      : results;
-    
-    return {
-      found: filtered.length,
-      solutions: filtered.map(r => ({
-        error: r.error_description,
-        solution: r.solution,
-        confidence: r.confidence,
-      })),
+  "rootCause": "The lateinit property 'user' is declared but never initialized before being accessed. Lateinit properties must be explicitly initialized before first use.",
+  "fixGuidelines": [
+    "Initialize 'user' in onCreate() or class initialization block",
+    "Or check if user is initialized with ::user.isInitialized before accessing",
+    "Consider using nullable type (var user: User?) instead of lateinit if initialization timing is uncertain"
+  ],
+  "confidence": 0.9
+}`,
+      // ... more examples
     };
-  },
-};
+    return examples[errorType] || '';
+  }
+}
 ```
 
----
-
-### Week 8: Integration & Testing
-
-#### Milestone 2.4 - End-to-End RCA Workflow
-**Deliverable:** First working RCA generation
-
-### Week 8: End-to-End Testing
-
-**Phase 1 Test Coverage (Kotlin/Android Only):**
-
-| Test Scenario | Input | Expected Output |
-| **Kotlin NullPointerException** | `NullPointerException: lateinit property not initialized` | Root cause: lateinit accessed before init, Fix: Initialize in onCreate() |
-| **Compose State Error** | `IllegalStateException: reading a state in composition` | Root cause: Improper state handling, Fix: Use remember { mutableStateOf() } |
-| **XML Layout Inflation** | `InflateException: Binary XML file line #12` | Root cause: Missing view ID in XML, Fix: Add android:id attribute |
-| **Gradle Build Error** | `Could not resolve dependency` | Root cause: Maven repository misconfigured, Fix: Add correct repository URL |
-| **Android Lifecycle Error** | `UninitializedPropertyAccessException` in Fragment | Root cause: Accessing view before onViewCreated, Fix: Use viewLifecycleOwner |
-| **Compose Recomposition** | Excessive recompositions slowing UI | Root cause: Unstable state, Fix: Use derivedStateOf or remember |
-| **Kotlin Scope Function Misuse** | Unexpected null in `let` block | Root cause: Wrong scope function used, Fix: Use `?.let` or `run` instead |
-
-**Performance Benchmarks (Your 3070 Ti):**
-
-| Mode | Model | Quant | Per Iteration | Total (8 iter) | Status |
-| **NVIDIA GPU (8GB+)** | 7B | Q8 | 4-6s | 32-48s | Standard ✅ |
-| **Apple M1/M2 (16GB)** | 7B | Q8 | 6-8s | 48-64s | Standard ✅ |
-| **CPU (8-core)** | 7B | Q8 | 15-20s | 120-160s | Standard 🟡 |
-| **CPU (8-core)** | 7B | Q4 | 10-12s | 80-96s | Standard 🟡 |
-| **NVIDIA GPU (8GB+)** | 3B | Q8 | 2-3s | 16-24s | Fast ✅ |
-| **Apple M1/M2 (16GB)** | 7B | Q8 | 8-10s | 64-80s | Educational ✅ |
-| **CPU (4-core)** | 3B | Q4 | 8-10s | 64-80s | Fast 🟡 |
-
-**Targets by Hardware:**
-- **GPU/Apple Silicon:** <60s standard, <90s educational, <40s fast ✅
-- **CPU-only (8-core):** <100s standard, <120s educational, <80s fast 🟡
-- **CPU-only (4-core):** Fast mode only (<80s) 🟡
-
-**Caching Impact:**
-- First analysis: Full time (see above)
-- Repeat similar error: 90% reduction (~5-10s via vector DB)
-- Exact duplicate: 95% reduction (~2-5s from cache)
-
-**Optimization Tips:**
-- Use Q8 quantization for best quality/speed balance
-- Enable GPU acceleration (2-4x faster than CPU)
-- Use Fast Mode (3B) for quick feedback loops
-- Implement result caching (huge wins on similar errors)
-
-*Note: Benchmarks assume typical error complexity. Very complex errors may use 10-12 iterations.*
+**Tests:**
+- [ ] Prompt engine returns valid prompts
+- [ ] Few-shot examples included correctly
+- [ ] Agent accuracy improves (measure before/after)
+- [ ] Test with 10 diverse errors
 
 ---
 
-## � Phase 1 Success Criteria
+## CHUNK 3: Database Backend (Weeks 4-5)
 
-**Phase 1 is complete when:**
-- ✅ Can analyze real Kotlin/Android errors from your projects
-- ✅ Provides useful root cause analysis
-- ✅ Completes in <60s on your GPU
-- ✅ Handles all error types listed above
-- ✅ Vector DB learns from your errors
-- ✅ You actually use it during development
-- ✅ Educational mode helps you learn Kotlin better
+### CHUNK 3.1: ChromaDB Setup (Days 1-3, ~24h)
 
-**At this point, you have a working product for Kotlin/Android!**
+**Goal:** Store and retrieve RCA documents
 
----
+**Tasks:**
+- [ ] `src/db/ChromaDBClient.ts`
+  - [ ] Connection to ChromaDB server
+  - [ ] Health check and error handling
+  - [ ] Collection initialization
+  - [ ] Add document method
+  - [ ] Document ID generation (UUID)
+  - [ ] Metadata storage
+  
+- [ ] `src/db/schemas/rca-collection.ts`
+  - [ ] RCADocument interface
+  - [ ] Metadata schema
+  - [ ] Validation rules
 
-## 🚀 PHASE 2: TypeScript/JavaScript Support (When Phase 1 Complete)
-
-> **Goal:** Add web development debugging capability
-
-**What Phase 2 Adds:**
-- TypeScript/JavaScript error parsing
-- React/Vue/Angular specific error handling
-- Node.js backend error support
-- NPM dependency analysis
-- Model: CodeLlama 7B or Qwen-Coder 7B
-
-**Phase 2 Test Cases:**
-- `Cannot read property 'x' of undefined`
-- React hooks errors (useEffect, useState)
-- TypeScript type errors
-- NPM package conflicts
-- Async/await errors
-
----
-
-## 🐍 PHASE 3: Python Support (When Phase 2 Complete)
-
-> **Goal:** Add Python debugging for data science, backend, scripting
-
-**What Phase 3 Adds:**
-- Python error parsing (SyntaxError, AttributeError, etc.)
-- Django/Flask error handling
-- Pip dependency analysis
-- Virtual environment issues
-- Model: DeepSeek-Coder 6.7B
-
-**Phase 3 Test Cases:**
-- ImportError, ModuleNotFoundError
-- IndentationError
-- Django ORM errors
-- Pandas/NumPy errors
-- Async Python errors
-
----
-
-## 🔧 PHASE 4: Advanced Features (When Ready)
-
-> **Goal:** Polish and advanced capabilities
-
-**What Phase 4 Adds:**
-- Fine-tuning on your specific error patterns (QLoRA)
-- Multi-file refactoring suggestions
-- Performance optimization hints
-- Security vulnerability detection
-- Custom prompt templates
-- Better UI/UX
-
----
-
-## 🌟 PHASE 5+: Future Extensions (Optional)
-
-**Potential additions if you want:**
-- Go language support
-- Rust language support
-- C++ support
-- Ruby/Rails support
-- More languages as needed
-- Team collaboration features
-- Cloud sync (optional)
-
----
-
-## 🏗️ Phase 1 Detailed Implementation (Flexible Timeline)
-
-### Week 9: User Interface
-
-#### Milestone 3.1 - Webview Panel
-**Deliverable:** Interactive UI with live progress display
-
-**UI Components:**
-```
-┌─────────────────────────────────────┐
-│ RCA Agent - Analyzing Error         │
-│ Mode: [Standard] Educational Fast   │
-├─────────────────────────────────────┤
-│ ⚙️  Status: Running (Iteration 3/10)│
-│ ⏱️  Elapsed: 12s / 60s               │
-│ 📊 Complexity: Medium (0.65)         │
-├─────────────────────────────────────┤
-│ 🧠 Thought #3:                       │
-│ "Error occurs in fetchUserData().    │
-│ Need to check API response format."  │
-│                                      │
-│ 🔧 Action: read_file                 │
-│ Parameters: { filePath: "api.ts" }   │
-│                                      │
-│ 👁️  Observation:                     │
-│ "Line 45: data.users.map() - data   │
-│ may be undefined if API fails"       │
-├─────────────────────────────────────┤
-│ 💡 Hypothesis:                       │
-│ Missing error handling for failed    │
-│ API responses causes undefined data  │
-│                                      │
-│ ✅ Confidence: 85%                   │
-│ 📚 Quality Score: 0.82               │
-├─────────────────────────────────────┤
-│ 🎓 LEARNING NOTE (Educational):      │
-│ "When calling .map() on an object,   │
-│ always ensure it exists first. The   │
-│ optional chaining operator (?.)      │
-│ prevents this type of error."        │
-├─────────────────────────────────────┤
-│ [Stop] [Export] [Resume Checkpoint] │
-└─────────────────────────────────────┘
-```
-
-**Implementation:**
+**Implementation Example:**
 ```typescript
-// src/ui/RCAWebview.ts
-export class RCAWebviewProvider {
-  async showProgress(state: AgentState): Promise<void> {
-    this.panel.webview.postMessage({
-      type: 'update',
-      iteration: state.iteration,
-      thought: state.thoughts[state.thoughts.length - 1],
-      action: state.actions[state.actions.length - 1],
-      observation: state.observations[state.observations.length - 1],
+// src/db/ChromaDBClient.ts
+import { ChromaClient, Collection } from 'chromadb';
+import { v4 as uuidv4 } from 'uuid';
+
+export interface RCADocument {
+  id: string;
+  error_message: string;
+  error_type: string;
+  language: string;
+  root_cause: string;
+  fix_guidelines: string[];
+  confidence: number;
+  created_at: number;
+  user_validated: boolean;
+  quality_score: number;
+}
+
+export class ChromaDBClient {
+  private client: ChromaClient;
+  private collection: Collection;
+  
+  static async create(): Promise<ChromaDBClient> {
+    const instance = new ChromaDBClient();
+    instance.client = new ChromaClient({ path: 'http://localhost:8000' });
+    
+    // Create or get collection
+    instance.collection = await instance.client.getOrCreateCollection({
+      name: 'rca_solutions',
+      metadata: { description: 'Root cause analysis solutions' },
+    });
+    
+    return instance;
+  }
+  
+  async addRCA(rca: Omit<RCADocument, 'id' | 'created_at'>): Promise<string> {
+    const id = uuidv4();
+    const document: RCADocument = {
+      ...rca,
+      id,
+      created_at: Date.now(),
+    };
+    
+    await this.collection.add({
+      ids: [id],
+      documents: [JSON.stringify(document)],
+      metadatas: [{
+        language: rca.language,
+        error_type: rca.error_type,
+        confidence: rca.confidence,
+        quality_score: rca.quality_score,
+      }],
+    });
+    
+    return id;
+  }
+}
+```
+
+**Tests:**
+- [ ] Connect to ChromaDB successfully
+- [ ] Create collection
+- [ ] Add document and retrieve it
+- [ ] Handle connection failures
+- [ ] Validate document schema
+
+---
+
+### CHUNK 3.2: Embedding & Search (Days 4-6, ~24h)
+
+**Goal:** Semantic similarity search for past RCAs
+
+**Tasks:**
+- [ ] `src/db/EmbeddingService.ts`
+  - [ ] Load sentence-transformers model (all-MiniLM-L6-v2)
+  - [ ] Generate embeddings for text
+  - [ ] Batch processing for efficiency
+  - [ ] Model caching
+  
+- [ ] Update `ChromaDBClient`
+  - [ ] Add embedding to documents
+  - [ ] Similarity search method
+  - [ ] Filter by metadata (language, error_type)
+  - [ ] Rank by relevance + quality score
+  
+- [ ] `src/db/QualityScorer.ts`
+  - [ ] Calculate quality score algorithm
+  - [ ] Factors: confidence, user validation, age
+
+**Implementation Example:**
+```typescript
+// src/db/EmbeddingService.ts
+import * as tf from '@tensorflow/tfjs-node';
+import * as use from '@tensorflow-models/universal-sentence-encoder';
+
+export class EmbeddingService {
+  private model: use.UniversalSentenceEncoder;
+  
+  static async create(): Promise<EmbeddingService> {
+    const instance = new EmbeddingService();
+    instance.model = await use.load();
+    return instance;
+  }
+  
+  async embed(text: string): Promise<number[]> {
+    const embeddings = await this.model.embed([text]);
+    const embedding = await embeddings.array();
+    return embedding[0];
+  }
+  
+  async embedBatch(texts: string[]): Promise<number[][]> {
+    const embeddings = await this.model.embed(texts);
+    return await embeddings.array();
+  }
+}
+
+// Update ChromaDBClient
+export class ChromaDBClient {
+  private embedder: EmbeddingService;
+  
+  async addRCA(rca: Omit<RCADocument, 'id' | 'created_at'>): Promise<string> {
+    const id = uuidv4();
+    const text = `${rca.error_message} ${rca.root_cause}`;
+    const embedding = await this.embedder.embed(text);
+    
+    await this.collection.add({
+      ids: [id],
+      embeddings: [embedding],
+      documents: [JSON.stringify({ ...rca, id, created_at: Date.now() })],
+      metadatas: [{ /* ... */ }],
+    });
+    
+    return id;
+  }
+  
+  async searchSimilar(errorMessage: string, limit: number = 5): Promise<RCADocument[]> {
+    const embedding = await this.embedder.embed(errorMessage);
+    
+    const results = await this.collection.query({
+      queryEmbeddings: [embedding],
+      nResults: limit,
+      where: { quality_score: { $gte: 0.5 } }, // Filter low quality
+    });
+    
+    return results.documents[0].map(doc => JSON.parse(doc));
+  }
+}
+```
+
+**Tests:**
+- [ ] Generate embedding for text
+- [ ] Store RCA with embedding
+- [ ] Search returns similar RCAs
+- [ ] Filter by language works
+- [ ] Quality score affects ranking
+
+---
+
+### CHUNK 3.3: Caching System (Days 7-9, ~24h)
+
+**Goal:** Fast lookups for repeat errors
+
+**Tasks:**
+- [ ] `src/cache/ErrorHasher.ts`
+  - [ ] SHA-256 hash generation
+  - [ ] Normalize error messages
+  - [ ] Include file path + line in hash
+  
+- [ ] `src/cache/RCACache.ts`
+  - [ ] In-memory cache (Map)
+  - [ ] TTL management (24 hours)
+  - [ ] Cache hit/miss tracking
+  - [ ] Automatic cleanup (expired entries)
+  - [ ] Cache invalidation on negative feedback
+  
+- [ ] Update agent to use cache
+  - [ ] Check cache before analysis
+  - [ ] Store result in cache
+  - [ ] Track cache hit rate
+
+**Implementation Example:**
+```typescript
+// src/cache/ErrorHasher.ts
+import * as crypto from 'crypto';
+
+export class ErrorHasher {
+  hash(error: ParsedError): string {
+    const normalized = this.normalize(error.message);
+    const key = `${error.type}:${normalized}:${error.filePath}:${error.line}`;
+    return crypto.createHash('sha256').update(key).digest('hex');
+  }
+  
+  private normalize(message: string): string {
+    return message
+      .toLowerCase()
+      .replace(/\s+/g, ' ')
+      .replace(/\d+/g, 'N') // Replace numbers
+      .trim();
+  }
+}
+
+// src/cache/RCACache.ts
+export class RCACache {
+  private cache = new Map<string, CacheEntry>();
+  private TTL = 24 * 60 * 60 * 1000; // 24 hours
+  
+  get(hash: string): RCADocument | null {
+    const entry = this.cache.get(hash);
+    if (!entry) return null;
+    
+    if (Date.now() > entry.expires) {
+      this.cache.delete(hash);
+      return null;
+    }
+    
+    entry.hits++;
+    return entry.rca;
+  }
+  
+  set(hash: string, rca: RCADocument): void {
+    this.cache.set(hash, {
+      rca,
+      expires: Date.now() + this.TTL,
+      hits: 0,
     });
   }
   
-  async showFinalRCA(rca: RCADocument): Promise<void> {
-    // Render markdown document with sections
+  invalidate(hash: string): void {
+    this.cache.delete(hash);
+  }
+  
+  getStats(): CacheStats {
+    return {
+      size: this.cache.size,
+      // Calculate hit rate from tracking
+    };
   }
 }
 ```
 
----
-
-### Week 10: Output Synthesis
-
-#### Milestone 3.2 - RCA Document Generation
-**Deliverable:** High-quality markdown reports
-
-**Document Template:**
-```markdown
-# Root Cause Analysis Report
-
-**Generated:** [timestamp]  
-**Mode:** [Standard / Educational / Fast]  
-**Language:** [detected language]  
-**Confidence:** [0-100%]  
-**Quality Score:** [0-100%]
-
-## 🐛 Problem Summary
-[Error type, message, stack trace excerpt]
-
-## 🔍 Root Cause Analysis
-
-### Primary Cause
-[Main issue identified]
-
-### Contributing Factors
-1. [Factor 1]
-2. [Factor 2]
-
-### Evidence
-- **File:** [file.ts#L42](vscode://file/workspace/file.ts#L42)
-- **Function:** `functionName()`
-- **Call Chain:** A → B → C (error here)
-
-## 📦 Dependencies Involved
-- `package@version` - [How it's related]
-
-## 🛠️ Fix Guidelines
-
-### Immediate Fix
-```[language]
-// Before (buggy code)
-data.map(...)
-
-// After (fixed code)
-data?.map(...) ?? []
-```
-
-### Long-term Improvements
-1. Add type guards
-2. Implement error boundaries
-3. Add unit tests
-
-${mode === 'educational' ? `
-## 🎓 Learning Notes
-
-### Why This Error Happened
-[Beginner-friendly explanation]
-
-### Key Concepts
-- **Optional Chaining (?.):** Safely access nested properties
-- **Nullish Coalescing (??):** Provide default values
-- **Type Guards:** Runtime checks for type safety
-
-### Common Mistakes to Avoid
-1. Assuming API responses always succeed
-2. Not handling edge cases (null, undefined, empty arrays)
-3. Skipping error boundaries in UI components
-
-### Practice Exercise
-Try refactoring this similar pattern in your codebase:
-\`\`\`[language]
-// Find and fix similar patterns
-\`\`\`
-` : ''}
-
-## 🔗 Related Resources
-- [Similar past RCA] (if found in vector DB)
-- [External documentation]
-
----
-*Was this helpful?* 👍 Yes | 👎 No
-```
-
-**Implementation:**
-```typescript
-// src/agent/DocumentSynthesizer.ts
-export class DocumentSynthesizer {
-  async generate(state: AgentState): Promise<string> {
-    const template = await this.loadTemplate();
-    return this.populateTemplate(template, {
-      timestamp: new Date().toISOString(),
-      error: state.errorContext,
-      rootCause: state.rootCause,
-      evidence: this.formatEvidence(state.observations),
-      fixGuidelines: this.generateFixSteps(state),
-    });
-  }
-}
-```
+**Tests:**
+- [ ] Hash generates consistent IDs
+- [ ] Cache stores and retrieves
+- [ ] TTL expiration works
+- [ ] Cache invalidation works
+- [ ] Measure cache hit rate (>50% for repeat errors)
 
 ---
 
-### Week 11: Continuous Learning
+### CHUNK 3.4: User Feedback System (Days 10-12, ~24h)
 
-#### Milestone 3.3 - Feedback Loop
-**Deliverable:** User validation → Vector DB ingestion
+**Goal:** Learn from user validation
 
-**Workflow:**
-```
-User reviews RCA → Clicks "Helpful? Yes"
-     ↓
-Document marked as validated
-     ↓
-Re-embedded with higher confidence weight
-     ↓
-Stored in ChromaDB for future queries
-     ↓
-Similar errors now retrieve this solution
-```
+**Tasks:**
+- [ ] `src/agent/FeedbackHandler.ts`
+  - [ ] Process positive feedback (thumbs up)
+  - [ ] Process negative feedback (thumbs down)
+  - [ ] Update confidence scores
+  - [ ] Re-embed documents with new scores
+  - [ ] Invalidate cache on negative feedback
+  
+- [ ] `src/db/QualityManager.ts`
+  - [ ] Auto-prune low-quality RCAs (<0.3 quality)
+  - [ ] Expiration policy (6 months old)
+  - [ ] Maintain quality metrics
 
-**Implementation:**
+**Implementation Example:**
 ```typescript
 // src/agent/FeedbackHandler.ts
 export class FeedbackHandler {
-  async handlePositiveFeedback(rca: RCADocument): Promise<void> {
-    // Increase confidence score
+  constructor(
+    private db: ChromaDBClient,
+    private cache: RCACache
+  ) {}
+  
+  async handlePositive(rcaId: string, errorHash: string): Promise<void> {
+    // Get document
+    const rca = await this.db.getById(rcaId);
+    if (!rca) return;
+    
+    // Increase confidence (max 1.0)
     rca.confidence = Math.min(rca.confidence * 1.2, 1.0);
+    rca.quality_score = this.calculateQuality(rca);
+    rca.user_validated = true;
     
-    // Re-embed and update in vector DB
-    const db = ChromaDBClient.getInstance();
-    await db.updateDocument(rca.id, {
-      ...rca,
-      metadata: {
-        ...rca.metadata,
-        user_validated: true,
-        validation_timestamp: Date.now(),
-      },
-    });
+    // Update in database
+    await this.db.update(rcaId, rca);
     
-    vscode.window.showInformationMessage('Thank you! This RCA will improve future analyses.');
+    console.log(`RCA ${rcaId} validated positively. New confidence: ${rca.confidence}`);
+  }
+  
+  async handleNegative(rcaId: string, errorHash: string): Promise<void> {
+    const rca = await this.db.getById(rcaId);
+    if (!rca) return;
+    
+    // Decrease confidence
+    rca.confidence = Math.max(rca.confidence * 0.5, 0.1);
+    rca.quality_score = this.calculateQuality(rca);
+    
+    // Update and invalidate cache
+    await this.db.update(rcaId, rca);
+    this.cache.invalidate(errorHash);
+    
+    console.log(`RCA ${rcaId} marked unhelpful. New confidence: ${rca.confidence}`);
+  }
+  
+  private calculateQuality(rca: RCADocument): number {
+    let quality = rca.confidence;
+    if (rca.user_validated) quality += 0.2;
+    
+    // Age penalty (6 months = 50% reduction)
+    const age = Date.now() - rca.created_at;
+    const sixMonths = 6 * 30 * 24 * 60 * 60 * 1000;
+    if (age > sixMonths) {
+      quality *= 0.5;
+    }
+    
+    return Math.min(quality, 1.0);
   }
 }
 ```
 
----
-
-### Week 12: Deployment & Documentation
-
-#### Milestone 3.4 - Production Release
-**Deliverable:** Published extension + comprehensive docs
-
-| Task | Deliverable |
-|------|-------------|
-| **Performance Optimization** | • Result caching (hash-based deduplication)<br>• Parallel tool execution<br>• Context window management<br>• Model selection (7B/3B based on complexity) |
-| **Error Handling** | • Graceful degradation for tool failures<br>• User-friendly error messages<br>• Checkpoint resume on crash<br>• Structured logging |
-| **Reliability** | • Automated ChromaDB backups (daily)<br>• Collection merging utility<br>• Vector DB maintenance (quality pruning)<br>• Embedding model versioning |
-| **Monitoring & Observability** | • Performance metrics dashboard<br>• Tool execution latency tracking<br>• LLM token usage stats<br>• Success rate by error type<br>• Export to JSON for analysis |
-| **Documentation** | • `README.md` with setup guide<br>• `EDUCATIONAL_MODE.md` - Learning-focused guide<br>• `CONTRIBUTING.md`<br>• Video demo<br>• API reference |
-| **Publishing** | • Package with `vsce package`<br>• GitHub releases with binaries<br>• Optional: Local VS Code extension install |
-
-**Final Checklist:**
-- [ ] All unit tests passing (>80% coverage)
-- [ ] E2E tests for 15+ error scenarios across **all Android approaches**:
-  - Modern Native (Kotlin + Compose + Kotlin DSL)
-  - Traditional Native (Java/Kotlin + XML + Groovy)
-  - Cross-Platform (Flutter + Dart + YAML)
-  - Web (TypeScript) + Backend (Python)
-- [ ] Android project integration tests:
-  - Gradle/Groovy build errors
-  - Kotlin DSL build errors  
-  - XML layout inflation errors
-  - Manifest merge errors
-  - Flutter pubspec dependency errors
-- [ ] Adversarial testing (prompt injection defense)
-- [ ] Performance: <60s (standard), <40s (fast), <90s (educational)
-- [ ] **Multiple local LLM models tested** (<10B params: 3B, 7B, 8B variants)
-- [ ] **Model hot-swapping validated** across different languages:
-  - Use codellama for TypeScript errors
-  - Use deepseek-coder for Python errors
-  - Use Kotlin-specialized models for Android errors
-  - Use dart-specialized models for Flutter errors
-  - Switch models mid-analysis for best results
-- [ ] Agent state persistence + checkpoint resume validated
-- [ ] Result caching shows >90% reduction for repeats
-- [ ] Educational mode generates beginner-friendly explanations
-- [ ] Vector DB quality management (auto-pruning low scores)
-- [ ] Collection merging utility functional
-- [ ] Automated backups working
-- [ ] Fix validation prevents syntax errors
-- [ ] Monitoring dashboard exports metrics
-- [ ] User documentation complete
-- [ ] Educational mode guide published
+**Tests:**
+- [ ] Positive feedback increases confidence
+- [ ] Negative feedback decreases confidence
+- [ ] Cache invalidated on negative feedback
+- [ ] Quality score calculated correctly
+- [ ] Low-quality RCAs not returned in search
 
 ---
 
-## 🎯 Best Practices & Standards
+## CHUNK 4: Android Backend (Weeks 6-8)
 
-### Development Tracking Best Practices
+### CHUNK 4.1: Jetpack Compose Parser (Days 1-4, ~32h)
 
-#### 1. **Never Skip Documentation**
-```bash
-# BAD: Commit code without updating DEVLOG
-git commit -m "Added new feature"
+**Goal:** Parse Compose-specific errors
 
-# GOOD: Document then commit
-# 1. Add entry to DEVLOG.md with:
-#    - Files created/modified
-#    - Functions implemented (with signatures)
-#    - Architecture decisions (if applicable)
-# 2. Run automated checks
-npm run generate-structure
-npm run validate-contracts
-# 3. Commit with descriptive message
-git commit -m "feat(agent): Add self-reflection mechanism [milestone-2.1]
+**Tasks:**
+- [ ] `src/utils/parsers/JetpackComposeParser.ts`
+  - [ ] `remember` error patterns
+  - [ ] `derivedStateOf` error patterns
+  - [ ] Recomposition detection
+  - [ ] `LaunchedEffect` error patterns
+  - [ ] CompositionLocal error patterns
+  - [ ] Modifier chain errors
+  
+- [ ] Compose-specific prompts in PromptEngine
+- [ ] Few-shot examples for Compose errors
+- [ ] Unit tests (10+ Compose error types)
 
-- Implemented reflectOnHypothesis() in ReactAgent.ts
-- Added ReflectionResult interface to types.ts  
-- Updated DEVLOG.md Week 6 entry
-- Test coverage: 89%
-- Refs: ADR-008"
+**Implementation Example:**
+```typescript
+// src/utils/parsers/JetpackComposeParser.ts
+export class JetpackComposeParser {
+  parse(text: string): ParsedError | null {
+    return (
+      this.parseRememberError(text) ||
+      this.parseRecompositionError(text) ||
+      this.parseLaunchedEffectError(text) ||
+      this.parseCompositionLocalError(text) ||
+      null
+    );
+  }
+  
+  private parseRememberError(text: string): ParsedError | null {
+    if (text.includes('reading a state') && text.includes('without calling remember')) {
+      const fileMatch = text.match(/at (.+\.kt):(\d+)/);
+      return {
+        type: 'compose_remember',
+        message: text,
+        filePath: fileMatch?.[1] || 'unknown',
+        line: parseInt(fileMatch?.[2] || '0'),
+        language: 'kotlin',
+        framework: 'compose',
+      };
+    }
+    return null;
+  }
+  
+  private parseRecompositionError(text: string): ParsedError | null {
+    const match = text.match(/Recomposing (\d+) times/);
+    if (match) {
+      const count = parseInt(match[1]);
+      if (count > 10) {
+        return {
+          type: 'compose_recomposition',
+          message: text,
+          filePath: 'unknown', // Needs profiler
+          line: 0,
+          language: 'kotlin',
+          framework: 'compose',
+          metadata: { recompositionCount: count },
+        };
+      }
+    }
+    return null;
+  }
+}
 ```
 
-#### 2. **Function Documentation Template**
-Every new function must be documented in DEVLOG.md with this format:
+**Tests:**
+- [ ] Parse remember errors
+- [ ] Parse recomposition errors
+- [ ] Parse LaunchedEffect errors
+- [ ] Integration with main parser
+- [ ] 10+ test cases
 
-```markdown
-### Functions Implemented (Week X)
+---
 
-| Function Name | File | Signature | Purpose | Tests | Coverage |
-|---------------|------|-----------|---------|-------|----------|
-| `reflectOnHypothesis` | `agent/ReactAgent.ts` | `async (state: AgentState): Promise<ReflectionResult>` | Self-evaluate hypothesis quality based on evidence | ✅ | 91% |
-| `parseReflection` | `agent/ReactAgent.ts` | `(reflection: string): ReflectionResult` | Parse LLM reflection output into structured format | ✅ | 88% |
+### CHUNK 4.2: XML Layout Parser (Days 5-7, ~24h)
+
+**Goal:** Parse XML layout inflation errors
+
+**Tasks:**
+- [ ] `src/utils/parsers/XMLParser.ts`
+  - [ ] Inflation error patterns
+  - [ ] Missing view ID errors
+  - [ ] Attribute error patterns (layout_width, etc.)
+  - [ ] Namespace errors (xmlns:android)
+  - [ ] Parse XML line numbers
+  
+- [ ] XML-specific prompts
+- [ ] Unit tests (8+ XML error types)
+
+**Implementation Example:**
+```typescript
+// src/utils/parsers/XMLParser.ts
+export class XMLParser {
+  parse(text: string): ParsedError | null {
+    return (
+      this.parseInflationError(text) ||
+      this.parseMissingIdError(text) ||
+      this.parseAttributeError(text) ||
+      null
+    );
+  }
+  
+  private parseInflationError(text: string): ParsedError | null {
+    const match = text.match(/InflateException: Binary XML file line #(\d+)/);
+    if (match) {
+      const line = parseInt(match[1]);
+      const fileMatch = text.match(/in (.+\.xml)/);
+      return {
+        type: 'xml_inflation',
+        message: text,
+        filePath: fileMatch?.[1] || 'unknown.xml',
+        line,
+        language: 'xml',
+        framework: 'android',
+      };
+    }
+    return null;
+  }
+  
+  private parseMissingIdError(text: string): ParsedError | null {
+    if (text.includes('findViewById') && text.includes('null')) {
+      return {
+        type: 'xml_missing_id',
+        message: text,
+        filePath: 'unknown.xml',
+        line: 0,
+        language: 'xml',
+        framework: 'android',
+      };
+    }
+    return null;
+  }
+}
 ```
 
-#### 3. **Architecture Decision Triggers**
-Create an ADR when:
-- Choosing between multiple technical approaches
-- Adding a new dependency
-- Changing core data structures
-- Modifying API contracts
-- Making performance trade-offs
-- Security-related decisions
+**Tests:**
+- [ ] Parse inflation errors
+- [ ] Parse missing ID errors
+- [ ] Parse attribute errors
+- [ ] Extract line numbers correctly
+- [ ] 8+ test cases
 
-**Example Trigger Scenarios:**
-- "Should we use Zod or Yup for schema validation?" → ADR required
-- "Rename variable from `data` to `rcaData`" → No ADR needed
-- "Switch from REST to GraphQL for external API" → ADR required
+---
 
-#### 4. **Milestone Completion Ritual**
-```bash
-# At end of each milestone (e.g., Week 1, 2, 4, 6, 8, 10, 12):
+### CHUNK 4.3: Gradle Build Analyzer (Days 8-11, ~32h)
 
-# 1. Complete milestone checklist in DEVLOG.md
-# 2. Generate final project structure
-npm run generate-structure
+**Goal:** Analyze Gradle build errors
 
-# 3. Run full quality suite
-npm run quality-check
+**Tasks:**
+- [ ] `src/tools/AndroidBuildTool.ts`
+  - [ ] Parse Gradle error output
+  - [ ] Dependency conflict detection
+  - [ ] Version mismatch analysis
+  - [ ] Repository configuration errors
+  - [ ] Plugin errors
+  - [ ] Recommend version resolution
+  
+- [ ] Support both Groovy and Kotlin DSL
+- [ ] Dependency graph analysis
+- [ ] Unit tests (10+ Gradle errors)
 
-# 4. Generate performance report
-npm run perf:benchmark
-npm run perf:report
+**Implementation Example:**
+```typescript
+// src/tools/AndroidBuildTool.ts
+export class AndroidBuildTool {
+  parseBuildError(buildOutput: string): ParsedError | null {
+    return (
+      this.parseDependencyConflict(buildOutput) ||
+      this.parseVersionMismatch(buildOutput) ||
+      this.parseRepositoryError(buildOutput) ||
+      null
+    );
+  }
+  
+  parseDependencyConflict(output: string): ParsedError | null {
+    const match = output.match(/Conflict.*module '(.+?)' versions? (.+?) and (.+)/);
+    if (match) {
+      const [_, module, version1, version2] = match;
+      return {
+        type: 'gradle_dependency_conflict',
+        message: output,
+        filePath: 'build.gradle',
+        line: 0,
+        language: 'gradle',
+        metadata: { module, conflictingVersions: [version1, version2] },
+      };
+    }
+    return null;
+  }
+  
+  recommendResolution(conflict: ParsedError): string {
+    const { module, conflictingVersions } = conflict.metadata;
+    const recommended = this.selectHigherVersion(conflictingVersions);
+    
+    return `Add explicit version in build.gradle:
+implementation("${module}:${recommended}")
 
-# 5. Create milestone tag
-git tag -a v0.1.0-milestone-1.5 -m "Milestone 1.5: Testing & Validation Complete"
-
-# 6. Archive completed ADRs
-# Move superseded ADRs to docs/architecture/decisions/archive/
-
-# 7. Update README with actual vs planned progress
-# Add any lessons learned to DEVLOG.md
-
-# 8. Create milestone summary
-cat << EOF > docs/milestones/milestone-1.5-summary.md
-# Milestone 1.5 Summary: Testing & Validation
-
-**Completed:** 2025-01-22  
-**Status:** ✅ On Schedule  
-**Test Coverage:** 83% (Target: 80%)
-
-## Deliverables
-- [x] Unit tests for all components
-- [x] Integration tests for core workflows  
-- [x] CI pipeline configured
-
-## Key Achievements
-- Exceeded coverage target
-- Zero build warnings
-- All performance targets met
-
-## Challenges
-- ChromaDB intermittent connection issues (resolved with retry logic)
-
-## Next Milestone
-- 1.6: Multi-Language Support (Week 2)
-EOF
+Or use dependency resolution strategy:
+configurations.all {
+  resolutionStrategy {
+    force "${module}:${recommended}"
+  }
+}`;
+  }
+  
+  private selectHigherVersion(versions: string[]): string {
+    // Simple version comparison (can be more sophisticated)
+    return versions.sort().reverse()[0];
+  }
+}
 ```
 
-#### 5. **Code Review Checklist (Self-Review)**
-Before committing, verify:
+**Tests:**
+- [ ] Parse dependency conflicts
+- [ ] Parse version mismatches
+- [ ] Recommend correct version
+- [ ] Support Groovy and Kotlin DSL
+- [ ] 10+ test cases
 
-**Documentation:**
-- [ ] Function added to DEVLOG.md function table
-- [ ] File purpose documented in PROJECT_STRUCTURE.md (auto-generated)
-- [ ] Tool contract added to API_CONTRACTS.md (if applicable)
-- [ ] ADR written for architectural decisions
-- [ ] JSDoc comments on all public functions
-- [ ] Inline comments explain "why" not "what"
+---
 
-**Code Quality:**
-- [ ] ESLint passes (zero warnings)
-- [ ] TypeScript strict mode (no `any` types)
-- [ ] Unit tests written (>80% coverage for new code)
-- [ ] Integration test added if touching multiple components
-- [ ] No hardcoded values (use config or constants)
-- [ ] Error handling implemented
+### CHUNK 4.4: Manifest & Docs (Days 12-15, ~32h)
 
-**Performance:**
-- [ ] No obvious performance issues (N+1 queries, unnecessary loops)
-- [ ] Large files handled efficiently (streaming, chunking)
-- [ ] Async operations don't block unnecessarily
-- [ ] Caching used where appropriate
+**Goal:** Handle manifest errors and search Android docs
 
-**Git:**
-- [ ] Commit message follows conventional commits
-- [ ] Branch named correctly (`feature/milestone-X.Y`, `fix/issue-123`)
-- [ ] No commented-out code
-- [ ] No `console.log` statements (use Logger)
+**Tasks:**
+- [ ] `src/tools/ManifestAnalyzerTool.ts`
+  - [ ] Parse manifest merge conflicts
+  - [ ] Detect missing permissions
+  - [ ] Find undeclared activities/services
+  - [ ] Parse XML merge markers
+  
+- [ ] `src/tools/AndroidDocsSearchTool.ts`
+  - [ ] Index offline Android SDK docs
+  - [ ] Search by API name
+  - [ ] Search by error message keywords
+  - [ ] Return relevant doc snippets
+  
+- [ ] Unit tests for both tools
 
-#### 6. **Weekly Friday Ritual (Non-Negotiable)**
+**Implementation Example:**
+```typescript
+// src/tools/ManifestAnalyzerTool.ts
+export class ManifestAnalyzerTool {
+  parseManifestError(output: string): ParsedError | null {
+    if (output.includes('Manifest merger failed')) {
+      return {
+        type: 'manifest_merge_conflict',
+        message: output,
+        filePath: 'AndroidManifest.xml',
+        line: 0,
+        language: 'xml',
+        framework: 'android',
+      };
+    }
+    
+    const permMatch = output.match(/Permission denied.*requires (.+)/);
+    if (permMatch) {
+      return {
+        type: 'manifest_missing_permission',
+        message: output,
+        filePath: 'AndroidManifest.xml',
+        line: 0,
+        language: 'xml',
+        metadata: { requiredPermission: permMatch[1] },
+      };
+    }
+    
+    return null;
+  }
+}
 
+// src/tools/AndroidDocsSearchTool.ts
+export class AndroidDocsSearchTool {
+  private docsIndex: Map<string, string> = new Map();
+  
+  async initialize() {
+    // Index common Android APIs
+    this.docsIndex.set('Activity', 'android.app.Activity - Base class for activities...');
+    this.docsIndex.set('onCreate', 'Called when activity is starting...');
+    // ... more indexing
+  }
+  
+  search(query: string): string[] {
+    const results: string[] = [];
+    for (const [key, value] of this.docsIndex.entries()) {
+      if (key.toLowerCase().includes(query.toLowerCase())) {
+        results.push(value);
+      }
+    }
+    return results.slice(0, 5);
+  }
+}
+```
+
+**Tests:**
+- [ ] Parse manifest merge conflicts
+- [ ] Detect missing permissions
+- [ ] Search docs by API name
+- [ ] Return relevant doc snippets
+- [ ] Integration tests
+
+---
+
+### CHUNK 4.5: Android Testing (Days 16-18, ~24h)
+
+**Goal:** Comprehensive Android testing
+
+**Tasks:**
+- [ ] Create test dataset (20 real Android errors)
+  - [ ] 5 Compose errors
+  - [ ] 3 XML errors
+  - [ ] 5 Gradle errors
+  - [ ] 3 Manifest errors
+  - [ ] 4 mixed errors
+- [ ] Run full test suite
+- [ ] Measure accuracy per error type
+- [ ] Fix bugs found during testing
+- [ ] Performance optimization
+- [ ] Document accuracy metrics
+
+**Tests:**
+- [ ] End-to-end tests for all Android features
+- [ ] Accuracy: 14/20 (70%+)
+- [ ] Latency: <60s per analysis
+- [ ] All parsers working correctly
+
+---
+
+## CHUNK 5: Polish Backend (Weeks 9-12)
+
+### CHUNK 5.1: Agent State Streaming (Days 1-5, ~40h)
+
+**Goal:** Real-time progress updates for UI
+
+**Tasks:**
+- [ ] `src/agent/AgentStateStream.ts`
+  - [ ] EventEmitter for state changes
+  - [ ] Emit iteration updates
+  - [ ] Emit thought/action/observation events
+  - [ ] Progress calculation (%)
+  
+- [ ] `src/agent/DocumentSynthesizer.ts`
+  - [ ] Generate markdown RCA reports
+  - [ ] Section organization (summary, analysis, fix)
+  - [ ] Code highlighting syntax
+  - [ ] Link generation (file paths)
+  
+- [ ] Update ReactAgent to emit events
+- [ ] Format events for UI consumption
+
+**Implementation Example:**
+```typescript
+// src/agent/AgentStateStream.ts
+import { EventEmitter } from 'events';
+
+export class AgentStateStream extends EventEmitter {
+  emitIteration(iteration: number, maxIterations: number) {
+    this.emit('iteration', { iteration, maxIterations, progress: iteration / maxIterations });
+  }
+  
+  emitThought(thought: string) {
+    this.emit('thought', { thought, timestamp: Date.now() });
+  }
+  
+  emitAction(action: ToolCall) {
+    this.emit('action', { action, timestamp: Date.now() });
+  }
+  
+  emitObservation(observation: string) {
+    this.emit('observation', { observation, timestamp: Date.now() });
+  }
+  
+  emitComplete(rca: RCADocument) {
+    this.emit('complete', { rca, timestamp: Date.now() });
+  }
+}
+
+// Update ReactAgent
+export class ReactAgent {
+  private stream = new AgentStateStream();
+  
+  getStream(): AgentStateStream {
+    return this.stream;
+  }
+  
+  async analyze(error: ParsedError): Promise<RCADocument> {
+    for (let i = 0; i < this.maxIterations; i++) {
+      this.stream.emitIteration(i + 1, this.maxIterations);
+      
+      const thought = await this.generateThought(state);
+      this.stream.emitThought(thought);
+      
+      const action = await this.selectAction(thought);
+      this.stream.emitAction(action);
+      
+      const observation = await this.executeAction(action);
+      this.stream.emitObservation(observation);
+      
+      // ...
+    }
+    
+    const rca = this.synthesizeFinalRCA(state);
+    this.stream.emitComplete(rca);
+    return rca;
+  }
+}
+```
+
+**Tests:**
+- [ ] Stream emits all events
+- [ ] Events have correct data
+- [ ] Progress calculation accurate
+- [ ] Document synthesizer generates markdown
+
+---
+
+### CHUNK 5.2: Educational Agent (Days 6-10, ~40h)
+
+**Goal:** Generate learning-focused explanations
+
+**Tasks:**
+- [ ] `src/agent/EducationalAgent.ts`
+  - [ ] Extend ReactAgent
+  - [ ] Generate learning notes after each iteration
+  - [ ] Explain error types (what is NP E?)
+  - [ ] Explain root causes (why did this happen?)
+  - [ ] Prevention tips (how to avoid?)
+  
+- [ ] Educational prompts
+  - [ ] Beginner-friendly language
+  - [ ] Analogies and metaphors
+  - [ ] Code examples
+  
+- [ ] Async explanation generation (optional)
+
+**Implementation Example:**
+```typescript
+// src/agent/EducationalAgent.ts
+export class EducationalAgent extends ReactAgent {
+  async analyze(error: ParsedError, mode: 'sync' | 'async' = 'sync'): Promise<RCADocument> {
+    const rca = await super.analyze(error);
+    
+    if (mode === 'sync') {
+      // Generate explanations during analysis
+      rca.learningNotes = await this.generateLearningNotes(rca);
+    } else {
+      // Generate explanations after analysis (faster)
+      setTimeout(() => this.generateAndStoreLearningNotes(rca), 0);
+    }
+    
+    return rca;
+  }
+  
+  private async generateLearningNotes(rca: RCADocument): Promise<string[]> {
+    const notes: string[] = [];
+    
+    // Explain error type
+    const errorExplanation = await this.llm.generate(`
+      Explain "${rca.error_type}" error to a beginner Kotlin developer.
+      Use simple language and analogies. Keep it under 100 words.
+      
+      Focus on WHAT this error means in plain English.
+    `);
+    notes.push(`🎓 **What is this error?**\n${errorExplanation}`);
+    
+    // Explain root cause
+    const causeExplanation = await this.llm.generate(`
+      The root cause is: "${rca.root_cause}"
+      
+      Explain WHY this happened to a beginner. Use an analogy if helpful.
+      Keep it under 100 words.
+    `);
+    notes.push(`🔍 **Why did this happen?**\n${causeExplanation}`);
+    
+    // Prevention tips
+    const prevention = await this.llm.generate(`
+      Based on this error type (${rca.error_type}), give 3 concrete tips
+      on how to prevent it in the future. Be specific and actionable.
+    `);
+    notes.push(`🛡️ **How to prevent this:**\n${prevention}`);
+    
+    return notes;
+  }
+}
+```
+
+**Tests:**
+- [ ] Educational agent generates learning notes
+- [ ] Notes are beginner-friendly
+- [ ] Analogies are appropriate
+- [ ] Sync vs async modes work
+- [ ] Test with 5 error types
+
+---
+
+### CHUNK 5.3: Performance Optimization (Days 11-14, ~32h)
+
+**Goal:** Meet all performance targets
+
+**Tasks:**
+- [ ] `src/monitoring/PerformanceTracker.ts`
+  - [ ] Track latency per component (parser, LLM, tools, DB)
+  - [ ] Token usage tracking
+  - [ ] Cache hit rate monitoring
+  - [ ] Export metrics to JSON
+  
+- [ ] Optimization implementation
+  - [ ] Parallel tool execution
+  - [ ] Context window management (chunking for large files)
+  - [ ] Query optimization (ChromaDB)
+  - [ ] Prompt optimization (reduce tokens)
+  
+- [ ] Benchmarking suite
+  - [ ] Run 100 analyses
+  - [ ] Measure p50, p90, p99 latencies
+  - [ ] Compare before/after optimization
+
+**Implementation Example:**
+```typescript
+// src/monitoring/PerformanceTracker.ts
+export class PerformanceTracker {
+  private metrics: Map<string, number[]> = new Map();
+  
+  startTimer(operation: string): () => void {
+    const start = Date.now();
+    return () => {
+      const duration = Date.now() - start;
+      this.recordMetric(operation, duration);
+    };
+  }
+  
+  recordMetric(operation: string, duration: number): void {
+    if (!this.metrics.has(operation)) {
+      this.metrics.set(operation, []);
+    }
+    this.metrics.get(operation)!.push(duration);
+  }
+  
+  getStats(operation: string): Stats {
+    const values = this.metrics.get(operation) || [];
+    if (values.length === 0) return { p50: 0, p90: 0, p99: 0, mean: 0 };
+    
+    const sorted = [...values].sort((a, b) => a - b);
+    return {
+      p50: sorted[Math.floor(sorted.length * 0.5)],
+      p90: sorted[Math.floor(sorted.length * 0.9)],
+      p99: sorted[Math.floor(sorted.length * 0.99)],
+      mean: values.reduce((a, b) => a + b, 0) / values.length,
+      count: values.length,
+    };
+  }
+  
+  exportMetrics(): Record<string, Stats> {
+    const result: Record<string, Stats> = {};
+    for (const [operation, _] of this.metrics.entries()) {
+      result[operation] = this.getStats(operation);
+    }
+    return result;
+  }
+}
+
+// Usage in ReactAgent
+export class ReactAgent {
+  private perf = new PerformanceTracker();
+  
+  async analyze(error: ParsedError): Promise<RCADocument> {
+    const stopTotal = this.perf.startTimer('total_analysis');
+    
+    const stopParsing = this.perf.startTimer('parsing');
+    const parsed = this.parser.parse(error);
+    stopParsing();
+    
+    for (let i = 0; i < this.maxIterations; i++) {
+      const stopLLM = this.perf.startTimer('llm_inference');
+      const thought = await this.llm.generate(prompt);
+      stopLLM();
+      
+      const stopTool = this.perf.startTimer('tool_execution');
+      const observation = await this.executeTool(action);
+      stopTool();
+    }
+    
+    stopTotal();
+    console.log(this.perf.exportMetrics());
+    
+    return rca;
+  }
+}
+```
+
+**Tests:**
+- [ ] Performance tracker records metrics
+- [ ] Stats calculation correct
+- [ ] Benchmarks show <60s average (standard mode, GPU)
+- [ ] Cache hit rate >60%
+- [ ] Parallel tool execution 2-3x faster
+
+---
+
+### CHUNK 5.4: Testing & QA (Days 15-19, ~40h)
+
+**Goal:** Achieve 80%+ test coverage
+
+**Tasks:**
+- [ ] Unit tests for all modules
+  - [ ] Parsers (15+ tests)
+  - [ ] Agent (10+ tests)
+  - [ ] Tools (12+ tests)
+  - [ ] Database (8+ tests)
+  - [ ] Cache (6+ tests)
+  
+- [ ] Integration tests
+  - [ ] End-to-end workflow (parse → analyze → store)
+  - [ ] Tool execution workflow
+  - [ ] Feedback loop workflow
+  
+- [ ] Golden test suite
+  - [ ] 15+ reference RCAs
+  - [ ] Expected outputs
+  - [ ] Regression testing
+  
+- [ ] Edge case testing
+  - [ ] Large files (>10K lines)
+  - [ ] Missing files
+  - [ ] Malformed errors
+  - [ ] LLM timeout
+  - [ ] ChromaDB connection failure
+
+**Test Organization:**
+```
+tests/
+├── unit/
+│   ├── utils/
+│   │   ├── ErrorParser.test.ts
+│   │   ├── KotlinParser.test.ts
+│   │   └── GradleParser.test.ts
+│   ├── agent/
+│   │   ├── ReactAgent.test.ts
+│   │   ├── EducationalAgent.test.ts
+│   │   └── PromptEngine.test.ts
+│   ├── tools/
+│   │   ├── ReadFileTool.test.ts
+│   │   ├── LSPTool.test.ts
+│   │   └── AndroidBuildTool.test.ts
+│   ├── db/
+│   │   ├── ChromaDBClient.test.ts
+│   │   └── EmbeddingService.test.ts
+│   └── cache/
+│       ├── RCACache.test.ts
+│       └── ErrorHasher.test.ts
+│
+├── integration/
+│   ├── end-to-end.test.ts
+│   ├── database-workflow.test.ts
+│   └── feedback-loop.test.ts
+│
+└── golden/
+    ├── kotlin-npe-1.test.ts
+    ├── kotlin-lateinit-1.test.ts
+    ├── compose-remember-1.test.ts
+    ├── gradle-conflict-1.test.ts
+    └── ... (15 total)
+```
+
+**Coverage Report:**
 ```bash
-#!/bin/bash
-# scripts/weekly-update.sh
-
-echo "🗓️  Week X Update - $(date +%Y-%m-%d)"
-echo "======================================"
-
-# 1. Documentation
-echo "📝 Step 1/5: Updating documentation..."
-npm run generate-structure
-npm run extract-functions >> docs/weekly-updates/week-X-functions.md
-
-# 2. Validation
-echo "✅ Step 2/5: Validating contracts..."
-npm run validate-contracts
-
-# 3. Testing
-echo "🧪 Step 3/5: Running tests..."
+# Run tests with coverage
 npm run test:coverage
 
-# 4. Performance
-echo "⚡ Step 4/5: Benchmarking..."
-npm run perf:benchmark
-
-# 5. DEVLOG update reminder
-echo "📋 Step 5/5: MANUAL TASK - Update DEVLOG.md with:"
-echo "  - Files created/modified this week"
-echo "  - Functions implemented (copy from week-X-functions.md)"
-echo "  - Architecture decisions (if any)"
-echo "  - Blockers encountered and solutions"
-echo "  - Next week's goals"
-
-# 6. Commit
-echo ""
-read -p "Ready to commit? (y/n) " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    git add docs/
-    git commit -m "docs: Week X progress update"
-    echo "✅ Documentation committed!"
-else
-    echo "⚠️  Remember to commit docs/ manually"
-fi
+# Expected output:
+----------------------|---------|----------|---------|---------|
+File                  | % Stmts | % Branch | % Funcs | % Lines |
+----------------------|---------|----------|---------|---------|
+All files             |   83.45 |    78.92 |   85.12 |   83.67 |
+ utils/               |   88.23 |    82.45 |   90.12 |   88.45 |
+  ErrorParser.ts      |   91.34 |    85.67 |   93.21 |   91.56 |
+  KotlinParser.ts     |   89.45 |    83.12 |   91.45 |   89.67 |
+ agent/               |   81.23 |    75.67 |   82.34 |   81.45 |
+  ReactAgent.ts       |   84.56 |    78.23 |   85.67 |   84.78 |
+ tools/               |   85.67 |    80.12 |   87.23 |   85.89 |
+ db/                  |   79.45 |    74.23 |   80.12 |   79.67 |
+ cache/               |   87.12 |    82.34 |   88.45 |   87.34 |
+----------------------|---------|----------|---------|---------|
 ```
 
-#### 7. **Traceability Matrix**
-Maintain a traceability matrix linking requirements → implementation → tests
+**Tests:**
+- [ ] All unit tests passing
+- [ ] All integration tests passing
+- [ ] Golden suite: 15/15 pass
+- [ ] Coverage >80% overall
+- [ ] No known bugs or edge case failures
 
-**Location:** `docs/traceability.md`
+---
 
-```markdown
-# Traceability Matrix
+### CHUNK 5.5: Documentation (Days 20-24, ~40h)
 
-| Requirement ID | Requirement | Implementation | Tests | Status |
-|----------------|-------------|----------------|-------|--------|
-| REQ-001 | Support local LLMs | `src/llm/OllamaClient.ts` | `tests/unit/llm/OllamaClient.test.ts` | ✅ |
-| REQ-002 | Multi-language error parsing | `src/utils/ErrorParser.ts` + language-specific parsers | `tests/unit/utils/ErrorParser.test.ts` | ✅ |
-| REQ-003 | Vector DB learning | `src/db/ChromaDBClient.ts` | `tests/integration/vectordb.test.ts` | ✅ |
-| REQ-004 | ReAct agent loop | `src/agent/ReactAgent.ts` | `tests/unit/agent/ReactAgent.test.ts` | 🟡 In Progress |
-| REQ-005 | Webview UI | `src/ui/RCAWebview.ts` | `tests/unit/ui/RCAWebview.test.ts` | ⏳ Planned |
+**Goal:** Complete API and architecture documentation
+
+**Tasks:**
+- [ ] API documentation
+  - [ ] All public methods documented (JSDoc)
+  - [ ] Interface documentation
+  - [ ] Usage examples
+  
+- [ ] Architecture documentation
+  - [ ] System overview diagram
+  - [ ] Component interaction diagrams
+  - [ ] Data flow diagrams
+  - [ ] Database schema documentation
+  
+- [ ] Code comments cleanup
+  - [ ] Remove TODO comments (resolve or file issues)
+  - [ ] Add explanatory comments for complex logic
+  - [ ] Document algorithm choices
+  
+- [ ] Performance benchmarks documentation
+  - [ ] Latency metrics
+  - [ ] Accuracy metrics
+  - [ ] Cache hit rates
+  - [ ] Token usage stats
+
+**Documentation Structure:**
+```
+docs/
+├── api/
+│   ├── Agent.md              # Agent API reference
+│   ├── Parsers.md            # Parser API reference
+│   ├── Tools.md              # Tool API reference
+│   └── Database.md           # DB API reference
+│
+├── architecture/
+│   ├── overview.md           # System architecture
+│   ├── agent-workflow.md     # Agent reasoning flow
+│   ├── database-design.md    # ChromaDB schema
+│   └── diagrams/
+│       ├── component-diagram.png
+│       └── data-flow.png
+│
+└── performance/
+    ├── benchmarks.md         # Performance metrics
+    └── optimization-guide.md # Optimization techniques
 ```
 
-### Code Quality Standards
-
-#### TypeScript Configuration
-- **Strict Mode:** Enabled (no `any` types)
-- **ESLint:** Airbnb config with custom rules
-- **Prettier:** 2-space indentation, single quotes
-- **Import Order:** Auto-sorted by plugin
-
-```json
-// tsconfig.json
-{
-  "compilerOptions": {
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true
+**Example API Documentation:**
+```typescript
+/**
+ * Root Cause Analysis Agent using ReAct (Reasoning + Acting) pattern.
+ * 
+ * @example
+ * ```typescript
+ * const llm = await OllamaClient.create({ model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest' });
+ * const agent = new ReactAgent(llm);
+ * 
+ * const error: ParsedError = {
+ *   type: 'lateinit',
+ *   message: 'lateinit property user has not been initialized',
+ *   filePath: 'MainActivity.kt',
+ *   line: 45,
+ *   language: 'kotlin',
+ * };
+ * 
+ * const rca = await agent.analyze(error);
+ * console.log(rca.rootCause);
+ * console.log(rca.fixGuidelines);
+ * ```
+ */
+export class ReactAgent {
+  /**
+   * Analyze an error and generate root cause analysis.
+   * 
+   * @param error - Parsed error object
+   * @param options - Analysis options (mode, maxIterations, timeout)
+   * @returns RCA document with root cause and fix guidelines
+   * @throws {AnalysisError} If analysis fails or times out
+   */
+  async analyze(error: ParsedError, options?: AnalysisOptions): Promise<RCADocument> {
+    // Implementation...
   }
 }
 ```
 
-#### Testing Standards
-- **Unit Tests:** One test file per source file (`*.test.ts`)
-- **Coverage:** Minimum 80% per file
-- **Naming:** `describe('ClassName/FunctionName')`, `it('should...')`
-- **Mocking:** Use Jest mocks for external dependencies
-- **Integration Tests:** Test complete workflows end-to-end
+**Deliverables:**
+- [ ] All public APIs documented
+- [ ] Architecture diagrams created
+- [ ] Performance benchmarks documented
+- [ ] Code comments complete
 
-```typescript
-// Example test structure
-describe('ReactAgent', () => {
-  describe('analyze()', () => {
-    it('should generate RCA for TypeError', async () => {
-      // Arrange
-      const mockLLM = createMockLLM();
-      const agent = new ReactAgent(mockLLM);
-      const errorContext = { /* ... */ };
-      
-      // Act
-      const result = await agent.analyze(errorContext);
-      
-      // Assert
-      expect(result.rootCause).toBeDefined();
-      expect(result.confidence).toBeGreaterThan(0.8);
-    });
-    
-    it('should terminate after max iterations', async () => {
-      // Test timeout logic
-    });
-  });
-});
-```
+---
 
-### Git Workflow Standards
+## Testing Strategy
 
-#### Branch Naming
-- `main` - Production-ready code
-- `develop` - Integration branch
-- `feature/milestone-X.Y` - New features
-- `fix/issue-description` - Bug fixes
-- `docs/update-category` - Documentation only
+### Unit Testing
+- **Coverage Target:** 80%+ per file
+- **Framework:** Jest
+- **Mocking:** Mock external dependencies (Ollama, ChromaDB, VS Code API)
+- **Focus:** Individual function correctness
 
-#### Commit Message Format (Conventional Commits)
-```
-<type>(<scope>): <subject>
+### Integration Testing
+- **Focus:** Component interactions
+- **Scenarios:**
+  - Parse → Analyze → Store workflow
+  - Tool execution workflow
+  - Feedback loop workflow
+  - Cache hit/miss scenarios
 
-[optional body]
+### Golden Testing
+- **Purpose:** Regression prevention
+- **Dataset:** 15+ real errors with expected RCAs
+- **Validation:** Output matches expected (with tolerance for LLM variance)
 
-[optional footer]
-```
+### Performance Testing
+- **Benchmarks:** 100+ analyses per test
+- **Metrics:** p50, p90, p99 latencies
+- **Targets:** <60s standard, <40s fast, <90s educational
 
-**Types:**
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation only
-- `refactor`: Code restructuring
-- `test`: Adding tests
-- `perf`: Performance improvement
-- `chore`: Maintenance
+---
 
-**Examples:**
-```bash
-feat(agent): Add self-reflection mechanism [milestone-2.1]
+## Development Guidelines
 
-- Implemented reflectOnHypothesis() for hypothesis validation
-- Agent now backtracks when evidence contradicts hypothesis
-- Performance impact: +2s per iteration (acceptable)
+### Code Standards
+- **TypeScript:** Strict mode enabled
+- **Linting:** ESLint with Airbnb config
+- **Formatting:** Prettier (2-space indentation)
+- **Comments:** JSDoc for all public methods
+- **Naming:** Descriptive names (no abbreviations)
 
-Refs: ADR-008, REQ-004
-Tests: ReactAgent.test.ts (coverage: 91%)
-```
-
-```bash
-fix(db): Handle ChromaDB connection retry logic
-
-- Added exponential backoff for failed connections
-- Max retries: 3, initial delay: 100ms
-- Fixes intermittent test failures
-
-Closes: #42
-```
-
-#### PR Template
-```markdown
-## Milestone: [X.Y - Name]
-
-### Changes
-- [ ] Feature 1 description
-- [ ] Feature 2 description
-
-### Documentation Updated
-- [ ] DEVLOG.md (Week X)
-- [ ] PROJECT_STRUCTURE.md (regenerated)
-- [ ] API_CONTRACTS.md (if tools changed)
-- [ ] ADRs written (list numbers)
-
-### Testing
-- [ ] Unit tests added (coverage: XX%)
-- [ ] Integration tests added
-- [ ] All tests passing
+### Error Handling
+- Always use try-catch for async operations
+- Throw typed errors (e.g., `AnalysisError`, `ParsingError`)
+- Log errors with context
+- Graceful degradation (fallbacks for tool failures)
 
 ### Performance
-- [ ] No performance regressions
-- [ ] Benchmark results: [link to report]
+- Profile hot paths (use PerformanceTracker)
+- Optimize prompts to reduce tokens
+- Use parallel tool execution where possible
+- Implement caching aggressively
 
-### Checklist
-- [ ] ESLint passes
-- [ ] TypeScript compiles
-- [ ] Self-review completed
-- [ ] Conventional commit messages
-```
-
----
-
-## 📊 Progress Tracking
-
-### **Simple Success Metrics:**
-
-| Phase | Goal | Completion Criteria | Timeline |
-|-------|------|-------------------|----------|
-| Phase 1 | Kotlin/Android working | Can debug real Android projects | Flexible - when ready |
-| Phase 2 | TypeScript/JS working | Can debug web projects | Flexible - when ready |
-| Phase 3 | Python working | Can debug Python projects | Flexible - when ready |
-| Phase 4 | Polish & advanced features | Fine-tuning, better UI | Flexible - when ready |
-
-### **Learning Goals:**
-- Understand how LLM agents work deeply
-- Master RAG systems and vector databases
-- Learn to work effectively with AI assistants
-- Build a practical debugging tool that actually helps
-- Explore local AI deployment advantages
-- Portfolio project for resume (secondary)
-
-### **Optional: Share Your Work (Only If You Want)**
-- Blog post about the learning journey
-- GitHub repo (public or keep private)
-- Demo video
-- Share insights with community
-
-*Remember: This is for you first. No pressure to share anything.*
+### Testing
+- Write tests before or during implementation (TDD)
+- Test edge cases (null, undefined, empty arrays)
+- Mock external dependencies
+- Aim for >80% coverage
 
 ---
 
-## 📦 What You'll Build
+## Collaboration with Sokchea
 
-### Phase 1 Deliverables (Weeks 1-12)
-- [ ] VS Code extension
-- [ ] Kotlin/Android error analyzer
-- [ ] Jetpack Compose error handler
-- [ ] Gradle build error analyzer
-- [ ] Vector DB learning system
-- [ ] Educational mode
-- [ ] Working UI
-
-### Phase 2 Deliverables (Weeks 13-16)
-- [ ] TypeScript/JavaScript support
-- [ ] React error handling
-- [ ] NPM dependency analyzer
-
-### Phase 3 Deliverables (Weeks 17-20)
-- [ ] Python support
-- [ ] Django/Flask errors
-- [ ] Pip dependency analyzer
-
-### Phase 4 Deliverables (Weeks 21-24)
-- [ ] Fine-tuning capability
-- [ ] Better UI/UX
-- [ ] Performance optimizations
-- [ ] Documentation
-
-### Optional Extras
-- [ ] Blog post about the project
-- [ ] Demo video
-- [ ] GitHub repo (public or private)
-- [ ] More language support
-
----
-
-## 🎯 Simple Success Metrics
-
-### Phase 1 Success (Kotlin/Android)
-- ✅ Can analyze 10+ different Kotlin error types
-- ✅ Handles Android lifecycle errors correctly
-- ✅ Understands Jetpack Compose issues
-- ✅ Parses Gradle build errors
-- ✅ Completes analysis in <60s
-- ✅ Actually helps when debugging
-- ✅ Learns from your errors (vector DB)
-- ✅ You use it regularly
-
-### Overall Project Success
-- **Usability:** You actually use it while coding
-- **Performance:** Fast enough not to be annoying (<60s)
-- **Learning:** Deep understanding of LLM agents and RAG
-- **Enjoyment:** Fun to build and use
-- **Personal Growth:** Genuine learning happens
-- **No Pressure:** Take breaks, pivot as needed
-- **AI Collaboration:** Effective AI-assisted development
-
-### Personal Goals (Not Requirements)
-- Learn about LLM agents and RAG systems
-- Build something useful for yourself
-- Understand local AI deployment deeply
-- Maybe portfolio project (if it turns out well)
-- Possibly help others with similar interests (optional)
-
----
-
-**This roadmap ensures production-ready code with complete audit trail. Every decision, file, and function is documented for maintainability and future onboarding.**
-
-### 1. Update Documentation
-```bash
-# Step 1: Run automated structure generator
-npm run generate-structure
-
-# Step 2: Validate all tool schemas
-npm run validate-contracts
-
-# Step 3: Generate test coverage report
-npm run test:coverage
-
-# Step 4: Manually update DEVLOG.md with week's progress
-# Include: Files created, functions implemented, decisions made, blockers
-
-# Step 5: Commit documentation changes
-git add docs/
-git commit -m "docs: Week X progress update [milestone-Y.Z]"
-git push origin develop
-```
-
-### 2. Code Quality Check
-```bash
-# Run full quality suite
-npm run quality-check
-
-# This includes:
-# - ESLint (zero warnings)
-# - Prettier (formatting)
-# - TypeScript compiler (strict mode)
-# - Test suite (unit + integration)
-# - Coverage report (must be >80%)
-# - Bundle size analysis
-# - Performance benchmarks
-```
-
-### 3. Milestone Review (If Applicable)
-- [ ] Complete milestone checklist in DEVLOG.md
-- [ ] Update PROJECT_STRUCTURE.md
-- [ ] Write ADR for major decisions
-- [ ] Update API_CONTRACTS.md for new/modified tools
-- [ ] Create PR with milestone tag
-- [ ] Self-review code changes
-
-### 4. Performance Tracking
-```bash
-# Generate performance report
-npm run perf:report
-
-# Output:
-# - RCA generation times (p50, p90, p99)
-# - Tool execution latencies
-# - LLM inference times
-# - Memory usage trends
-# - Cache hit rates
-```
-
-**Monthly Review (Last Friday):**
-- Update architecture diagrams in `docs/architecture/diagrams/`
-- Analyze performance trends (compare to targets)
-- Review and prune old ADRs (mark as superseded)
-- Backup vector database
-- Update roadmap if needed
-- Generate monthly progress report
-
----
-
-## 🤖 Automated Scripts for Development Tracking
-
-### Script 1: Generate Project Structure
-**File:** `scripts/generate-structure.ts`  
-**Purpose:** Auto-generate PROJECT_STRUCTURE.md with metadata
+### Interface Contracts
+Kai defines the contracts (function signatures, interfaces) that Sokchea will call:
 
 ```typescript
-import * as fs from 'fs';
-import * as path from 'path';
-import { execSync } from 'child_process';
-
-interface FileMetadata {
-  path: string;
-  purpose: string;           // Extracted from file header comment
-  functions: string[];       // Exported functions/classes
-  dependencies: string[];    // Import statements
-  lastModified: string;      // Git last commit date
-  lastAuthor: string;        // Git last commit author
-  lineCount: number;
-  testCoverage?: number;     // From Jest coverage report
-  testFile?: string;         // Associated test file
+// Example: Agent interface for Sokchea to use
+export interface IAgent {
+  analyze(error: ParsedError): Promise<RCADocument>;
+  getStream(): AgentStateStream; // For real-time updates
+  cancel(): void; // Allow user to stop analysis
 }
 
-interface DirectoryNode {
-  name: string;
-  type: 'file' | 'directory';
-  children?: DirectoryNode[];
-  metadata?: FileMetadata;
+// Example: Feedback handler interface
+export interface IFeedbackHandler {
+  handlePositive(rcaId: string, errorHash: string): Promise<void>;
+  handleNegative(rcaId: string, errorHash: string): Promise<void>;
 }
-
-async function generateStructure(): Promise<void> {
-  console.log('🔍 Analyzing project structure...');
-  
-  const rootDir = path.join(__dirname, '..');
-  const tree = await buildTree(rootDir);
-  const markdown = generateMarkdown(tree);
-  
-  const outputPath = path.join(rootDir, 'docs', 'PROJECT_STRUCTURE.md');
-  fs.writeFileSync(outputPath, markdown);
-  
-  console.log('✅ PROJECT_STRUCTURE.md updated');
-}
-
-async function buildTree(dir: string, depth: number = 0): Promise<DirectoryNode> {
-  // Implementation:
-  // 1. Recursively walk directory (ignore node_modules, .git, dist)
-  // 2. For each .ts/.tsx file:
-  //    - Parse JSDoc header for purpose
-  //    - Extract export statements for functions/classes
-  //    - Parse import statements for dependencies
-  //    - Run `git log -1 --format="%cd|%an" -- <file>` for metadata
-  //    - Count lines with `wc -l` or fs.readFileSync
-  //    - Read coverage from `coverage/coverage-summary.json`
-  // 3. Build tree structure
-  // 4. Return DirectoryNode
-}
-
-function generateMarkdown(tree: DirectoryNode): string {
-  // Generate markdown with tree structure
-  // Include metadata inline as comments
-  // Example:
-  // ├── src/
-  // │   ├── extension.ts              # Entry point, command registration
-  // │   │                             # Functions: activate(), deactivate()
-  // │   │                             # Dependencies: vscode, CommandRegistry
-  // │   │                             # Last Modified: 2025-01-15 by Alice | Lines: 87 | Coverage: 95%
-}
-
-generateStructure().catch(console.error);
 ```
 
-**Usage:**
-```bash
-npm run generate-structure
-```
+### Communication
+- **Daily Sync:** Share what APIs are ready for integration
+- **Documentation:** Document all public methods with JSDoc
+- **Examples:** Provide usage examples for Sokchea
+- **Testing:** Help Sokchea test integration points
 
-### Script 2: Validate Tool Contracts
-**File:** `scripts/validate-contracts.ts`  
-**Purpose:** Ensure all tools have documented schemas in API_CONTRACTS.md
+### Integration Points
+1. **Extension → Agent:** Sokchea calls `agent.analyze(error)`
+2. **Extension → Stream:** Sokchea subscribes to `agent.getStream()` for updates
+3. **Extension → Feedback:** Sokchea calls `feedbackHandler.handlePositive()`
+4. **Extension → Cache:** Sokchea shows cache hit notifications from Kai's data
 
+---
+
+## Success Metrics
+
+### Phase 1 Complete When:
+- ✅ All parsers working (Kotlin, Compose, XML, Gradle)
+- ✅ Agent achieves 70%+ accuracy on test suite
+- ✅ ChromaDB stores and retrieves RCAs correctly
+- ✅ Cache hit rate >60%
+- ✅ Performance <60s standard mode (GPU)
+- ✅ Educational mode generates learning notes
+- ✅ Test coverage >80%
+- ✅ All golden tests passing
+- ✅ Zero known critical bugs
+- ✅ API documentation complete
+
+---
+
+## Notes
+
+- Focus on implementation, not UI
+- Write clean, maintainable code
+- Document everything (JSDoc + architecture docs)
+- Test rigorously (unit + integration + golden)
+- Optimize for accuracy first, then performance
+- Collaborate closely with Sokchea on interfaces
+- Ask for clarification when interface contracts are unclear
+
+**This is Kai's complete work breakdown. Sokchea handles all UI/integration separately.**
+
+---
+
+## 🚨 Common Pitfalls & Solutions
+
+### Pitfall 1: Ignoring LLM Output Validation
+**Problem:** LLM returns malformed JSON or unexpected formats
+**Solution:**
 ```typescript
-import * as fs from 'fs';
-import * as path from 'path';
-import { ToolRegistry } from '../src/tools/ToolRegistry';
+// WRONG: Trust LLM output blindly
+const result = JSON.parse(llmOutput);
 
-interface ToolContract {
-  name: string;
-  version: string;
-  file: string;
-  inputSchema: object;
-  outputSchema: object;
-  documented: boolean;
-}
-
-async function validateContracts(): Promise<void> {
-  console.log('🔍 Validating tool contracts...');
+// CORRECT: Validate and sanitize
+function parseLLMOutput(output: string): RCAResult {
+  const sanitized = InputValidator.sanitizeLLMOutput(output);
   
-  // 1. Load all tools from ToolRegistry
-  const tools = ToolRegistry.getAllTools();
-  
-  // 2. Parse API_CONTRACTS.md
-  const contractsPath = path.join(__dirname, '..', 'docs', 'API_CONTRACTS.md');
-  const contractsContent = fs.readFileSync(contractsPath, 'utf-8');
-  
-  // 3. Check each tool has documentation
-  const undocumented: string[] = [];
-  const outdated: string[] = [];
-  
-  for (const tool of tools) {
-    const documented = contractsContent.includes(`## Tool: ${tool.name}`);
-    if (!documented) {
-      undocumented.push(tool.name);
+  try {
+    const parsed = JSON.parse(sanitized);
+    
+    // Validate structure
+    if (!parsed.rootCause || !parsed.fixGuidelines) {
+      logger.warn('Incomplete LLM output', { output: sanitized });
+      return createFallbackResult(output);
     }
     
-    // Check if schema in code matches documentation
-    // (Compare Zod schema with documented JSON schema)
-  }
-  
-  // 4. Report results
-  if (undocumented.length > 0) {
-    console.error('❌ Undocumented tools:', undocumented);
-    process.exit(1);
-  }
-  
-  if (outdated.length > 0) {
-    console.warn('⚠️  Outdated contracts:', outdated);
-  }
-  
-  console.log('✅ All tool contracts validated');
-}
-
-validateContracts().catch(console.error);
-```
-
-**Usage:**
-```bash
-npm run validate-contracts
-```
-
-### Script 3: Function Summary Extractor
-**File:** `scripts/extract-functions.ts`  
-**Purpose:** Generate function inventory for DEVLOG.md
-
-```typescript
-import * as ts from 'typescript';
-import * as fs from 'fs';
-import * as path from 'path';
-
-interface FunctionSummary {
-  name: string;
-  file: string;
-  signature: string;
-  purpose: string;        // From JSDoc
-  isPublic: boolean;
-  parameters: Parameter[];
-  returnType: string;
-  isAsync: boolean;
-  lineNumber: number;
-}
-
-interface Parameter {
-  name: string;
-  type: string;
-  optional: boolean;
-  defaultValue?: string;
-}
-
-function extractFunctions(filePath: string): FunctionSummary[] {
-  const content = fs.readFileSync(filePath, 'utf-8');
-  const sourceFile = ts.createSourceFile(
-    filePath,
-    content,
-    ts.ScriptTarget.Latest,
-    true
-  );
-  
-  const functions: FunctionSummary[] = [];
-  
-  function visit(node: ts.Node) {
-    if (ts.isFunctionDeclaration(node) || ts.isMethodDeclaration(node)) {
-      // Extract function details using TypeScript AST
-      const summary: FunctionSummary = {
-        name: node.name?.getText() || 'anonymous',
-        file: filePath,
-        signature: node.getText().split('{')[0].trim(),
-        purpose: extractJSDocComment(node),
-        isPublic: hasPublicModifier(node),
-        parameters: extractParameters(node),
-        returnType: extractReturnType(node),
-        isAsync: hasAsyncModifier(node),
-        lineNumber: sourceFile.getLineAndCharacterOfPosition(node.getStart()).line + 1,
-      };
-      functions.push(summary);
+    // Validate types
+    if (typeof parsed.rootCause !== 'string') {
+      throw new ValidationError('rootCause must be a string');
     }
     
-    ts.forEachChild(node, visit);
+    if (!Array.isArray(parsed.fixGuidelines)) {
+      throw new ValidationError('fixGuidelines must be an array');
+    }
+    
+    return parsed as RCAResult;
+  } catch (error) {
+    logger.error('Failed to parse LLM output', error as Error, { output });
+    return createFallbackResult(sanitized);
+  }
+}
+
+function createFallbackResult(output: string): RCAResult {
+  return {
+    rootCause: output,
+    fixGuidelines: ['Review the error and code context'],
+    confidence: 0.3
+  };
+}
+```
+
+### Pitfall 2: Not Handling File System Errors
+**Problem:** Files may not exist, be inaccessible, or be binary
+**Solution:**
+```typescript
+// WRONG: Assume file exists and is readable
+const content = fs.readFileSync(filePath, 'utf-8');
+
+// CORRECT: Handle all edge cases
+async function readFileSafely(filePath: string): Promise<string | null> {
+  try {
+    // Check if file exists
+    const exists = await fs.promises.access(filePath).then(() => true).catch(() => false);
+    if (!exists) {
+      logger.warn('File not found', { filePath });
+      return null;
+    }
+    
+    // Check file size (avoid huge files)
+    const stats = await fs.promises.stat(filePath);
+    if (stats.size > 10 * 1024 * 1024) { // 10MB
+      logger.warn('File too large, reading first 10MB', { filePath, size: stats.size });
+      const fd = await fs.promises.open(filePath, 'r');
+      const buffer = Buffer.alloc(10 * 1024 * 1024);
+      await fd.read(buffer, 0, buffer.length, 0);
+      await fd.close();
+      return buffer.toString('utf-8');
+    }
+    
+    // Check if binary
+    const buffer = await fs.promises.readFile(filePath);
+    const isBinary = buffer.some(byte => byte === 0 || byte > 127);
+    
+    if (isBinary) {
+      logger.warn('Binary file detected', { filePath });
+      return null;
+    }
+    
+    return buffer.toString('utf-8');
+  } catch (error) {
+    logger.error('Error reading file', error as Error, { filePath });
+    return null;
+  }
+}
+```
+
+### Pitfall 3: Race Conditions in Async Code
+**Problem:** Multiple async operations modifying shared state
+**Solution:**
+```typescript
+// WRONG: Concurrent modifications without locking
+async function badCacheUpdate(key: string) {
+  const value = await cache.get(key);
+  const updated = value + 1;
+  await cache.set(key, updated);
+}
+
+// CORRECT: Use mutex/semaphore for critical sections
+import { Mutex } from 'async-mutex';
+
+class ThreadSafeCache {
+  private cache = new Map<string, any>();
+  private locks = new Map<string, Mutex>();
+  
+  private getLock(key: string): Mutex {
+    if (!this.locks.has(key)) {
+      this.locks.set(key, new Mutex());
+    }
+    return this.locks.get(key)!;
   }
   
-  visit(sourceFile);
-  return functions;
+  async update(key: string, updater: (value: any) => any): Promise<void> {
+    const lock = this.getLock(key);
+    const release = await lock.acquire();
+    
+    try {
+      const currentValue = this.cache.get(key);
+      const newValue = updater(currentValue);
+      this.cache.set(key, newValue);
+    } finally {
+      release();
+    }
+  }
 }
-
-function generateMarkdownTable(functions: FunctionSummary[]): string {
-  // Generate markdown table for DEVLOG.md
-  // | Function Name | File | Signature | Purpose | Tests | Coverage |
-}
-
-// Main execution
-const srcDir = path.join(__dirname, '..', 'src');
-const allFunctions = walkDirectory(srcDir).flatMap(extractFunctions);
-console.log(generateMarkdownTable(allFunctions));
 ```
 
-**Usage:**
-```bash
-npm run extract-functions > docs/function-inventory.md
-```
-
-### Script 4: Performance Benchmarker
-**File:** `scripts/benchmark.ts`  
-**Purpose:** Track performance metrics over time
-
+### Pitfall 4: Memory Leaks from Event Listeners
+**Problem:** Event listeners not cleaned up
+**Solution:**
 ```typescript
-import * as fs from 'fs';
-import * as path from 'path';
-
-interface PerformanceMetrics {
-  timestamp: string;
-  week: number;
-  milestone: string;
-  rcaGenerationTime: {
-    p50: number;
-    p90: number;
-    p99: number;
-  };
-  toolExecutionTimes: Record<string, number>;
-  llmInferenceTime: number;
-  cacheHitRate: number;
-  testCoverage: number;
-  buildTime: number;
-  bundleSize: number;
+// WRONG: Add listeners without cleanup
+class LeakyAgent {
+  constructor() {
+    process.on('uncaughtException', this.handleError);
+    setInterval(this.checkHealth, 60000);
+  }
 }
 
-async function runBenchmarks(): Promise<PerformanceMetrics> {
-  // 1. Run RCA generation 100 times, measure latency
-  // 2. Measure each tool execution time
-  // 3. Calculate cache hit rate from logs
-  // 4. Extract test coverage from Jest report
-  // 5. Measure build time with `time npm run compile`
-  // 6. Check bundle size from dist/
+// CORRECT: Track and clean up resources
+class ProperAgent {
+  private intervals: NodeJS.Timeout[] = [];
+  private boundHandlers = new Map<string, (...args: any[]) => void>();
   
-  const metrics: PerformanceMetrics = {
-    // ... collected data
-  };
+  constructor() {
+    const errorHandler = this.handleError.bind(this);
+    this.boundHandlers.set('error', errorHandler);
+    process.on('uncaughtException', errorHandler);
+    
+    const interval = setInterval(this.checkHealth.bind(this), 60000);
+    this.intervals.push(interval);
+  }
   
-  // Store metrics in time-series JSON file
-  const historyPath = path.join(__dirname, '..', 'docs', 'performance-history.json');
-  const history = JSON.parse(fs.readFileSync(historyPath, 'utf-8'));
-  history.push(metrics);
-  fs.writeFileSync(historyPath, JSON.stringify(history, null, 2));
-  
-  return metrics;
+  dispose(): void {
+    // Clean up intervals
+    this.intervals.forEach(clearInterval);
+    this.intervals = [];
+    
+    // Remove event listeners
+    for (const [event, handler] of this.boundHandlers.entries()) {
+      process.removeListener(event, handler);
+    }
+    this.boundHandlers.clear();
+  }
 }
-
-async function generateReport(metrics: PerformanceMetrics): Promise<void> {
-  // Generate markdown report comparing to targets
-  // Highlight regressions in red, improvements in green
-}
-
-runBenchmarks().then(generateReport).catch(console.error);
 ```
 
-**Usage:**
-```bash
-npm run perf:benchmark
-npm run perf:report
-```
-
-### Script 5: Quality Gate Check
-**File:** `scripts/quality-gate.ts`  
-**Purpose:** Pre-commit validation (runs in CI/CD)
-
+### Pitfall 5: Inefficient Database Queries
+**Problem:** N+1 query problem or fetching too much data
+**Solution:**
 ```typescript
-interface QualityMetrics {
-  lintErrors: number;
-  typeErrors: number;
-  testFailures: number;
-  coverage: number;
-  buildSuccess: boolean;
-  documentationComplete: boolean;
+// WRONG: Query in loop (N+1 problem)
+async function badApproach(errorIds: string[]) {
+  const results = [];
+  for (const id of errorIds) {
+    const rca = await db.getById(id); // N queries!
+    results.push(rca);
+  }
+  return results;
 }
 
-async function runQualityGate(): Promise<void> {
-  console.log('🚦 Running quality gate checks...\n');
+// CORRECT: Batch query
+async function goodApproach(errorIds: string[]) {
+  // Single query with filter
+  const results = await db.getByIds(errorIds);
+  return results;
+}
+
+// CORRECT: Pagination for large datasets
+async function getPaginatedResults(query: string, pageSize: number = 50) {
+  let offset = 0;
+  let hasMore = true;
+  const allResults = [];
   
-  const checks = [
-    { name: 'ESLint', command: 'npm run lint', threshold: 0 },
-    { name: 'TypeScript', command: 'npm run type-check', threshold: 0 },
-    { name: 'Tests', command: 'npm test', threshold: 0 },
-    { name: 'Coverage', command: 'npm run test:coverage', threshold: 80 },
-    { name: 'Build', command: 'npm run compile', threshold: 0 },
-    { name: 'Contracts', command: 'npm run validate-contracts', threshold: 0 },
+  while (hasMore) {
+    const page = await db.query({
+      query,
+      limit: pageSize,
+      offset
+    });
+    
+    allResults.push(...page.results);
+    hasMore = page.hasMore;
+    offset += pageSize;
+    
+    // Safety check
+    if (allResults.length > 1000) {
+      logger.warn('Query returning too many results, stopping at 1000');
+      break;
+    }
+  }
+  
+  return allResults;
+}
+```
+
+### Pitfall 6: Not Handling Partial Failures
+**Problem:** One failure stops entire batch
+**Solution:**
+```typescript
+// WRONG: All-or-nothing approach
+async function processAllOrFail(items: Item[]) {
+  const results = await Promise.all(items.map(processItem));
+  return results;
+}
+
+// CORRECT: Process with fault tolerance
+async function processWithFaultTolerance(items: Item[]) {
+  const results = await Promise.allSettled(items.map(processItem));
+  
+  const successful = results
+    .filter((r): r is PromiseFulfilledResult<Result> => r.status === 'fulfilled')
+    .map(r => r.value);
+  
+  const failed = results
+    .filter((r): r is PromiseRejectedResult => r.status === 'rejected')
+    .map((r, i) => ({ item: items[i], error: r.reason }));
+  
+  if (failed.length > 0) {
+    logger.warn('Some items failed to process', {
+      successCount: successful.length,
+      failCount: failed.length,
+      failures: failed.map(f => f.error.message)
+    });
+  }
+  
+  return { successful, failed };
+}
+```
+
+---
+
+## 🎨 API Design Patterns
+
+### Pattern 13: Builder Pattern for Complex Objects
+```typescript
+// Complex configuration with many optional parameters
+export class AgentConfigBuilder {
+  private config: Partial<AgentConfig> = {};
+  
+  setModel(model: string): this {
+    this.config.model = model;
+    return this;
+  }
+  
+  setMaxIterations(max: number): this {
+    if (max < 1 || max > 20) {
+      throw new Error('Max iterations must be between 1 and 20');
+    }
+    this.config.maxIterations = max;
+    return this;
+  }
+  
+  setTimeout(ms: number): this {
+    this.config.timeout = ms;
+    return this;
+  }
+  
+  setMode(mode: 'standard' | 'fast' | 'educational'): this {
+    this.config.mode = mode;
+    return this;
+  }
+  
+  enableCaching(enable: boolean = true): this {
+    this.config.caching = enable;
+    return this;
+  }
+  
+  build(): AgentConfig {
+    // Set defaults
+    return {
+      model: this.config.model ?? 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest',
+      maxIterations: this.config.maxIterations ?? 10,
+      timeout: this.config.timeout ?? 90000,
+      mode: this.config.mode ?? 'standard',
+      caching: this.config.caching ?? true
+    };
+  }
+}
+
+// Usage
+const config = new AgentConfigBuilder()
+  .setModel('codellama:7b')
+  .setMaxIterations(8)
+  .setMode('fast')
+  .enableCaching()
+  .build();
+
+const agent = new ReactAgent(config);
+```
+
+### Pattern 14: Factory Pattern for Parser Creation
+```typescript
+// Centralized parser creation
+export class ParserFactory {
+  private static parsers = new Map<string, ErrorParser>();
+  
+  static register(language: string, parser: ErrorParser): void {
+    this.parsers.set(language.toLowerCase(), parser);
+  }
+  
+  static getParser(language: string): ErrorParser {
+    const parser = this.parsers.get(language.toLowerCase());
+    if (!parser) {
+      throw new Error(`No parser registered for language: ${language}`);
+    }
+    return parser;
+  }
+  
+  static getSupportedLanguages(): string[] {
+    return Array.from(this.parsers.keys());
+  }
+  
+  static parseError(errorText: string, language?: string): ParsedError | null {
+    // Auto-detect language if not provided
+    if (!language) {
+      language = LanguageDetector.detect(errorText);
+    }
+    
+    const parser = this.getParser(language);
+    return parser.parse(errorText);
+  }
+}
+
+// Registration
+ParserFactory.register('kotlin', new KotlinParser());
+ParserFactory.register('java', new JavaParser());
+ParserFactory.register('xml', new XMLParser());
+ParserFactory.register('gradle', new GradleParser());
+
+// Usage
+const error = ParserFactory.parseError(errorText, 'kotlin');
+```
+
+### Pattern 15: Strategy Pattern for Different Analysis Modes
+```typescript
+// Different analysis strategies
+export interface AnalysisStrategy {
+  analyze(error: ParsedError): Promise<RCAResult>;
+  getMaxIterations(): number;
+  getTimeout(): number;
+}
+
+export class StandardStrategy implements AnalysisStrategy {
+  constructor(private agent: ReactAgent) {}
+  
+  async analyze(error: ParsedError): Promise<RCAResult> {
+    return this.agent.analyze(error);
+  }
+  
+  getMaxIterations(): number {
+    return 10;
+  }
+  
+  getTimeout(): number {
+    return 60000;
+  }
+}
+
+export class FastStrategy implements AnalysisStrategy {
+  constructor(private agent: ReactAgent) {}
+  
+  async analyze(error: ParsedError): Promise<RCAResult> {
+    // Use fewer iterations and smaller model
+    return this.agent.analyze(error, {
+      maxIterations: 6,
+      model: 'qwen-coder:3b'
+    });
+  }
+  
+  getMaxIterations(): number {
+    return 6;
+  }
+  
+  getTimeout(): number {
+    return 40000;
+  }
+}
+
+export class EducationalStrategy implements AnalysisStrategy {
+  constructor(
+    private agent: ReactAgent,
+    private educationalAgent: EducationalAgent
+  ) {}
+  
+  async analyze(error: ParsedError): Promise<RCAResult> {
+    const rca = await this.agent.analyze(error);
+    const learningNotes = await this.educationalAgent.generateLearningNotes(rca);
+    return { ...rca, learningNotes };
+  }
+  
+  getMaxIterations(): number {
+    return 10;
+  }
+  
+  getTimeout(): number {
+    return 90000;
+  }
+}
+
+// Usage
+export class AnalysisEngine {
+  private strategies = new Map<string, AnalysisStrategy>();
+  
+  constructor() {
+    const agent = new ReactAgent();
+    const eduAgent = new EducationalAgent();
+    
+    this.strategies.set('standard', new StandardStrategy(agent));
+    this.strategies.set('fast', new FastStrategy(agent));
+    this.strategies.set('educational', new EducationalStrategy(agent, eduAgent));
+  }
+  
+  async analyze(error: ParsedError, mode: string = 'standard'): Promise<RCAResult> {
+    const strategy = this.strategies.get(mode);
+    if (!strategy) {
+      throw new Error(`Unknown analysis mode: ${mode}`);
+    }
+    
+    return strategy.analyze(error);
+  }
+}
+```
+
+### Pattern 16: Observer Pattern for Progress Updates
+```typescript
+// Observable agent for real-time updates
+export interface AgentObserver {
+  onIterationStart(iteration: number, maxIterations: number): void;
+  onThought(thought: string): void;
+  onAction(action: ToolCall): void;
+  onObservation(observation: string): void;
+  onComplete(rca: RCAResult): void;
+  onError(error: Error): void;
+}
+
+export class ObservableAgent {
+  private observers: AgentObserver[] = [];
+  
+  subscribe(observer: AgentObserver): () => void {
+    this.observers.push(observer);
+    
+    // Return unsubscribe function
+    return () => {
+      const index = this.observers.indexOf(observer);
+      if (index > -1) {
+        this.observers.splice(index, 1);
+      }
+    };
+  }
+  
+  private notifyIterationStart(iteration: number, max: number): void {
+    this.observers.forEach(o => o.onIterationStart(iteration, max));
+  }
+  
+  private notifyThought(thought: string): void {
+    this.observers.forEach(o => o.onThought(thought));
+  }
+  
+  private notifyAction(action: ToolCall): void {
+    this.observers.forEach(o => o.onAction(action));
+  }
+  
+  private notifyObservation(observation: string): void {
+    this.observers.forEach(o => o.onObservation(observation));
+  }
+  
+  private notifyComplete(rca: RCAResult): void {
+    this.observers.forEach(o => o.onComplete(rca));
+  }
+  
+  private notifyError(error: Error): void {
+    this.observers.forEach(o => o.onError(error));
+  }
+  
+  async analyze(error: ParsedError): Promise<RCAResult> {
+    try {
+      for (let i = 0; i < this.maxIterations; i++) {
+        this.notifyIterationStart(i + 1, this.maxIterations);
+        
+        const thought = await this.generateThought();
+        this.notifyThought(thought);
+        
+        const action = await this.selectAction(thought);
+        this.notifyAction(action);
+        
+        const observation = await this.executeAction(action);
+        this.notifyObservation(observation);
+      }
+      
+      const rca = this.synthesizeResult();
+      this.notifyComplete(rca);
+      return rca;
+    } catch (error) {
+      this.notifyError(error as Error);
+      throw error;
+    }
+  }
+}
+
+// Usage
+const agent = new ObservableAgent();
+
+const unsubscribe = agent.subscribe({
+  onIterationStart: (iter, max) => console.log(`Iteration ${iter}/${max}`),
+  onThought: (thought) => console.log(`Thinking: ${thought}`),
+  onAction: (action) => console.log(`Action: ${action.tool}`),
+  onObservation: (obs) => console.log(`Observed: ${obs}`),
+  onComplete: (rca) => console.log(`Done: ${rca.rootCause}`),
+  onError: (error) => console.error(`Error: ${error.message}`)
+});
+
+await agent.analyze(error);
+unsubscribe(); // Clean up
+```
+
+---
+
+## 🐛 Debugging & Troubleshooting
+
+### Debug Strategy 1: Comprehensive Logging
+```typescript
+// Add debug logging throughout analysis
+export class DebugAgent extends ReactAgent {
+  async analyze(error: ParsedError): Promise<RCAResult> {
+    const logger = Logger.getInstance();
+    logger.setLevel(LogLevel.DEBUG);
+    
+    logger.debug('Starting analysis', {
+      errorType: error.type,
+      language: error.language,
+      filePath: error.filePath,
+      line: error.line
+    });
+    
+    const startTime = Date.now();
+    
+    try {
+      // Check cache first
+      const cached = await this.checkCache(error);
+      if (cached) {
+        logger.debug('Cache hit', { errorHash: this.hashError(error) });
+        return cached;
+      }
+      
+      // Search vector DB
+      const similar = await this.searchSimilar(error);
+      logger.debug('Vector DB search results', {
+        count: similar.length,
+        topConfidence: similar[0]?.confidence
+      });
+      
+      // Run analysis
+      const result = await super.analyze(error);
+      
+      const duration = Date.now() - startTime;
+      logger.debug('Analysis complete', {
+        duration,
+        confidence: result.confidence,
+        iterations: this.currentIteration
+      });
+      
+      return result;
+    } catch (error) {
+      logger.error('Analysis failed', error as Error, {
+        duration: Date.now() - startTime,
+        errorType: error.type
+      });
+      throw error;
+    }
+  }
+}
+```
+
+### Debug Strategy 2: Tracing Tool Execution
+```typescript
+// Trace all tool calls
+export class TracedToolRegistry extends ToolRegistry {
+  async executeTool(call: ToolCall): Promise<ToolResult> {
+    const logger = Logger.getInstance();
+    const startTime = Date.now();
+    
+    logger.debug('Executing tool', {
+      tool: call.tool,
+      parameters: call.parameters
+    });
+    
+    try {
+      const result = await super.executeTool(call);
+      const duration = Date.now() - startTime;
+      
+      logger.debug('Tool execution succeeded', {
+        tool: call.tool,
+        duration,
+        resultLength: JSON.stringify(result).length
+      });
+      
+      return result;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      
+      logger.error('Tool execution failed', error as Error, {
+        tool: call.tool,
+        duration,
+        parameters: call.parameters
+      });
+      
+      throw error;
+    }
+  }
+}
+```
+
+### Debug Strategy 3: Snapshot Agent State
+```typescript
+// Save agent state for debugging
+export class SnapshotAgent extends ReactAgent {
+  private snapshots: AgentState[] = [];
+  
+  async analyze(error: ParsedError): Promise<RCAResult> {
+    this.snapshots = [];
+    
+    for (let i = 0; i < this.maxIterations; i++) {
+      // Take snapshot before each iteration
+      const snapshot = this.captureState();
+      this.snapshots.push(snapshot);
+      
+      // Continue normal analysis
+      await this.runIteration();
+    }
+    
+    // Save snapshots to file for debugging
+    await this.saveSnapshots(error);
+    
+    return this.synthesizeResult();
+  }
+  
+  private captureState(): AgentState {
+    return {
+      iteration: this.currentIteration,
+      thoughts: [...this.thoughts],
+      actions: [...this.actions],
+      observations: [...this.observations],
+      hypothesis: this.currentHypothesis,
+      timestamp: Date.now()
+    };
+  }
+  
+  private async saveSnapshots(error: ParsedError): Promise<void> {
+    const filename = `debug-${error.type}-${Date.now()}.json`;
+    const data = {
+      error,
+      snapshots: this.snapshots,
+      finalResult: this.result
+    };
+    
+    await fs.promises.writeFile(
+      path.join(__dirname, '../debug', filename),
+      JSON.stringify(data, null, 2)
+    );
+    
+    console.log(`Debug snapshots saved to ${filename}`);
+  }
+}
+```
+
+### Debug Strategy 4: Assertions for Invariants
+```typescript
+// Use assertions to catch bugs early
+function assert(condition: boolean, message: string): asserts condition {
+  if (!condition) {
+    throw new AssertionError(message);
+  }
+}
+
+export class ReactAgent {
+  async analyze(error: ParsedError): Promise<RCAResult> {
+    // Validate preconditions
+    assert(error !== null, 'Error cannot be null');
+    assert(error.type !== '', 'Error type cannot be empty');
+    assert(error.line >= 0, 'Line number must be non-negative');
+    
+    for (let i = 0; i < this.maxIterations; i++) {
+      const thought = await this.generateThought();
+      
+      // Validate intermediate state
+      assert(thought !== '', 'Thought cannot be empty');
+      assert(this.thoughts.length === i + 1, 'Thoughts array out of sync');
+      
+      const action = await this.selectAction(thought);
+      
+      // Validate action
+      assert(action !== null, 'Action cannot be null');
+      assert(action.tool !== '', 'Tool name cannot be empty');
+      
+      const observation = await this.executeAction(action);
+      
+      // Validate observation
+      assert(observation !== '', 'Observation cannot be empty');
+    }
+    
+    const result = this.synthesizeResult();
+    
+    // Validate postconditions
+    assert(result.rootCause !== '', 'Root cause cannot be empty');
+    assert(result.fixGuidelines.length > 0, 'Must provide fix guidelines');
+    assert(result.confidence >= 0 && result.confidence <= 1, 'Confidence must be 0-1');
+    
+    return result;
+  }
+}
+```
+
+---
+
+## 📈 Performance Profiling
+
+### Profiling Technique 1: Built-in Performance Marks
+```typescript
+// Use performance API for accurate timing
+import { performance } from 'perf_hooks';
+
+export class ProfiledAgent extends ReactAgent {
+  async analyze(error: ParsedError): Promise<RCAResult> {
+    performance.mark('analysis-start');
+    
+    // Parse error
+    performance.mark('parse-start');
+    const parsed = this.parseError(error);
+    performance.mark('parse-end');
+    performance.measure('parsing', 'parse-start', 'parse-end');
+    
+    // Check cache
+    performance.mark('cache-start');
+    const cached = await this.checkCache(parsed);
+    performance.mark('cache-end');
+    performance.measure('cache-lookup', 'cache-start', 'cache-end');
+    
+    if (cached) {
+      performance.mark('analysis-end');
+      performance.measure('total-analysis', 'analysis-start', 'analysis-end');
+      this.logPerformance();
+      return cached;
+    }
+    
+    // Run analysis iterations
+    for (let i = 0; i < this.maxIterations; i++) {
+      performance.mark(`iteration-${i}-start`);
+      
+      performance.mark(`llm-${i}-start`);
+      const thought = await this.llm.generate(prompt);
+      performance.mark(`llm-${i}-end`);
+      performance.measure(`llm-iteration-${i}`, `llm-${i}-start`, `llm-${i}-end`);
+      
+      performance.mark(`tool-${i}-start`);
+      const observation = await this.executeTool(action);
+      performance.mark(`tool-${i}-end`);
+      performance.measure(`tool-iteration-${i}`, `tool-${i}-start`, `tool-${i}-end`);
+      
+      performance.mark(`iteration-${i}-end`);
+      performance.measure(`iteration-${i}`, `iteration-${i}-start`, `iteration-${i}-end`);
+    }
+    
+    performance.mark('analysis-end');
+    performance.measure('total-analysis', 'analysis-start', 'analysis-end');
+    
+    this.logPerformance();
+    
+    return this.synthesizeResult();
+  }
+  
+  private logPerformance(): void {
+    const measures = performance.getEntriesByType('measure');
+    
+    console.log('Performance Profile:');
+    console.log('===================');
+    
+    for (const measure of measures) {
+      console.log(`${measure.name}: ${measure.duration.toFixed(2)}ms`);
+    }
+    
+    // Clear marks and measures
+    performance.clearMarks();
+    performance.clearMeasures();
+  }
+}
+```
+
+### Profiling Technique 2: Memory Usage Tracking
+```typescript
+// Monitor memory usage
+export class MemoryMonitor {
+  private baseline: NodeJS.MemoryUsage;
+  private checkpoints: Map<string, NodeJS.MemoryUsage> = new Map();
+  
+  constructor() {
+    this.baseline = process.memoryUsage();
+  }
+  
+  checkpoint(label: string): void {
+    const usage = process.memoryUsage();
+    this.checkpoints.set(label, usage);
+    
+    const heapDelta = (usage.heapUsed - this.baseline.heapUsed) / 1024 / 1024;
+    const externalDelta = (usage.external - this.baseline.external) / 1024 / 1024;
+    
+    console.log(`Memory Checkpoint "${label}":`);
+    console.log(`  Heap Used: ${(usage.heapUsed / 1024 / 1024).toFixed(2)}MB (Δ ${heapDelta.toFixed(2)}MB)`);
+    console.log(`  External: ${(usage.external / 1024 / 1024).toFixed(2)}MB (Δ ${externalDelta.toFixed(2)}MB)`);
+  }
+  
+  report(): void {
+    const current = process.memoryUsage();
+    const totalHeapGrowth = (current.heapUsed - this.baseline.heapUsed) / 1024 / 1024;
+    
+    console.log('\nMemory Usage Report:');
+    console.log('====================');
+    console.log(`Total Heap Growth: ${totalHeapGrowth.toFixed(2)}MB`);
+    console.log(`Current Heap: ${(current.heapUsed / 1024 / 1024).toFixed(2)}MB`);
+    console.log(`Heap Limit: ${(current.heapTotal / 1024 / 1024).toFixed(2)}MB`);
+  }
+}
+
+// Usage
+const monitor = new MemoryMonitor();
+
+monitor.checkpoint('before-analysis');
+await agent.analyze(error);
+monitor.checkpoint('after-analysis');
+
+monitor.checkpoint('before-db-store');
+await db.store(rca);
+monitor.checkpoint('after-db-store');
+
+monitor.report();
+```
+
+---
+
+## 🔒 Security Best Practices
+
+### Security Practice 1: Prompt Injection Defense
+```typescript
+// Prevent malicious prompts
+export class PromptSanitizer {
+  private static dangerousPatterns = [
+    /ignore\s+(previous|all|prior)\s+(instructions|commands|rules)/gi,
+    /forget\s+(previous|all|prior)\s+(instructions|commands|rules)/gi,
+    /you\s+are\s+now\s+a/gi,
+    /system\s*:/gi,
+    /\<\|endoftext\|\>/g,
+    /\<\|im_start\|\>/g,
+    /\<\|im_end\|\>/g,
   ];
   
-  let allPassed = true;
+  static sanitize(input: string): string {
+    let sanitized = input;
+    
+    // Remove dangerous patterns
+    for (const pattern of this.dangerousPatterns) {
+      sanitized = sanitized.replace(pattern, '[REDACTED]');
+    }
+    
+    // Limit length
+    if (sanitized.length > 50000) {
+      sanitized = sanitized.slice(0, 50000) + '\n[TRUNCATED]';
+    }
+    
+    return sanitized;
+  }
   
-  for (const check of checks) {
-    try {
-      // Run check and parse output
-      const result = execSync(check.command, { encoding: 'utf-8' });
-      console.log(`✅ ${check.name}: PASS`);
-    } catch (error) {
-      console.error(`❌ ${check.name}: FAIL`);
-      allPassed = false;
+  static isPromptInjection(input: string): boolean {
+    return this.dangerousPatterns.some(pattern => pattern.test(input));
+  }
+}
+```
+
+### Security Practice 2: Rate Limiting
+```typescript
+// Prevent abuse of LLM API
+export class RateLimiter {
+  private requests: Map<string, number[]> = new Map();
+  
+  constructor(
+    private maxRequests: number = 100,
+    private windowMs: number = 60000 // 1 minute
+  ) {}
+  
+  async checkLimit(userId: string): Promise<boolean> {
+    const now = Date.now();
+    const userRequests = this.requests.get(userId) || [];
+    
+    // Remove old requests outside window
+    const recentRequests = userRequests.filter(time => now - time < this.windowMs);
+    
+    if (recentRequests.length >= this.maxRequests) {
+      return false; // Rate limit exceeded
+    }
+    
+    // Add current request
+    recentRequests.push(now);
+    this.requests.set(userId, recentRequests);
+    
+    return true; // OK to proceed
+  }
+  
+  async waitForSlot(userId: string): Promise<void> {
+    while (!(await this.checkLimit(userId))) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
   }
+}
+
+// Usage
+const rateLimiter = new RateLimiter(100, 60000);
+
+if (!(await rateLimiter.checkLimit(userId))) {
+  throw new Error('Rate limit exceeded. Please wait before retrying.');
+}
+```
+
+### Security Practice 3: Secure Configuration
+```typescript
+// Never hardcode secrets
+export class SecureConfig {
+  private secrets: Map<string, string> = new Map();
   
-  if (!allPassed) {
-    console.error('\n🚫 Quality gate FAILED');
-    process.exit(1);
+  constructor() {
+    // Load from environment variables
+    this.secrets.set('ollama_api_key', process.env.OLLAMA_API_KEY || '');
+    this.secrets.set('chroma_auth_token', process.env.CHROMA_AUTH_TOKEN || '');
   }
   
-  console.log('\n🎉 Quality gate PASSED');
-}
-
-runQualityGate().catch(console.error);
-```
-
-**Usage:**
-```bash
-npm run quality-check
-```
-
-### Package.json Scripts Setup
-```json
-{
-  "scripts": {
-    "generate-structure": "ts-node scripts/generate-structure.ts",
-    "validate-contracts": "ts-node scripts/validate-contracts.ts",
-    "extract-functions": "ts-node scripts/extract-functions.ts",
-    "perf:benchmark": "ts-node scripts/benchmark.ts",
-    "perf:report": "ts-node scripts/performance-report.ts",
-    "quality-check": "ts-node scripts/quality-gate.ts",
-    "weekly-update": "npm run generate-structure && npm run validate-contracts && npm run perf:report",
-    "pre-commit": "npm run quality-check",
-    "test:coverage": "jest --coverage --coverageReporters=json-summary"
+  getSecret(key: string): string {
+    const value = this.secrets.get(key);
+    if (!value) {
+      throw new Error(`Secret not found: ${key}`);
+    }
+    return value;
+  }
+  
+  // Never log secrets
+  toString(): string {
+    return '[SecureConfig - secrets hidden]';
+  }
+  
+  toJSON(): object {
+    return { type: 'SecureConfig', secretCount: this.secrets.size };
   }
 }
+
+// Usage
+const config = new SecureConfig();
+const apiKey = config.getSecret('ollama_api_key');
+
+// WRONG: Never do this
+console.log('API Key:', apiKey); // ❌ Leaks secret
+
+// CORRECT
+console.log('API Key configured:', !!apiKey); // ✅ Just check existence
 ```
 
----
+**This is Kai's complete work breakdown with advanced best practices, implementation patterns, and comprehensive guidelines. Sokchea handles all UI/integration separately.**
 
-## 📈 Development Metrics Dashboard
 
-### Location: `docs/metrics.md` (Auto-generated)
-
-**Weekly Progress Tracking:**
-```markdown
-# Development Metrics Dashboard
-
-## Week 8 Overview (Phase 2 Complete)
-**Generated:** 2025-03-01 10:00 AM  
-**Milestone:** 2.4 - End-to-End RCA Workflow
-
-### Code Statistics
-| Metric | Value | Target | Status |
-|--------|-------|--------|--------|
-| Total Files | 47 | ~50 | 🟢 |
-| Total Lines of Code | 8,342 | <10,000 | 🟢 |
-| Test Files | 38 | 1 per src file | 🟢 |
-| Test Coverage | 83% | >80% | 🟢 |
-| TypeScript Strict Mode | ✅ | Required | 🟢 |
-| ESLint Warnings | 0 | 0 | 🟢 |
-
-### Performance Metrics
-| Metric | Value | Target | Status |
-|--------|-------|--------|--------|
-| RCA Generation (p90) | 54s | <60s | 🟢 |
-| RCA Generation (p50) | 48s | <45s | 🟡 |
-| Cache Hit Rate | 67% | >60% | 🟢 |
-| Tool Success Rate | 96% | >95% | 🟢 |
-| Build Time | 26s | <30s | 🟢 |
-
-### Documentation Status
-| Document | Lines | Last Updated | Status |
-|----------|-------|--------------|--------|
-| DEVLOG.md | 487 | 2025-02-28 | ✅ |
-| PROJECT_STRUCTURE.md | 612 | 2025-02-28 | ✅ |
-| API_CONTRACTS.md | 342 | 2025-02-27 | ✅ |
-| Architecture ADRs | 8 files | 2025-02-25 | ✅ |
-
-### Architecture Decisions This Week
-- ADR 007: Parallel Tool Execution Strategy
-- ADR 008: Self-Reflection Mechanism
-
-### Blockers & Risks
-- None currently
-
-### Week 9 Goals
-- [ ] Implement webview UI
-- [ ] Add real-time progress display
-- [ ] Create markdown document synthesizer
-```
-
----
-
-## 🎯 Production-Ready Features Summary
-
-### Core Capabilities
-✅ **Local-First Architecture** - Zero cloud dependencies, full privacy  
-✅ **Educational Mode** - Learning-focused explanations for skill development  
-✅ **Unlimited Language Support** - Model swapping eliminates language constraints  
-✅ **Comprehensive Android Support** - Modern Native (Kotlin+Compose), Traditional (Java+XML), Cross-Platform (Flutter+Dart)  
-✅ **Free Model Swapping** - Hot-swap between specialized models per language (3B-8B) without restart  
-✅ **Intelligent Caching** - 90% faster for repeat errors  
-✅ **Persistent State** - Resume from checkpoint on crash  
-✅ **Dynamic Iterations** - Auto-adjust complexity (6-12 iterations)  
-✅ **Parallel Tool Execution** - 3x faster analysis  
-✅ **Self-Reflection** - Agent backtracks when hypothesis wrong  
-✅ **Quality Management** - Auto-prune low-quality RCAs from vector DB  
-✅ **Fix Validation** - Verify suggested code compiles  
-✅ **Structured Feedback** - Detailed feedback improves learning loop  
-✅ **Collection Merging** - Combine workspace knowledge bases  
-✅ **Disaster Recovery** - Automated backups, model versioning  
-✅ **Observability** - Performance metrics, token tracking  
-✅ **Security** - Prompt injection defense, input sanitization  
-
-### Modes of Operation
-- **Standard Mode:** Balanced speed/accuracy (~60s on GPU, ~100s on CPU)
-- **Fast Mode:** Quick analysis with 3B model (~40s on GPU, ~80s on CPU)
-- **Educational Mode (Sync):** Real-time learning explanations (~90s on GPU, ~130s on CPU)
-- **Educational Mode (Async):** Fast analysis + post-analysis explanations (~60s analysis + background learning content)
-
-### Model Requirements
-- **Parameter Range:** <10B (typically 3B-8B)
-- **Recommended Sizes:**
-  - **7B-8B models:** Best accuracy, standard mode
-  - **3B-4B models:** Fast mode, lower resource usage
-- **Model Selection Criteria:**
-  - Code understanding capability
-  - Instruction following
-  - Reasoning depth for multi-step analysis
-  - Support for extended context windows
-- **Deployment:** Via Ollama or similar local inference servers
-
----
-
----
-
-## 📚 Complete Development Audit Trail System
-
-### Overview: Single Source of Truth Documentation
-
-This project implements a comprehensive **Development Audit Trail** system ensuring every file, function, decision, and change is documented. This makes the project:
-- **Maintainable:** Future developers can understand design decisions
-- **Traceable:** Every requirement links to implementation and tests
-- **Auditable:** Complete history of what was built, when, and why
-- **Future-Proof:** Documentation prevents knowledge loss
-
-### The Five Pillars of Documentation
-
-#### 1️⃣ **DEVLOG.md** - Development Timeline
-**What:** Weekly journal of all development activities  
-**When:** Updated every Friday (mandatory)  
-**Contains:**
-- Files created/modified with purpose
-- Functions implemented with full signatures
-- Architecture decisions with rationale
-- Blockers encountered and solutions
-- Performance metrics vs targets
-- Next week's goals
-
-**Purpose:** Historical record of development progress
-
----
-
-#### 2️⃣ **PROJECT_STRUCTURE.md** - Codebase Snapshot
-**What:** Auto-generated file tree with metadata  
-**When:** Updated at each milestone (Weeks 1, 2, 4, 6, 8, 10, 12)  
-**Contains:**
-- Complete directory structure
-- File purposes (from JSDoc headers)
-- Exported functions/classes per file
-- Dependencies (import statements)
-- Last modified date and author
-- Line count and test coverage
-- Associated test file
-
-**Purpose:** Quick navigation and understanding of codebase layout
-
----
-
-#### 3️⃣ **API_CONTRACTS.md** - Tool Interface Specifications
-**What:** JSON schemas for all LLM tools  
-**When:** Updated when tools added/modified  
-**Contains:**
-- Input schema (parameters)
-- Output schema (return values)
-- Example usage (request/response)
-- Validation status (Zod schema check)
-- Version history
-- Breaking changes log
-
-**Purpose:** LLM and human-readable tool documentation
-
----
-
-#### 4️⃣ **Architecture Decision Records (ADRs)** - Design Rationale
-**What:** Individual markdown files per major decision  
-**When:** Created when architectural choices made  
-**Location:** `docs/architecture/decisions/YYYYMMDD-name.md`  
-**Contains:**
-- Context (why decision needed)
-- Decision made
-- Consequences (pros/cons)
-- Alternatives considered
-- Implementation details
-- Related decisions
-- Status (proposed/accepted/superseded)
-
-**Purpose:** Preserve "why" behind technical choices
-
----
-
-#### 5️⃣ **Traceability Matrix** - Requirement Tracking
-**What:** Mapping of requirements → code → tests  
-**When:** Updated throughout development  
-**Location:** `docs/traceability.md`  
-**Contains:**
-- Requirement ID and description
-- Implementing file(s)
-- Test file(s)
-- Status (planned/in-progress/complete)
-- Coverage percentage
-
-**Purpose:** Ensure all requirements are implemented and tested
-
----
-
-### Automated Tracking Tools
-
-#### Tool Summary
-| Tool | Command | Frequency | Output |
-|------|---------|-----------|--------|
-| **Structure Generator** | `npm run generate-structure` | End of each milestone | PROJECT_STRUCTURE.md |
-| **Contract Validator** | `npm run validate-contracts` | Weekly + pre-commit | Validation errors/warnings |
-| **Function Extractor** | `npm run extract-functions` | Weekly | Function inventory table |
-| **Performance Benchmarker** | `npm run perf:benchmark` | Weekly | performance-history.json |
-| **Quality Gate** | `npm run quality-check` | Pre-commit + CI | Pass/fail report |
-| **Weekly Update Script** | `npm run weekly-update` | Every Friday | All of above |
-
-#### Integration with Development Workflow
-
-```mermaid
-graph LR
-    A[Write Code] --> B[Write Tests]
-    B --> C[Run Quality Check]
-    C --> D{Pass?}
-    D -->|No| A
-    D -->|Yes| E[Update DEVLOG.md]
-    E --> F[Run Automated Scripts]
-    F --> G[Commit with Convention]
-    G --> H[Push to Branch]
-    H --> I[Create PR]
-    I --> J[Milestone Complete?]
-    J -->|Yes| K[Tag Release]
-    J -->|No| A
-```
-
-### Documentation Maintenance Schedule
-
-#### Daily (During Active Development)
-- Write JSDoc comments for new functions
-- Update inline code comments
-- Keep DEVLOG.md draft updated (don't wait till Friday)
-
-#### Weekly (Every Friday)
-```bash
-# Run the weekly update script
-npm run weekly-update
-
-# Manually update DEVLOG.md sections:
-# - Files Created/Modified table
-# - Functions Implemented table
-# - Architecture Decisions (if any)
-# - Blockers & Solutions
-# - Performance Metrics
-# - Next Week Goals
-
-# Commit documentation
-git add docs/
-git commit -m "docs: Week X progress update [phase-Y]"
-git push origin develop
-```
-
-#### Milestone (Weeks 1, 2, 4, 6, 8, 10, 12)
-```bash
-# 1. Complete milestone checklist in DEVLOG.md
-# 2. Regenerate project structure
-npm run generate-structure
-
-# 3. Validate all contracts
-npm run validate-contracts
-
-# 4. Run full test suite
-npm run test:coverage
-
-# 5. Generate performance report
-npm run perf:report
-
-# 6. Create milestone summary
-# docs/milestones/milestone-X.Y-summary.md
-
-# 7. Tag release
-git tag -a v0.X.0-milestone-Y.Z -m "Milestone Y.Z Complete"
-
-# 8. Update traceability matrix
-# Mark requirements as complete in docs/traceability.md
-```
-
-#### Monthly (Last Friday)
-- Review and update architecture diagrams
-- Archive superseded ADRs
-- Analyze performance trends
-- Backup vector database
-- Generate monthly progress report
-- Update main README if roadmap changes
-
-### Quick Reference: "Where Do I Document X?"
-
-| What You're Doing | Where to Document | When |
-|-------------------|-------------------|------|
-| Created new file | DEVLOG.md "Files Created" table | End of week |
-| Added function | DEVLOG.md "Functions Implemented" table | End of week |
-| Made architectural choice | New ADR in `docs/architecture/decisions/` | Immediately |
-| Added/modified tool | API_CONTRACTS.md | When PR created |
-| Fixed a bug | Git commit message (conventional) | When committing |
-| Encountered blocker | DEVLOG.md "Blockers & Solutions" | End of week |
-| Completed milestone | Milestone summary + DEVLOG.md | Milestone end |
-| Performance regression | DEVLOG.md "Performance Metrics" | End of week |
-| New dependency added | ADR + DEVLOG.md | Immediately |
-| Refactored code | Git commit message + DEVLOG.md note | When committing |
-
-### Example: Complete Documentation Flow
-
-**Scenario:** Adding self-reflection mechanism to ReAct agent (Week 6, Milestone 2.1)
-
-#### Step 1: Write Code
-```typescript
-// src/agent/ReactAgent.ts
-
-/**
- * Self-evaluate hypothesis quality based on recent evidence
- * @param state Current agent state with observations
- * @returns Reflection result with backtrack decision
- */
-async reflectOnHypothesis(state: AgentState): Promise<ReflectionResult> {
-  // Implementation...
-}
-```
-
-#### Step 2: Write Tests
-```typescript
-// tests/unit/agent/ReactAgent.test.ts
-describe('ReactAgent.reflectOnHypothesis', () => {
-  it('should identify contradicting evidence', async () => {
-    // Test implementation
-  });
-});
-```
-
-#### Step 3: Run Quality Check
-```bash
-npm run quality-check
-# ✅ ESLint: PASS
-# ✅ TypeScript: PASS
-# ✅ Tests: PASS (coverage: 91%)
-```
-
-#### Step 4: Create ADR (Major Decision)
-```markdown
-# docs/architecture/decisions/20250203-self-reflection-mechanism.md
-
-# ADR 008: Self-Reflection Mechanism
-
-**Date:** 2025-02-03  
-**Status:** Accepted
-
-## Context
-Agent sometimes continues with incorrect hypothesis despite
-contradicting evidence, wasting iterations.
-
-## Decision
-Implement self-reflection after each iteration where agent
-evaluates if recent evidence supports current hypothesis.
-If contradiction detected, backtrack and revise hypothesis.
-
-## Consequences
-**Positive:**
-- Faster convergence to correct root cause
-- Fewer wasted iterations on wrong paths
-
-**Negative:**
-- +2s per iteration (extra LLM call)
-- More complex state management
-
-## Implementation
-- New method: `reflectOnHypothesis()`
-- New interface: `ReflectionResult`
-- Triggered after every observation
-
-## Alternatives
-1. Human-in-the-loop validation → Too slow
-2. Confidence threshold → Less accurate
-```
-
-#### Step 5: Update DEVLOG.md (Friday)
-```markdown
-## Week 6 - Agent Self-Reflection
-**Date Range:** 2025-01-29 - 2025-02-04  
-**Milestone:** 2.1 - ReAct Loop Implementation  
-**Status:** 🟢 On Track
-
-### Files Created/Modified
-| File Path | Purpose | Key Functions/Classes | Status |
-|-----------|---------|----------------------|--------|
-| `src/agent/ReactAgent.ts` | Core agent logic | `reflectOnHypothesis()`, `parseReflection()` | ✅ |
-| `src/agent/types.ts` | Type definitions | `ReflectionResult` interface | ✅ |
-
-### Functions Implemented
-| Function Name | File | Signature | Purpose | Tests | Coverage |
-|---------------|------|-----------|---------|-------|----------|
-| `reflectOnHypothesis` | `agent/ReactAgent.ts` | `async (state: AgentState): Promise<ReflectionResult>` | Self-evaluate hypothesis quality | ✅ | 91% |
-| `parseReflection` | `agent/ReactAgent.ts` | `(reflection: string): ReflectionResult` | Parse LLM output into structured format | ✅ | 88% |
-
-### Architecture Decisions
-**ADR 008: Self-Reflection Mechanism**
-- **Decision:** Agent self-evaluates after each iteration
-- **Rationale:** Prevent wasted iterations on wrong hypotheses
-- **Trade-off:** +2s per iteration for extra LLM call
-- **Implementation:** New `reflectOnHypothesis()` method
-- **Related Files:** `agent/ReactAgent.ts`, `agent/types.ts`
-
-### Performance Metrics
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| RCA Generation Time | <60s | 56s | 🟢 |
-| Test Coverage | >80% | 89% | 🟢 |
-
-### Next Week Goals
-- [ ] Implement prompt engineering for reflection quality
-- [ ] Add few-shot examples for better LLM output
-```
-
-#### Step 6: Run Automated Scripts
-```bash
-npm run generate-structure  # Updates PROJECT_STRUCTURE.md
-npm run extract-functions   # Generates function inventory
-```
-
-#### Step 7: Commit with Convention
-```bash
-git add .
-git commit -m "feat(agent): Add self-reflection mechanism [milestone-2.1]
-
-- Implemented reflectOnHypothesis() for hypothesis validation
-- Added ReflectionResult interface to types.ts
-- Agent now backtracks when evidence contradicts hypothesis
-- Performance impact: +2s per iteration (acceptable trade-off)
-- Updated DEVLOG.md Week 6 entry
-
-Refs: ADR-008, REQ-004
-Tests: ReactAgent.test.ts (coverage: 91%)
-Breaking: None"
-```
-
-#### Step 8: Update Traceability Matrix
-```markdown
-# docs/traceability.md
-
-| Requirement ID | Requirement | Implementation | Tests | Status |
-|----------------|-------------|----------------|-------|--------|
-| REQ-004 | ReAct agent with self-correction | `src/agent/ReactAgent.ts` (reflectOnHypothesis) | `tests/unit/agent/ReactAgent.test.ts` | ✅ 91% |
-```
-
----
-
-### Benefits of This System
-
-✅ **Future-Proof:** New developers can onboard by reading DEVLOG.md chronologically  
-✅ **Maintainable:** Understand "why" behind every decision via ADRs  
-✅ **Traceable:** Every requirement tracked from specification to test  
-✅ **Quality:** Automated scripts enforce documentation standards  
-✅ **Transparent:** Clear audit trail for all changes  
-✅ **Collaborative:** Documentation facilitates team coordination  
-✅ **Debuggable:** Function signatures and purposes readily available  
-✅ **Testable:** Traceability matrix ensures test coverage  
-
-### Anti-Patterns to Avoid
-
-❌ **"I'll document later"** → Document as you code  
-❌ **"Code is self-documenting"** → Explain "why" not "what"  
-❌ **"Skip DEVLOG this week"** → Breaks audit trail  
-❌ **"No need for ADR"** → Future you will disagree  
-❌ **"Tests can wait"** → Technical debt compounds  
-❌ **"Quick fix without commit message"** → Lost context  
-
----
-
-**This roadmap ensures production-ready code with complete audit trail. Every decision, file, and function is documented for maintainability and future onboarding.**

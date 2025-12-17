@@ -50,7 +50,7 @@ This directory contains the backend implementation for chunks 1.1-1.3 of the RCA
 ### Prerequisites
 - Node.js 18+
 - Ollama installed and running
-- `granite-code:8b` model downloaded
+- `hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest` model downloaded
 
 ### Installation
 
@@ -75,7 +75,7 @@ npm run test:coverage
 curl http://localhost:11434/api/tags
 
 # Should return JSON with list of models
-# Verify granite-code:8b is in the list
+# Verify hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest is in the list
 ```
 
 ## 💻 Usage Example
@@ -89,7 +89,7 @@ async function main() {
   // 1. Initialize LLM client
   const llm = new OllamaClient({
     baseUrl: 'http://localhost:11434',
-    model: 'granite-code:8b',
+    model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest',
     timeout: 90000,
   });
   await llm.connect();
@@ -166,7 +166,7 @@ npm test -- --watch
 ```typescript
 const client = new OllamaClient({
   baseUrl: 'http://localhost:11434',    // Ollama API URL
-  model: 'granite-code:8b',              // Model name
+  model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest',              // Model name
   timeout: 90000,                        // Request timeout (ms)
   maxRetries: 3,                         // Retry attempts
   initialRetryDelay: 1000,               // Initial delay (ms)
@@ -197,7 +197,7 @@ ollama serve
 
 # Verify model is downloaded
 ollama list
-# Should show granite-code:8b
+# Should show hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
 ```
 
 ### Tests Fail

@@ -50,7 +50,7 @@
 ### Deliverables
 - [ ] Extension activates without errors
 - [ ] `rcaAgent.analyzeError` command appears in palette
-- [ ] Ollama client can call granite-code:8b model
+- [ ] Ollama client can call hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest model
 - [ ] ChromaDB running and accepting connections
 - [ ] Can save/load agent state from workspace storage
 
@@ -109,7 +109,7 @@ export function activate(context: vscode.ExtensionContext): void {
 // src/llm/OllamaClient.ts
 export class OllamaClient implements LLMProvider {
   static async create(config: LLMConfig): Promise<OllamaClient> {
-    // Primary: granite-code:8b for Kotlin/Android (5GB VRAM)
+    // Primary: hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest for Kotlin/Android (5GB VRAM)
     // Fallback: qwen-coder:3b for fast mode (2GB VRAM)
     // Uses your 3070 Ti GPU for 4-6s per iteration
   }

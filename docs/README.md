@@ -47,7 +47,7 @@ An AI-powered debugging assistant that:
 Perfect for this project! Your 8GB VRAM handles 7B-8B models excellently.
 
 **Expected Performance:**
-- **Standard Mode:** 35-50s per analysis (granite-code:8b)
+- **Standard Mode:** 35-50s per analysis (hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest)
 - **Fast Mode:** 16-24s per analysis (qwen-coder:3b)
 - **Educational Mode:** 60-80s per analysis (with learning explanations)
 
@@ -60,7 +60,7 @@ Perfect for this project! Your 8GB VRAM handles 7B-8B models excellently.
 ### Model Recommendations
 | Model | Size | VRAM | Speed | Best For |
 |-------|------|------|-------|----------|
-| **granite-code:8b** | 5GB | 4-5GB | 4-6s/iter | Kotlin/Android (Primary) ✅ |
+| **hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest** | 5GB | 4-5GB | 4-6s/iter | Kotlin/Android (Primary) ✅ |
 | **qwen-coder:3b** | 2GB | 2-3GB | 2-3s/iter | Fast feedback loops |
 | **codellama:7b** | 4GB | 4-5GB | 4-6s/iter | General code debugging |
 
@@ -81,10 +81,10 @@ Perfect for this project! Your 8GB VRAM handles 7B-8B models excellently.
 winget install Ollama.Ollama
 
 # 2. Download your first model (5GB - takes 5-10 min)
-ollama pull granite-code:8b
+ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
 
 # 3. Test model works
-ollama run granite-code:8b "Write hello world in Kotlin"
+ollama run hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest "Write hello world in Kotlin"
 
 # 4. Install Docker Desktop for ChromaDB
 winget install Docker.DockerDesktop

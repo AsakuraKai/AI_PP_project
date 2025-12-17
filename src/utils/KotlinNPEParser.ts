@@ -19,7 +19,7 @@
  * }
  */
 
-import { ParsedError, ParsingError } from '../types';
+import { ParsedError } from '../types';
 
 export class KotlinNPEParser {
   // Regex patterns for different Kotlin error types
@@ -195,20 +195,6 @@ export class KotlinNPEParser {
       line: 0,
       stackTrace: [],
     };
-  }
-
-  /**
-   * Validate that the parsed error makes sense
-   * Used internally for quality assurance
-   */
-  private validate(error: ParsedError): boolean {
-    return (
-      error.type !== '' &&
-      error.message !== '' &&
-      error.filePath !== '' &&
-      error.line >= 0 &&
-      ['kotlin', 'java'].includes(error.language)
-    );
   }
 
   /**

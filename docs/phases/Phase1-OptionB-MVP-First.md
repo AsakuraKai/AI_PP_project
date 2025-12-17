@@ -107,15 +107,15 @@ eslint --version
 
 **Step 3: Download Ollama Model** (Kai's LLM)
 ```bash
-# Download granite-code:8b model (~5GB download)
+# Download hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest model (~5GB download)
 # This may take 10-30 minutes depending on internet speed
-ollama pull granite-code:8b
+ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
 
 # Verify model downloaded
 ollama list
 
 # Test model works
-ollama run granite-code:8b "Write a hello world function in Kotlin"
+ollama run hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest "Write a hello world function in Kotlin"
 # Should return Kotlin code - press Ctrl+D to exit
 ```
 
@@ -126,7 +126,7 @@ ollama serve
 
 # In a new terminal, test API endpoint
 curl http://localhost:11434/api/generate -d '{
-  "model": "granite-code:8b",
+  "model": "hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest",
   "prompt": "Hello",
   "stream": false
 }'
@@ -188,7 +188,7 @@ yo --version
 
 # Test Ollama
 ollama list
-# Expected: Should show granite-code:8b in list ✅
+# Expected: Should show hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest in list ✅
 
 # Test Ollama API
 curl http://localhost:11434/api/tags
@@ -221,7 +221,7 @@ rmdir rca-test-setup
 
 **Issue: Ollama model download fails**
 - **Solution:** Check internet connection, proxy settings, firewall
-- Try: `ollama pull granite-code:8b --insecure` (if behind corporate proxy)
+- Try: `ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest --insecure` (if behind corporate proxy)
 
 **Issue: Docker Desktop won't start**
 - **Solution:** Enable Hyper-V (Windows) or install WSL2
@@ -377,7 +377,7 @@ export function activate(context: vscode.ExtensionContext) {
       }
       
       // Analyze with agent
-      const llm = await OllamaClient.create({ model: 'granite-code:8b' });
+      const llm = await OllamaClient.create({ model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest' });
       const agent = new MinimalReactAgent(llm);
       
       vscode.window.showInformationMessage('Analyzing error...');
