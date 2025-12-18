@@ -27,8 +27,8 @@ export class KotlinNPEParser {
     // lateinit property user has not been initialized
     lateinit: /lateinit property (\w+) has not been initialized/i,
     
-    // NullPointerException patterns
-    npe: /NullPointerException/i,
+    // NullPointerException patterns (includes IndexOutOfBoundsException)
+    npe: /(?:NullPointerException|IndexOutOfBoundsException)/i,
     
     // UninitializedPropertyAccessException
     uninitializedProperty: /UninitializedPropertyAccessException.*lateinit property (\w+)/i,
@@ -118,7 +118,7 @@ export class KotlinNPEParser {
   }
 
   /**
-   * Parse standard NullPointerException
+   * Parse standard NullPointerException and IndexOutOfBoundsException
    */
   private parseNPE(text: string): ParsedError | null {
     if (!KotlinNPEParser.PATTERNS.npe.test(text)) {
@@ -126,6 +126,9 @@ export class KotlinNPEParser {
     }
 
     const { filePath, line, stackTrace } = this.extractStackInfo(text);
+    
+    // Determine specific error type
+    const isIndexOutOfBounds = /IndexOutOfBoundsException/i.test(text);
 
     return {
       type: 'npe',
@@ -135,7 +138,7 @@ export class KotlinNPEParser {
       language: 'kotlin',
       stackTrace,
       metadata: {
-        errorType: 'NullPointerException',
+        errorType: isIndexOutOfBounds ? 'IndexOutOfBoundsException' : 'NullPointerException',
       },
     };
   }
