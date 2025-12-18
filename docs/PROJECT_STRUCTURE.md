@@ -26,7 +26,7 @@ rca-agent/
 │   │   │   └── ADR-TEMPLATE.md    # Template for new ADRs
 │   │   └── diagrams/              # System design diagrams (to be created)
 │   ├── milestones/                # Milestone completion summaries
-│   │   └── Week1-Chunks-1.1-1.3-Complete.md  # First milestone [EXISTING]
+│   │   └── Chunk-1.1-1.3-COMPLETE.md  # First milestone [EXISTING]
 │   └── phases/                    # Phase-specific roadmaps
 │       └── Phase1-OptionB-MVP-First-KAI.md  # Kai's implementation guide
 ├── src/
