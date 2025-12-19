@@ -24,6 +24,8 @@ import { ParsedError } from '../types';
 import { LanguageDetector } from './LanguageDetector';
 import { KotlinParser } from './parsers/KotlinParser';
 import { GradleParser } from './parsers/GradleParser';
+import { JetpackComposeParser } from './parsers/JetpackComposeParser';
+import { XMLParser } from './parsers/XMLParser';
 
 /**
  * Interface for language-specific parsers
@@ -60,7 +62,9 @@ export class ErrorParser {
   private registerDefaultParsers(): void {
     this.registerParser('kotlin', new KotlinParser());
     this.registerParser('gradle', new GradleParser());
-    // Future: Java, XML parsers will be added here
+    this.registerParser('compose', new JetpackComposeParser());
+    this.registerParser('xml', new XMLParser());
+    // Future: Java parser will be added here
   }
 
   /**
@@ -125,8 +129,8 @@ export class ErrorParser {
    * Used when language detection fails
    */
   private tryAllParsers(errorText: string): ParsedError | null {
-    // Try in order of most common errors
-    const tryOrder = ['kotlin', 'gradle', 'java', 'xml'];
+    // Try in order of most common errors (compose before kotlin since it's more specific)
+    const tryOrder = ['compose', 'kotlin', 'gradle', 'java', 'xml'];
 
     for (const language of tryOrder) {
       const parser = this.parsers.get(language);

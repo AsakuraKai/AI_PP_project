@@ -19,6 +19,7 @@
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { Tool } from './ToolRegistry';
 
 export interface ReadFileOptions {
   /** Number of lines before error line (default: 25) */
@@ -29,13 +30,24 @@ export interface ReadFileOptions {
   maxFileSize?: number;
 }
 
-export class ReadFileTool {
+export class ReadFileTool implements Tool {
+  public readonly name = 'read_file';
+  public readonly description = 'Read source code file and extract context around error location';
+  
   private readonly DEFAULT_LINES_BEFORE = 25;
   private readonly DEFAULT_LINES_AFTER = 25;
   private readonly MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
   /**
-   * Execute file reading operation
+   * Execute file reading operation (implements Tool interface)
+   * 
+   * @param parameters - Tool parameters { filePath, line, contextLines? }
+   * @returns Formatted string with file content, or error message
+   */
+  async execute(parameters: Record<string, any>): Promise<string>;
+  
+  /**
+   * Execute file reading operation (legacy overload for backward compatibility)
    * 
    * @param filePath - Absolute or relative path to file
    * @param errorLine - Line number where error occurred (1-indexed)
@@ -45,11 +57,38 @@ export class ReadFileTool {
   async execute(
     filePath: string,
     errorLine: number,
+    options?: ReadFileOptions
+  ): Promise<string>;
+  
+  async execute(
+    filePathOrParams: string | Record<string, any>,
+    errorLine?: number,
     options: ReadFileOptions = {}
   ): Promise<string> {
-    const linesBefore = options.linesBefore ?? this.DEFAULT_LINES_BEFORE;
-    const linesAfter = options.linesAfter ?? this.DEFAULT_LINES_AFTER;
-    const maxFileSize = options.maxFileSize ?? this.MAX_FILE_SIZE;
+    // Handle two signatures: new (params object) and old (filePath, errorLine, options)
+    let filePath: string;
+    let line: number;
+    let opts: ReadFileOptions;
+
+    if (typeof filePathOrParams === 'string') {
+      // Old signature
+      filePath = filePathOrParams;
+      line = errorLine!;
+      opts = options;
+    } else {
+      // New signature
+      const params = filePathOrParams;
+      filePath = params.filePath || params.file;
+      line = params.line || params.errorLine;
+      opts = {
+        linesBefore: params.contextLines || params.linesBefore,
+        linesAfter: params.contextLines || params.linesAfter,
+      };
+    }
+
+    const linesBefore = opts.linesBefore ?? this.DEFAULT_LINES_BEFORE;
+    const linesAfter = opts.linesAfter ?? this.DEFAULT_LINES_AFTER;
+    const maxFileSize = opts.maxFileSize ?? this.MAX_FILE_SIZE;
 
     try {
       // Validate inputs
@@ -57,7 +96,7 @@ export class ReadFileTool {
         return 'Error: File path is empty';
       }
 
-      if (errorLine < 0) {
+      if (line < 0) {
         return 'Error: Line number must be non-negative';
       }
 
@@ -84,17 +123,17 @@ export class ReadFileTool {
       const lines = content.split('\n');
 
       // Calculate line range (1-indexed to 0-indexed)
-      const startLine = Math.max(0, errorLine - 1 - linesBefore);
-      const endLine = Math.min(lines.length, errorLine + linesAfter);
+      const startLine = Math.max(0, line - 1 - linesBefore);
+      const endLine = Math.min(lines.length, line + linesAfter);
 
       // Extract lines
       const extractedLines = lines.slice(startLine, endLine);
 
       // Format output with line numbers
-      const formattedLines = extractedLines.map((line, index) => {
+      const formattedLines = extractedLines.map((lineText, index) => {
         const lineNumber = startLine + index + 1;
-        const indicator = lineNumber === errorLine ? '→ ' : '  ';
-        return `${indicator}${lineNumber.toString().padStart(4, ' ')} | ${line}`;
+        const indicator = lineNumber === line ? '→ ' : '  ';
+        return `${indicator}${lineNumber.toString().padStart(4, ' ')} | ${lineText}`;
       }).join('\n');
 
       return `Lines ${startLine + 1}-${endLine} of ${path.basename(filePath)}:\n${formattedLines}`;

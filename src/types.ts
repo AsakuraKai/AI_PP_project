@@ -24,6 +24,9 @@ export interface ParsedError {
   /** Programming language */
   language: 'kotlin' | 'java' | 'xml' | 'gradle';
   
+  /** Optional: Framework/library (e.g., 'compose', 'android') - added in Chunk 4.1 */
+  framework?: string;
+  
   /** Optional: Column number */
   column?: number;
   
@@ -66,6 +69,12 @@ export interface RCAResult {
   
   /** Confidence score (0-1) */
   confidence: number;
+  
+  /** Optional: Number of iterations taken (added in Chunk 2.4) */
+  iterations?: number;
+  
+  /** Optional: Tools used during analysis (added in Chunk 2.4) */
+  toolsUsed?: string[];
   
   /** Optional: Related code snippets */
   codeContext?: string;

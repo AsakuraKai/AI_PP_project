@@ -169,110 +169,208 @@ Always respond with valid JSON:
           },
         },
       ],
+      // Jetpack Compose-specific examples (added in Chunk 4.1)
+      'compose_remember': [
+        {
+          error: 'Creating a state object during composition without using remember at HomeScreen.kt:45',
+          thought: 'This Compose error indicates state is being created without remember. This means the state will be recreated on every recomposition, losing its value.',
+          action: 'read_file at HomeScreen.kt:45 to see the state creation',
+          observation: 'Found: "var counter = mutableStateOf(0)" at line 45 without remember wrapper.',
+          conclusion: {
+            rootCause: 'State is created with mutableStateOf() but not wrapped in remember { }. In Compose, state created during composition without remember is recreated on every recomposition, losing its value.',
+            fixGuidelines: [
+              'Wrap in remember: val counter = remember { mutableStateOf(0) }',
+              'Or use the by delegate: var counter by remember { mutableStateOf(0) }',
+              'For state that survives config changes: rememberSaveable { mutableStateOf(0) }',
+            ],
+            confidence: 0.95,
+          },
+        },
+      ],
+      'compose_recomposition': [
+        {
+          error: 'Performance warning: Recomposing 150 times in ItemCard composable at ItemCard.kt:23',
+          thought: 'Excessive recomposition indicates a performance issue. The composable is being recomposed too often, likely due to unstable parameters or state reading.',
+          action: 'read_file at ItemCard.kt:23 to check composable parameters and state usage',
+          observation: 'Found: "@Composable fun ItemCard(onClick: () -> Unit)" - lambda parameter is unstable. Parent passes new lambda instance on each recomposition.',
+          conclusion: {
+            rootCause: 'The ItemCard composable receives an unstable lambda parameter (onClick: () -> Unit) which causes recomposition on every parent update. Lambda instances are not stable by default in Compose.',
+            fixGuidelines: [
+              'Wrap callback in remember: remember { { onItemClick(item.id) } }',
+              'Move lambda to companion or top-level for stability',
+              'Use key() to scope recomposition: key(item.id) { ItemCard(...) }',
+              'Consider using Immutable/Stable annotations on data classes',
+            ],
+            confidence: 0.88,
+          },
+        },
+      ],
+      'compose_launched_effect': [
+        {
+          error: 'LaunchedEffect must have at least one key parameter at DataLoader.kt:34',
+          thought: 'LaunchedEffect requires keys to control when the effect re-runs. Missing keys means the effect might not restart when needed.',
+          action: 'read_file at DataLoader.kt:34 to see LaunchedEffect usage',
+          observation: 'Found: "LaunchedEffect { loadData() }" without any key parameter.',
+          conclusion: {
+            rootCause: 'LaunchedEffect is called without a key parameter. The key determines when the effect restarts. Without keys, the effect only runs once and never restarts even if dependencies change.',
+            fixGuidelines: [
+              'Add appropriate key: LaunchedEffect(userId) { loadData(userId) }',
+              'Use Unit for one-time effects: LaunchedEffect(Unit) { initializeOnce() }',
+              'Multiple keys: LaunchedEffect(key1, key2) { ... }',
+              'Never use mutable objects as keys - use their IDs instead',
+            ],
+            confidence: 0.92,
+          },
+        },
+      ],
+      'compose_composition_local': [
+        {
+          error: 'CompositionLocal LocalTheme not provided at ThemedButton.kt:12',
+          thought: 'CompositionLocal requires a provider higher in the composition tree. The composable is trying to access a local value that wasn\'t provided.',
+          action: 'read_file at ThemedButton.kt:12 to see how LocalTheme is accessed',
+          observation: 'Found: "val theme = LocalTheme.current" but no CompositionLocalProvider wrapping this composable tree.',
+          conclusion: {
+            rootCause: 'ThemedButton accesses LocalTheme.current but no ancestor composable provides a value via CompositionLocalProvider. CompositionLocals must be provided before they can be consumed.',
+            fixGuidelines: [
+              'Wrap the composable tree with provider: CompositionLocalProvider(LocalTheme provides myTheme) { ThemedButton() }',
+              'Provide at app root level for global access',
+              'Or define default value: staticCompositionLocalOf { DefaultTheme }',
+              'Check that provider is above consumer in composition tree',
+            ],
+            confidence: 0.9,
+          },
+        },
+      ],
+      'compose_derived_state': [
+        {
+          error: 'derivedStateOf should be used with remember at SearchScreen.kt:56',
+          thought: 'derivedStateOf without remember means the derivation is recalculated on every recomposition instead of only when source state changes.',
+          action: 'read_file at SearchScreen.kt:56 to see derivedStateOf usage',
+          observation: 'Found: "val filteredItems = derivedStateOf { items.filter { it.matches(query) } }" outside of remember.',
+          conclusion: {
+            rootCause: 'derivedStateOf is used without remember, causing the derivation to be recreated on every recomposition. This defeats the purpose of derivedStateOf which is to cache derived values.',
+            fixGuidelines: [
+              'Wrap in remember: val filteredItems = remember { derivedStateOf { items.filter { it.matches(query) } } }',
+              'The outer remember caches the derivedStateOf, inner derivedStateOf caches the computation',
+              'Only re-derives when source state (items, query) actually changes',
+            ],
+            confidence: 0.93,
+          },
+        },
+      ],
+      // XML Layout-specific examples (added in Chunk 4.2)
+      'xml_inflation': [
+        {
+          error: 'android.view.InflateException: Binary XML file line #42: Error inflating class com.example.CustomView in activity_main.xml',
+          thought: 'XML inflation error indicates the view class cannot be instantiated. Could be a missing constructor, wrong class name, or initialization issue in the custom view.',
+          action: 'read_file at CustomView.kt to check the view class definition',
+          observation: 'Found CustomView class but constructor is private: "private constructor(context: Context) : View(context)". Views must have public constructor with Context and AttributeSet.',
+          conclusion: {
+            rootCause: 'The CustomView has a private constructor instead of the required public constructor. Android Views inflated from XML must have a public constructor taking Context and AttributeSet parameters.',
+            fixGuidelines: [
+              'Change constructor to public: constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)',
+              'Or add the required constructor if missing: constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)',
+              'Ensure the view class is not abstract',
+              'Verify the class is in the correct package and accessible',
+            ],
+            confidence: 0.92,
+          },
+        },
+      ],
+      'xml_missing_id': [
+        {
+          error: 'java.lang.NullPointerException: findViewById(R.id.text_title) returned null at MainActivity.kt:23',
+          thought: 'findViewById returning null means the view ID does not exist in the inflated layout. Need to check if the ID is defined in the XML and if the correct layout is inflated.',
+          action: 'read_file at MainActivity.kt:23 to see which layout is set and how findViewById is called',
+          observation: 'setContentView(R.layout.activity_main) at line 20. findViewById(R.id.text_title) at line 23. Checked activity_main.xml - no view with id "text_title", found "textTitle" (camelCase) instead.',
+          conclusion: {
+            rootCause: 'The view ID "text_title" does not exist in activity_main.xml. The layout has "textTitle" (camelCase) but the code looks for "text_title" (snake_case). ID mismatch between XML and code.',
+            fixGuidelines: [
+              'Change Kotlin code to match XML: findViewById(R.id.textTitle)',
+              'Or change XML to match code: android:id="@+id/text_title"',
+              'Use View Binding to avoid ID mismatches: ActivityMainBinding.inflate(layoutInflater)',
+              'Verify setContentView() is called before findViewById()',
+              'Ensure you are looking in the correct layout file',
+            ],
+            confidence: 0.95,
+          },
+        },
+      ],
+      'xml_attribute_error': [
+        {
+          error: 'Error parsing XML: attribute layout_width not specified in activity_main.xml at line 15',
+          thought: 'Missing required attribute. Android views in XML must have layout_width and layout_height specified. This is a common oversight.',
+          action: 'read_file at activity_main.xml:15 to see the view definition',
+          observation: 'Found TextView at line 15 with android:text but no layout_width or layout_height attributes.',
+          conclusion: {
+            rootCause: 'TextView is missing the required layout_width and layout_height attributes. All Android views must specify their size constraints when used in layouts.',
+            fixGuidelines: [
+              'Add required attributes: android:layout_width="wrap_content" android:layout_height="wrap_content"',
+              'Common values: wrap_content (size to content), match_parent (fill parent), or specific dp value like "48dp"',
+              'Use IDE autocomplete to avoid missing required attributes',
+              'Enable XML validation warnings in IDE settings',
+            ],
+            confidence: 0.98,
+          },
+        },
+      ],
+      'xml_resource_not_found': [
+        {
+          error: 'android.content.res.Resources$NotFoundException: String resource @string/app_name not found in activity_main.xml',
+          thought: 'Resource reference error means the string resource is not defined or misspelled. Need to check strings.xml.',
+          action: 'Search workspace for strings.xml and check if app_name is defined',
+          observation: 'Found strings.xml in res/values/ but "app_name" is not defined. Only "application_name" exists.',
+          conclusion: {
+            rootCause: 'The string resource @string/app_name is referenced but not defined in strings.xml. The actual resource is named "application_name". Resource name mismatch.',
+            fixGuidelines: [
+              'Define the missing string in res/values/strings.xml: <string name="app_name">My App</string>',
+              'Or change XML reference to existing resource: @string/application_name',
+              'Use IDE "Extract String Resource" to avoid typos',
+              'Check for typos in resource names (app_name vs application_name)',
+            ],
+            confidence: 0.93,
+          },
+        },
+      ],
+      'xml_duplicate_id': [
+        {
+          error: 'Error: Duplicate id @+id/button_submit, already defined earlier in this layout in activity_main.xml at line 45',
+          thought: 'Duplicate ID in the same layout file. Each view must have a unique ID within a layout. This usually happens when copy-pasting views.',
+          action: 'read_file at activity_main.xml:45 and search for other instances of button_submit',
+          observation: 'Found button_submit defined at line 28 (inside a LinearLayout) and again at line 45 (inside a RelativeLayout). Both are Button views.',
+          conclusion: {
+            rootCause: 'The ID "button_submit" is used for two different buttons in the same layout. IDs must be unique within a layout file. This likely occurred from copy-pasting without renaming the ID.',
+            fixGuidelines: [
+              'Rename one of the buttons: android:id="@+id/button_confirm" or android:id="@+id/button_submit_secondary"',
+              'Use descriptive IDs based on location/purpose: button_submit_top, button_submit_bottom',
+              'After renaming, update Kotlin code that references the old ID',
+              'Use IDE refactoring (Shift+F6) to rename IDs safely',
+            ],
+            confidence: 0.96,
+          },
+        },
+      ],
+      'xml_invalid_attribute_value': [
+        {
+          error: 'Error: "wrap_contentt" is not a valid value for attribute layout_width in activity_main.xml at line 12',
+          thought: 'Typo in attribute value. "wrap_contentt" has an extra "t" at the end. Should be "wrap_content".',
+          action: 'read_file at activity_main.xml:12 to confirm the typo',
+          observation: 'Found: android:layout_width="wrap_contentt" - confirmed typo.',
+          conclusion: {
+            rootCause: 'Typo in layout_width value: "wrap_contentt" instead of "wrap_content". Extra "t" at the end causes XML parser to reject the attribute value.',
+            fixGuidelines: [
+              'Fix typo: android:layout_width="wrap_content"',
+              'Valid values are: wrap_content, match_parent, or specific dimensions like "48dp"',
+              'Enable XML validation in IDE to catch typos at edit time',
+              'Use IDE autocomplete for attributes to avoid typos',
+            ],
+            confidence: 0.99,
+          },
+        },
+      ],
     };
 
     return examples[errorType] || [];
-  }
-
-  /**
-   * Build initial analysis prompt (iteration 1)
-   */
-  buildInitialPrompt(error: ParsedError, fileContent?: string | null): string {
-    const examples = this.getFewShotExamples(error.type);
-    const examplesText = examples.length > 0
-      ? `\n\n**EXAMPLES OF SIMILAR ANALYSIS:**\n${this.formatExamples(examples)}`
-      : '';
-
-    let contextText = '';
-    if (fileContent) {
-      contextText = `\n\n**CODE CONTEXT:**\n\`\`\`kotlin\n${fileContent}\n\`\`\``;
-    }
-
-    return `${this.getSystemPrompt()}
-
-**ERROR TO ANALYZE:**
-Type: ${error.type}
-Message: ${error.message}
-Location: ${error.filePath}:${error.line}
-Language: ${error.language}
-${error.metadata ? `Metadata: ${JSON.stringify(error.metadata, null, 2)}` : ''}${contextText}${examplesText}
-
-**YOUR TASK:**
-This is iteration 1. Start by forming an initial hypothesis about what caused this error.
-Consider what you know from the error message and code context (if available).
-
-Respond with JSON containing your thought and next action.`;
-  }
-
-  /**
-   * Build iteration prompt (iterations 2+)
-   */
-  buildIterationPrompt(
-    error: ParsedError,
-    state: AgentState,
-    _previousThought: string,
-    previousObservation?: string
-  ): string {
-    const progress = `Iteration ${state.iteration}/${state.maxIterations}`;
-    
-    let historyText = '\n**ANALYSIS SO FAR:**\n';
-    state.thoughts.forEach((thought, i) => {
-      historyText += `\nIteration ${i + 1} Thought: ${thought}\n`;
-      if (state.observations[i]) {
-        historyText += `Observation: ${state.observations[i]}\n`;
-      }
-    });
-
-    let observationText = '';
-    if (previousObservation) {
-      observationText = `\n**LATEST OBSERVATION:**\n${previousObservation}\n`;
-    }
-
-    return `${progress}
-
-**ERROR:**
-${error.message} at ${error.filePath}:${error.line}
-${historyText}${observationText}
-
-**YOUR TASK:**
-Based on what you've learned, continue your analysis.
-- If you have enough information, provide final conclusion (set action to null)
-- If you need more information, specify the next tool to use
-
-Respond with JSON.`;
-  }
-
-  /**
-   * Build final conclusion prompt
-   */
-  buildFinalPrompt(error: ParsedError, state: AgentState): string {
-    let historyText = '\n**COMPLETE ANALYSIS HISTORY:**\n';
-    state.thoughts.forEach((thought, i) => {
-      historyText += `\nIteration ${i + 1}:\n`;
-      historyText += `  Thought: ${thought}\n`;
-      if (state.observations[i]) {
-        historyText += `  Observation: ${state.observations[i]}\n`;
-      }
-    });
-
-    return `**FINAL ANALYSIS REQUIRED**
-
-**ERROR:**
-${error.type}: ${error.message}
-Location: ${error.filePath}:${error.line}
-${historyText}
-
-**YOUR TASK:**
-Synthesize everything you've learned and provide your final analysis.
-
-Respond with JSON including:
-- thought: Your final reasoning
-- action: null (no more actions needed)
-- rootCause: Clear explanation of what went wrong
-- fixGuidelines: Step-by-step fix instructions (array of strings)
-- confidence: Your confidence level (0.0-1.0)
-
-Be specific, cite evidence from code you examined, and provide actionable guidance.`;
   }
 
   /**
@@ -322,6 +420,163 @@ ${example.conclusion.fixGuidelines.map(step => `    - ${step}`).join('\n')}
       return JSON.parse(jsonMatch[0]);
     } catch (error) {
       throw new Error(`Invalid JSON in response: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  /**
+   * Build iteration prompt with comprehensive context (NEW - for Chunk 2.4)
+   */
+  buildIterationPrompt(params: {
+    systemPrompt: string;
+    examples: FewShotExample[];
+    error: ParsedError;
+    previousThoughts: string[];
+    previousActions: any[];
+    previousObservations: string[];
+    iteration: number;
+    maxIterations: number;
+  }): string {
+    const { systemPrompt, examples, error, previousThoughts, previousActions, previousObservations, iteration, maxIterations } = params;
+
+    let prompt = `${systemPrompt}\n\n`;
+
+    // Add examples only on first iteration
+    if (iteration === 1 && examples.length > 0) {
+      prompt += `**EXAMPLES OF SIMILAR ANALYSIS:**\n${this.formatExamples(examples)}\n\n`;
+    }
+
+    prompt += `**ERROR TO ANALYZE:**
+Type: ${error.type}
+Message: ${error.message}
+Location: ${error.filePath}:${error.line}
+Language: ${error.language}
+${error.metadata ? `Metadata: ${JSON.stringify(error.metadata, null, 2)}` : ''}
+
+**PROGRESS:** Iteration ${iteration}/${maxIterations}\n`;
+
+    // Add history if exists
+    if (previousThoughts.length > 0) {
+      prompt += `\n**ANALYSIS HISTORY:**\n`;
+      previousThoughts.forEach((thought, i) => {
+        prompt += `\nIteration ${i + 1}:\n`;
+        prompt += `  Thought: ${thought}\n`;
+        if (previousActions[i]) {
+          prompt += `  Action: ${JSON.stringify(previousActions[i])}\n`;
+        }
+        if (previousObservations[i]) {
+          prompt += `  Observation: ${previousObservations[i]}\n`;
+        }
+      });
+    }
+
+    prompt += `\n**YOUR TASK:**\n`;
+    if (iteration === 1) {
+      prompt += `This is your first analysis. Form an initial hypothesis about what caused this error.
+Consider using the read_file tool to examine the code at the error location.\n`;
+    } else {
+      prompt += `Continue your analysis based on what you've learned.
+- If you have sufficient information, provide your final conclusion (set action to null)
+- If you need more information, specify the next tool to use\n`;
+    }
+
+    prompt += `\nRespond ONLY with valid JSON (no other text):\n`;
+    prompt += `{
+  "thought": "Your current reasoning",
+  "action": { "tool": "tool_name", "parameters": {...} } OR null if concluding,
+  "rootCause": "Explanation" (only when action is null),
+  "fixGuidelines": ["Step 1", "Step 2", ...] (only when action is null),
+  "confidence": 0.0-1.0 (only when action is null)
+}`;
+
+    return prompt;
+  }
+
+  /**
+   * Build final prompt with all state (NEW - for Chunk 2.4)
+   */
+  buildFinalPrompt(state: AgentState): string {
+    const { error, thoughts, actions, observations } = state;
+
+    let prompt = `**FINAL ANALYSIS REQUIRED**
+
+You have reached the maximum number of iterations. Provide your final conclusion now.
+
+**ERROR:**
+Type: ${error.type}
+Message: ${error.message}
+Location: ${error.filePath}:${error.line}
+
+**COMPLETE ANALYSIS HISTORY:**\n`;
+
+    thoughts.forEach((thought, i) => {
+      prompt += `\nIteration ${i + 1}:\n`;
+      prompt += `  Thought: ${thought}\n`;
+      if (actions[i]) {
+        prompt += `  Action: ${JSON.stringify(actions[i])}\n`;
+      }
+      if (observations[i]) {
+        prompt += `  Observation: ${observations[i]}\n`;
+      }
+    });
+
+    prompt += `\n**YOUR TASK:**
+Synthesize all information gathered and provide your final analysis.
+
+Respond ONLY with valid JSON (no other text):
+{
+  "thought": "Your final reasoning",
+  "action": null,
+  "rootCause": "Clear explanation of what went wrong and why",
+  "fixGuidelines": ["Step 1", "Step 2", "Step 3"],
+  "confidence": 0.0-1.0
+}`;
+
+    return prompt;
+  }
+
+  /**
+   * Parse LLM response into structured format (NEW - for Chunk 2.4)
+   */
+  parseResponse(response: string): {
+    thought: string;
+    action: any | null;
+    rootCause?: string;
+    fixGuidelines?: string[];
+    confidence?: number;
+  } {
+    try {
+      const json = this.extractJSON(response);
+      const validation = this.validateResponse(json);
+
+      if (!validation.valid) {
+        console.warn(`Response validation failed: ${validation.error}`);
+        // Return minimal valid response
+        return {
+          thought: json.thought || response,
+          action: null,
+          rootCause: 'Analysis incomplete - validation failed',
+          fixGuidelines: ['Review error and context'],
+          confidence: 0.2,
+        };
+      }
+
+      return {
+        thought: json.thought,
+        action: json.action,
+        rootCause: json.rootCause,
+        fixGuidelines: json.fixGuidelines,
+        confidence: json.confidence,
+      };
+    } catch (error) {
+      console.error('Failed to parse LLM response:', error);
+      // Fallback
+      return {
+        thought: response,
+        action: null,
+        rootCause: 'Analysis incomplete - parsing failed',
+        fixGuidelines: ['Review error message and code context'],
+        confidence: 0.2,
+      };
     }
   }
 

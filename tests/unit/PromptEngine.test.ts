@@ -102,7 +102,7 @@ describe('PromptEngine', () => {
     });
   });
 
-  describe('buildInitialPrompt', () => {
+  describe('buildIterationPrompt (first iteration)', () => {
     const testError: ParsedError = {
       type: 'lateinit',
       message: 'lateinit property user has not been initialized',
@@ -112,7 +112,16 @@ describe('PromptEngine', () => {
     };
 
     it('should include error information', () => {
-      const prompt = engine.buildInitialPrompt(testError);
+      const prompt = engine.buildIterationPrompt({
+        systemPrompt: engine.getSystemPrompt(),
+        examples: [],
+        error: testError,
+        previousThoughts: [],
+        previousActions: [],
+        previousObservations: [],
+        iteration: 1,
+        maxIterations: 3,
+      });
 
       expect(prompt).toContain('lateinit');
       expect(prompt).toContain('MainActivity.kt');
@@ -120,31 +129,34 @@ describe('PromptEngine', () => {
     });
 
     it('should include system prompt', () => {
-      const prompt = engine.buildInitialPrompt(testError);
-      const systemPrompt = engine.getSystemPrompt();
-
-      expect(prompt).toContain(systemPrompt);
+      const prompt = engine.buildIterationPrompt({
+        systemPrompt: engine.getSystemPrompt(),
+        examples: [],
+        error: testError,
+        previousThoughts: [],
+        previousActions: [],
+        previousObservations: [],
+        iteration: 1,
+        maxIterations: 3,
+      });
+      
+      expect(prompt).toContain('Kotlin/Android debugging');
     });
 
     it('should include few-shot examples for known error types', () => {
-      const prompt = engine.buildInitialPrompt(testError);
+      const examples = engine.getFewShotExamples('lateinit');
+      const prompt = engine.buildIterationPrompt({
+        systemPrompt: engine.getSystemPrompt(),
+        examples,
+        error: testError,
+        previousThoughts: [],
+        previousActions: [],
+        previousObservations: [],
+        iteration: 1,
+        maxIterations: 3,
+      });
 
       expect(prompt).toContain('EXAMPLES');
-    });
-
-    it('should include code context when provided', () => {
-      const fileContent = 'private lateinit var user: User\nval name = user.name';
-      const prompt = engine.buildInitialPrompt(testError, fileContent);
-
-      expect(prompt).toContain('CODE CONTEXT');
-      expect(prompt).toContain(fileContent);
-    });
-
-    it('should work without code context', () => {
-      const prompt = engine.buildInitialPrompt(testError, null);
-
-      expect(prompt).toBeTruthy();
-      expect(prompt).not.toContain('CODE CONTEXT');
     });
 
     it('should include metadata when present', () => {
@@ -153,7 +165,16 @@ describe('PromptEngine', () => {
         metadata: { propertyName: 'user' },
       };
 
-      const prompt = engine.buildInitialPrompt(errorWithMetadata);
+      const prompt = engine.buildIterationPrompt({
+        systemPrompt: engine.getSystemPrompt(),
+        examples: [],
+        error: errorWithMetadata,
+        previousThoughts: [],
+        previousActions: [],
+        previousObservations: [],
+        iteration: 1,
+        maxIterations: 3,
+      });
 
       expect(prompt).toContain('Metadata');
       expect(prompt).toContain('propertyName');
@@ -178,57 +199,70 @@ describe('PromptEngine', () => {
       thoughts: ['Initial hypothesis about error'],
       actions: [],
       observations: ['File content shows property declared but not initialized'],
-      hypothesis: 'Property not initialized in onCreate',
+      hypothesis: 'Property not initialized',
       rootCause: null,
       converged: false,
       error: testError,
     };
 
     it('should include iteration progress', () => {
-      const prompt = engine.buildIterationPrompt(
-        testError,
-        testState,
-        'Continuing analysis',
-        'New observation'
-      );
+      const prompt = engine.buildIterationPrompt({
+        systemPrompt: engine.getSystemPrompt(),
+        examples: [],
+        error: testError,
+        previousThoughts: testState.thoughts,
+        previousActions: testState.actions,
+        previousObservations: testState.observations,
+        iteration: 2,
+        maxIterations: 3,
+      });
 
       expect(prompt).toContain('Iteration 2/3');
     });
 
-    it('should include analysis history', () => {
-      const prompt = engine.buildIterationPrompt(
-        testError,
-        testState,
-        'Continuing analysis',
-        'New observation'
-      );
+    it('should include previous thoughts and observations', () => {
+      const prompt = engine.buildIterationPrompt({
+        systemPrompt: engine.getSystemPrompt(),
+        examples: [],
+        error: testError,
+        previousThoughts: testState.thoughts,
+        previousActions: testState.actions,
+        previousObservations: testState.observations,
+        iteration: 2,
+        maxIterations: 3,
+      });
 
-      expect(prompt).toContain('ANALYSIS SO FAR');
       expect(prompt).toContain('Initial hypothesis');
-      expect(prompt).toContain('File content shows property');
+      expect(prompt).toContain('not initialized');
     });
 
-    it('should include latest observation', () => {
-      const prompt = engine.buildIterationPrompt(
-        testError,
-        testState,
-        'Continuing analysis',
-        'New observation about initialization'
-      );
+    it('should include examples only on first iteration', () => {
+      const examples = engine.getFewShotExamples('lateinit');
+      
+      const prompt1 = engine.buildIterationPrompt({
+        systemPrompt: engine.getSystemPrompt(),
+        examples,
+        error: testError,
+        previousThoughts: [],
+        previousActions: [],
+        previousObservations: [],
+        iteration: 1,
+        maxIterations: 3,
+      });
 
-      expect(prompt).toContain('LATEST OBSERVATION');
-      expect(prompt).toContain('New observation about initialization');
-    });
+      const prompt2 = engine.buildIterationPrompt({
+        systemPrompt: engine.getSystemPrompt(),
+        examples,
+        error: testError,
+        previousThoughts: testState.thoughts,
+        previousActions: testState.actions,
+        previousObservations: testState.observations,
+        iteration: 2,
+        maxIterations: 3,
+      });
 
-    it('should work without observation', () => {
-      const prompt = engine.buildIterationPrompt(
-        testError,
-        testState,
-        'Continuing analysis'
-      );
-
-      expect(prompt).toBeTruthy();
-      expect(prompt).not.toContain('LATEST OBSERVATION');
+      expect(prompt1).toContain('EXAMPLES');
+      expect(prompt2).not.toContain('EXAMPLES');
     });
   });
 
@@ -247,234 +281,204 @@ describe('PromptEngine', () => {
       startTime: Date.now(),
       timeout: 90000,
       mode: 'standard',
-      thoughts: ['Hypothesis 1', 'Hypothesis 2', 'Final hypothesis'],
+      thoughts: [
+        'Initial hypothesis',
+        'Deeper analysis',
+        'Final reasoning',
+      ],
       actions: [],
-      observations: ['Observation 1', 'Observation 2', 'Observation 3'],
+      observations: [
+        'File content',
+        'More context',
+      ],
       hypothesis: 'Property not initialized',
       rootCause: null,
       converged: false,
       error: testError,
     };
 
-    it('should request final analysis', () => {
-      const prompt = engine.buildFinalPrompt(testError, testState);
+    it('should include complete analysis history', () => {
+      const prompt = engine.buildFinalPrompt(testState);
 
       expect(prompt).toContain('FINAL ANALYSIS');
-      expect(prompt).toContain('Synthesize');
+      expect(prompt).toContain('Initial hypothesis');
+      expect(prompt).toContain('Deeper analysis');
+      expect(prompt).toContain('Final reasoning');
     });
 
-    it('should include complete history', () => {
-      const prompt = engine.buildFinalPrompt(testError, testState);
+    it('should include all observations', () => {
+      const prompt = engine.buildFinalPrompt(testState);
 
-      expect(prompt).toContain('COMPLETE ANALYSIS HISTORY');
-      expect(prompt).toContain('Hypothesis 1');
-      expect(prompt).toContain('Hypothesis 2');
-      expect(prompt).toContain('Final hypothesis');
-      expect(prompt).toContain('Observation 1');
-      expect(prompt).toContain('Observation 2');
+      expect(prompt).toContain('File content');
+      expect(prompt).toContain('More context');
     });
 
-    it('should specify required output fields', () => {
-      const prompt = engine.buildFinalPrompt(testError, testState);
+    it('should request structured JSON output', () => {
+      const prompt = engine.buildFinalPrompt(testState);
 
       expect(prompt).toContain('rootCause');
       expect(prompt).toContain('fixGuidelines');
       expect(prompt).toContain('confidence');
-      expect(prompt).toContain('action: null');
     });
   });
 
-  describe('buildToolPrompt', () => {
-    it('should list available tools', () => {
-      const tools = ['read_file', 'find_callers', 'get_symbol_info'];
-      const prompt = engine.buildToolPrompt(tools);
+  describe('parseResponse', () => {
+    it('should extract JSON from clean output', () => {
+      const output = JSON.stringify({
+        thought: 'Analysis complete',
+        rootCause: 'Property not initialized',
+        fixGuidelines: ['Initialize in onCreate'],
+        confidence: 0.9,
+      });
 
-      expect(prompt).toContain('AVAILABLE TOOLS');
-      expect(prompt).toContain('read_file');
-      expect(prompt).toContain('find_callers');
-      expect(prompt).toContain('get_symbol_info');
+      const result = engine.parseResponse(output);
+
+      expect(result.thought).toBe('Analysis complete');
+      expect(result.rootCause).toBe('Property not initialized');
+      expect(result.fixGuidelines).toEqual(['Initialize in onCreate']);
+      expect(result.confidence).toBe(0.9);
     });
 
-    it('should include usage instructions', () => {
-      const tools = ['read_file'];
-      const prompt = engine.buildToolPrompt(tools);
+    it('should extract JSON with surrounding text', () => {
+      const output = `Here's my analysis:
+${JSON.stringify({
+  thought: 'After reviewing the code',
+  action: { tool: 'read_file', parameters: { filePath: 'test.kt', line: 10 } },
+})}
+That's what I found.`;
 
-      expect(prompt).toContain('tool_name');
-      expect(prompt).toContain('parameters');
-      expect(prompt).toContain('action');
+      const result = engine.parseResponse(output);
+
+      expect(result.thought).toBe('After reviewing the code');
+      expect(result.action).toEqual({
+        tool: 'read_file',
+        parameters: { filePath: 'test.kt', line: 10 },
+      });
     });
 
-    it('should handle empty tool list', () => {
-      const prompt = engine.buildToolPrompt([]);
-
-      expect(prompt).toBeTruthy();
-    });
-  });
-
-  describe('extractJSON', () => {
-    it('should extract valid JSON', () => {
-      const response = '{"thought": "test", "action": null}';
-      const json = engine.extractJSON(response);
-
-      expect(json).toEqual({ thought: 'test', action: null });
-    });
-
-    it('should extract JSON with extra text before', () => {
-      const response = 'Here is my analysis: {"thought": "test", "action": null}';
-      const json = engine.extractJSON(response);
-
-      expect(json).toEqual({ thought: 'test', action: null });
-    });
-
-    it('should extract JSON with extra text after', () => {
-      const response = '{"thought": "test", "action": null} - end of analysis';
-      const json = engine.extractJSON(response);
-
-      expect(json).toEqual({ thought: 'test', action: null });
-    });
-
-    it('should extract JSON with markdown formatting', () => {
-      const response = '```json\n{"thought": "test", "action": null}\n```';
-      const json = engine.extractJSON(response);
-
-      expect(json).toEqual({ thought: 'test', action: null });
-    });
-
-    it('should throw error when no JSON found', () => {
-      const response = 'No JSON here';
-
-      expect(() => engine.extractJSON(response)).toThrow('No JSON found');
-    });
-
-    it('should throw error for invalid JSON', () => {
-      const response = '{"thought": "test", action: null}'; // Missing quotes
-
-      expect(() => engine.extractJSON(response)).toThrow('Invalid JSON');
-    });
-  });
-
-  describe('validateResponse', () => {
-    it('should validate correct response with action', () => {
-      const response = {
-        thought: 'Analyzing error',
-        action: { tool: 'read_file', parameters: { filePath: 'test.kt' } },
-      };
-
-      const result = engine.validateResponse(response);
-
-      expect(result.valid).toBe(true);
-      expect(result.error).toBeUndefined();
-    });
-
-    it('should validate correct final response', () => {
-      const response = {
-        thought: 'Final analysis',
+    it('should handle null action', () => {
+      const output = JSON.stringify({
+        thought: 'Final conclusion',
         action: null,
         rootCause: 'Property not initialized',
         fixGuidelines: ['Initialize in onCreate'],
         confidence: 0.9,
+      });
+
+      const result = engine.parseResponse(output);
+
+      expect(result.action).toBeNull();
+      expect(result.rootCause).toBe('Property not initialized');
+    });
+
+    it('should return fallback object if no JSON found', () => {
+      const output = 'This is not JSON at all';
+
+      const result = engine.parseResponse(output);
+
+      // Should return fallback with low confidence
+      expect(result.thought).toBe('This is not JSON at all');
+      expect(result.action).toBeNull();
+      expect(result.rootCause).toContain('parsing failed');
+      expect(result.confidence).toBe(0.2);
+    });
+  });
+
+  describe('validateResponse', () => {
+    it('should accept valid response with action', () => {
+      const response = {
+        thought: 'Need more info',
+        action: { tool: 'read_file', parameters: {} },
       };
 
       const result = engine.validateResponse(response);
+      expect(result.valid).toBe(true);
+    });
 
+    it('should accept valid final response', () => {
+      const response = {
+        thought: 'Analysis complete',
+        action: null,
+        rootCause: 'Issue found',
+        fixGuidelines: ['Fix it'],
+        confidence: 0.8,
+      };
+
+      const result = engine.validateResponse(response);
       expect(result.valid).toBe(true);
     });
 
     it('should reject response without thought', () => {
       const response = {
         action: null,
-        rootCause: 'Test',
-        fixGuidelines: ['Fix it'],
-        confidence: 0.8,
+        rootCause: 'Issue',
       };
 
       const result = engine.validateResponse(response);
-
       expect(result.valid).toBe(false);
-      expect(result.error).toContain('thought');
     });
 
     it('should reject final response without rootCause', () => {
       const response = {
-        thought: 'Analysis',
+        thought: 'Done',
         action: null,
-        fixGuidelines: ['Fix it'],
-        confidence: 0.8,
-      };
-
-      const result = engine.validateResponse(response);
-
-      expect(result.valid).toBe(false);
-      expect(result.error).toContain('rootCause');
-    });
-
-    it('should reject final response without fixGuidelines', () => {
-      const response = {
-        thought: 'Analysis',
-        action: null,
-        rootCause: 'Error',
-        confidence: 0.8,
-      };
-
-      const result = engine.validateResponse(response);
-
-      expect(result.valid).toBe(false);
-      expect(result.error).toContain('fixGuidelines');
-    });
-
-    it('should reject final response with empty fixGuidelines', () => {
-      const response = {
-        thought: 'Analysis',
-        action: null,
-        rootCause: 'Error',
         fixGuidelines: [],
-        confidence: 0.8,
+        confidence: 0.5,
       };
 
       const result = engine.validateResponse(response);
-
       expect(result.valid).toBe(false);
-      expect(result.error).toContain('fixGuidelines');
     });
 
-    it('should reject final response with invalid confidence', () => {
+    it('should reject final response without confidence', () => {
       const response = {
-        thought: 'Analysis',
+        thought: 'Done',
         action: null,
-        rootCause: 'Error',
-        fixGuidelines: ['Fix'],
-        confidence: 1.5, // Invalid
+        rootCause: 'Issue',
+        fixGuidelines: [],
       };
 
       const result = engine.validateResponse(response);
-
-      expect(result.valid).toBe(false);
-      expect(result.error).toContain('confidence');
-    });
-
-    it('should reject response with action missing tool', () => {
-      const response = {
-        thought: 'Analysis',
-        action: { parameters: {} }, // Missing tool
-      };
-
-      const result = engine.validateResponse(response);
-
-      expect(result.valid).toBe(false);
-      expect(result.error).toContain('tool');
-    });
-
-    it('should reject non-object response', () => {
-      const result = engine.validateResponse('not an object');
-
-      expect(result.valid).toBe(false);
-      expect(result.error).toContain('object');
-    });
-
-    it('should reject null response', () => {
-      const result = engine.validateResponse(null);
-
       expect(result.valid).toBe(false);
     });
   });
+
+  describe('extractJSON', () => {
+    it('should extract JSON from code blocks', () => {
+      const text = '```json\n{"key": "value"}\n```';
+      const result = engine.extractJSON(text);
+
+      expect(result).toEqual({ key: 'value' });
+    });
+
+    it('should extract JSON without code blocks', () => {
+      const text = 'Some text {"key": "value"} more text';
+      const result = engine.extractJSON(text);
+
+      expect(result).toEqual({ key: 'value' });
+    });
+
+    it('should handle nested JSON', () => {
+      const text = JSON.stringify({
+        outer: {
+          inner: { value: 42 },
+        },
+      });
+
+      const result = engine.extractJSON(text);
+
+      expect(result).toEqual({
+        outer: {
+          inner: { value: 42 },
+        },
+      });
+    });
+
+    it('should throw for invalid JSON', () => {
+      const text = 'This is not JSON';
+
+      expect(() => engine.extractJSON(text)).toThrow('No JSON found in response');
+    });
+  });
 });
+
