@@ -12,7 +12,10 @@
     "Debuggers"
   ],
   "activationEvents": [
-    "onCommand:rcaAgent.analyzeError"
+    "onCommand:rcaAgent.analyzeError",
+    "onCommand:rcaAgent.analyzeErrorWebview",
+    "onCommand:rcaAgent.toggleEducationalMode",
+    "onCommand:rcaAgent.togglePerformanceMetrics"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -20,6 +23,19 @@
       {
         "command": "rcaAgent.analyzeError",
         "title": "RCA Agent: Analyze Error"
+      },
+      {
+        "command": "rcaAgent.analyzeErrorWebview",
+        "title": "RCA Agent: Analyze Error (Webview)",
+        "icon": "$(code)"
+      },
+      {
+        "command": "rcaAgent.toggleEducationalMode",
+        "title": "RCA Agent: Toggle Educational Mode 🎓"
+      },
+      {
+        "command": "rcaAgent.togglePerformanceMetrics",
+        "title": "RCA Agent: Toggle Performance Metrics ⚡"
       }
     ],
     "keybindings": [
@@ -28,6 +44,22 @@
         "key": "ctrl+shift+r",
         "mac": "cmd+shift+r",
         "when": "editorTextFocus"
+      },
+      {
+        "command": "rcaAgent.analyzeErrorWebview",
+        "key": "ctrl+shift+w",
+        "mac": "cmd+shift+w",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "rcaAgent.toggleEducationalMode",
+        "key": "ctrl+shift+e",
+        "mac": "cmd+shift+e"
+      },
+      {
+        "command": "rcaAgent.togglePerformanceMetrics",
+        "key": "ctrl+shift+p",
+        "mac": "cmd+shift+p"
       }
     ],
     "configuration": {
@@ -48,6 +80,11 @@
             "qwen-coder:7b",
             "deepseek-coder:6.7b"
           ]
+        },
+        "rcaAgent.showPerformanceMetrics": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show performance metrics (latency, cache hit rate, token usage) in analysis results"
         }
       }
     }
