@@ -248,12 +248,12 @@ This script scans the project directory and regenerates the tree structure above
 
 > **Auto-generated snapshot of project file tree**  
 > **Project Type:** Personal learning project - Kotlin/Android debugging assistant  
-**Last Updated:** December 2024 (Week 6 - Chunks 1.1-4.1 Complete - 585/585 tests passing)  
-**Next Update:** After Chunk 4.2 (XML Layout Parser)
+**Last Updated:** December 2024 (Week 8 - Chunks 1.1-4.3 Complete - 654/654 tests passing)  
+**Next Update:** After Chunk 4.4 (Manifest & Docs)
 
 ---
 
-## Current Structure (Week 6 - Chunks 1.1-4.1 Complete)
+## Current Structure (Week 8 - Chunks 1.1-4.3 Complete)
 
 ```
 rca-agent/
@@ -284,7 +284,8 @@ rca-agent/
 │   │   ├── Chunk-3.2-COMPLETE.md         # Chunk 3.2 milestone [EXISTING]
 │   │   ├── Chunk-3.3-COMPLETE.md         # Chunk 3.3 milestone [EXISTING]
 │   │   ├── Chunk-3.4-COMPLETE.md         # Chunk 3.4 milestone [EXISTING]
-│   │   └── Chunk-4.1-COMPLETE.md         # Chunk 4.1 milestone [NEW]
+│   │   ├── Chunk-4.1-COMPLETE.md         # Chunk 4.1 milestone [EXISTING]
+│   │   └── Chunk-4.3-COMPLETE.md         # Chunk 4.3 milestone [NEW]
 │   └── phases/                    # Phase-specific roadmaps
 │       └── Phase1-OptionB-MVP-First-KAI.md  # Kai's implementation guide [UPDATED]
 ├── src/
@@ -308,18 +309,20 @@ rca-agent/
 │   │   └── parsers/
 │   │       ├── KotlinParser.ts    # 6 Kotlin error types [EXISTING]
 │   │       ├── GradleParser.ts    # 5 Gradle error types [EXISTING]
-│   │       └── JetpackComposeParser.ts  # 10 Compose error types (~500 lines) [NEW]
+│   │       └── JetpackComposeParser.ts  # 10 Compose error types (~500 lines) [EXISTING]
 │   ├── tools/
 │   │   ├── ReadFileTool.ts        # File reading with context extraction [EXISTING]
 │   │   ├── ToolRegistry.ts        # Tool management with Zod validation [EXISTING]
-│   │   └── LSPTool.ts             # LSP placeholder implementation [EXISTING]
+│   │   ├── LSPTool.ts             # LSP placeholder implementation [EXISTING]
+│   │   └── AndroidBuildTool.ts    # Gradle build analyzer with version resolution (~350 lines) [NEW]
 │   └── agent/
 │       ├── MinimalReactAgent.ts   # Fully integrated ReAct agent [EXISTING]
 │       ├── PromptEngine.ts        # Advanced prompt generation [MODIFIED - Compose examples]
 │       └── FeedbackHandler.ts     # User feedback processing (430 lines) [EXISTING]
 ├── tests/
 │   ├── unit/
-│   │   ├── JetpackComposeParser.test.ts  # Compose parser tests (49 tests) [NEW]
+│   │   ├── JetpackComposeParser.test.ts  # Compose parser tests (49 tests) [EXISTING]
+│   │   ├── AndroidBuildTool.test.ts      # Gradle build analyzer tests (26 tests) [NEW]
 │   │   ├── FeedbackHandler.test.ts       # FeedbackHandler tests (38 tests) [EXISTING]
 │   │   ├── QualityManager.test.ts        # QualityManager tests (38 tests) [EXISTING]
 │   │   ├── ErrorHasher.test.ts           # ErrorHasher tests (51 tests) [EXISTING]

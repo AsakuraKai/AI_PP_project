@@ -80,9 +80,11 @@ export class JetpackComposeParser {
   /**
    * Parse remember-related errors
    * Example: "Creating a state object during composition without using remember"
+   * AC001: State created without remember
    */
   private parseRememberError(text: string): ParsedError | null {
     const patterns = [
+      /Reading a state.*created.*composable function but not called with remember/i,
       /Creating a state object during composition without using remember/i,
       /reading a state.*without calling remember/i,
       /State should be created with remember/i,
@@ -219,11 +221,14 @@ export class JetpackComposeParser {
   /**
    * Parse LaunchedEffect-related errors
    * Example: "LaunchedEffect must have at least one key"
+   * AC003: LaunchedEffect with constant key
    */
   private parseLaunchedEffectError(text: string): ParsedError | null {
     const patterns = [
+      /LaunchedEffect\s+called\s+with\s+key.*runs\s+only\s+once/i,
       /LaunchedEffect\s+must\s+have\s+at\s+least\s+one\s+key/i,
       /LaunchedEffect\s+key\s+should\s+not\s+be\s+Unit/i,
+      /LaunchedEffect\s+with\s+constant\s+key/i,
       /LaunchedEffect.*cancelled/i,
       /LaunchedEffect.*coroutine.*exception/i,
       /suspend\s+function.*outside\s+LaunchedEffect/i,
@@ -294,9 +299,11 @@ export class JetpackComposeParser {
   /**
    * Parse CompositionLocal-related errors
    * Example: "CompositionLocal not provided"
+   * AC004: CompositionLocal not present
    */
   private parseCompositionLocalError(text: string): ParsedError | null {
     const patterns = [
+      /CompositionLocal\s+(\w+)\s+not\s+present/i,
       /CompositionLocal\s+(\w+)\s+not\s+provided/i,
       /No\s+value\s+provided\s+for\s+(\w+)/i,
       /LocalComposition.*not\s+found/i,
@@ -331,12 +338,15 @@ export class JetpackComposeParser {
   }
 
   /**
-   * Parse Modifier-related errors
-   * Example: "Modifier.clickable must come after Modifier.padding"
+   * AC005: Clickable modifier order issue
    */
   private parseModifierError(text: string): ParsedError | null {
     const patterns = [
+      /Clickable\s+modifier\s+must\s+come\s+(before|after)/i,
       /Modifier\.(\w+)\s+must\s+come\s+(before|after)\s+Modifier\.(\w+)/i,
+      /Invalid\s+Modifier\s+chain/i,
+      /Modifier.*order\s+matters/i,
+      /Modifier.*order.*issuecome\s+(before|after)\s+Modifier\.(\w+)/i,
       /Invalid\s+Modifier\s+chain/i,
       /Modifier.*order\s+matters/i,
       /Modifier\s+not\s+applied/i,
@@ -473,8 +483,43 @@ export class JetpackComposeParser {
 
   /**
    * Extract file path and line number from error text
+   * Improved to handle Compose-specific stack traces better
+   * Prefers user code over framework code
    */
   private extractFileInfo(text: string): { filePath: string; line: number } {
+    // Try to extract all stack frames
+    const stackFrames: Array<{ file: string; line: number }> = [];
+    
+    // Pattern: "at com.example.Function(File.kt:line)"
+    const stackRegex = /at\s+([\w.]+)\(([\w]+\.kt):(\d+)\)/g;
+    let match;
+    
+    while ((match = stackRegex.exec(text)) !== null) {
+      const packageName = match[1];
+      const fileName = match[2];
+      const lineNum = parseInt(match[3], 10);
+      
+      stackFrames.push({ file: fileName, line: lineNum });
+      
+      // Prefer user code (com.example.*) over framework code (androidx.*, kotlin.*)
+      if (packageName.startsWith('com.example')) {
+        return {
+          filePath: fileName,
+          line: lineNum,
+        };
+      }
+    }
+    
+    // If we found stack frames but no user code, use the last frame (most specific)
+    if (stackFrames.length > 0) {
+      const lastFrame = stackFrames[stackFrames.length - 1];
+      return {
+        filePath: lastFrame.file,
+        line: lastFrame.line,
+      };
+    }
+    
+    // Fallback patterns
     // Try standard compiler format: "file.kt:line:column"
     const compilerMatch = text.match(/(\w+\.kt):(\d+):(\d+)/);
     if (compilerMatch) {
@@ -490,15 +535,6 @@ export class JetpackComposeParser {
       return {
         filePath: simpleMatch[1],
         line: parseInt(simpleMatch[2], 10),
-      };
-    }
-
-    // Try stack trace format: "at package.Class.method(File.kt:line)"
-    const stackMatch = text.match(/at\s+[\w.]+\(([\w.]+\.kt):(\d+)\)/);
-    if (stackMatch) {
-      return {
-        filePath: stackMatch[1],
-        line: parseInt(stackMatch[2], 10),
       };
     }
 
