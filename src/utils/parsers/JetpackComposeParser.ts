@@ -105,8 +105,8 @@ export class JetpackComposeParser {
           filePath,
           line,
           language: 'kotlin',
+          framework: 'compose',
           metadata: {
-            framework: 'compose',
             errorType: 'State management',
             stateVariable: stateVar,
             suggestion: 'Wrap state creation in remember { } or rememberSaveable { }',

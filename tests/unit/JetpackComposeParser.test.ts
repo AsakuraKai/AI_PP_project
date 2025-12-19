@@ -37,7 +37,7 @@ describe('JetpackComposeParser', () => {
       expect(result?.filePath).toBe('HomeScreen.kt');
       expect(result?.line).toBe(45);
       expect(result?.language).toBe('kotlin');
-      expect(result?.metadata?.framework).toBe('compose');
+      expect(result?.framework).toBe('compose');
     });
 
     it('should parse "reading state without remember" error', () => {

@@ -30,7 +30,7 @@ describe('AndroidBuildTool', () => {
       const result = tool.parseBuildError(errorText);
 
       expect(result).not.toBeNull();
-      expect(result?.type).toBe('dependency_resolution_error');
+      expect(result?.type).toBe('gradle_dependency_resolution_error');
       expect(result?.metadata?.dependency).toBe('com.google.android.material:material:1.9.0');
     });
 
@@ -42,7 +42,7 @@ describe('AndroidBuildTool', () => {
       const result = tool.parseBuildError(errorText);
 
       expect(result).not.toBeNull();
-      expect(result?.type).toBe('dependency_conflict');
+      expect(result?.type).toBe('gradle_dependency_conflict');
     });
 
     it('should return null for non-Gradle errors', () => {

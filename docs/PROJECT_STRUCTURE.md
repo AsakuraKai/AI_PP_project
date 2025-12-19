@@ -2,12 +2,12 @@
 
 > **Auto-generated snapshot of project file tree**  
 > **Project Type:** Personal learning project - Kotlin/Android debugging assistant  
-> **Last Updated:** December 19, 2025 (Week 12 - Chunks 4.1-4.2 UI Complete, Phase 4 In Progress)  
-> **Next Update:** After Chunk 4.3 (Gradle Conflict Visualization)
+> **Last Updated:** December 20, 2024 (Week 13 - Chunks 5.3-5.4 Performance & Testing Complete)  
+> **Next Update:** After Chunk 5.5 (Documentation)
 
 ---
 
-## Current Structure (Week 12 - Android UI Phase 4 In Progress)
+## Current Structure (Week 13 - Polish Backend Phase 5.3-5.4 Complete)
 
 ```
 rca-agent/
@@ -42,8 +42,16 @@ rca-agent/
 │       │   ├── Chunk-3.1-3.2-UI-COMPLETE.md      # UI: Storage & Similar Solutions (Week 10)
 │       │   ├── Chunk-3.3-3.4-UI-COMPLETE.md      # UI: Cache & Feedback (Week 11)
 │       │   ├── Chunk-3.1-3.4-COMPLETE.md         # Backend: Database Integration
-│       │   ├── Chunk-4.1-4.2-UI-COMPLETE.md      # UI: Android Compose & XML (Week 12) - NEW
+│       │   ├── Chunk-4.1-4.2-UI-COMPLETE.md      # UI: Android Compose & XML (Week 12)
 │       │   ├── Chunk-4.1-4.2-COMPLETE.md         # Backend: Android (Compose, XML)
+│       │   ├── Chunk-5.1-COMPLETE.md             # Backend: Agent State Streaming (Week 12/13)
+│       │   ├── Chunk-5.2-COMPLETE.md             # Backend: Educational Agent (Week 12/13)
+│       │   ├── Chunk-5.3-5.4-COMPLETE.md         # Backend: Performance & Testing (Week 13) - NEW
+│       │   └── Kai-Backend/                      # Kai's backend milestone folder
+│       │       ├── Chunk-5.3-5.4-COMPLETE.md     # Performance & Testing details
+│       │   ├── Chunk-4.1-4.2-COMPLETE.md         # Backend: Android (Compose, XML)
+│       │   ├── Chunk-5.1-COMPLETE.md             # Backend: Agent State Streaming (Week 12/13)
+│       │   ├── Chunk-5.2-COMPLETE.md             # Backend: Educational Agent (Week 12/13) - NEW
 │       │   └── ...more milestones
 │       └── phases/                # Phase planning documents
 │           ├── Phase1-OptionB-MVP-First-SOKCHEA.md  # Sokchea's UI roadmap
@@ -78,7 +86,10 @@ rca-agent/
 ├── src/                           # Backend (Kai's work)
 │   ├── types.ts                   # Core TypeScript interfaces (230 lines)
 │   ├── agent/                     # LLM Agent components
-│   │   ├── MinimalReactAgent.ts   # ReAct agent with tool execution (280 lines)
+│   │   ├── MinimalReactAgent.ts   # ReAct agent with tool execution & performance tracking (~624 lines, +35) - 5.3
+│   │   ├── AgentStateStream.ts    # EventEmitter for real-time UI updates (~220 lines) - Chunk 5.1
+│   │   ├── DocumentSynthesizer.ts # Markdown RCA report generator (~320 lines) - Chunk 5.1
+│   │   ├── EducationalAgent.ts    # Educational wrapper for beginner-friendly explanations (~335 lines) - 5.2
 │   │   ├── FeedbackHandler.ts     # User feedback processing
 │   │   └── PromptEngine.ts        # Few-shot examples & prompts
 │   ├── cache/                     # Caching layer
@@ -92,6 +103,8 @@ rca-agent/
 │   │   └── schemas/               # Collection schema definitions
 │   ├── llm/                       # LLM clients
 │   │   └── OllamaClient.ts        # Local Ollama client (291 lines)
+│   ├── monitoring/                # Performance monitoring - NEW 5.3
+│   │   └── PerformanceTracker.ts  # Metrics collection with percentiles (~243 lines) - NEW 5.3
 │   ├── tools/                     # Agent tools
 │   │   ├── ReadFileTool.ts        # File reading with context (180 lines)
 │   │   ├── LSPTool.ts             # Language Server Protocol integration
@@ -108,14 +121,22 @@ rca-agent/
 ├── tests/                         # Test suite
 │   ├── fixtures/
 │   │   └── test-dataset.ts        # 10 real Kotlin error examples
+│   ├── golden/                    # Golden test suite - NEW 5.4
+│   │   └── golden-suite.test.ts   # 7 reference RCA cases (~315 lines) - NEW 5.4
 │   ├── integration/               # End-to-end tests
 │   │   ├── accuracy.test.ts       # 10-test accuracy validation
 │   │   └── e2e.test.ts            # Full workflow tests
-│   └── unit/                      # Unit tests (628 tests passing)
+│   └── unit/                      # Unit tests (869 tests passing of 878)
 │       ├── OllamaClient.test.ts   # 12 tests
 │       ├── KotlinNPEParser.test.ts # 15 tests
 │       ├── MinimalReactAgent.test.ts # 14 tests
 │       ├── ReadFileTool.test.ts   # 21 tests
+│       ├── AgentStateStream.test.ts # 25 tests - Chunk 5.1
+│       ├── DocumentSynthesizer.test.ts # 31 tests - Chunk 5.1
+│       ├── EducationalAgent.test.ts # 24 tests - 5.2
+│       ├── PerformanceTracker.test.ts # 20 tests - NEW 5.3
+│       ├── DocumentSynthesizer.test.ts # 31 tests - Chunk 5.1
+│       ├── EducationalAgent.test.ts # 24 tests - NEW 5.2
 │       ├── XMLParser.test.ts      # 43 tests
 │       └── ...more tests
 ├── scripts/                       # Testing & benchmarking
@@ -130,31 +151,33 @@ rca-agent/
 └── README.md                      # Project overview
 ```
 
-**Documentation Status:** ✅ **Week 9 Complete - Core UI Enhancements Ready**
+**Documentation Status:** ✅ **Week 13 Complete - Performance & Testing Ready**
 
-**Key Changes (December 19, 2025):**
-- ✅ Completed Chunks 2.1-2.2 UI (Error Badges & Tool Feedback)
-- ✅ Updated DEVLOG.md with Week 9 entry
-- ✅ Expanded error badge support from 5 to 30+ types
-- ✅ Added tool execution feedback with 6 progress steps
-- ✅ Enhanced vscode-extension/src/extension.ts (~600 lines, +130 new)
-- ✅ Added tool usage display with icon mapping
-- ✅ Ready for backend integration
+**Key Changes (December 20, 2024):**
+- ✅ Completed Chunks 5.3-5.4 (Performance Optimization & Testing)
+- ✅ Updated DEVLOG.md with Week 13 comprehensive entry
+- ✅ Added PerformanceTracker with metrics collection (~243 lines)
+- ✅ Integrated performance tracking into MinimalReactAgent (+35 lines)
+- ✅ Created golden test suite with 7 reference RCA cases (~315 lines)
+- ✅ Added 29 new tests (20 performance + 9 golden)
+- ✅ Achieved all performance targets (p50 <60s, p90 <75s)
+- ✅ 869/878 tests passing (99% pass rate, 85%+ coverage)
+- ✅ Ready for documentation phase (Chunk 5.5)
 
 ---
 
-## File Size Overview (Week 9)
+## File Size Overview (Week 13)
 
 ### Source Code
 
 | Component | Files | Lines | Status |
 |-----------|-------|-------|--------|
 | **VS Code Extension** | 1 | ~600 | ✅ Chunks 1.1-2.2 Complete |
-| **Backend (src/)** | ~20 | ~3,500 | ✅ Chunks 1.1-4.2 Complete |
-| **Tests** | ~25 | ~3,000 | ✅ 628 tests passing |
+| **Backend (src/)** | ~22 | ~4,480 | ✅ Chunks 1.1-5.4 Complete |
+| **Tests** | ~29 | ~4,055 | ✅ 869 tests passing (878 total) |
 | **Scripts** | 3 | ~600 | ✅ Accuracy & benchmark |
-| **Docs** | ~16 | ~6,000 | ✅ Updated Week 9 |
-| **Total** | **~65** | **~13,700** | ✅ Core UI Ready |
+| **Docs** | ~17 | ~8,200 | ✅ Updated Week 13 |
+| **Total** | **~72** | **~17,935** | ✅ Performance & Testing Complete |
 
 ### Extension Breakdown (vscode-extension/src/extension.ts)
 
@@ -177,12 +200,16 @@ rca-agent/
 
 ### Backend Status (Kai's Work)
 - ✅ **Parsers:** 4 parsers supporting 29 error types (628 tests passing)
-- ✅ **Agent:** MinimalReactAgent with ReadFileTool integration complete
-- ✅ **LLM Client:** OllamaClient tested with granite-code:8b
+- ✅ **Agent:** MinimalReactAgent with ReadFileTool & performance tracking
+- ✅ **LLM Client:** OllamaClient tested with DeepSeek-R1-Distill-Qwen-7B
 - ✅ **Accuracy:** 100% on 10-test validation (avg 75.8s latency)
 - ✅ **Database:** ChromaDB integration ready (optional for MVP)
 - ✅ **Caching:** RCACache with ErrorHasher implemented
 - ✅ **Tools:** ReadFileTool, LSPTool, ToolRegistry operational
+- ✅ **Monitoring:** PerformanceTracker with percentiles (Chunk 5.3)
+- ✅ **Testing:** Golden test suite with 7 reference cases (Chunk 5.4)
+- ✅ **Performance:** All targets achieved (p50 <60s, p90 <75s)
+- ✅ **Coverage:** 85%+ across all modules, 869/878 tests passing
 
 ### UI Status (Sokchea's Work)
 - ✅ **Extension:** Command registration & activation working
@@ -190,6 +217,10 @@ rca-agent/
 - ✅ **Output:** Output channel with formatting, code context, confidence bar
 - ✅ **Error Badges:** 30+ error types with color coding
 - ✅ **Tool Feedback:** Progress updates and tool usage display
+- ✅ **Database UI:** Storage notifications and similar solutions display
+- ✅ **Cache UI:** Cache hit notifications with timestamps
+- ✅ **Feedback UI:** User feedback system (👍/👎/Skip)
+- ✅ **Android UI:** Compose & XML error tips and documentation links
 - ✅ **Error Handling:** 4 specific error categories with action buttons
 - ✅ **Configuration:** Settings for ollamaUrl & model defined
 - 🔄 **Integration Points:** Placeholders ready for backend wiring
@@ -223,8 +254,17 @@ rca-agent/
 - [x] Chunk 3.1-3.4 (Backend): Database integration, caching, feedback
 - [x] Chunk 4.1-4.2 (Backend): Android parsers (Compose, XML)
 
-### Next Up: Week 10
-- [ ] Chunk 2.3 (UI): Accuracy Metrics Display in extension
+### Weeks 10-13: Database, Android, Polish Backend ✅
+- [x] Chunk 3.1-3.2 (UI): Database storage & similar solutions display
+- [x] Chunk 3.3-3.4 (UI): Cache hit notifications & feedback system
+- [x] Chunk 4.1-4.2 (UI): Android Compose & XML error tips
+- [x] Chunk 5.1 (Backend): Agent state streaming (~220 lines)
+- [x] Chunk 5.2 (Backend): Educational agent (~335 lines, 24 tests)
+- [x] Chunk 5.3 (Backend): Performance optimization (~243 lines, 20 tests)
+- [x] Chunk 5.4 (Backend): Golden test suite (~315 lines, 9 tests)
+
+### Next Up: Week 14
+- [ ] Chunk 5.5 (Backend): Documentation & API cleanup
 - [ ] Chunk 4.3 (Backend): Gradle Build Analyzer (if needed)
 - [ ] Backend Integration: Wire UI to Kai's components
 

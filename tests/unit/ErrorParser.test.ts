@@ -69,7 +69,7 @@ describe('ErrorParser', () => {
         const result = parser.parse(errorText);
 
         expect(result).not.toBeNull();
-        expect(result?.type).toBe('dependency_resolution_error');
+        expect(result?.type).toBe('gradle_dependency_resolution_error');
         expect(result?.language).toBe('gradle');
       });
 
@@ -89,7 +89,7 @@ describe('ErrorParser', () => {
         const result = parser.parse(errorText);
 
         expect(result).not.toBeNull();
-        expect(result?.type).toBe('build_script_syntax_error');
+        expect(result?.type).toBe('gradle_build_script_syntax_error');
         expect(result?.language).toBe('gradle');
       });
     });

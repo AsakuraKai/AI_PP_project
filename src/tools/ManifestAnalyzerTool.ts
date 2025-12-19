@@ -87,6 +87,8 @@ export class ManifestAnalyzerTool {
       // Try to extract specific conflict details
       const attributeMatch = output.match(/attribute\s+(\S+)\s+.*?has already been defined/i);
       const elementMatch = output.match(/element\s+<(\S+)>\s+.*?conflicts/i);
+      // Pattern for "Attribute application@allowBackup value=..."
+      const atAttributeMatch = output.match(/Attribute\s+\w+@(\w+)\s+value=/i);
       
       let metadata: any = {};
       
@@ -96,6 +98,9 @@ export class ManifestAnalyzerTool {
       } else if (elementMatch) {
         metadata.conflictType = 'element';
         metadata.conflictElement = elementMatch[1];
+      } else if (atAttributeMatch) {
+        metadata.conflictType = 'attribute';
+        metadata.conflictAttribute = atAttributeMatch[1];
       }
       
       return {

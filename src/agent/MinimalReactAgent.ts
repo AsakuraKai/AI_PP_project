@@ -25,6 +25,8 @@ import { ReadFileTool } from '../tools/ReadFileTool';
 import { LSPTool } from '../tools/LSPTool';
 import { ToolRegistry } from '../tools/ToolRegistry';
 import { PromptEngine } from './PromptEngine';
+import { AgentStateStream } from './AgentStateStream';
+import { PerformanceTracker } from '../monitoring/PerformanceTracker';
 import { z } from 'zod';
 import {
   ParsedError,
@@ -53,9 +55,11 @@ export class MinimalReactAgent {
   private readonly toolRegistry: ToolRegistry;
   private readonly promptEngine: PromptEngine;
   private readonly readFileTool: ReadFileTool;
+  private readonly stream: AgentStateStream;
+  private readonly performanceTracker: PerformanceTracker;
 
   constructor(
-    private llm: OllamaClient,
+    protected llm: OllamaClient,
     config?: AgentConfig
   ) {
     // Configuration with defaults
@@ -68,6 +72,8 @@ export class MinimalReactAgent {
     this.readFileTool = new ReadFileTool();
     this.toolRegistry = ToolRegistry.getInstance();
     this.promptEngine = new PromptEngine();
+    this.stream = new AgentStateStream();
+    this.performanceTracker = new PerformanceTracker();
 
     // Register tools if using ToolRegistry
     if (this.useToolRegistry) {
@@ -138,6 +144,7 @@ export class MinimalReactAgent {
    */
   async analyze(error: ParsedError): Promise<RCAResult> {
     const startTime = Date.now();
+    const stopTotal = this.performanceTracker.startTimer('total_analysis');
 
     // Initialize agent state
     const state: AgentState = {
@@ -157,22 +164,28 @@ export class MinimalReactAgent {
 
     try {
       // Get system prompt and few-shot examples if using PromptEngine
+      const stopPromptGen = this.performanceTracker.startTimer('prompt_generation');
       const systemPrompt = this.usePromptEngine
         ? this.promptEngine.getSystemPrompt()
         : null;
       const examples = this.usePromptEngine
         ? this.promptEngine.getFewShotExamples(error.type)
         : [];
+      stopPromptGen();
 
       // Dynamic iteration loop
       for (let i = 0; i < this.maxIterations; i++) {
         state.iteration = i + 1;
         this.checkTimeout(state);
 
+        // Emit iteration start event
+        this.stream.emitIteration(state.iteration, this.maxIterations);
+
         // Generate thought/action using PromptEngine or fallback
         let response: { thought: string; action: ToolCall | null; rootCause?: string; fixGuidelines?: string[]; confidence?: number };
         
         if (this.usePromptEngine) {
+          const stopPromptBuild = this.performanceTracker.startTimer('prompt_build');
           const prompt = this.promptEngine.buildIterationPrompt({
             systemPrompt: systemPrompt || '',
             examples: i === 0 ? examples : [], // Only first iteration
@@ -183,11 +196,14 @@ export class MinimalReactAgent {
             iteration: i + 1,
             maxIterations: this.maxIterations,
           });
+          stopPromptBuild();
 
+          const stopLLM = this.performanceTracker.startTimer('llm_inference');
           const llmResponse = await this.llm.generate(prompt, {
             temperature: 0.7,
             maxTokens: 1500,
           });
+          stopLLM();
 
           response = this.promptEngine.parseResponse(llmResponse.text);
         } else {
@@ -201,33 +217,61 @@ export class MinimalReactAgent {
           state.hypothesis = response.thought;
         }
 
+        // Emit thought event
+        this.stream.emitThought(response.thought, state.iteration);
+
         // Execute action if specified
         if (response.action && response.action.tool && this.useToolRegistry) {
+          // Emit action event
+          this.stream.emitAction(response.action, state.iteration);
+
           try {
+            const stopTool = this.performanceTracker.startTimer('tool_execution');
             const toolResult = await this.toolRegistry.execute(
               response.action.tool,
               response.action.parameters
             );
+            stopTool();
 
+            const observation = toolResult.success ? toolResult.data : toolResult.error || 'Tool execution failed';
             state.actions.push(response.action);
-            state.observations.push(toolResult.success ? toolResult.data : toolResult.error || 'Tool execution failed');
+            state.observations.push(observation);
+
+            // Emit observation event
+            this.stream.emitObservation(observation, state.iteration, toolResult.success);
 
             console.log(`✓ Tool ${response.action.tool} executed successfully`);
           } catch (toolError) {
             const errorMsg = `Tool ${response.action.tool} failed: ${toolError instanceof Error ? toolError.message : 'Unknown error'}`;
             state.observations.push(errorMsg);
+            
+            // Emit observation event (failure)
+            this.stream.emitObservation(errorMsg, state.iteration, false);
+
             console.warn(`✗ ${errorMsg}`);
           }
         } else if (response.action && response.action.tool === 'read_file' && !this.useToolRegistry) {
           // Fallback: Execute read_file directly (backward compatibility)
+          this.stream.emitAction(response.action, state.iteration);
+
           try {
+            const stopReadFile = this.performanceTracker.startTimer('read_file_fallback');
             const params = response.action.parameters as { filePath: string; line: number };
             const fileContent = await this.readFileTool.execute(params.filePath, params.line);
+            stopReadFile();
+            
             state.actions.push(response.action);
             state.observations.push(fileContent || 'No file content available');
+
+            // Emit observation event
+            this.stream.emitObservation(fileContent || 'No file content available', state.iteration, true);
           } catch (e) {
             const errorMsg = `Failed to read file: ${e instanceof Error ? e.message : 'Unknown error'}`;
             state.observations.push(errorMsg);
+
+            // Emit observation event (failure)
+            this.stream.emitObservation(errorMsg, state.iteration, false);
+
             console.warn(errorMsg);
           }
         }
@@ -235,7 +279,10 @@ export class MinimalReactAgent {
         // Check if agent decided to conclude
         if (response.rootCause && response.fixGuidelines) {
           console.log(`✓ Agent concluded after ${i + 1} iterations`);
-          return {
+          
+          stopTotal();
+          
+          const result: RCAResult = {
             error: error.message,
             rootCause: response.rootCause,
             fixGuidelines: response.fixGuidelines,
@@ -243,24 +290,38 @@ export class MinimalReactAgent {
             iterations: i + 1,
             toolsUsed: state.actions.map((a) => a.tool),
           };
+
+          // Emit completion event
+          this.stream.emitComplete(result, i + 1);
+
+          // Print performance metrics
+          this.performanceTracker.printMetrics();
+
+          return result;
         }
       }
 
       // Reached max iterations - force conclusion
       console.warn(`⚠ Reached max iterations (${this.maxIterations}), forcing conclusion`);
       
+      const stopFinalPrompt = this.performanceTracker.startTimer('final_prompt_generation');
       const finalPrompt = this.usePromptEngine
         ? this.promptEngine.buildFinalPrompt(state)
         : this.buildFinalPromptLegacy(state);
+      stopFinalPrompt();
 
+      const stopFinalLLM = this.performanceTracker.startTimer('final_llm_inference');
       const finalResponse = await this.llm.generate(finalPrompt, {
         temperature: 0.5,
         maxTokens: 1500,
       });
+      stopFinalLLM();
+
+      stopTotal();
 
       if (this.usePromptEngine) {
         const parsed = this.promptEngine.parseResponse(finalResponse.text);
-        return {
+        const result: RCAResult = {
           error: error.message,
           rootCause: parsed.rootCause || 'Analysis incomplete - reached max iterations',
           fixGuidelines: parsed.fixGuidelines || ['Review error and code context'],
@@ -268,10 +329,42 @@ export class MinimalReactAgent {
           iterations: this.maxIterations,
           toolsUsed: state.actions.map((a) => a.tool),
         };
+
+        // Emit completion event
+        this.stream.emitComplete(result, this.maxIterations);
+
+        // Print performance metrics
+        this.performanceTracker.printMetrics();
+
+        return result;
       } else {
-        return this.parseOutputLegacy(finalResponse.text, error, state);
+        const result = this.parseOutputLegacy(finalResponse.text, error, state);
+        
+        // Emit completion event
+        this.stream.emitComplete(result, this.maxIterations);
+
+        // Print performance metrics
+        this.performanceTracker.printMetrics();
+
+        return result;
       }
     } catch (error) {
+      stopTotal();
+      
+      // Emit error event (best effort, don't let it break error handling)
+      try {
+        this.stream.emitError(
+          error as Error,
+          state?.iteration || 0,
+          'synthesis'
+        );
+      } catch (streamError) {
+        console.warn('Failed to emit error event:', streamError);
+      }
+
+      // Print performance metrics even on error
+      this.performanceTracker.printMetrics();
+
       if (error instanceof AnalysisTimeoutError || error instanceof LLMError) {
         throw error;
       }
@@ -503,6 +596,13 @@ IMPORTANT: Respond ONLY with valid JSON, no other text.`;
   }
 
   /**
+   * Get performance tracker for metrics inspection
+   */
+  getPerformanceTracker(): PerformanceTracker {
+    return this.performanceTracker;
+  }
+
+  /**
    * Get tool registry (for testing and inspection)
    */
   getToolRegistry(): ToolRegistry {
@@ -514,5 +614,19 @@ IMPORTANT: Respond ONLY with valid JSON, no other text.`;
    */
   getPromptEngine(): PromptEngine {
     return this.promptEngine;
+  }
+
+  /**
+   * Get agent state stream for real-time updates
+   */
+  getStream(): AgentStateStream {
+    return this.stream;
+  }
+
+  /**
+   * Dispose of agent resources
+   */
+  dispose(): void {
+    this.stream.dispose();
   }
 }
