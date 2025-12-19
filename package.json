@@ -9,6 +9,7 @@
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:accuracy": "ts-node scripts/run-accuracy-tests.ts",
+    "test:golden": "RUN_GOLDEN_TESTS=true jest tests/golden",
     "bench": "ts-node scripts/benchmark.ts",
     "lint": "eslint src/**/*.ts",
     "format": "prettier --write src/**/*.ts"

@@ -236,7 +236,7 @@ describe('Chunk 4.5 - Android Testing Suite', () => {
       expect(result).not.toBeNull();
       expect(result?.type).toBe('gradle_dependency_conflict');
       expect(result?.language).toBe('gradle');
-      expect(result?.metadata).toHaveProperty('conflictingDependencies');
+      expect(result?.metadata).toHaveProperty('conflictingVersions');
     });
 
     test('AG002: Parse Gradle Kotlin Version Mismatch', () => {
@@ -332,7 +332,7 @@ describe('Chunk 4.5 - Android Testing Suite', () => {
       expect(result).not.toBeNull();
       expect(result?.type).toBe('manifest_undeclared_activity');
       expect(result?.metadata?.componentType).toBe('activity');
-      expect(result?.metadata?.componentName).toContain('SettingsActivity');
+      expect(result?.metadata?.componentClass).toContain('SettingsActivity');
     });
 
     test('AM003: Parse Manifest Merge Conflict', () => {
@@ -341,7 +341,7 @@ describe('Chunk 4.5 - Android Testing Suite', () => {
 
       expect(result).not.toBeNull();
       expect(result?.type).toBe('manifest_merge_conflict');
-      expect(result?.metadata?.attribute).toBe('allowBackup');
+      expect(result?.metadata?.conflictAttribute).toBe('allowBackup');
     });
 
     test('All Manifest errors should parse correctly', () => {

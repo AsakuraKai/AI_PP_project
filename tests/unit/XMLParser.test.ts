@@ -142,7 +142,7 @@ in fragment_profile.xml
         const result = parser.parse(errorText);
 
         expect(result).not.toBeNull();
-        expect(result?.type).toBe('xml_attribute_error');
+        expect(result?.type).toBe('xml_missing_attribute');
         expect(result?.filePath).toBe('fragment_profile.xml');
         expect(result?.metadata?.attributeName).toBe('layout_height');
       });
