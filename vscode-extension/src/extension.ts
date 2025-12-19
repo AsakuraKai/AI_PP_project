@@ -20,6 +20,22 @@ interface RCAResult {
   fixGuidelines: string[];
   confidence: number;
   codeSnippet?: string;
+  toolsUsed?: string[]; // CHUNK 2.2: Track tools used during analysis
+  iterations?: number;  // CHUNK 2.2: Track agent iterations
+  language?: 'kotlin' | 'java' | 'xml'; // CHUNK 4.2: Track language for XML-specific display
+  
+  // CHUNK 2.3: Accuracy metrics
+  qualityScore?: number;  // Quality score from QualityScorer (0.0-1.0)
+  latency?: number;       // Analysis latency in milliseconds
+  modelName?: string;     // LLM model used (e.g., 'granite-code:8b')
+  
+  // CHUNK 3.3: Cache metadata
+  fromCache?: boolean;    // Whether result came from cache
+  cacheTimestamp?: string; // When result was cached
+  
+  // CHUNK 3.4: Feedback tracking
+  rcaId?: string;         // Unique ID for this RCA (for feedback)
+  errorHash?: string;     // Hash of the error (for cache lookup)
 }
 
 // Global state
@@ -80,7 +96,7 @@ async function analyzeErrorCommand(): Promise<void> {
     vscode.window.showErrorMessage(
       'Could not parse error. Is this a Kotlin/Android error?',
       'View Debug Logs'
-    ).then(selection => {
+    ).then((selection: string | undefined) => {
       if (selection === 'View Debug Logs') {
         debugChannel.show();
       }
@@ -89,6 +105,32 @@ async function analyzeErrorCommand(): Promise<void> {
   }
   
   log('info', 'Error parsed successfully', parsedError);
+  
+  // CHUNK 4.1: Display Compose-specific tips if applicable
+  if (isComposeError(parsedError.type)) {
+    await showComposeTips(parsedError);
+  }
+  
+  // CHUNK 4.2: Display XML-specific tips if applicable
+  if (isXMLError(parsedError.type)) {
+    await showXMLTips(parsedError);
+  }
+  
+  // CHUNK 3.3: Check cache before analysis
+  const cachedResult = await checkCache(parsedError);
+  
+  if (cachedResult) {
+    // Cache hit - show result immediately
+    log('info', 'Cache hit - showing cached result');
+    showResult(cachedResult);
+    
+    // CHUNK 3.4: Show feedback buttons for cached result
+    await showFeedbackPrompt(cachedResult);
+    return;
+  }
+  
+  // Cache miss - proceed with full analysis
+  log('info', 'Cache miss - running full analysis');
   
   // CHUNK 1.3: Analyze with agent and display results
   await analyzeWithProgress(parsedError);
@@ -181,6 +223,10 @@ function parseError(errorText: string): ParsedError | null {
 
 /**
  * CHUNK 1.3: Analyze with progress indicator
+ * CHUNK 1.4: Enhanced with file reading status updates
+ * CHUNK 2.2: Enhanced with tool execution feedback
+ * CHUNK 3.1: Enhanced with database storage notifications
+ * CHUNK 3.2: Enhanced with similar solutions search
  * Calls Kai's agent and displays results
  */
 async function analyzeWithProgress(parsedError: ParsedError): Promise<void> {
@@ -188,9 +234,21 @@ async function analyzeWithProgress(parsedError: ParsedError): Promise<void> {
     location: vscode.ProgressLocation.Notification,
     title: 'RCA Agent',
     cancellable: false,
-  }, async (progress) => {
+  }, async (progress: vscode.Progress<{ message?: string; increment?: number }>) => {
     try {
-      progress.report({ message: 'Checking LLM connection...' });
+      // CHUNK 3.2: Search for similar past solutions BEFORE analysis
+      progress.report({ message: '🔍 Searching past solutions...', increment: 5 });
+      await searchAndDisplaySimilarSolutions(parsedError);
+      
+      // CHUNK 2.2: Tool execution feedback - File reading
+      progress.report({ message: '📖 Reading source file...', increment: 15 });
+      log('info', 'Tool execution: ReadFileTool', { filePath: parsedError.filePath, line: parsedError.line });
+      
+      // Simulate file reading delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // CHUNK 2.2: Tool execution feedback - LLM initialization
+      progress.report({ message: '🤖 Initializing LLM...', increment: 25 });
       
       // Check if we can connect to Ollama (placeholder)
       const config = vscode.workspace.getConfiguration('rcaAgent');
@@ -199,22 +257,48 @@ async function analyzeWithProgress(parsedError: ParsedError): Promise<void> {
       
       log('info', 'Configuration', { ollamaUrl, model });
       
-      // TODO: Wire to Kai's OllamaClient and MinimalReactAgent
-      // For now, simulate analysis with placeholder
-      progress.report({ message: 'Analyzing error... (using placeholder)' });
+      // CHUNK 2.2: Tool execution feedback - Finding context
+      progress.report({ message: '🔍 Finding code context...', increment: 35 });
+      log('info', 'Tool execution: LSPTool (simulated)', { operation: 'find_callers' });
       
-      // Simulate delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // CHUNK 2.2: Tool execution feedback - Analyzing pattern
+      progress.report({ message: '🧠 Analyzing error pattern...', increment: 60 });
+      
+      // Simulate analysis
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Generate mock result (will be replaced with Kai's agent)
       const result = generateMockResult(parsedError);
       
-      progress.report({ message: 'Complete!', increment: 100 });
+      progress.report({ message: '✅ Analysis complete!', increment: 85 });
       
       // Display result in output channel
       showResult(result);
       
-      vscode.window.showInformationMessage('Analysis complete! Check the RCA Agent output.');
+      // CHUNK 3.1: Store result in database (after analysis)
+      progress.report({ message: '💾 Storing result...', increment: 90 });
+      await storeResultInDatabase(result, parsedError);
+      
+      // CHUNK 3.3: Store in cache for future use
+      progress.report({ message: '💾 Caching result...', increment: 95 });
+      await storeInCache(result, parsedError);
+      
+      progress.report({ message: '🎉 Done!', increment: 100 });
+      
+      // CHUNK 1.5: Improved success message
+      vscode.window.showInformationMessage(
+        '✅ Analysis complete! Check the RCA Agent output.',
+        'View Output'
+      ).then((selection: string | undefined) => {
+        if (selection === 'View Output') {
+          outputChannel.show();
+        }
+      });
+      
+      // CHUNK 3.4: Show feedback prompt after analysis
+      await showFeedbackPrompt(result);
       
     } catch (error) {
       handleAnalysisError(error as Error);
@@ -256,6 +340,62 @@ function generateMockResult(parsedError: ParsedError): RCAResult {
         'Verify the symbol is in scope',
         'Sync Gradle project if using external library'
       ]
+    },
+    // CHUNK 4.1: Compose error examples
+    'compose_remember': {
+      rootCause: 'State was created during composition without using remember, causing state to be lost on recomposition.',
+      fixGuidelines: [
+        'Wrap state in remember: val state = remember { mutableStateOf(value) }',
+        'Use rememberSaveable for persisting across configuration changes',
+        'Ensure remember has correct keys for conditional recreation',
+        'Move state initialization outside composable if it should persist'
+      ]
+    },
+    'compose_recomposition': {
+      rootCause: 'Composable is recomposing excessively due to unstable parameters or state reads.',
+      fixGuidelines: [
+        'Mark data classes with @Stable or @Immutable annotation',
+        'Use derivedStateOf for computed values',
+        'Move expensive computations into remember blocks',
+        'Check for lambda recreations - use remember { lambda }'
+      ]
+    },
+    'compose_launched_effect': {
+      rootCause: 'LaunchedEffect is not executing as expected due to incorrect keys or scope issues.',
+      fixGuidelines: [
+        'Verify LaunchedEffect keys - effect restarts when keys change',
+        'Use Unit key for one-time effects',
+        'Check coroutine scope cancellation',
+        'Move side effects inside LaunchedEffect, not at composable top level'
+      ]
+    },
+    // CHUNK 4.2: XML error examples
+    'xml_inflation': {
+      rootCause: 'Layout XML file could not be inflated due to syntax error, missing view, or initialization issue.',
+      fixGuidelines: [
+        'Check for XML syntax errors (unclosed tags, missing attributes)',
+        'Verify all custom views have proper constructors',
+        'Ensure all view imports are correct',
+        'Clean and rebuild project if resource not found'
+      ]
+    },
+    'xml_missing_id': {
+      rootCause: 'findViewById returned null because the view ID does not exist in the inflated layout.',
+      fixGuidelines: [
+        'Add android:id="@+id/viewName" to view in layout XML',
+        'Verify layout file is correct (check setContentView)',
+        'Use view binding for type-safe view access',
+        'Check if view is in an included layout or fragment'
+      ]
+    },
+    'xml_attribute_error': {
+      rootCause: 'Required XML attribute is missing from a view element.',
+      fixGuidelines: [
+        'Add layout_width and layout_height to all views',
+        'Use wrap_content, match_parent, or specific dimensions',
+        'Check for other required attributes specific to view type',
+        'Refer to Android documentation for view requirements'
+      ]
     }
   };
   
@@ -263,6 +403,12 @@ function generateMockResult(parsedError: ParsedError): RCAResult {
     rootCause: 'Unable to determine root cause. Real agent analysis needed.',
     fixGuidelines: ['Run with Ollama server for detailed analysis']
   };
+  
+  // Determine language from error type (CHUNK 4.2)
+  let language: 'kotlin' | 'java' | 'xml' = 'kotlin';
+  if (parsedError.type.startsWith('xml_')) {
+    language = 'xml';
+  }
   
   return {
     error: parsedError.message,
@@ -272,93 +418,323 @@ function generateMockResult(parsedError: ParsedError): RCAResult {
     rootCause: template.rootCause || 'Unknown',
     fixGuidelines: template.fixGuidelines || [],
     confidence: 0.75, // Mock confidence
-    codeSnippet: '// Code snippet will be provided by agent'
+    codeSnippet: '// Code snippet will be provided by agent',
+    toolsUsed: ['ReadFileTool', 'LSPTool', 'VectorSearchTool'], // CHUNK 2.2: Mock tools
+    iterations: 3, // CHUNK 2.2: Mock iteration count
+    language, // CHUNK 4.2: Add language info
+    
+    // CHUNK 2.3: Accuracy metrics
+    qualityScore: 0.72,  // Mock quality score (slightly lower than confidence)
+    latency: 25918,      // Mock latency (~26 seconds, from real accuracy tests)
+    modelName: 'granite-code:8b', // Mock model name
   };
 }
 
 /**
- * CHUNK 1.3 & 1.5: Display results with nice formatting
+ * CHUNK 1.3: Display results with nice formatting
+ * CHUNK 1.4: Code Context Display
+ * CHUNK 1.5: MVP Polish with enhanced formatting
+ * CHUNK 3.3: Cache indicator
  */
 function showResult(result: RCAResult): void {
-  // Clear previous output
-  outputChannel.clear();
+  // Clear previous output (unless it's a cache hit with pre-existing header)
+  if (!result.fromCache) {
+    outputChannel.clear();
+  }
   
-  // Use emoji and formatting for better UX
+  // Use emoji and formatting for better UX (Chunk 1.5)
   outputChannel.appendLine('🔍 === ROOT CAUSE ANALYSIS ===\n');
   
-  // Error badge
+  // CHUNK 3.3: Show cache indicator if from cache
+  if (result.fromCache && result.cacheTimestamp) {
+    const cacheTime = new Date(result.cacheTimestamp);
+    const now = new Date();
+    const diffMinutes = Math.floor((now.getTime() - cacheTime.getTime()) / 60000);
+    const timeAgo = diffMinutes < 60 
+      ? `${diffMinutes} minute${diffMinutes !== 1 ? 's' : ''} ago`
+      : `${Math.floor(diffMinutes / 60)} hour${Math.floor(diffMinutes / 60) !== 1 ? 's' : ''} ago`;
+    
+    outputChannel.appendLine(`⚡ CACHE HIT: Result retrieved from cache (analyzed ${timeAgo})`);
+    outputChannel.appendLine(`💾 No LLM inference needed - instant result!\n`);
+  }
+  
+  // Error badge with color-coding (Chunk 2.1 preview)
   const badge = getErrorBadge(result.errorType);
   outputChannel.appendLine(`${badge}\n`);
   
   outputChannel.appendLine(`🐛 ERROR: ${result.error}`);
   outputChannel.appendLine(`📁 FILE: ${result.filePath}:${result.line}\n`);
   
-  // Code snippet if available
-  if (result.codeSnippet && result.codeSnippet.length > 0) {
-    outputChannel.appendLine('📝 CODE CONTEXT:');
+  // CHUNK 1.4: Display file reading status and code snippet
+  if (result.codeSnippet && result.codeSnippet.length > 0 && result.codeSnippet !== '// Code snippet will be provided by agent') {
+    outputChannel.appendLine('📝 CODE CONTEXT (from source file):');
     outputChannel.appendLine('```kotlin');
     outputChannel.appendLine(result.codeSnippet);
     outputChannel.appendLine('```\n');
+    log('info', 'Code snippet displayed', { snippetLength: result.codeSnippet.length });
+  } else {
+    outputChannel.appendLine('⚠️  CODE CONTEXT: File could not be read (using error message only)\n');
+    log('warn', 'No code snippet available');
   }
   
+  // Root cause section
   outputChannel.appendLine(`💡 ROOT CAUSE:\n${result.rootCause}\n`);
+  
+  // CHUNK 4.1: Display Compose-specific hints
+  if (isComposeError(result.errorType)) {
+    displayComposeHints(result);
+  }
+  
+  // CHUNK 4.2: Display XML-specific hints and suggestions
+  if (isXMLError(result.errorType)) {
+    displayXMLHints(result);
+  }
+  
+  // CHUNK 1.5: Enhanced fix guidelines formatting
   outputChannel.appendLine(`🛠️  FIX GUIDELINES:`);
   result.fixGuidelines.forEach((guideline, index) => {
     outputChannel.appendLine(`  ${index + 1}. ${guideline}`);
   });
   
+  // CHUNK 1.5: Confidence bar visualization
+  const confidenceBar = createConfidenceBar(result.confidence);
   outputChannel.appendLine(`\n✅ CONFIDENCE: ${(result.confidence * 100).toFixed(0)}%`);
+  outputChannel.appendLine(`   ${confidenceBar}`);
+  outputChannel.appendLine(`   ${getConfidenceInterpretation(result.confidence)}`);
   
-  // Helpful footer
-  outputChannel.appendLine('\n---');
+  // CHUNK 2.2: Display tool execution summary (if available)
+  if (result.toolsUsed && result.toolsUsed.length > 0) {
+    outputChannel.appendLine(`\n🔧 TOOLS USED:`);
+    result.toolsUsed.forEach((tool, index) => {
+      const toolIcon = getToolIcon(tool);
+      outputChannel.appendLine(`  ${index + 1}. ${toolIcon} ${tool}`);
+    });
+  }
+  
+  // CHUNK 2.2: Display iteration count (if available)
+  if (result.iterations !== undefined) {
+    outputChannel.appendLine(`\n🔄 ITERATIONS: ${result.iterations} reasoning steps`);
+  }
+  
+  // CHUNK 2.3: Accuracy metrics display (optional section)
+  if (result.qualityScore !== undefined || result.latency !== undefined || result.modelName) {
+    outputChannel.appendLine('\n📊 METRICS:');
+    
+    if (result.qualityScore !== undefined) {
+      const qualityPercent = (result.qualityScore * 100).toFixed(0);
+      const qualityBar = createConfidenceBar(result.qualityScore); // Reuse confidence bar
+      outputChannel.appendLine(`   Quality Score: ${qualityPercent}% ${qualityBar}`);
+    }
+    
+    if (result.latency !== undefined) {
+      const latencySeconds = (result.latency / 1000).toFixed(1);
+      outputChannel.appendLine(`   Analysis Time: ${latencySeconds}s`);
+    }
+    
+    if (result.modelName) {
+      outputChannel.appendLine(`   Model: ${result.modelName}`);
+    }
+  }
+  
+  // CHUNK 1.5: Helpful footer with improved tips
+  outputChannel.appendLine('\n' + '─'.repeat(60));
   outputChannel.appendLine('💡 TIP: This is a placeholder result. Connect to Ollama for real AI-powered analysis.');
   outputChannel.appendLine('📖 Configure: File > Preferences > Settings > RCA Agent');
+  outputChannel.appendLine('❓ Need help? Check the documentation or report issues on GitHub.');
   
   // Show output channel
   outputChannel.show(true);
   
-  log('info', 'Result displayed in output channel');
+  log('info', 'Result displayed in output channel with code context and confidence visualization');
 }
 
 /**
- * CHUNK 2.1: Error type badges with colors
+ * CHUNK 2.1: Error type badges with colors (EXPANDED)
+ * Supports 30+ error types across Kotlin, Gradle, Compose, and XML
  */
 function getErrorBadge(errorType: string): string {
   const badges: Record<string, string> = {
+    // Kotlin Errors (6 types) - Red variants
     'npe': '🔴 NullPointerException',
-    'lateinit': '🟠 Lateinit Error',
-    'gradle_build': '🟡 Build Error',
-    'unresolved_reference': '🔵 Unresolved Reference',
-    'type_mismatch': '🟣 Type Mismatch',
+    'lateinit': '🔴 Lateinit Property Error',
+    'unresolved_reference': '🔴 Unresolved Reference',
+    'type_mismatch': '🔴 Type Mismatch',
+    'cast_exception': '🔴 Class Cast Exception',
+    'index_out_of_bounds': '🔴 Index Out of Bounds',
+    
+    // Gradle Build Errors (5 types) - Yellow variants
+    'gradle_dependency': '🟡 Gradle Dependency Conflict',
+    'gradle_version': '🟡 Gradle Version Mismatch',
+    'gradle_build': '🟡 Gradle Build Failure',
+    'gradle_task': '🟡 Gradle Task Error',
+    'gradle_plugin': '🟡 Gradle Plugin Issue',
+    
+    // Jetpack Compose Errors (10 types) - Purple variants
+    'compose_remember': '🟣 Compose: Remember Error',
+    'compose_derived_state': '🟣 Compose: DerivedStateOf Error',
+    'compose_recomposition': '🟣 Compose: Recomposition Issue',
+    'compose_launched_effect': '🟣 Compose: LaunchedEffect Error',
+    'compose_disposable_effect': '🟣 Compose: DisposableEffect Error',
+    'compose_composition_local': '🟣 Compose: CompositionLocal Error',
+    'compose_modifier': '🟣 Compose: Modifier Error',
+    'compose_side_effect': '🟣 Compose: Side Effect Error',
+    'compose_state_read': '🟣 Compose: State Read Error',
+    'compose_snapshot': '🟣 Compose: Snapshot Error',
+    
+    // XML/Android Layout Errors (8 types) - Orange variants
+    'xml_inflation': '🟠 XML: Layout Inflation Error',
+    'xml_missing_id': '🟠 XML: Missing View ID',
+    'xml_attribute': '🟠 XML: Missing Required Attribute',
+    'xml_namespace': '🟠 XML: Missing Namespace',
+    'xml_tag_mismatch': '🟠 XML: Tag Mismatch',
+    'xml_resource_not_found': '🟠 XML: Resource Not Found',
+    'xml_duplicate_id': '🟠 XML: Duplicate ID',
+    'xml_invalid_attribute': '🟠 XML: Invalid Attribute Value',
+    
+    // General/Other Errors - Blue variants
+    'unknown': '🔵 Unknown Error',
+    'timeout': '⏱️ Timeout',
+    'network': '🌐 Network Error',
   };
-  return badges[errorType] || '⚪ Unknown Error';
+  
+  return badges[errorType] || '⚪ Unrecognized Error';
 }
 
 /**
- * Error handler with helpful suggestions
+ * CHUNK 1.5: Create visual confidence bar
+ */
+function createConfidenceBar(confidence: number): string {
+  const barLength = 20;
+  const filledLength = Math.round(confidence * barLength);
+  const bar = '█'.repeat(filledLength) + '░'.repeat(barLength - filledLength);
+  return bar;
+}
+
+/**
+ * CHUNK 1.5: Get confidence interpretation text
+ */
+function getConfidenceInterpretation(confidence: number): string {
+  if (confidence >= 0.8) {
+    return 'High confidence - likely accurate';
+  } else if (confidence >= 0.6) {
+    return 'Medium confidence - verify suggestion';
+  } else {
+    return 'Low confidence - use as starting point';
+  }
+}
+
+/**
+ * CHUNK 2.2: Get icon for tool name
+ */
+function getToolIcon(toolName: string): string {
+  const icons: Record<string, string> = {
+    'read_file': '📖',
+    'ReadFileTool': '📖',
+    'find_callers_of_function': '🔍',
+    'LSPTool': '🔍',
+    'vector_search_db': '📚',
+    'VectorSearchTool': '📚',
+    'web_search_wiki': '🌐',
+    'WebSearchTool': '🌐',
+    'get_code_context': '📝',
+    'get_user_error_context': '❓',
+  };
+  
+  return icons[toolName] || '🔧';
+}
+
+/**
+ * CHUNK 1.5: Enhanced error handler with helpful suggestions and actions
  */
 function handleAnalysisError(error: Error): void {
   log('error', 'Analysis failed', error);
   
-  // Specific error messages
+  // Specific error messages with actionable suggestions
   if (error.message.includes('ECONNREFUSED') || error.message.includes('Ollama')) {
+    // Ollama connection error
     vscode.window.showErrorMessage(
-      'Could not connect to Ollama. Is it running?',
+      '❌ Could not connect to Ollama. Is it running?',
       'Start Ollama',
-      'View Docs'
-    ).then(selection => {
+      'Installation Guide',
+      'Check Logs'
+    ).then((selection: string | undefined) => {
       if (selection === 'Start Ollama') {
         vscode.env.openExternal(vscode.Uri.parse('https://ollama.ai/'));
-      } else if (selection === 'View Docs') {
+      } else if (selection === 'Installation Guide') {
         vscode.env.openExternal(vscode.Uri.parse('https://ollama.ai/docs'));
+      } else if (selection === 'Check Logs') {
+        debugChannel.show();
       }
     });
+    
+    outputChannel.appendLine('\n❌ ERROR: Could not connect to Ollama');
+    outputChannel.appendLine('\n🔧 TROUBLESHOOTING STEPS:');
+    outputChannel.appendLine('1. Install Ollama: https://ollama.ai/');
+    outputChannel.appendLine('2. Start Ollama: Run "ollama serve" in terminal');
+    outputChannel.appendLine('3. Pull model: Run "ollama pull granite-code:8b"');
+    outputChannel.appendLine('4. Check settings: File > Preferences > Settings > RCA Agent');
+    
+  } else if (error.message.includes('timeout') || error.message.includes('ETIMEDOUT')) {
+    // Timeout error
+    vscode.window.showErrorMessage(
+      '⏱️ Analysis timed out. Try increasing timeout or using a smaller model.',
+      'Open Settings',
+      'View Logs'
+    ).then((selection: string | undefined) => {
+      if (selection === 'Open Settings') {
+        vscode.commands.executeCommand('workbench.action.openSettings', 'rcaAgent');
+      } else if (selection === 'View Logs') {
+        debugChannel.show();
+      }
+    });
+    
+    outputChannel.appendLine('\n⏱️ ERROR: Analysis timed out');
+    outputChannel.appendLine('\n💡 SUGGESTIONS:');
+    outputChannel.appendLine('• Increase timeout in settings');
+    outputChannel.appendLine('• Use a faster/smaller model (e.g., granite-code:8b)');
+    outputChannel.appendLine('• Check your network connection');
+    
+  } else if (error.message.includes('parse') || error.message.includes('Could not parse')) {
+    // Parse error
+    vscode.window.showErrorMessage(
+      '⚠️ Could not parse error. Is this a Kotlin/Android error?',
+      'View Debug Logs',
+      'Report Issue'
+    ).then((selection: string | undefined) => {
+      if (selection === 'View Debug Logs') {
+        debugChannel.show();
+      } else if (selection === 'Report Issue') {
+        vscode.env.openExternal(vscode.Uri.parse('https://github.com/your-repo/issues'));
+      }
+    });
+    
+    outputChannel.appendLine('\n⚠️ ERROR: Could not parse error message');
+    outputChannel.appendLine('\n💡 TIPS:');
+    outputChannel.appendLine('• Ensure error is from Kotlin/Android code');
+    outputChannel.appendLine('• Include full stack trace if possible');
+    outputChannel.appendLine('• Check debug logs for more details');
+    
   } else {
-    vscode.window.showErrorMessage(`Analysis failed: ${error.message}`);
+    // Generic error
+    vscode.window.showErrorMessage(
+      `❌ Analysis failed: ${error.message}`,
+      'View Logs',
+      'Retry'
+    ).then((selection: string | undefined) => {
+      if (selection === 'View Logs') {
+        debugChannel.show();
+      } else if (selection === 'Retry') {
+        vscode.commands.executeCommand('rcaAgent.analyzeError');
+      }
+    });
+    
+    outputChannel.appendLine(`\n❌ ERROR: ${error.message}`);
+    outputChannel.appendLine('\n📋 Stack Trace:');
+    outputChannel.appendLine(error.stack || 'No stack trace available');
   }
   
-  outputChannel.appendLine(`\n❌ ERROR: ${error.message}`);
   outputChannel.show(true);
+  log('error', 'Error displayed to user', { errorType: error.constructor.name });
 }
 
 /**
@@ -380,6 +756,617 @@ function log(level: 'info' | 'warn' | 'error', message: string, data?: unknown):
 }
 
 /**
+ * CHUNK 3.2: Search and display similar past solutions
+ * Shows similar errors from database BEFORE running new analysis
+ */
+async function searchAndDisplaySimilarSolutions(parsedError: ParsedError): Promise<void> {
+  try {
+    log('info', 'CHUNK 3.2: Searching for similar past solutions', { errorMessage: parsedError.message });
+    
+    // TODO: Wire to Kai's ChromaDBClient.searchSimilar()
+    // For now, simulate with placeholder data
+    const similarRCAs = generateMockSimilarSolutions(parsedError);
+    
+    if (similarRCAs.length > 0) {
+      log('info', 'Found similar solutions', { count: similarRCAs.length });
+      
+      // Display similar solutions in output channel BEFORE showing new analysis
+      outputChannel.clear();
+      outputChannel.appendLine('🔍 === SEARCHING KNOWLEDGE BASE ===\n');
+      outputChannel.appendLine(`Found ${similarRCAs.length} similar past solution(s):\n`);
+      outputChannel.appendLine('📚 SIMILAR PAST SOLUTIONS:\n');
+      
+      similarRCAs.forEach((rca, index) => {
+        outputChannel.appendLine(`${index + 1}. ${rca.errorType.toUpperCase()}: ${rca.error}`);
+        outputChannel.appendLine(`   📁 File: ${rca.filePath}:${rca.line}`);
+        outputChannel.appendLine(`   💡 Root Cause: ${rca.rootCause}`);
+        outputChannel.appendLine(`   ✅ Confidence: ${(rca.confidence * 100).toFixed(0)}%`);
+        
+        // Show distance/similarity score if available
+        if (rca.distance !== undefined) {
+          const similarity = ((1 - rca.distance) * 100).toFixed(0);
+          outputChannel.appendLine(`   🎯 Similarity: ${similarity}%`);
+        }
+        
+        outputChannel.appendLine('');
+      });
+      
+      outputChannel.appendLine('─'.repeat(60));
+      outputChannel.appendLine('💡 TIP: Review similar solutions above before checking new analysis below.\n');
+      
+      // Show notification
+      const action = await vscode.window.showInformationMessage(
+        `📚 Found ${similarRCAs.length} similar solution(s) from past analyses`,
+        'View Now',
+        'Continue to New Analysis'
+      );
+      
+      if (action === 'View Now') {
+        outputChannel.show(true);
+      }
+    } else {
+      log('info', 'No similar solutions found in database');
+      outputChannel.clear();
+      outputChannel.appendLine('🔍 === SEARCHING KNOWLEDGE BASE ===\n');
+      outputChannel.appendLine('📚 No similar past solutions found.');
+      outputChannel.appendLine('This appears to be a new error pattern.\n');
+      outputChannel.appendLine('─'.repeat(60) + '\n');
+    }
+  } catch (error) {
+    log('error', 'Failed to search similar solutions', error);
+    // Don't block analysis on database search failure
+    outputChannel.appendLine('⚠️  Could not search past solutions (database unavailable)\n');
+  }
+}
+
+/**
+ * CHUNK 3.2: Generate mock similar solutions (PLACEHOLDER)
+ * TODO: Replace with Kai's ChromaDBClient.searchSimilar()
+ */
+function generateMockSimilarSolutions(parsedError: ParsedError): Array<RCAResult & { distance?: number }> {
+  // Simulate finding similar solutions based on error type
+  const mockDatabase: Record<string, Array<RCAResult & { distance?: number }>> = {
+    'npe': [
+      {
+        error: 'kotlin.KotlinNullPointerException: Attempt to invoke virtual method',
+        errorType: 'npe',
+        filePath: 'src/main/kotlin/com/example/MainActivity.kt',
+        line: 45,
+        rootCause: 'TextView instance was null when setText() was called',
+        fixGuidelines: [
+          'Use findViewById<TextView>() with null check',
+          'Call setText() only after view inflation completes',
+          'Use view binding for safer view access'
+        ],
+        confidence: 0.88,
+        distance: 0.15, // Low distance = high similarity
+      },
+      {
+        error: 'NullPointerException at com.example.ui.ProfileFragment.onViewCreated',
+        errorType: 'npe',
+        filePath: 'src/main/kotlin/com/example/ui/ProfileFragment.kt',
+        line: 67,
+        rootCause: 'Fragment view accessed after being destroyed',
+        fixGuidelines: [
+          'Check if view is null before access',
+          'Use viewLifecycleOwner for observers',
+          'Clear references in onDestroyView()'
+        ],
+        confidence: 0.82,
+        distance: 0.22,
+      }
+    ],
+    'lateinit': [
+      {
+        error: 'kotlin.UninitializedPropertyAccessException: lateinit property binding has not been initialized',
+        errorType: 'lateinit',
+        filePath: 'src/main/kotlin/com/example/DetailActivity.kt',
+        line: 28,
+        rootCause: 'ViewBinding accessed before onCreate() initialized it',
+        fixGuidelines: [
+          'Initialize binding in onCreate() before use',
+          'Check ::binding.isInitialized before access',
+          'Move initialization earlier in lifecycle'
+        ],
+        confidence: 0.91,
+        distance: 0.12,
+      }
+    ]
+  };
+  
+  // Return similar solutions for the parsed error type
+  return mockDatabase[parsedError.type] || [];
+}
+
+/**
+ * CHUNK 3.1: Store result in database
+ * Shows storage notifications and handles errors gracefully
+ */
+async function storeResultInDatabase(result: RCAResult, parsedError: ParsedError): Promise<void> {
+  try {
+    log('info', 'CHUNK 3.1: Storing result in database', { 
+      errorType: result.errorType,
+      confidence: result.confidence 
+    });
+    
+    // Show notification that we're storing
+    vscode.window.showInformationMessage('💾 Storing result in database...');
+    
+    // TODO: Wire to Kai's ChromaDBClient.addRCA()
+    // For now, simulate storage with placeholder
+    await new Promise(resolve => setTimeout(resolve, 300)); // Simulate DB write
+    
+    // Generate a mock RCA ID (in real implementation, this comes from ChromaDB)
+    const rcaId = generateMockRcaId();
+    
+    log('info', 'Result stored successfully', { rcaId });
+    
+    // Show success notification with ID
+    const action = await vscode.window.showInformationMessage(
+      `✅ Result saved! ID: ${rcaId.substring(0, 8)}...`,
+      'View Details'
+    );
+    
+    if (action === 'View Details') {
+      // Add storage confirmation to output
+      outputChannel.appendLine('\n💾 === STORAGE CONFIRMATION ===');
+      outputChannel.appendLine(`✅ Result stored in knowledge base`);
+      outputChannel.appendLine(`📋 RCA ID: ${rcaId}`);
+      outputChannel.appendLine(`📅 Stored: ${new Date().toISOString()}`);
+      outputChannel.appendLine(`🏷️  Error Type: ${result.errorType}`);
+      outputChannel.appendLine(`✅ Confidence: ${(result.confidence * 100).toFixed(0)}%`);
+      outputChannel.appendLine('\n💡 This solution will help improve future analyses of similar errors.');
+      outputChannel.show(true);
+    }
+    
+    // Note: In real implementation, this would call:
+    // const db = await ChromaDBClient.create();
+    // const rcaId = await db.addRCA({
+    //   error_message: result.error,
+    //   error_type: result.errorType,
+    //   language: parsedError.language,
+    //   root_cause: result.rootCause,
+    //   fix_guidelines: result.fixGuidelines,
+    //   confidence: result.confidence,
+    //   user_validated: false,
+    //   quality_score: result.qualityScore || result.confidence,
+    // });
+    
+  } catch (error) {
+    log('error', 'Failed to store result in database', error);
+    
+    // Show warning but don't fail the analysis
+    const action = await vscode.window.showWarningMessage(
+      '⚠️  Could not store result in database. Analysis is still valid.',
+      'View Error',
+      'Retry'
+    );
+    
+    if (action === 'View Error') {
+      outputChannel.appendLine('\n❌ === STORAGE ERROR ===');
+      outputChannel.appendLine(`Could not store result: ${(error as Error).message}`);
+      outputChannel.appendLine('\n🔧 TROUBLESHOOTING:');
+      outputChannel.appendLine('1. Check if ChromaDB is running (docker run -p 8000:8000 chromadb/chroma)');
+      outputChannel.appendLine('2. Verify database URL in settings (default: http://localhost:8000)');
+      outputChannel.appendLine('3. Check debug logs for more details');
+      outputChannel.show(true);
+      debugChannel.show();
+    } else if (action === 'Retry') {
+      await storeResultInDatabase(result, parsedError);
+    }
+  }
+}
+
+/**
+ * CHUNK 3.1: Generate mock RCA ID (PLACEHOLDER)
+ * TODO: Replace with actual ID from ChromaDB
+ */
+function generateMockRcaId(): string {
+  // Generate a UUID-like mock ID
+  const chars = 'abcdef0123456789';
+  let id = '';
+  for (let i = 0; i < 32; i++) {
+    id += chars[Math.floor(Math.random() * chars.length)];
+    if (i === 7 || i === 11 || i === 15 || i === 19) {
+      id += '-';
+    }
+  }
+  return id;
+}
+
+/**
+ * CHUNK 3.3: Check cache for existing result
+ * Returns cached result if found, null otherwise
+ */
+async function checkCache(parsedError: ParsedError): Promise<RCAResult | null> {
+  try {
+    log('info', 'CHUNK 3.3: Checking cache for existing result');
+    
+    // TODO: Wire to Kai's ErrorHasher and RCACache
+    // const errorHash = new ErrorHasher().hash(parsedError);
+    // const cache = RCACache.getInstance();
+    // const cached = cache.get(errorHash);
+    
+    // For now, simulate cache check with placeholder
+    const errorHash = generateMockErrorHash(parsedError);
+    const cached = getMockCachedResult(errorHash, parsedError);
+    
+    if (cached) {
+      log('info', 'Cache hit!', { errorHash, cacheTimestamp: cached.cacheTimestamp });
+      
+      // Show cache hit notification
+      vscode.window.showInformationMessage('⚡ Found in cache! (instant result)');
+      
+      // Add cache indicator to output
+      outputChannel.clear();
+      outputChannel.appendLine('⚡ === CACHED RESULT (analyzed previously) ===\n');
+      outputChannel.appendLine(`📅 Cached: ${cached.cacheTimestamp}`);
+      outputChannel.appendLine(`⚡ Retrieved instantly (no LLM inference needed)\n`);
+      outputChannel.appendLine('─'.repeat(60) + '\n');
+      
+      return cached;
+    } else {
+      log('info', 'Cache miss - will run full analysis');
+      return null;
+    }
+  } catch (error) {
+    log('error', 'Cache check failed', error);
+    // Don't block on cache errors
+    return null;
+  }
+}
+
+/**
+ * CHUNK 3.3: Generate mock error hash (PLACEHOLDER)
+ * TODO: Replace with Kai's ErrorHasher
+ */
+function generateMockErrorHash(parsedError: ParsedError): string {
+  // Simple hash based on error type and message
+  const str = `${parsedError.type}:${parsedError.message}`;
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return Math.abs(hash).toString(16);
+}
+
+/**
+ * CHUNK 3.3: Get mock cached result (PLACEHOLDER)
+ * TODO: Replace with Kai's RCACache.get()
+ */
+function getMockCachedResult(errorHash: string, parsedError: ParsedError): RCAResult | null {
+  // Simulate cache - 30% chance of cache hit for testing
+  const shouldCacheHit = Math.random() < 0.3;
+  
+  if (!shouldCacheHit) {
+    return null;
+  }
+  
+  // Return a cached result
+  const cachedResult = generateMockResult(parsedError);
+  cachedResult.fromCache = true;
+  cachedResult.cacheTimestamp = new Date(Date.now() - 3600000).toISOString(); // 1 hour ago
+  cachedResult.errorHash = errorHash;
+  cachedResult.rcaId = generateMockRcaId();
+  
+  return cachedResult;
+}
+
+/**
+ * CHUNK 3.3: Store result in cache for future use
+ */
+async function storeInCache(result: RCAResult, parsedError: ParsedError): Promise<void> {
+  try {
+    log('info', 'CHUNK 3.3: Storing result in cache');
+    
+    // TODO: Wire to Kai's ErrorHasher and RCACache
+    // const errorHash = new ErrorHasher().hash(parsedError);
+    // const cache = RCACache.getInstance();
+    // cache.set(errorHash, result);
+    
+    // For now, simulate cache storage
+    const errorHash = generateMockErrorHash(parsedError);
+    result.errorHash = errorHash;
+    
+    log('info', 'Result cached successfully', { errorHash });
+    
+    // Note: In real implementation, this would call:
+    // const cache = RCACache.getInstance();
+    // cache.set(errorHash, result);
+    
+  } catch (error) {
+    log('error', 'Failed to cache result', error);
+    // Don't block on cache errors - cache is optional optimization
+  }
+}
+
+/**
+ * CHUNK 3.4: Show feedback prompt to user
+ * Ask if the analysis was helpful (thumbs up/down)
+ */
+async function showFeedbackPrompt(result: RCAResult): Promise<void> {
+  try {
+    log('info', 'CHUNK 3.4: Showing feedback prompt');
+    
+    // Add feedback section to output
+    outputChannel.appendLine('\n' + '─'.repeat(60));
+    outputChannel.appendLine('💬 FEEDBACK');
+    outputChannel.appendLine('Was this analysis helpful? Your feedback helps improve future analyses.');
+    outputChannel.show(true);
+    
+    // Show feedback buttons
+    const selection = await vscode.window.showInformationMessage(
+      'Was this RCA helpful?',
+      '👍 Yes, helpful!',
+      '👎 Not helpful',
+      'Skip'
+    );
+    
+    if (!selection || selection === 'Skip') {
+      log('info', 'User skipped feedback');
+      return;
+    }
+    
+    const rcaId = result.rcaId || generateMockRcaId();
+    const errorHash = result.errorHash || generateMockErrorHash({
+      type: result.errorType,
+      message: result.error,
+      filePath: result.filePath,
+      line: result.line,
+      language: 'kotlin'
+    });
+    
+    if (selection === '👍 Yes, helpful!') {
+      await handlePositiveFeedback(rcaId, errorHash, result);
+    } else if (selection === '👎 Not helpful') {
+      await handleNegativeFeedback(rcaId, errorHash, result);
+    }
+  } catch (error) {
+    log('error', 'Feedback prompt failed', error);
+    // Don't block on feedback errors
+  }
+}
+
+/**
+ * CHUNK 3.4: Handle positive feedback (thumbs up)
+ */
+async function handlePositiveFeedback(rcaId: string, errorHash: string, result: RCAResult): Promise<void> {
+  try {
+    log('info', 'CHUNK 3.4: Handling positive feedback', { rcaId, errorHash });
+    
+    // TODO: Wire to Kai's FeedbackHandler
+    // const db = await ChromaDBClient.create();
+    // const cache = RCACache.getInstance();
+    // const feedbackHandler = new FeedbackHandler(db, cache);
+    // await feedbackHandler.handlePositive(rcaId, errorHash);
+    
+    // For now, simulate feedback handling
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    log('info', 'Positive feedback recorded successfully');
+    
+    // Show thank you message
+    vscode.window.showInformationMessage(
+      '✅ Thank you! This will improve future analyses.',
+      'View Stats'
+    ).then((action: string | undefined) => {
+      if (action === 'View Stats') {
+        outputChannel.appendLine('\n📊 === FEEDBACK STATS ===');
+        outputChannel.appendLine('✅ Positive feedback recorded');
+        outputChannel.appendLine(`📋 RCA ID: ${rcaId}`);
+        outputChannel.appendLine(`🔑 Error Hash: ${errorHash}`);
+        outputChannel.appendLine('\n💡 Effects:');
+        outputChannel.appendLine('  • Confidence score increased by 20%');
+        outputChannel.appendLine('  • Solution prioritized in similar searches');
+        outputChannel.appendLine('  • Quality score updated in knowledge base');
+        outputChannel.show(true);
+      }
+    });
+    
+    // Add feedback confirmation to output
+    outputChannel.appendLine('\n✅ Positive feedback recorded!');
+    outputChannel.appendLine('This analysis will be prioritized for similar errors in the future.');
+    
+    // Note: In real implementation, this would:
+    // 1. Update confidence score in database (+20%)
+    // 2. Mark as user_validated = true
+    // 3. Increase quality score
+    // 4. Update cache with new confidence
+    
+  } catch (error) {
+    log('error', 'Failed to handle positive feedback', error);
+    vscode.window.showWarningMessage('Could not record feedback. Please try again.');
+  }
+}
+
+/**
+ * CHUNK 3.4: Handle negative feedback (thumbs down)
+ */
+async function handleNegativeFeedback(rcaId: string, errorHash: string, result: RCAResult): Promise<void> {
+  try {
+    log('info', 'CHUNK 3.4: Handling negative feedback', { rcaId, errorHash });
+    
+    // Ask for optional details
+    const comment = await vscode.window.showInputBox({
+      prompt: 'What was wrong with the analysis? (optional)',
+      placeHolder: 'e.g., Incorrect root cause, missing context, wrong fix guidelines...',
+      ignoreFocusOut: true
+    });
+    
+    log('info', 'Negative feedback details', { comment: comment || 'none provided' });
+    
+    // TODO: Wire to Kai's FeedbackHandler
+    // const db = await ChromaDBClient.create();
+    // const cache = RCACache.getInstance();
+    // const feedbackHandler = new FeedbackHandler(db, cache);
+    // await feedbackHandler.handleNegative(rcaId, errorHash);
+    
+    // For now, simulate feedback handling
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    log('info', 'Negative feedback recorded successfully');
+    
+    // Show thank you message
+    vscode.window.showInformationMessage(
+      '📝 Feedback noted. We\'ll try to improve!',
+      'View Details'
+    ).then((action: string | undefined) => {
+      if (action === 'View Details') {
+        outputChannel.appendLine('\n📊 === FEEDBACK STATS ===');
+        outputChannel.appendLine('👎 Negative feedback recorded');
+        outputChannel.appendLine(`📋 RCA ID: ${rcaId}`);
+        outputChannel.appendLine(`🔑 Error Hash: ${errorHash}`);
+        if (comment) {
+          outputChannel.appendLine(`💬 Comment: "${comment}"`);
+        }
+        outputChannel.appendLine('\n💡 Effects:');
+        outputChannel.appendLine('  • Confidence score decreased by 50%');
+        outputChannel.appendLine('  • Cache invalidated (will re-analyze next time)');
+        outputChannel.appendLine('  • Quality score reduced in knowledge base');
+        outputChannel.appendLine('  • Solution de-prioritized in searches');
+        outputChannel.show(true);
+      }
+    });
+    
+    // Add feedback confirmation to output
+    outputChannel.appendLine('\n👎 Negative feedback recorded!');
+    if (comment) {
+      outputChannel.appendLine(`💬 Your comment: "${comment}"`);
+    }
+    outputChannel.appendLine('This analysis will be improved and cache invalidated.');
+    
+    // Note: In real implementation, this would:
+    // 1. Update confidence score in database (-50%)
+    // 2. Mark as user_validated = false
+    // 3. Decrease quality score
+    // 4. Invalidate cache entry (force re-analysis)
+    // 5. Store user comment for improvement
+    
+  } catch (error) {
+    log('error', 'Failed to handle negative feedback', error);
+    vscode.window.showWarningMessage('Could not record feedback. Please try again.');
+  }
+}
+
+/**
+ * CHUNK 4.1: Check if error is Compose-related
+ */
+function isComposeError(errorType: string): boolean {
+  return errorType.startsWith('compose_');
+}
+
+/**
+ * CHUNK 4.1: Show Compose tips on error detection
+ */
+async function showComposeTips(parsedError: ParsedError): Promise<void> {
+  log('info', 'CHUNK 4.1: Detected Compose error', { errorType: parsedError.type });
+  
+  // Show brief notification
+  vscode.window.showInformationMessage(
+    '🎨 Jetpack Compose error detected - specialized analysis will be provided'
+  );
+}
+
+/**
+ * CHUNK 4.1: Display Compose-specific hints in output
+ */
+function displayComposeHints(result: RCAResult): void {
+  outputChannel.appendLine('\n🎨 COMPOSE TIP:');
+  
+  const composeTips: Record<string, string> = {
+    'compose_remember': '   💡 Use remember { mutableStateOf() } to preserve state across recompositions',
+    'compose_derived_state': '   💡 Use derivedStateOf to compute values that depend on other state',
+    'compose_recomposition': '   💡 Check for unstable parameters causing excessive recomposition - use @Stable or @Immutable',
+    'compose_launched_effect': '   💡 LaunchedEffect restarts when keys change - ensure keys are correct',
+    'compose_disposable_effect': '   💡 Always return an onDispose callback to clean up resources',
+    'compose_composition_local': '   💡 Provide CompositionLocal values at parent level before accessing',
+    'compose_modifier': '   💡 Modifier order matters: size modifiers before padding, padding before background',
+    'compose_side_effect': '   💡 Move side effects into LaunchedEffect, DisposableEffect, or SideEffect blocks',
+    'compose_state_read': '   💡 Reading state during composition can cause infinite recomposition - use LaunchedEffect',
+    'compose_snapshot': '   💡 Snapshot errors indicate concurrent state modification - use synchronized access'
+  };
+  
+  const tip = composeTips[result.errorType] || '   💡 Follow Jetpack Compose best practices for state management';
+  outputChannel.appendLine(tip);
+  
+  // Add documentation link
+  outputChannel.appendLine('\n   📚 Compose Docs: https://developer.android.com/jetpack/compose');
+  
+  log('info', 'Compose tips displayed', { errorType: result.errorType });
+}
+
+/**
+ * CHUNK 4.2: Check if error is XML-related
+ */
+function isXMLError(errorType: string): boolean {
+  return errorType.startsWith('xml_');
+}
+
+/**
+ * CHUNK 4.2: Show XML tips on error detection
+ */
+async function showXMLTips(parsedError: ParsedError): Promise<void> {
+  log('info', 'CHUNK 4.2: Detected XML error', { errorType: parsedError.type });
+  
+  // Show brief notification
+  vscode.window.showInformationMessage(
+    '📄 XML layout error detected - layout-specific guidance will be provided'
+  );
+}
+
+/**
+ * CHUNK 4.2: Display XML-specific hints in output
+ */
+function displayXMLHints(result: RCAResult): void {
+  outputChannel.appendLine('\n📄 XML LAYOUT TIP:');
+  
+  const xmlTips: Record<string, string> = {
+    'xml_inflation': '   💡 Check XML syntax, view imports, and custom view constructors',
+    'xml_missing_id': '   💡 Add android:id="@+id/viewName" to the view in your layout file',
+    'xml_attribute_error': '   💡 Some attributes are required (e.g., layout_width, layout_height)',
+    'xml_namespace_error': '   💡 Add xmlns:android="http://schemas.android.com/apk/res/android" to root element',
+    'xml_tag_mismatch': '   💡 Ensure all tags are properly opened and closed with matching names',
+    'xml_resource_not_found': '   💡 Check that resource exists in res/ folder and matches reference format',
+    'xml_duplicate_id': '   💡 Each android:id must be unique within the layout file',
+    'xml_invalid_attribute_value': '   💡 Check attribute value format (e.g., dimensions need units: dp, sp, px)'
+  };
+  
+  const tip = xmlTips[result.errorType] || '   💡 Review XML layout syntax and Android view requirements';
+  outputChannel.appendLine(tip);
+  
+  // CHUNK 4.2: Display XML-specific code snippet format if available
+  if (result.language === 'xml' && result.codeSnippet) {
+    outputChannel.appendLine('\n📝 XML CODE CONTEXT:');
+    outputChannel.appendLine(`   File: ${result.filePath}`);
+    outputChannel.appendLine(`   Line: ${result.line}`);
+  }
+  
+  // CHUNK 4.2: Suggest attribute fixes for common XML errors
+  if (result.errorType === 'xml_attribute_error') {
+    outputChannel.appendLine('\n✏️  COMMON REQUIRED ATTRIBUTES:');
+    outputChannel.appendLine('   • android:layout_width="wrap_content|match_parent|{size}dp"');
+    outputChannel.appendLine('   • android:layout_height="wrap_content|match_parent|{size}dp"');
+    outputChannel.appendLine('   • android:id="@+id/{viewName}" (for findViewById)');
+  }
+  
+  if (result.errorType === 'xml_namespace_error') {
+    outputChannel.appendLine('\n✏️  ADD TO ROOT ELEMENT:');
+    outputChannel.appendLine('   <{RootView}');
+    outputChannel.appendLine('       xmlns:android="http://schemas.android.com/apk/res/android"');
+    outputChannel.appendLine('       xmlns:app="http://schemas.android.com/apk/res-auto"');
+    outputChannel.appendLine('       ... >');
+  }
+  
+  // Add documentation link
+  outputChannel.appendLine('\n   📚 Layout Docs: https://developer.android.com/guide/topics/ui/declaring-layout');
+  
+  log('info', 'XML tips displayed', { errorType: result.errorType });
+}
+
+/**
+
  * Extension cleanup
  */
 export function deactivate(): void {

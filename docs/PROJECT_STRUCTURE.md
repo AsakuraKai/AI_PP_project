@@ -1,16 +1,13 @@
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
 # Project Structure - RCA Agent
 
 > **Auto-generated snapshot of project file tree**  
 > **Project Type:** Personal learning project - Kotlin/Android debugging assistant  
-> **Last Updated:** December 15, 2025 (Planning Phase Complete)  
-> **Next Update:** After Milestone 1.1 (Extension Setup)
+> **Last Updated:** December 19, 2025 (Week 12 - Chunks 4.1-4.2 UI Complete, Phase 4 In Progress)  
+> **Next Update:** After Chunk 4.3 (Gradle Conflict Visualization)
 
 ---
 
-## Current Structure (Planning Phase Complete)
+## Current Structure (Week 12 - Android UI Phase 4 In Progress)
 
 ```
 rca-agent/
@@ -18,86 +15,483 @@ rca-agent/
 │   └── copilot-instructions.md    # AI agent guidance document (comprehensive roadmap)
 ├── docs/
 │   ├── README.md                  # Main roadmap: 12-week production-ready plan
-│   ├── DEVLOG.md                  # Central development journal (weekly updates)
-│   ├── PROJECT_STRUCTURE.md       # This file - project tree snapshot
+│   ├── DEVLOG.md                  # Central development journal (weekly updates) - UPDATED Week 12
+│   ├── PROJECT_STRUCTURE.md       # This file - project tree snapshot - UPDATED Week 12
 │   ├── API_CONTRACTS.md           # Tool interface specifications (JSON schemas)
-│   ├── traceability.md            # Requirements → Code → Tests mapping
-│   ├── metrics.md                 # Performance & quality metrics dashboard
+│   ├── WEEK-8-SUMMARY.md          # Week 8 completion summary
+│   ├── WEEK-9-SUMMARY.md          # Week 9 completion summary
+│   ├── WEEK-10-SUMMARY.md         # Week 10 completion summary (Chunks 3.1-3.2)
+│   ├── WEEK-11-SUMMARY.md         # Week 11 completion summary (Chunks 3.3-3.4)
+│   ├── WEEK-12-SUMMARY.md         # Week 12 completion summary (Chunks 4.1-4.2) - TO BE CREATED
 │   ├── architecture/
 │   │   ├── decisions/             # Architecture Decision Records (ADRs)
 │   │   │   ├── README.md          # ADR index and guidelines
 │   │   │   └── ADR-TEMPLATE.md    # Template for new ADRs
 │   │   └── diagrams/              # System design diagrams (to be created)
-│   └── milestones/                # Milestone completion summaries (to be created)
-└── [Implementation files to be created starting Week 1]
+│   ├── data/
+│   │   └── accuracy-metrics.json  # Test results from Chunk 1.5 validation
+│   └── _archive/
+│       ├── milestones/            # Milestone completion summaries
+│       │   ├── Chunk-1.1-1.3-COMPLETE.md         # Extension Bootstrap & Basic UI
+│       │   ├── Chunk-1.4-COMPLETE.md             # Backend: ReadFileTool
+│       │   ├── Chunk-1.5-COMPLETE.md             # Backend: MVP Testing
+│       │   ├── Chunk-1.4-1.5-UI-COMPLETE.md      # UI: Code Context & Polish
+│       │   ├── Chunk-2.1-2.2-UI-COMPLETE.md      # UI: Error Badges & Tool Feedback
+│       │   ├── Chunk-2.1-COMPLETE.md             # Backend: Error Type Badges
+│       │   ├── Chunk-2.2-2.3-COMPLETE.md         # Backend: Tool Execution & Accuracy
+│       │   ├── Chunk-3.1-3.2-UI-COMPLETE.md      # UI: Storage & Similar Solutions (Week 10)
+│       │   ├── Chunk-3.3-3.4-UI-COMPLETE.md      # UI: Cache & Feedback (Week 11)
+│       │   ├── Chunk-3.1-3.4-COMPLETE.md         # Backend: Database Integration
+│       │   ├── Chunk-4.1-4.2-UI-COMPLETE.md      # UI: Android Compose & XML (Week 12) - NEW
+│       │   ├── Chunk-4.1-4.2-COMPLETE.md         # Backend: Android (Compose, XML)
+│       │   └── ...more milestones
+│       └── phases/                # Phase planning documents
+│           ├── Phase1-OptionB-MVP-First-SOKCHEA.md  # Sokchea's UI roadmap
+│           └── ...
+├── vscode-extension/              # VS Code Extension (Sokchea's work) - UPDATED Week 12
+│   ├── package.json               # Extension manifest with commands & config
+│   ├── tsconfig.json              # TypeScript configuration
+│   ├── README.md                  # Extension user guide
+│   ├── QUICKSTART.md              # Quick setup instructions
+│   └── src/
+│       └── extension.ts           # Main extension code (~1359 lines, +182 from Week 11)
+│           # Chunks 1.1-4.2 Complete (Phase 4 40% Complete):
+│           # - Extension activation & command registration
+│           # - User input handling with validation
+│           # - Output channel display with formatting
+│           # - Code context display with syntax highlighting
+│           # - Confidence visualization (bar + interpretation)
+│           # - Enhanced error handling (4 categories)
+│           # - 38 error type badges (Kotlin, Gradle, Compose, XML)
+│           # - Tool execution feedback with progress updates
+│           # - Tool usage display with icons
+│           # - Accuracy metrics display (quality, latency, model)
+│           # - Database storage notifications (Chunk 3.1)
+│           # - Similar solutions display (Chunk 3.2)
+│           # - Cache hit notifications with timestamps (Chunk 3.3)
+│           # - User feedback system (👍/👎/Skip) (Chunk 3.4)
+│           # - Compose error detection & tips (NEW - Chunk 4.1)
+│           # - XML error detection & tips (NEW - Chunk 4.2)
+│           # - Framework-specific documentation links (NEW)
+│           # - XML attribute suggestions (NEW - Chunk 4.2)
+│           # - Ready for backend integration
+├── src/                           # Backend (Kai's work)
+│   ├── types.ts                   # Core TypeScript interfaces (230 lines)
+│   ├── agent/                     # LLM Agent components
+│   │   ├── MinimalReactAgent.ts   # ReAct agent with tool execution (280 lines)
+│   │   ├── FeedbackHandler.ts     # User feedback processing
+│   │   └── PromptEngine.ts        # Few-shot examples & prompts
+│   ├── cache/                     # Caching layer
+│   │   ├── ErrorHasher.ts         # Deterministic error hashing
+│   │   └── RCACache.ts            # In-memory LRU cache
+│   ├── db/                        # ChromaDB integration
+│   │   ├── ChromaDBClient.ts      # Vector database client
+│   │   ├── EmbeddingService.ts    # Dual embedding (local + cloud)
+│   │   ├── QualityManager.ts      # Quality score management
+│   │   ├── QualityScorer.ts       # Confidence-based scoring
+│   │   └── schemas/               # Collection schema definitions
+│   ├── llm/                       # LLM clients
+│   │   └── OllamaClient.ts        # Local Ollama client (291 lines)
+│   ├── tools/                     # Agent tools
+│   │   ├── ReadFileTool.ts        # File reading with context (180 lines)
+│   │   ├── LSPTool.ts             # Language Server Protocol integration
+│   │   └── ToolRegistry.ts        # Tool management & execution
+│   └── utils/                     # Parsers & utilities
+│       ├── ErrorParser.ts         # Multi-language error router
+│       ├── KotlinNPEParser.ts     # Kotlin NPE parser (220 lines)
+│       ├── LanguageDetector.ts    # Auto-detect language
+│       └── parsers/               # Language-specific parsers
+│           ├── KotlinParser.ts    # Kotlin error patterns (6 types)
+│           ├── GradleParser.ts    # Gradle build errors (5 types)
+│           ├── JetpackComposeParser.ts  # Compose errors (10 types)
+│           └── XMLParser.ts       # XML layout errors (8 types)
+├── tests/                         # Test suite
+│   ├── fixtures/
+│   │   └── test-dataset.ts        # 10 real Kotlin error examples
+│   ├── integration/               # End-to-end tests
+│   │   ├── accuracy.test.ts       # 10-test accuracy validation
+│   │   └── e2e.test.ts            # Full workflow tests
+│   └── unit/                      # Unit tests (628 tests passing)
+│       ├── OllamaClient.test.ts   # 12 tests
+│       ├── KotlinNPEParser.test.ts # 15 tests
+│       ├── MinimalReactAgent.test.ts # 14 tests
+│       ├── ReadFileTool.test.ts   # 21 tests
+│       ├── XMLParser.test.ts      # 43 tests
+│       └── ...more tests
+├── scripts/                       # Testing & benchmarking
+│   ├── run-accuracy-tests.ts      # Orchestrates accuracy testing
+│   ├── benchmark.ts               # Performance benchmarking
+│   └── README.md                  # Scripts documentation
+├── examples/                      # Usage examples
+│   └── basic-usage.ts             # Simple example
+├── jest.config.js                 # Jest test configuration
+├── tsconfig.json                  # Root TypeScript config
+├── package.json                   # Dependencies & scripts
+└── README.md                      # Project overview
 ```
 
-**Documentation Status:** ✅ **Complete - Ready to Start Coding**
+**Documentation Status:** ✅ **Week 9 Complete - Core UI Enhancements Ready**
 
-**Key Changes (December 15, 2025):**
-- ✅ Simplified documentation to focus on Phase 1 (Kotlin/Android only)
-- ✅ Created clear README.md with getting started guide
-- ✅ Separated detailed roadmap into Roadmap.md
-- ✅ Created traceability.md (requirements tracking)
-- ✅ Created metrics.md (performance dashboard)
-- ✅ Created architecture/decisions/ with ADR template
-- ✅ Created milestones/ directory (ready for summaries)
-- 📝 Clarified: This is a learning project, not research publication
+**Key Changes (December 19, 2025):**
+- ✅ Completed Chunks 2.1-2.2 UI (Error Badges & Tool Feedback)
+- ✅ Updated DEVLOG.md with Week 9 entry
+- ✅ Expanded error badge support from 5 to 30+ types
+- ✅ Added tool execution feedback with 6 progress steps
+- ✅ Enhanced vscode-extension/src/extension.ts (~600 lines, +130 new)
+- ✅ Added tool usage display with icon mapping
+- ✅ Ready for backend integration
 
 ---
 
-## Target Structure (After Phase 1 Complete)
+## File Size Overview (Week 9)
 
-**Note:** Phase 1 focuses exclusively on Kotlin/Android support. Future phases (TypeScript, Python, etc.) will be added when ready - no fixed timeline.
+### Source Code
+
+| Component | Files | Lines | Status |
+|-----------|-------|-------|--------|
+| **VS Code Extension** | 1 | ~600 | ✅ Chunks 1.1-2.2 Complete |
+| **Backend (src/)** | ~20 | ~3,500 | ✅ Chunks 1.1-4.2 Complete |
+| **Tests** | ~25 | ~3,000 | ✅ 628 tests passing |
+| **Scripts** | 3 | ~600 | ✅ Accuracy & benchmark |
+| **Docs** | ~16 | ~6,000 | ✅ Updated Week 9 |
+| **Total** | **~65** | **~13,700** | ✅ Core UI Ready |
+
+### Extension Breakdown (vscode-extension/src/extension.ts)
+
+| Section | Lines | Description |
+|---------|-------|-------------|
+| **Interfaces** | ~30 | ParsedError, RCAResult with tools/iterations |
+| **Activation** | ~25 | activate(), command registration |
+| **Input Handling** | ~40 | getErrorText(), sanitization |
+| **Parsing** | ~40 | parseError() placeholder |
+| **Progress & Analysis** | ~80 | analyzeWithProgress() with tool feedback |
+| **Output Display** | ~100 | showResult() with badges, tools, iterations |
+| **Error Handling** | ~100 | handleAnalysisError() with 4 categories |
+| **Helper Functions** | ~80 | getErrorBadge (30+ types), getToolIcon, confidence helpers |
+| **Logging & Cleanup** | ~30 | log(), deactivate() |
+| **Total** | **~600** | ✅ Core UI Complete |
+
+---
+
+## Integration Readiness
+
+### Backend Status (Kai's Work)
+- ✅ **Parsers:** 4 parsers supporting 29 error types (628 tests passing)
+- ✅ **Agent:** MinimalReactAgent with ReadFileTool integration complete
+- ✅ **LLM Client:** OllamaClient tested with granite-code:8b
+- ✅ **Accuracy:** 100% on 10-test validation (avg 75.8s latency)
+- ✅ **Database:** ChromaDB integration ready (optional for MVP)
+- ✅ **Caching:** RCACache with ErrorHasher implemented
+- ✅ **Tools:** ReadFileTool, LSPTool, ToolRegistry operational
+
+### UI Status (Sokchea's Work)
+- ✅ **Extension:** Command registration & activation working
+- ✅ **Input:** User input with validation & sanitization complete
+- ✅ **Output:** Output channel with formatting, code context, confidence bar
+- ✅ **Error Badges:** 30+ error types with color coding
+- ✅ **Tool Feedback:** Progress updates and tool usage display
+- ✅ **Error Handling:** 4 specific error categories with action buttons
+- ✅ **Configuration:** Settings for ollamaUrl & model defined
+- 🔄 **Integration Points:** Placeholders ready for backend wiring
+
+### Next Steps for Integration
+1. **Wire parsers:** Replace `parseError()` with Kai's `ErrorParser.parse()`
+2. **Wire agent:** Replace `generateMockResult()` with `MinimalReactAgent.analyze()`
+3. **Add real tool feedback:** Stream progress from agent iterations
+4. **Display real tool results:** Show LSP caller lists, search results
+5. **Test end-to-end:** Run full workflow with real Ollama server
+
+---
+
+## Milestones Completed
+
+### Week 1-2: MVP Backend & UI ✅
+- [x] Chunk 1.1: Extension Bootstrap & Backend Foundation
+- [x] Chunk 1.2: User Input Handling & Kotlin Parser
+- [x] Chunk 1.3: Output Display & Ollama Integration
+- [x] Chunk 1.4 (Backend): ReadFileTool with code context (21 tests)
+- [x] Chunk 1.4 (UI): Code Context Display in extension
+- [x] Chunk 1.5 (Backend): MVP Testing & Refinement (100% accuracy)
+- [x] Chunk 1.5 (UI): MVP Polish with confidence & error handling
+
+### Week 9: Core UI Enhancements ✅
+- [x] Chunk 2.1 (UI): Error Type Badges expansion (30+ types)
+- [x] Chunk 2.2 (UI): Tool Execution Feedback with progress
+
+### Weeks 3-7: Advanced Backend ✅
+- [x] Chunk 2.1-2.4 (Backend): Error badges, tool feedback, accuracy metrics
+- [x] Chunk 3.1-3.4 (Backend): Database integration, caching, feedback
+- [x] Chunk 4.1-4.2 (Backend): Android parsers (Compose, XML)
+
+### Next Up: Week 10
+- [ ] Chunk 2.3 (UI): Accuracy Metrics Display in extension
+- [ ] Chunk 4.3 (Backend): Gradle Build Analyzer (if needed)
+- [ ] Backend Integration: Wire UI to Kai's components
+
+---
+
+## Technical Debt & Future Work
+
+### High Priority
+1. **Backend Integration** - Wire UI placeholders to Kai's components (Week 10)
+2. **Unit Tests for UI** - Add tests for new functions
+3. **Real Tool Streaming** - Stream progress from actual agent iterations
+
+### Medium Priority
+1. **Webview UI** - Replace output channel with webview (Chunk 5.1)
+2. **Configuration UI** - Settings page instead of manual JSON editing
+3. **Accessibility** - Verify screen reader compatibility
+
+### Low Priority (Future Phases)
+1. **Multi-language Support** - TypeScript, Python, Java (Phase 2-3)
+2. **Educational Mode** - Beginner-friendly explanations
+3. **Marketplace Publishing** - Package for VS Code marketplace
+
+---
+
+## Notes
+
+**Current Focus:** Accuracy Metrics Display (Chunk 2.3 UI) and backend integration.  
+**Blockers:** None - both UI and backend are complete and ready to integrate.  
+**Test Status:** Backend has 628 tests passing; UI needs automated tests.  
+**Performance:** Backend validated at 75.8s avg latency (target: <90s).  
+**Accuracy:** Backend validated at 100% on 10-test dataset (target: ≥60%).  
+**Error Coverage:** 30+ error types supported across 4 languages (Kotlin, Gradle, Compose, XML).
+
+---
+
+**Status:** ✅ **Core UI Complete - Ready for Integration**  
+**Next Milestone:** Accuracy Metrics Display & Backend Integration  
+**Timeline:** Week 10 (December 23-27, 2025)
 
 ```
 rca-agent/
 ├── .github/
-│   ├── copilot-instructions.md
-│   └── workflows/
-│       └── test.yml               # CI pipeline for automated testing
-├── .vscode/
-│   ├── launch.json                # Debug configurations
-│   └── tasks.json                 # Build tasks
+│   └── copilot-instructions.md    # AI agent guidance document (comprehensive roadmap)
 ├── docs/
-│   ├── DEVLOG.md
-│   ├── PROJECT_STRUCTURE.md
-│   ├── API_CONTRACTS.md           # Tool input/output JSON schemas
-│   └── architecture/
-│       ├── diagrams/
-│       │   └── system-architecture.png
-│       └── decisions/
-│           ├── 001-dual-llm-strategy.md
-│           ├── 002-multi-language-support.md
-│           └── 003-chromadb-selection.md
-├── src/
-│   ├── extension.ts               # Entry point - command registration
-│   ├── db/
+│   ├── README.md                  # Main roadmap: 12-week production-ready plan
+│   ├── DEVLOG.md                  # Central development journal (weekly updates) - UPDATED Week 8
+│   ├── PROJECT_STRUCTURE.md       # This file - project tree snapshot
+│   ├── API_CONTRACTS.md           # Tool interface specifications (JSON schemas)
+│   ├── architecture/
+│   │   ├── decisions/             # Architecture Decision Records (ADRs)
+│   │   │   ├── README.md          # ADR index and guidelines
+│   │   │   └── ADR-TEMPLATE.md    # Template for new ADRs
+│   │   └── diagrams/              # System design diagrams (to be created)
+│   ├── data/
+│   │   └── accuracy-metrics.json  # Test results from Chunk 1.5 validation
+│   └── _archive/
+│       ├── milestones/            # Milestone completion summaries
+│       │   ├── Chunk-1.1-1.3-COMPLETE.md         # Extension Bootstrap & Basic UI
+│       │   ├── Chunk-1.4-COMPLETE.md             # Backend: ReadFileTool
+│       │   ├── Chunk-1.5-COMPLETE.md             # Backend: MVP Testing
+│       │   ├── Chunk-1.4-1.5-UI-COMPLETE.md      # UI: Code Context & Polish - NEW
+│       │   ├── Chunk-2.1-COMPLETE.md             # Error Type Badges (backend)
+│       │   ├── Chunk-2.2-2.3-COMPLETE.md         # Tool Execution & Accuracy (backend)
+│       │   ├── Chunk-3.1-3.4-COMPLETE.md         # Database Integration (backend)
+│       │   ├── Chunk-4.1-4.2-COMPLETE.md         # Android Backend (Compose, XML)
+│       │   └── ...more milestones
+│       └── phases/                # Phase planning documents
+│           ├── Phase1-OptionB-MVP-First-SOKCHEA.md  # Sokchea's UI roadmap
+│           └── ...
+├── vscode-extension/              # VS Code Extension (Sokchea's work) - UPDATED
+│   ├── package.json               # Extension manifest with commands & config
+│   ├── tsconfig.json              # TypeScript configuration
+│   ├── README.md                  # Extension user guide
+│   ├── QUICKSTART.md              # Quick setup instructions
+│   └── src/
+│       └── extension.ts           # Main extension code (~470 lines)
+│           # Chunks 1.1-1.5 Complete:
+│           # - Extension activation & command registration
+│           # - User input handling with validation
+│           # - Output channel display with formatting
+│           # - Code context display with syntax highlighting
+│           # - Confidence visualization (bar + interpretation)
+│           # - Enhanced error handling (4 categories)
+│           # - Ready for backend integration
+├── src/                           # Backend (Kai's work)
+│   ├── types.ts                   # Core TypeScript interfaces (230 lines)
+│   ├── agent/                     # LLM Agent components
+│   │   ├── MinimalReactAgent.ts   # ReAct agent with tool execution (280 lines)
+│   │   ├── FeedbackHandler.ts     # User feedback processing
+│   │   └── PromptEngine.ts        # Few-shot examples & prompts
+│   ├── cache/                     # Caching layer
+│   │   ├── ErrorHasher.ts         # Deterministic error hashing
+│   │   └── RCACache.ts            # In-memory LRU cache
+│   ├── db/                        # ChromaDB integration
 │   │   ├── ChromaDBClient.ts      # Vector database client
 │   │   ├── EmbeddingService.ts    # Dual embedding (local + cloud)
-│   │   └── schemas/
-│   │       └── rca-collection.ts  # Collection schema definitions
-│   ├── llm/
-│   │   ├── LLMProvider.ts         # Abstract LLM interface
-│   │   ├── OllamaClient.ts        # Local model client
-│   │   ├── OpenAIClient.ts        # Cloud API client
-│   │   └── ProviderFactory.ts     # Runtime provider selection
-│   ├── tools/
-│   │   ├── ToolRegistry.ts        # Central tool registration
-│   │   ├── ToolBase.ts            # Base class for all tools
-│   │   ├── ReadFileTool.ts        # Workspace file access
-│   │   └── WebSearchTool.ts       # External knowledge retrieval
-│   └── utils/
-│       ├── ErrorParser.ts         # Multi-language error parsing
-│       ├── LanguageDetector.ts    # Auto-detect file language
-│       └── Logger.ts              # Structured logging
-├── tests/
-│   ├── unit/
-│   │   ├── db/
-│   │   │   └── ChromaDBClient.test.ts
-│   │   ├── llm/
-│   │   │   └── ProviderFactory.test.ts
-│   │   └── tools/
+│   │   ├── QualityManager.ts      # Quality score management
+│   │   ├── QualityScorer.ts       # Confidence-based scoring
+│   │   └── schemas/               # Collection schema definitions
+│   ├── llm/                       # LLM clients
+│   │   └── OllamaClient.ts        # Local Ollama client (291 lines)
+│   ├── tools/                     # Agent tools
+│   │   ├── ReadFileTool.ts        # File reading with context (180 lines)
+│   │   ├── LSPTool.ts             # Language Server Protocol integration
+│   │   └── ToolRegistry.ts        # Tool management & execution
+│   └── utils/                     # Parsers & utilities
+│       ├── ErrorParser.ts         # Multi-language error router
+│       ├── KotlinNPEParser.ts     # Kotlin NPE parser (220 lines)
+│       ├── LanguageDetector.ts    # Auto-detect language
+│       └── parsers/               # Language-specific parsers
+│           ├── KotlinParser.ts    # Kotlin error patterns
+│           ├── GradleParser.ts    # Gradle build errors
+│           ├── JetpackComposeParser.ts  # Compose errors
+│           └── XMLParser.ts       # XML layout errors (500 lines)
+├── tests/                         # Test suite
+│   ├── fixtures/
+│   │   └── test-dataset.ts        # 10 real Kotlin error examples
+│   ├── integration/               # End-to-end tests
+│   │   ├── accuracy.test.ts       # 10-test accuracy validation
+│   │   └── e2e.test.ts            # Full workflow tests
+│   └── unit/                      # Unit tests (628 tests passing)
+│       ├── OllamaClient.test.ts   # 12 tests
+│       ├── KotlinNPEParser.test.ts # 15 tests
+│       ├── MinimalReactAgent.test.ts # 14 tests
+│       ├── ReadFileTool.test.ts   # 21 tests
+│       ├── XMLParser.test.ts      # 43 tests
+│       └── ...more tests
+├── scripts/                       # Testing & benchmarking
+│   ├── run-accuracy-tests.ts      # Orchestrates accuracy testing
+│   ├── benchmark.ts               # Performance benchmarking
+│   └── README.md                  # Scripts documentation
+├── examples/                      # Usage examples
+│   └── basic-usage.ts             # Simple example
+├── jest.config.js                 # Jest test configuration
+├── tsconfig.json                  # Root TypeScript config
+├── package.json                   # Dependencies & scripts
+└── README.md                      # Project overview
+```
+
+**Documentation Status:** ✅ **Week 8 Complete - UI MVP Ready for Integration**
+
+**Key Changes (December 19, 2025):**
+- ✅ Completed Chunks 1.4-1.5 UI (Code Context Display & MVP Polish)
+- ✅ Updated DEVLOG.md with Week 8 entry
+- ✅ Created Chunk-1.4-1.5-UI-COMPLETE.md milestone
+- ✅ Enhanced vscode-extension/src/extension.ts (~470 lines, +120 new)
+- ✅ Added confidence visualization (bar + interpretation)
+- ✅ Implemented comprehensive error handling (4 categories)
+- ✅ Ready for backend integration (all placeholders in place)
+
+---
+
+## File Size Overview (Week 8)
+
+### Source Code
+
+| Component | Files | Lines | Status |
+|-----------|-------|-------|--------|
+| **VS Code Extension** | 1 | ~470 | ✅ Chunks 1.1-1.5 Complete |
+| **Backend (src/)** | ~20 | ~3,500 | ✅ Chunks 1.1-4.2 Complete |
+| **Tests** | ~25 | ~3,000 | ✅ 628 tests passing |
+| **Scripts** | 3 | ~600 | ✅ Accuracy & benchmark |
+| **Docs** | ~15 | ~5,000 | ✅ Updated Week 8 |
+| **Total** | **~64** | **~12,570** | ✅ MVP Ready |
+
+### Extension Breakdown (vscode-extension/src/extension.ts)
+
+| Section | Lines | Description |
+|---------|-------|-------------|
+| **Interfaces** | ~25 | ParsedError, RCAResult types |
+| **Activation** | ~25 | activate(), command registration |
+| **Input Handling** | ~40 | getErrorText(), sanitization |
+| **Parsing** | ~40 | parseError() placeholder |
+| **Progress & Analysis** | ~60 | analyzeWithProgress(), generateMockResult() |
+| **Output Display** | ~80 | showResult() with code context & confidence |
+| **Error Handling** | ~100 | handleAnalysisError() with 4 categories |
+| **Helper Functions** | ~40 | getErrorBadge(), createConfidenceBar(), etc. |
+| **Logging & Cleanup** | ~30 | log(), deactivate() |
+| **Total** | **~470** | ✅ Complete MVP UI |
+
+---
+
+## Integration Readiness
+
+### Backend Status (Kai's Work)
+- ✅ **Parsers:** KotlinNPEParser, XMLParser, GradleParser ready (628 tests passing)
+- ✅ **Agent:** MinimalReactAgent with ReadFileTool integration complete
+- ✅ **LLM Client:** OllamaClient tested with granite-code:8b
+- ✅ **Accuracy:** 100% on 10-test validation (avg 75.8s latency)
+- ✅ **Database:** ChromaDB integration ready (optional for MVP)
+- ✅ **Caching:** RCACache with ErrorHasher implemented
+
+### UI Status (Sokchea's Work)
+- ✅ **Extension:** Command registration & activation working
+- ✅ **Input:** User input with validation & sanitization complete
+- ✅ **Output:** Output channel with formatting, code context, confidence bar
+- ✅ **Error Handling:** 4 specific error categories with action buttons
+- ✅ **Configuration:** Settings for ollamaUrl & model defined
+- 🔄 **Integration Points:** Placeholders ready for backend wiring
+
+### Next Steps for Integration
+1. **Wire parsers:** Replace `parseError()` with Kai's `KotlinNPEParser`
+2. **Wire agent:** Replace `generateMockResult()` with `MinimalReactAgent.analyze()`
+3. **Add file reading:** Use Kai's `ReadFileTool` for code snippets
+4. **Test end-to-end:** Run full workflow with real Ollama server
+5. **Measure performance:** Validate <90s latency target
+
+---
+
+## Milestones Completed
+
+### Week 1-2: MVP Backend ✅
+- [x] Chunk 1.1: Extension Bootstrap & Backend Foundation
+- [x] Chunk 1.2: User Input Handling & Kotlin Parser
+- [x] Chunk 1.3: Output Display & Ollama Integration
+
+### Week 1 Extended: Tool Infrastructure ✅
+- [x] Chunk 1.4 (Backend): ReadFileTool with code context (21 tests)
+- [x] Chunk 1.5 (Backend): MVP Testing & Refinement (100% accuracy)
+
+### Week 8: MVP UI Complete ✅
+- [x] Chunk 1.4 (UI): Code Context Display in extension
+- [x] Chunk 1.5 (UI): MVP Polish with confidence & error handling
+
+### Weeks 3-7: Advanced Backend ✅
+- [x] Chunk 2.1-2.4: Error badges, tool feedback, accuracy metrics
+- [x] Chunk 3.1-3.4: Database integration, caching, feedback
+- [x] Chunk 4.1-4.2: Android parsers (Compose, XML)
+
+### Next Up: Week 9
+- [ ] Chunk 2.1 (UI): Error Type Badges expansion in extension
+- [ ] Chunk 4.3 (Backend): Gradle Build Analyzer (if needed)
+
+---
+
+## Technical Debt & Future Work
+
+### High Priority
+1. **Backend Integration** - Wire UI placeholders to Kai's components (Week 9)
+2. **Unit Tests for UI** - Add tests for createConfidenceBar(), etc.
+3. **Webview UI** - Replace output channel with webview (Chunk 5.1)
+
+### Medium Priority
+1. **Configuration UI** - Settings page instead of manual JSON editing
+2. **Progress Streaming** - Real-time agent iteration updates
+3. **Accessibility** - Verify screen reader compatibility
+
+### Low Priority (Future Phases)
+1. **Multi-language Support** - TypeScript, Python, Java (Phase 2-3)
+2. **Educational Mode** - Beginner-friendly explanations
+3. **Marketplace Publishing** - Package for VS Code marketplace
+
+---
+
+## Notes
+
+**Current Focus:** Integration testing to connect Sokchea's UI with Kai's backend.  
+**Blockers:** None - both UI and backend are complete and ready to integrate.  
+**Test Status:** Backend has 628 tests passing; UI needs automated tests.  
+**Performance:** Backend validated at 75.8s avg latency (target: <90s).  
+**Accuracy:** Backend validated at 100% on 10-test dataset (target: ≥60%).
+
+---
+
+**Status:** ✅ **MVP UI Complete - Ready for Integration**  
+**Next Milestone:** Backend Integration & End-to-End Testing  
+**Timeline:** Week 9 (December 23-27, 2025)
 │   │       └── ReadFileTool.test.ts
 │   └── integration/
 │       └── end-to-end-storage.test.ts
