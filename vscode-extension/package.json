@@ -1,0 +1,76 @@
+{
+  "name": "rca-agent-extension",
+  "displayName": "RCA Agent - Root Cause Analysis",
+  "description": "AI-powered debugging assistant for Kotlin/Android",
+  "version": "0.1.0",
+  "publisher": "sokchea",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Debuggers"
+  ],
+  "activationEvents": [
+    "onCommand:rcaAgent.analyzeError"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "rcaAgent.analyzeError",
+        "title": "RCA Agent: Analyze Error"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "rcaAgent.analyzeError",
+        "key": "ctrl+shift+r",
+        "mac": "cmd+shift+r",
+        "when": "editorTextFocus"
+      }
+    ],
+    "configuration": {
+      "title": "RCA Agent",
+      "properties": {
+        "rcaAgent.ollamaUrl": {
+          "type": "string",
+          "default": "http://localhost:11434",
+          "description": "Ollama server URL"
+        },
+        "rcaAgent.model": {
+          "type": "string",
+          "default": "granite-code:8b",
+          "description": "LLM model to use for analysis",
+          "enum": [
+            "granite-code:8b",
+            "codellama:7b",
+            "qwen-coder:7b",
+            "deepseek-coder:6.7b"
+          ]
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "@types/node": "^18.0.0",
+    "@types/mocha": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.45.0",
+    "typescript": "^5.0.0",
+    "@vscode/test-electron": "^2.3.0"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.0"
+  }
+}

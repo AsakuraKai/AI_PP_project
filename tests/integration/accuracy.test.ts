@@ -13,7 +13,6 @@
 import { OllamaClient } from '../../src/llm/OllamaClient';
 import { KotlinNPEParser } from '../../src/utils/KotlinNPEParser';
 import { MinimalReactAgent } from '../../src/agent/MinimalReactAgent';
-import { ReadFileTool } from '../../src/tools/ReadFileTool';
 import { testDataset, TestCase } from '../fixtures/test-dataset';
 import * as fs from 'fs/promises';
 import * as path from 'path';
@@ -45,7 +44,6 @@ describe('Accuracy Testing Suite - Chunk 1.5', () => {
   let llmClient: OllamaClient;
   let parser: KotlinNPEParser;
   let agent: MinimalReactAgent;
-  let readFileTool: ReadFileTool;
 
   // Skip tests if Ollama not available
   const isOllamaAvailable = process.env.OLLAMA_AVAILABLE === 'true';
@@ -59,8 +57,13 @@ describe('Accuracy Testing Suite - Chunk 1.5', () => {
 
     llmClient = new OllamaClient();
     parser = new KotlinNPEParser();
-    readFileTool = new ReadFileTool();
-    agent = new MinimalReactAgent(llmClient, readFileTool);
+    
+    // Use new constructor signature with config
+    agent = new MinimalReactAgent(llmClient, {
+      maxIterations: 3,
+      usePromptEngine: false, // Use legacy for baseline
+      useToolRegistry: false,
+    });
 
     // Check Ollama connection
     try {

@@ -10,7 +10,7 @@
 import { KotlinNPEParser } from '../../src/utils/KotlinNPEParser';
 import { MinimalReactAgent } from '../../src/agent/MinimalReactAgent';
 import { OllamaClient } from '../../src/llm/OllamaClient';
-import { ReadFileTool } from '../../src/tools/ReadFileTool';
+import { LLMResponse } from '../../src/types';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as os from 'os';
@@ -22,7 +22,6 @@ describe('End-to-End Integration Tests', () => {
   let parser: KotlinNPEParser;
   let agent: MinimalReactAgent;
   let mockLLM: jest.Mocked<OllamaClient>;
-  let readFileTool: ReadFileTool;
   let tempDir: string;
 
   beforeAll(async () => {
@@ -41,11 +40,16 @@ describe('End-to-End Integration Tests', () => {
 
   beforeEach(() => {
     parser = new KotlinNPEParser();
-    readFileTool = new ReadFileTool();
 
     // Create mock LLM
     mockLLM = new OllamaClient() as jest.Mocked<OllamaClient>;
-    agent = new MinimalReactAgent(mockLLM, readFileTool);
+    
+    // Use new constructor signature with config
+    agent = new MinimalReactAgent(mockLLM, {
+      maxIterations: 3,
+      usePromptEngine: false,
+      useToolRegistry: false,
+    });
   });
 
   describe('Complete Workflow: Parse → Analyze → Result', () => {
@@ -258,20 +262,22 @@ class UserRepository {
       const errorText = 'lateinit property user has not been initialized at Test.kt:5';
       const parsedError = parser.parse(errorText);
 
-      // Mock malformed responses
+      // Mock malformed responses (need 4: 3 iterations + 1 final prompt)
       mockLLM.generate
-        .mockResolvedValueOnce({ text: 'Hypothesis text', model: 'test-model' })
-        .mockResolvedValueOnce({ text: 'Analysis text', model: 'test-model' })
+        .mockResolvedValueOnce({ text: 'Hypothesis text', tokensUsed: 10, model: 'test-model' } as LLMResponse)
+        .mockResolvedValueOnce({ text: 'Analysis text', tokensUsed: 20, model: 'test-model' } as LLMResponse)
+        .mockResolvedValueOnce({ text: 'Deeper analysis', tokensUsed: 30, model: 'test-model' } as LLMResponse)
         .mockResolvedValueOnce({
           text: 'This is not valid JSON at all!',
+          tokensUsed: 40,
           model: 'test-model',
-        });
+        } as LLMResponse);
 
       const result = await agent.analyze(parsedError!);
 
-      // Should use fallback result
+      // Should use fallback result from final prompt parsing (legacy mode)
       expect(result).toBeDefined();
-      expect(result.confidence).toBe(0.3); // Low confidence for fallback
+      expect(result.confidence).toBe(0.3); // Low confidence for fallback (legacy mode uses 0.3)
       expect(result.fixGuidelines.length).toBeGreaterThan(0);
     });
   });

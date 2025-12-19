@@ -33,7 +33,12 @@ describe('MinimalReactAgent', () => {
       getConfig: jest.fn(),
     } as any;
 
-    agent = new MinimalReactAgent(mockLLM);
+    // Use new constructor signature with config
+    agent = new MinimalReactAgent(mockLLM, {
+      maxIterations: 3, // Match test expectations
+      usePromptEngine: false, // Use legacy mode for tests
+      useToolRegistry: false,
+    });
   });
 
   afterEach(() => {
@@ -85,6 +90,7 @@ describe('MinimalReactAgent', () => {
       mockLLM.generate
         .mockResolvedValueOnce({ text: 'Thought 1', tokensUsed: 20 } as LLMResponse)
         .mockResolvedValueOnce({ text: 'Thought 2', tokensUsed: 30 } as LLMResponse)
+        .mockResolvedValueOnce({ text: 'Thought 3', tokensUsed: 40 } as LLMResponse)
         .mockResolvedValueOnce({
           text: 'This is not valid JSON but contains analysis',
           tokensUsed: 50,
@@ -92,8 +98,8 @@ describe('MinimalReactAgent', () => {
 
       const result = await agent.analyze(error);
 
-      // Should use fallback behavior
-      expect(result.confidence).toBe(0.3);
+      // Should use fallback behavior when JSON parsing fails on final prompt (legacy mode)
+      expect(result.confidence).toBe(0.3); // Legacy fallback confidence
       expect(result.fixGuidelines).toBeDefined();
       expect(Array.isArray(result.fixGuidelines)).toBe(true);
     });
@@ -127,14 +133,18 @@ describe('MinimalReactAgent', () => {
       const error = createMockError();
 
       // Create agent with very short timeout
-      const shortTimeoutAgent = new MinimalReactAgent(mockLLM);
-      (shortTimeoutAgent as any).timeout = 100; // 100ms timeout
+      const shortTimeoutAgent = new MinimalReactAgent(mockLLM, {
+        maxIterations: 3,
+        timeout: 100, // 100ms timeout
+        usePromptEngine: false,
+        useToolRegistry: false,
+      });
 
-      // Mock slow LLM response
+      // Mock slow LLM response (200ms > 100ms timeout)
       mockLLM.generate.mockImplementation(
         () =>
           new Promise((resolve) =>
-            setTimeout(() => resolve({ text: 'Slow response' } as LLMResponse), 200)
+            setTimeout(() => resolve({ text: 'Slow response', tokensUsed: 10 } as LLMResponse), 200)
           )
       );
 

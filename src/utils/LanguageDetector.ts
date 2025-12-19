@@ -24,15 +24,20 @@ export class LanguageDetector {
    * 
    * @param errorText - Raw error message
    * @param filePath - Optional file path hint
-   * @returns Detected language: 'kotlin' | 'java' | 'xml' | 'gradle' | 'unknown'
+   * @returns Detected language: 'kotlin' | 'java' | 'xml' | 'gradle' | 'compose' | 'unknown'
    */
-  static detect(errorText: string, filePath?: string): 'kotlin' | 'java' | 'xml' | 'gradle' | 'unknown' {
+  static detect(errorText: string, filePath?: string): 'kotlin' | 'java' | 'xml' | 'gradle' | 'compose' | 'unknown' {
     if (!errorText) {
       return filePath ? this.detectFromFilePath(filePath) : 'unknown';
     }
 
     // Normalize text for pattern matching
     const text = errorText.toLowerCase();
+
+    // Check Compose patterns first (more specific than general Kotlin)
+    if (this.isCompose(text, errorText)) {
+      return 'compose';
+    }
 
     // Check Kotlin-specific patterns
     if (this.isKotlin(text, errorText)) {
@@ -44,7 +49,7 @@ export class LanguageDetector {
       return 'gradle';
     }
 
-    // Check XML layout patterns
+    // Check XML layout patterns (added in Chunk 4.2)
     if (this.isXML(text)) {
       return 'xml';
     }
@@ -65,7 +70,7 @@ export class LanguageDetector {
   /**
    * Detect language from file extension
    */
-  static detectFromFilePath(filePath: string): 'kotlin' | 'java' | 'xml' | 'gradle' | 'unknown' {
+  static detectFromFilePath(filePath: string): 'kotlin' | 'java' | 'xml' | 'gradle' | 'compose' | 'unknown' {
     const path = filePath.toLowerCase();
 
     if (path.endsWith('.kt')) {
@@ -89,6 +94,33 @@ export class LanguageDetector {
     }
 
     return 'unknown';
+  }
+
+  /**
+   * Check if error is from Jetpack Compose (added in Chunk 4.1)
+   */
+  private static isCompose(_textLower: string, originalText: string): boolean {
+    // Compose-specific error patterns
+    const composePatterns = [
+      /remember\s*\{/i,
+      /rememberSaveable/i,
+      /derivedStateOf/i,
+      /LaunchedEffect/i,
+      /DisposableEffect/i,
+      /SideEffect/i,
+      /CompositionLocal/i,
+      /mutableStateOf/i,
+      /@Composable/i,
+      /[Rr]ecompos(ing|ition)/,
+      /Modifier\./i,
+      /androidx\.compose/i,
+      /snapshotFlow/i,
+      /produceState/i,
+      /state\s+object\s+during\s+composition/i,
+      /composition\s+without\s+using\s+remember/i,
+    ];
+
+    return composePatterns.some(pattern => pattern.test(originalText));
   }
 
   /**
@@ -130,7 +162,7 @@ export class LanguageDetector {
   }
 
   /**
-   * Check if error is from XML
+   * Check if error is from XML (enhanced in Chunk 4.2)
    */
   private static isXML(textLower: string): boolean {
     const xmlPatterns = [
@@ -143,6 +175,12 @@ export class LanguageDetector {
       /resource.*not found/,
       /android:id/,
       /findviewbyid/,
+      /xmlns/,
+      /layout_width/,
+      /layout_height/,
+      /@\+id\//,
+      /@string\//,
+      /@drawable\//,
     ];
 
     return xmlPatterns.some(pattern => pattern.test(textLower));
@@ -175,6 +213,7 @@ export class LanguageDetector {
 
     // Check for strong indicators
     const strongIndicators = {
+      compose: [/@Composable/i, /remember\s*\{/i, /LaunchedEffect/i, /CompositionLocal/i],
       kotlin: [/lateinit property/i, /\.kt:\d+/],
       gradle: [/gradle.*build failed/i, /execution failed for task/i],
       xml: [/inflateexception/i, /binary xml file/i],
