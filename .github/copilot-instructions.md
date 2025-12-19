@@ -1762,7 +1762,7 @@ cat docs/accuracy-metrics.json
 - ✅ Ollama 0.13.4 with DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
 - ✅ Average inference: 27.9s (3.2x faster than target)
 
-**Production Readiness:** ✅ MVP VALIDATED AND READY FOR CHUNK 2
+**Production Readiness:** ✅ MVP VALIDATED AND READY FOR CHUNK 2.1
 
 ---
 
@@ -1982,25 +1982,11 @@ Final Analysis:
 
 ---
 
-### CHUNK 2.4: Agent Integration & Testing (Days 8-10, ~24h) ✅ COMPLETE
+### CHUNK 2.4: Agent Integration & Testing (Days 8-10, ~24h)
 
 **Goal:** Integrate tools and prompts into agent workflow
 
-**Status:** ✅ **COMPLETE** - December 19, 2025
-
-**Completion Summary:**
-- ✅ **MinimalReactAgent Integration:** Dynamic tool execution + PromptEngine integration
-- ✅ **Test Coverage:** 268/272 tests passing (98.5%)
-- ✅ **Documentation:** Complete milestone documentation
-- ✅ **A/B Testing Ready:** Legacy methods preserved for comparison
-- ✅ **Production Ready:** All prerequisites met for Chunk 3.1
-
-**Key Changes:**
-- Agent now uses configurable iterations (1-10, default: 10)
-- Dynamic tool selection and execution via ToolRegistry
-- Few-shot prompting via PromptEngine
-- Tracks toolsUsed and iterations in RCAResult
-- Backward compatible with legacy methods for A/B testing
+**Status:** ⏸️ PENDING
 
 **Tasks:**
 - [ ] Update `MinimalReactAgent.ts` to use ToolRegistry
