@@ -32,7 +32,7 @@ All project documentation is organized in the `docs/` folder:
 - [Chunk 4.2 Complete](docs/_archive/milestones/Chunk-4.2-COMPLETE.md) - XML Layout Parser ✅ (Dec 19)
 - [Chunk 4.3 Complete](docs/_archive/milestones/Chunk-4.3-COMPLETE.md) - Gradle Build Analyzer ✅ (Dec 19)
 - [Chunk 4.4-4.5 Complete](docs/_archive/milestones/Chunk-4.4-4.5-COMPLETE.md) - Manifest & Docs + Testing ✅ (Dec 19)
-- [Chunk 5.1 Complete](docs/_archive/milestones/Kai-Backend/Chunk-5.1-COMPLETE.md) - Agent State Streaming ✅ (Dec 18, 2024)
+- [Chunk 5.1 Complete](docs/_archive/milestones/Kai-Backend/Chunk-5.1-COMPLETE.md) - Agent State Streaming ✅ (Dec 18, 2025)
 
 ---
 

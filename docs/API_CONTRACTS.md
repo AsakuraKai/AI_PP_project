@@ -1,11 +1,28 @@
 # API Contracts - Tool Input/Output Schemas
 
 > **Purpose:** Define exact JSON schemas for all LLM tools to ensure consistent communication between agent and toolset.  
-> **Project:** Local-first Kotlin/Android debugging assistant (Phase 1)  
+> **Project:** Local-first Kotlin/Android debugging assistant (**Phase 1 Backend Complete ✅**)  
 > **Validation:** Use Zod runtime validation to enforce contracts.  
 > **Update Rule:** Every new tool MUST have its schema documented here before implementation.
 
 **Key Design Principle:** Tools support unlimited iterations and context - advantages of local LLM deployment.
+
+---
+
+## 📚 Comprehensive API Documentation Available
+
+For detailed API references, usage examples, and implementation patterns, see:
+
+- **[Agent APIs](api/Agent.md)** - MinimalReactAgent, EducationalAgent, AgentStateStream, PromptEngine, DocumentSynthesizer, FeedbackHandler
+- **[Parser APIs](api/Parsers.md)** - ErrorParser, KotlinParser, GradleParser, JetpackComposeParser, XMLParser, LanguageDetector (26 error types)
+- **[Tool APIs](api/Tools.md)** - ToolRegistry, ReadFileTool, LSPTool, AndroidBuildTool, AndroidDocsSearchTool, ManifestAnalyzerTool
+- **[Database APIs](api/Database.md)** - ChromaDBClient, EmbeddingService, RCACache, ErrorHasher, QualityManager, QualityScorer
+
+For system architecture and workflow details:
+- **[System Architecture](architecture/overview.md)** - Complete system design with component diagrams
+- **[Agent Workflow](architecture/agent-workflow.md)** - Detailed ReAct reasoning process
+- **[Database Design](architecture/database-design.md)** - ChromaDB schema and caching strategy
+- **[Performance Benchmarks](performance/benchmarks.md)** - Complete metrics from RTX 3070 Ti testing
 
 ---
 
@@ -2143,5 +2160,5 @@ if (AndroidBuildTool.isBuildError(errorText)) {
 
 ---
 
-**Last Updated:** December 20, 2024 (Week 13 - Chunks 5.3-5.4 Complete)  
+**Last Updated:** December 20, 2025 (Week 13 - Chunks 5.3-5.4 Complete)  
 **Next Update:** After implementing Chunk 5.5 (Documentation)
