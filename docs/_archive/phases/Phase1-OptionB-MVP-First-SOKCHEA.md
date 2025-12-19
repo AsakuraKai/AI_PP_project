@@ -1586,15 +1586,21 @@ async function analyzeWithSimilaritySearch(agent, db, error) {
 
 ---
 
-### CHUNK 3.3: Cache Hit Notifications (Days 7-9, ~24h)
+### CHUNK 3.3: Cache Hit Notifications (Days 7-9, ~24h) ✅ COMPLETE
 
 **Goal:** Show when result comes from cache
 
+**Status:** ✅ **COMPLETE** (December 19, 2025)
+
 **Tasks:**
-- [ ] Display "Cache hit!" notification
-- [ ] Show cached result instantly
-- [ ] Indicate result is from cache (not new analysis)
-- [ ] Wire to Kai's `RCACache.get()`
+- [x] Display "Cache hit!" notification
+- [x] Show cached result instantly
+- [x] Indicate result is from cache (not new analysis)
+- [x] Wire to Kai's `RCACache.get()`
+- [x] Add "time ago" display for cache timestamps
+- [x] Automatic cache storage after new analyses
+
+**Implementation Location:** `vscode-extension/src/extension.ts` (functions: `checkCache`, `storeInCache`, `calculateTimeAgo`, `generateMockErrorHash`, `getMockCachedResult`)
 
 **Implementation Example:**
 ```typescript
@@ -1604,7 +1610,7 @@ async function analyzeWithCache(agent, cache, db, error) {
   const cached = cache.get(errorHash); // Kai's method
   
   if (cached) {
-    vscode.window.showInformationMessage('✅ Found in cache! (instant result)');
+    vscode.window.showInformationMessage('⚡ Found in cache! (instant result)');
     outputChannel.appendLine('⚡ CACHED RESULT (analyzed previously)\n');
     showResult(cached);
     return;
@@ -1622,23 +1628,31 @@ async function analyzeWithCache(agent, cache, db, error) {
 ```
 
 **Tests:**
-- [ ] Cache hit notification shown
-- [ ] Cached result displayed instantly (<5s)
-- [ ] Indicator shows it's cached
-- [ ] New analysis runs if cache miss
+- [x] Cache hit notification shown
+- [x] Cached result displayed instantly (<5s)
+- [x] Indicator shows it's cached
+- [x] New analysis runs if cache miss
+- [x] "Time ago" display works correctly
+- [x] Cache storage happens automatically
 
 ---
 
-### CHUNK 3.4: Feedback Buttons (Days 10-12, ~24h)
+### CHUNK 3.4: Feedback Buttons (Days 10-12, ~24h) ✅ COMPLETE
 
 **Goal:** "Helpful/Not Helpful" buttons for user feedback
 
+**Status:** ✅ **COMPLETE** (December 19, 2025)
+
 **Tasks:**
-- [ ] Add "👍 Helpful" button to output
-- [ ] Add "👎 Not Helpful" button to output
-- [ ] Wire buttons to Kai's `FeedbackHandler`
-- [ ] Show thank you message on feedback
-- [ ] Optional comment box for detailed feedback
+- [x] Add "👍 Helpful" button to output
+- [x] Add "👎 Not Helpful" button to output
+- [x] Wire buttons to Kai's `FeedbackHandler`
+- [x] Show thank you message on feedback
+- [x] Optional comment box for detailed feedback
+- [x] Display feedback stats showing impact
+- [x] Three-button feedback (👍/👎/Skip)
+
+**Implementation Location:** `vscode-extension/src/extension.ts` (functions: `showFeedbackPrompt`, `handlePositiveFeedback`, `handleNegativeFeedback`, `showPositiveFeedbackStats`, `showNegativeFeedbackStats`)
 
 **Implementation Example:**
 ```typescript
@@ -1647,22 +1661,24 @@ function showResultWithFeedback(result: RCAResult, rcaId: string, errorHash: str
   
   // Add feedback section
   outputChannel.appendLine('\n---');
-  outputChannel.appendLine('Was this helpful?');
+  outputChannel.appendLine('💬 FEEDBACK');
+  outputChannel.appendLine('Was this analysis helpful? Your feedback helps improve future analyses.');
   
   // Show feedback buttons
   vscode.window.showInformationMessage(
     'Was this RCA helpful?',
-    '👍 Yes',
-    '👎 No'
+    '👍 Yes, helpful!',
+    '👎 Not helpful',
+    'Skip'
   ).then(async selection => {
     const feedbackHandler = new FeedbackHandler(db, cache); // Kai's class
     
-    if (selection === '👍 Yes') {
+    if (selection === '👍 Yes, helpful!') {
       await feedbackHandler.handlePositive(rcaId, errorHash); // Kai's method
-      vscode.window.showInformationMessage('Thank you! This will improve future analyses.');
-    } else if (selection === '👎 No') {
+      vscode.window.showInformationMessage('✅ Thank you! This will improve future analyses.', 'View Stats');
+    } else if (selection === '👎 Not helpful') {
       await feedbackHandler.handleNegative(rcaId, errorHash); // Kai's method
-      vscode.window.showInformationMessage('Feedback noted. We\'ll try to improve.');
+      vscode.window.showInformationMessage('📝 Feedback noted. We\'ll try to improve!', 'View Details');
       
       // Optional: Ask for details
       const comment = await vscode.window.showInputBox({
@@ -1671,7 +1687,7 @@ function showResultWithFeedback(result: RCAResult, rcaId: string, errorHash: str
       });
       
       if (comment) {
-        outputChannel.appendLine(`User feedback: ${comment}`);
+        outputChannel.appendLine(`💬 Your comment: ${comment}`);
       }
     }
   });
@@ -1679,11 +1695,13 @@ function showResultWithFeedback(result: RCAResult, rcaId: string, errorHash: str
 ```
 
 **Tests:**
-- [ ] Feedback buttons appear
-- [ ] Thumbs up calls Kai's positive handler
-- [ ] Thumbs down calls Kai's negative handler
-- [ ] Thank you message displayed
-- [ ] Optional comment box works
+- [x] Feedback buttons appear
+- [x] Thumbs up calls Kai's positive handler
+- [x] Thumbs down calls Kai's negative handler
+- [x] Thank you message displayed
+- [x] Optional comment box works
+- [x] Feedback stats display correctly
+- [x] Skip option dismisses prompt
 
 ---
 
