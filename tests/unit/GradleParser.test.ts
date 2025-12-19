@@ -30,7 +30,7 @@ describe('GradleParser', () => {
       const result = parser.parse(errorText);
 
       expect(result).not.toBeNull();
-      expect(result?.type).toBe('dependency_resolution_error');
+      expect(result?.type).toBe('gradle_dependency_resolution_error');
       expect(result?.metadata?.dependency).toBe('com.google.android.material:material:1.9.0');
       expect(result?.metadata?.group).toBe('com.google.android.material');
       expect(result?.metadata?.artifact).toBe('material');
@@ -48,7 +48,7 @@ describe('GradleParser', () => {
       const result = parser.parse(errorText);
 
       expect(result).not.toBeNull();
-      expect(result?.type).toBe('dependency_resolution_error');
+      expect(result?.type).toBe('gradle_dependency_resolution_error');
       expect(result?.metadata?.dependency).toBe('androidx.core:core-ktx:1.15.0');
       expect(result?.metadata?.group).toBe('androidx.core');
       expect(result?.metadata?.artifact).toBe('core-ktx');
@@ -64,7 +64,7 @@ describe('GradleParser', () => {
       const result = parser.parse(errorText);
 
       expect(result).not.toBeNull();
-      expect(result?.type).toBe('dependency_resolution_error');
+      expect(result?.type).toBe('gradle_dependency_resolution_error');
       expect(result?.metadata?.dependency).toBe('com.squareup.okhttp3:okhttp:4.10.0');
     });
 
@@ -76,7 +76,7 @@ describe('GradleParser', () => {
       const result = parser.parse(errorText);
 
       expect(result).not.toBeNull();
-      expect(result?.type).toBe('dependency_resolution_error');
+      expect(result?.type).toBe('gradle_dependency_resolution_error');
       expect(result?.metadata?.dependency).toBe('com.github.bumptech.glide:glide:4.14.2');
     });
   });
@@ -90,7 +90,7 @@ describe('GradleParser', () => {
       const result = parser.parse(errorText);
 
       expect(result).not.toBeNull();
-      expect(result?.type).toBe('dependency_conflict');
+      expect(result?.type).toBe('gradle_dependency_conflict');
       expect(result?.metadata?.module).toBe('com.google.guava:guava');
       // Should contain at least one version
       expect(result?.metadata?.conflictingVersions.length).toBeGreaterThan(0);
@@ -105,7 +105,7 @@ describe('GradleParser', () => {
       const result = parser.parse(errorText);
 
       expect(result).not.toBeNull();
-      expect(result?.type).toBe('dependency_conflict');
+      expect(result?.type).toBe('gradle_dependency_conflict');
       expect(result?.metadata?.module).toBe('com.google.code.gson:gson');
     });
 
@@ -117,7 +117,7 @@ describe('GradleParser', () => {
       const result = parser.parse(errorText);
 
       expect(result).not.toBeNull();
-      expect(result?.type).toBe('dependency_conflict');
+      expect(result?.type).toBe('gradle_dependency_conflict');
       expect(result?.metadata?.module).toBe('org.jetbrains.kotlin:kotlin-stdlib');
     });
   });
@@ -178,7 +178,7 @@ describe('GradleParser', () => {
       const result = parser.parse(errorText);
 
       expect(result).not.toBeNull();
-      expect(result?.type).toBe('build_script_syntax_error');
+      expect(result?.type).toBe('gradle_build_script_syntax_error');
       expect(result?.filePath).toBe('build.gradle');
       expect(result?.line).toBe(15);
       expect(result?.metadata?.description).toContain('unexpected token');
@@ -193,7 +193,7 @@ describe('GradleParser', () => {
       const result = parser.parse(errorText);
 
       expect(result).not.toBeNull();
-      expect(result?.type).toBe('build_script_syntax_error');
+      expect(result?.type).toBe('gradle_build_script_syntax_error');
       expect(result?.filePath).toBe('build.gradle.kts');
       expect(result?.line).toBe(42);
     });
@@ -206,14 +206,14 @@ describe('GradleParser', () => {
       const result = parser.parse(errorText);
 
       expect(result).not.toBeNull();
-      expect(result?.type).toBe('build_script_syntax_error');
+      expect(result?.type).toBe('gradle_build_script_syntax_error');
       expect(result?.filePath).toBe('app/build.gradle');
       expect(result?.line).toBe(28);
     });
   });
 
   describe('parse() - compilation errors', () => {
-    it('should parse compilation error reported by Gradle', () => {
+    it('should NOT parse compilation errors with Kotlin-specific errors (let KotlinParser handle)', () => {
       const errorText = `
         Compilation failed; see the compiler error output for details.
         e: MainActivity.kt:15: Unresolved reference: test
@@ -221,13 +221,11 @@ describe('GradleParser', () => {
 
       const result = parser.parse(errorText);
 
-      expect(result).not.toBeNull();
-      expect(result?.type).toBe('compilation_error');
-      expect(result?.metadata?.description).toBeTruthy();
-      expect(result?.language).toBe('gradle');
+      // GradleParser should return null for Kotlin errors - let KotlinParser handle it
+      expect(result).toBeNull();
     });
 
-    it('should parse compilation error with file reference', () => {
+    it('should NOT parse compilation errors with Type mismatch (let KotlinParser handle)', () => {
       const errorText = `
         Compilation error. See log for more details.
         error: UserActivity.kt:42: Type mismatch
@@ -235,13 +233,11 @@ describe('GradleParser', () => {
 
       const result = parser.parse(errorText);
 
-      expect(result).not.toBeNull();
-      expect(result?.type).toBe('compilation_error');
-      expect(result?.filePath).toBe('UserActivity.kt');
-      expect(result?.line).toBe(42);
+      // GradleParser should return null for Kotlin errors
+      expect(result).toBeNull();
     });
 
-    it('should extract description from error: prefix', () => {
+    it('should NOT parse compilation errors with lateinit errors (let KotlinParser handle)', () => {
       const errorText = `
         Compilation failed
         error: lateinit property not initialized
@@ -249,9 +245,22 @@ describe('GradleParser', () => {
 
       const result = parser.parse(errorText);
 
+      // GradleParser should return null for Kotlin errors
+      expect(result).toBeNull();
+    });
+
+    it('should parse generic Gradle compilation errors (no specific language errors)', () => {
+      const errorText = `
+        Compilation failed; see the compiler error output for details.
+        Some generic build error occurred.
+      `.trim();
+
+      const result = parser.parse(errorText);
+
+      // This should parse since there's no specific Kotlin/Java error
       expect(result).not.toBeNull();
       expect(result?.type).toBe('compilation_error');
-      expect(result?.metadata?.description).toContain('lateinit');
+      expect(result?.language).toBe('gradle');
     });
   });
 
@@ -288,7 +297,7 @@ describe('GradleParser', () => {
       const longError = 'Could not resolve com.example:library:1.0.0\n'.repeat(5000);
       const result = parser.parse(longError);
       expect(result).not.toBeNull();
-      expect(result?.type).toBe('dependency_resolution_error');
+      expect(result?.type).toBe('gradle_dependency_resolution_error');
     });
 
     it('should default to build.gradle when no file found', () => {

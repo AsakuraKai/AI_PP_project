@@ -56,6 +56,7 @@ Each tool contract specifies:
 | `find_callers_of_function` | 2.2 | LSP call hierarchy | ✅ Implemented |
 | `vector_search_db` | 3.1 | Query past RCA solutions | ✅ Implemented |
 | `get_user_error_context` | 2.3 | Capture error logs from user | ⏳ Planned |
+| `android_build_tool` | 4.3 | Gradle build error analysis | ✅ Implemented |
 
 ---
 
@@ -1015,5 +1016,168 @@ const result = errorParser.parse(errorText);
 
 ---
 
-**Last Updated:** December 2024 (Week 6 - Chunk 4.1 Complete)  
-**Next Update:** After implementing Chunk 4.2 (XML Layout Parser)
+## Tool API: `AndroidBuildTool`
+
+### Description
+Comprehensive Gradle build error analyzer with version resolution recommendations, dependency conflict analysis, and repository diagnostics. Wraps GradleParser with advanced features.
+
+### Initialization
+```typescript
+const tool = new AndroidBuildTool();
+```
+
+### Methods
+
+#### `parseBuildError(buildOutput: string): ParsedError | null`
+Parse Gradle build output and identify errors.
+
+**Input:**
+```typescript
+string  // Raw Gradle build output
+```
+
+**Output:**
+```typescript
+ParsedError | null  // Parsed error or null if not Gradle-related
+```
+
+**Example:**
+```typescript
+const error = tool.parseBuildError(`
+  FAILURE: Build failed with an exception.
+  
+  * What went wrong:
+  Could not resolve com.google.android.material:material:1.9.0
+`);
+
+// error?.type === 'dependency_resolution_error'
+// error?.metadata.dependency === 'com.google.android.material:material:1.9.0'
+```
+
+#### `recommendResolution(error: ParsedError): VersionResolution | null`
+Recommend version resolution strategy for dependency conflicts.
+
+**Input:**
+```typescript
+ParsedError  // Must be dependency_conflict or dependency_resolution_error
+```
+
+**Output:**
+```typescript
+interface VersionResolution {
+  recommended: string;           // Recommended version
+  reason: string;                // Explanation for choice
+  implementation: {
+    groovy: string;              // Groovy DSL code
+    kotlin: string;              // Kotlin DSL code
+  };
+}
+```
+
+**Example:**
+```typescript
+const resolution = tool.recommendResolution(error);
+
+console.log(resolution?.recommended);  // "1.12.0"
+console.log(resolution?.reason);       // "Selected highest version..."
+console.log(resolution?.implementation.groovy);
+// Output:
+// // Option 1: Force specific version (Groovy DSL)
+// configurations.all {
+//     resolutionStrategy {
+//         force 'androidx.core:core-ktx:1.12.0'
+//     }
+// }
+// ...
+```
+
+#### `analyzeDependencyConflict(error: ParsedError): DependencyAnalysis | null`
+Detailed analysis of dependency conflicts.
+
+**Input:**
+```typescript
+ParsedError  // Must be dependency_conflict type
+```
+
+**Output:**
+```typescript
+interface DependencyAnalysis {
+  module: string;                  // Module identifier
+  requestedVersions: string[];     // All conflicting versions
+  conflicts: string[];             // Conflict source descriptions
+  recommendation: VersionResolution;
+}
+```
+
+**Example:**
+```typescript
+const analysis = tool.analyzeDependencyConflict(error);
+
+console.log(analysis?.module);  // "com.google.guava:guava"
+console.log(analysis?.requestedVersions);  // ["28.0-android", "30.1-android"]
+console.log(analysis?.recommendation.recommended);  // "30.1-android"
+```
+
+#### `diagnoseRepositoryIssues(error: ParsedError): string | null`
+Diagnose and suggest repository configuration fixes.
+
+**Input:**
+```typescript
+ParsedError  // Must be dependency_resolution_error type
+```
+
+**Output:**
+```typescript
+string | null  // Diagnostic message with configuration suggestions
+```
+
+**Example:**
+```typescript
+const diagnosis = tool.diagnoseRepositoryIssues(error);
+
+console.log(diagnosis);
+// Output:
+// 📦 Android/AndroidX library detected
+// ✅ Ensure Google Maven repository is configured:
+//    repositories { google() }
+```
+
+#### `static isBuildError(text: string): boolean`
+Quick check if error text is Gradle-related.
+
+**Input:**
+```typescript
+string  // Error text
+```
+
+**Output:**
+```typescript
+boolean  // true if Gradle error detected
+```
+
+**Example:**
+```typescript
+if (AndroidBuildTool.isBuildError(errorText)) {
+  const error = tool.parseBuildError(errorText);
+  // Process Gradle error...
+}
+```
+
+### Error Types Handled
+- `dependency_resolution_error` - Cannot resolve dependency
+- `dependency_conflict` - Version conflict between dependencies
+- `task_failure` - Gradle task execution failure
+- `build_script_syntax_error` - Syntax error in build.gradle
+- `compilation_error` - Compilation failure reported by Gradle
+
+### Features
+1. **Semantic Versioning**: Correctly compares versions (1.10.0 > 1.9.99)
+2. **Version Prefixes**: Handles v, V prefixes (v1.2.3, V2.0.0)
+3. **Dual DSL**: Generates both Groovy and Kotlin code
+4. **Repository Detection**: Smart detection based on group ID
+5. **Three Resolution Strategies**: Force, explicit dependency, exclude transitive
+
+---
+
+**Last Updated:** December 2024 (Week 8 - Chunk 4.3 Complete)  
+**Next Update:** After implementing Chunk 4.4 (Manifest & Docs)

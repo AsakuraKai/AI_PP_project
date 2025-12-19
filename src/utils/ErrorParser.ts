@@ -97,8 +97,16 @@ export class ErrorParser {
       return this.tryAllParsers(errorText);
     }
 
-    // Use detected language parser
-    return this.parseWithLanguage(errorText, language);
+    // Try detected language parser first
+    const result = this.parseWithLanguage(errorText, language);
+    if (result) {
+      return result;
+    }
+
+    // If detected parser fails, try all parsers (handles mixed errors)
+    // This is critical for mixed errors like Kotlin+Gradle or Compose+Kotlin
+    // where LanguageDetector picks one but the other parser is more accurate
+    return this.tryAllParsers(errorText);
   }
 
   /**
@@ -126,11 +134,12 @@ export class ErrorParser {
 
   /**
    * Try all registered parsers until one succeeds
-   * Used when language detection fails
+   * Used when language detection fails or for mixed errors
    */
   private tryAllParsers(errorText: string): ParsedError | null {
-    // Try in order of most common errors (compose before kotlin since it's more specific)
-    const tryOrder = ['compose', 'kotlin', 'gradle', 'java', 'xml'];
+    // Try in order of most specific to least specific
+    // Kotlin must come before Gradle since mixed errors have both
+    const tryOrder = ['compose', 'kotlin', 'xml', 'gradle', 'java'];
 
     for (const language of tryOrder) {
       const parser = this.parsers.get(language);

@@ -53,11 +53,11 @@ export class XMLParser {
   parse(errorText: string): ParsedError | null {
     if (!errorText) return null;
 
-    // Try each parser in order of specificity
+    // Try each parser in order of specificity (most specific first)
     return (
+      this.parseAttributeError(errorText) ||  // Check attribute error before inflation
       this.parseInflationError(errorText) ||
       this.parseMissingIdError(errorText) ||
-      this.parseAttributeError(errorText) ||
       this.parseNamespaceError(errorText) ||
       this.parseTagMismatchError(errorText) ||
       this.parseResourceNotFoundError(errorText) ||
@@ -198,16 +198,39 @@ export class XMLParser {
 
   /**
    * Parse attribute errors (missing or invalid required attributes)
+   * AX002: Missing required attributes like layout_width
    * 
    * Example:
    * ```
    * Error parsing XML: attribute layout_width not specified
+   * You must supply a layout_width attribute
    * in activity_main.xml at line 15
    * ```
    */
   private parseAttributeError(errorText: string): ParsedError | null {
+    // Pattern 1: "You must supply a X attribute" (most specific for AX002)
+    const mustSupplyMatch = errorText.match(/You must supply (?:a|an) ([a-zA-Z0-9_:]+) attribute/i);
+    if (mustSupplyMatch) {
+      // Extract line from "Binary XML file line #X" format
+      const lineMatch = errorText.match(/Binary XML file line #(\d+)/i);
+      const fileMatch = errorText.match(/([a-zA-Z0-9_\/\-]+\.xml)/i);
+      
+      return {
+        type: 'xml_missing_attribute',
+        message: errorText.trim(),
+        filePath: fileMatch ? fileMatch[1] : 'unknown.xml',
+        line: lineMatch ? parseInt(lineMatch[1]) : 0,
+        language: 'xml',
+        framework: 'android',
+        metadata: {
+          attributeName: mustSupplyMatch[1],
+          errorType: 'missing_required_attribute'
+        }
+      };
+    }
+
+    // Pattern 2: "attribute X not specified" or "missing"
     const attrMatch = errorText.match(/attribute\s+([a-zA-Z0-9_:]+)\s+(not specified|missing|required)/i);
-    
     if (attrMatch) {
       const attributeName = attrMatch[1];
       
@@ -224,25 +247,6 @@ export class XMLParser {
         framework: 'android',
         metadata: {
           attributeName,
-          errorType: 'missing_attribute'
-        }
-      };
-    }
-
-    // Alternative: "You must supply a layout_width attribute"
-    const mustSupplyMatch = errorText.match(/You must supply (?:a|an) ([a-zA-Z0-9_:]+) attribute/i);
-    if (mustSupplyMatch) {
-      const fileMatch = errorText.match(/([a-zA-Z0-9_\/\-]+\.xml)/i);
-      
-      return {
-        type: 'xml_attribute_error',
-        message: errorText.trim(),
-        filePath: fileMatch ? fileMatch[1] : 'unknown.xml',
-        line: 0,
-        language: 'xml',
-        framework: 'android',
-        metadata: {
-          attributeName: mustSupplyMatch[1],
           errorType: 'missing_attribute'
         }
       };
