@@ -1,5 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 import * as vscode from 'vscode';
+import { RCAWebview } from './ui/RCAWebview';
 
 // Import Kai's backend components (will be wired from ../src)
 // These will be implemented by Kai - we just call them
@@ -36,17 +37,39 @@ interface RCAResult {
   // CHUNK 3.4: Feedback tracking
   rcaId?: string;         // Unique ID for this RCA (for feedback)
   errorHash?: string;     // Hash of the error (for cache lookup)
+  
+  // CHUNK 4.3: Gradle metadata
+  metadata?: {
+    module?: string;
+    conflictingVersions?: string[];
+    recommendedVersion?: string;
+    affectedDependencies?: string[];
+    requiredPermission?: string; // CHUNK 4.4: Manifest permissions
+  };
+  recommendedFix?: string; // CHUNK 4.3: Gradle fix command
+  
+  // CHUNK 4.4: Android documentation results
+  docResults?: Array<{
+    title: string;
+    summary: string;
+    url?: string;
+  }>;
 }
 
 // Global state
 let outputChannel: vscode.OutputChannel;
 let debugChannel: vscode.OutputChannel;
+let currentWebview: RCAWebview | undefined;
+let educationalMode: boolean = false;
+let extensionContext: vscode.ExtensionContext;
 
 /**
  * CHUNK 1.1: Extension Bootstrap
  * Entry point - Called when extension is activated
  */
 export function activate(context: vscode.ExtensionContext): void {
+  extensionContext = context;
+  
   // Initialize output channels
   outputChannel = vscode.window.createOutputChannel('RCA Agent');
   debugChannel = vscode.window.createOutputChannel('RCA Agent Debug');
@@ -68,9 +91,60 @@ export function activate(context: vscode.ExtensionContext): void {
     }
   );
   
-  context.subscriptions.push(analyzeCommand);
+  // CHUNK 5.1: Register webview command
+  const analyzeWebviewCommand = vscode.commands.registerCommand(
+    'rcaAgent.analyzeErrorWebview',
+    async () => {
+      try {
+        await analyzeErrorWithWebview();
+      } catch (error) {
+        const err = error as Error;
+        log('error', 'Webview command execution failed', err);
+        vscode.window.showErrorMessage(`RCA Agent error: ${err.message}`);
+      }
+    }
+  );
   
-  log('info', 'Command registered: rcaAgent.analyzeError');
+  // CHUNK 5.2: Register educational mode toggle command
+  const toggleEducationalCommand = vscode.commands.registerCommand(
+    'rcaAgent.toggleEducationalMode',
+    () => {
+      educationalMode = !educationalMode;
+      const status = educationalMode ? 'enabled' : 'disabled';
+      vscode.window.showInformationMessage(`Educational Mode ${status} 🎓`);
+      log('info', `Educational mode ${status}`);
+      
+      // Update webview if active
+      if (currentWebview) {
+        currentWebview.setEducationalMode(educationalMode);
+      }
+    }
+  );
+  
+  // CHUNK 5.3: Register performance metrics toggle command
+  const togglePerformanceMetricsCommand = vscode.commands.registerCommand(
+    'rcaAgent.togglePerformanceMetrics',
+    () => {
+      const config = vscode.workspace.getConfiguration('rcaAgent');
+      const currentValue = config.get<boolean>('showPerformanceMetrics', false);
+      const newValue = !currentValue;
+      
+      config.update('showPerformanceMetrics', newValue, vscode.ConfigurationTarget.Global);
+      
+      const status = newValue ? 'enabled' : 'disabled';
+      vscode.window.showInformationMessage(`Performance Metrics ${status} ⚡`);
+      log('info', `Performance metrics ${status}`);
+      
+      // Update webview if active
+      if (currentWebview) {
+        currentWebview.setPerformanceMetrics(newValue);
+      }
+    }
+  );
+  
+  context.subscriptions.push(analyzeCommand, analyzeWebviewCommand, toggleEducationalCommand, togglePerformanceMetricsCommand);
+  
+  log('info', 'Commands registered: rcaAgent.analyzeError, rcaAgent.analyzeErrorWebview, rcaAgent.toggleEducationalMode, rcaAgent.togglePerformanceMetrics');
   vscode.window.showInformationMessage('RCA Agent activated! Press Ctrl+Shift+R to analyze errors.');
 }
 
@@ -114,6 +188,16 @@ async function analyzeErrorCommand(): Promise<void> {
   // CHUNK 4.2: Display XML-specific tips if applicable
   if (isXMLError(parsedError.type)) {
     await showXMLTips(parsedError);
+  }
+  
+  // CHUNK 4.3: Display Gradle-specific tips if applicable
+  if (isGradleError(parsedError.type)) {
+    await showGradleTips(parsedError);
+  }
+  
+  // CHUNK 4.4: Display Manifest-specific tips if applicable
+  if (isManifestError(parsedError.type)) {
+    await showManifestTips(parsedError);
   }
   
   // CHUNK 3.3: Check cache before analysis
@@ -198,6 +282,8 @@ function parseError(errorText: string): ParsedError | null {
   
   // Try to detect error type
   let errorType = 'unknown';
+  let language: 'kotlin' | 'java' | 'xml' = 'kotlin';
+  
   if (errorText.includes('NullPointerException')) {
     errorType = 'npe';
   } else if (errorText.includes('UninitializedPropertyAccessException') || 
@@ -205,6 +291,46 @@ function parseError(errorText: string): ParsedError | null {
     errorType = 'lateinit';
   } else if (errorText.includes('UNRESOLVED_REFERENCE')) {
     errorType = 'unresolved_reference';
+  } else if (errorText.includes('Compose') || errorText.includes('@Composable')) {
+    // CHUNK 4.1: Detect Compose errors
+    if (errorText.includes('remember')) {
+      errorType = 'compose_remember';
+    } else if (errorText.includes('recomposition')) {
+      errorType = 'compose_recomposition';
+    } else if (errorText.includes('LaunchedEffect')) {
+      errorType = 'compose_launched_effect';
+    }
+  } else if (errorText.includes('InflateException') || errorText.includes('Binary XML') || 
+             errorText.includes('layout') || errorText.includes('findViewById')) {
+    // CHUNK 4.2: Detect XML errors
+    language = 'xml';
+    if (errorText.includes('InflateException')) {
+      errorType = 'xml_inflation';
+    } else if (errorText.includes('findViewById')) {
+      errorType = 'xml_missing_id';
+    } else if (errorText.includes('attribute')) {
+      errorType = 'xml_attribute_error';
+    }
+  } else if (errorText.includes('Gradle') || errorText.includes('dependency') || 
+             errorText.includes('build.gradle')) {
+    // CHUNK 4.3: Detect Gradle errors
+    if (errorText.includes('dependency') || errorText.includes('conflict')) {
+      errorType = 'gradle_dependency';
+    } else if (errorText.includes('version')) {
+      errorType = 'gradle_version';
+    } else {
+      errorType = 'gradle_build';
+    }
+  } else if (errorText.includes('Manifest') || errorText.includes('permission') || 
+             errorText.includes('Activity') || errorText.includes('Service')) {
+    // CHUNK 4.4: Detect Manifest errors
+    if (errorText.includes('permission')) {
+      errorType = 'manifest_permission';
+    } else if (errorText.includes('Activity')) {
+      errorType = 'manifest_activity';
+    } else if (errorText.includes('Service')) {
+      errorType = 'manifest_service';
+    }
   }
   
   if (fileLineMatch || errorType !== 'unknown') {
@@ -213,7 +339,7 @@ function parseError(errorText: string): ParsedError | null {
       message: errorText.split('\n')[0].trim(),
       filePath: fileLineMatch ? fileLineMatch[1] : 'unknown',
       line: fileLineMatch ? parseInt(fileLineMatch[2]) : 0,
-      language: 'kotlin'
+      language
     };
   }
   
@@ -396,6 +522,62 @@ function generateMockResult(parsedError: ParsedError): RCAResult {
         'Check for other required attributes specific to view type',
         'Refer to Android documentation for view requirements'
       ]
+    },
+    // CHUNK 4.3: Gradle error examples
+    'gradle_dependency': {
+      rootCause: 'Multiple versions of the same dependency are being used, causing version conflicts.',
+      fixGuidelines: [
+        'Use the recommended version across all modules',
+        'Add explicit version constraint in root build.gradle',
+        'Run ./gradlew dependencies to see full dependency tree',
+        'Consider using a BOM (Bill of Materials) for consistent versions'
+      ]
+    },
+    'gradle_version': {
+      rootCause: 'Gradle version mismatch between project requirements and installed version.',
+      fixGuidelines: [
+        'Update gradle-wrapper.properties to use compatible version',
+        'Sync Gradle files after version change',
+        'Check plugin compatibility with new Gradle version',
+        'Clear Gradle cache if needed: ./gradlew clean --refresh-dependencies'
+      ]
+    },
+    'gradle_build': {
+      rootCause: 'Gradle build failed due to configuration error or missing dependency.',
+      fixGuidelines: [
+        'Check build.gradle for syntax errors',
+        'Verify all required repositories are declared',
+        'Ensure dependencies are available and versions exist',
+        'Run ./gradlew build --stacktrace for detailed error'
+      ]
+    },
+    // CHUNK 4.4: Manifest error examples
+    'manifest_permission': {
+      rootCause: 'App is missing required permission declaration in AndroidManifest.xml.',
+      fixGuidelines: [
+        'Add <uses-permission> tag to AndroidManifest.xml',
+        'Request runtime permission for dangerous permissions (Android 6.0+)',
+        'Check permission name spelling and capitalization',
+        'Verify permission is appropriate for your use case'
+      ]
+    },
+    'manifest_activity': {
+      rootCause: 'Activity must be declared in AndroidManifest.xml before it can be launched.',
+      fixGuidelines: [
+        'Add <activity> tag inside <application> element',
+        'Include intent filters if activity should respond to intents',
+        'Set android:name to full qualified class name',
+        'Rebuild project after manifest changes'
+      ]
+    },
+    'manifest_service': {
+      rootCause: 'Service must be declared in AndroidManifest.xml before it can be started.',
+      fixGuidelines: [
+        'Add <service> tag inside <application> element',
+        'Include required intent filters for service discovery',
+        'Set android:exported correctly for Android 12+ compatibility',
+        'Check service permissions and process attributes'
+      ]
     }
   };
   
@@ -408,6 +590,51 @@ function generateMockResult(parsedError: ParsedError): RCAResult {
   let language: 'kotlin' | 'java' | 'xml' = 'kotlin';
   if (parsedError.type.startsWith('xml_')) {
     language = 'xml';
+  }
+  
+  // CHUNK 4.3: Add Gradle metadata for dependency conflicts
+  let metadata: RCAResult['metadata'];
+  let recommendedFix: string | undefined;
+  
+  if (parsedError.type === 'gradle_dependency') {
+    metadata = {
+      module: 'com.example.app',
+      conflictingVersions: [
+        'androidx.appcompat:appcompat:1.4.0 (from app)',
+        'androidx.appcompat:appcompat:1.3.1 (from :library)',
+        'androidx.appcompat:appcompat:1.2.0 (from com.google.android.material:material)'
+      ],
+      recommendedVersion: 'androidx.appcompat:appcompat:1.4.2',
+      affectedDependencies: [
+        'com.google.android.material:material:1.5.0',
+        'com.example.library:library:1.0.0'
+      ]
+    };
+    recommendedFix = 'Add to build.gradle: implementation("androidx.appcompat:appcompat:1.4.2")';
+  }
+  
+  // CHUNK 4.4: Add Manifest metadata for permissions
+  if (parsedError.type === 'manifest_permission') {
+    metadata = {
+      requiredPermission: 'android.permission.CAMERA'
+    };
+  }
+  
+  // CHUNK 4.4: Add mock documentation results for manifest errors
+  let docResults: RCAResult['docResults'];
+  if (parsedError.type.startsWith('manifest_')) {
+    docResults = [
+      {
+        title: 'App Manifest Overview',
+        summary: 'Every app project must have an AndroidManifest.xml file that describes essential information about your app.',
+        url: 'https://developer.android.com/guide/topics/manifest/manifest-intro'
+      },
+      {
+        title: 'Permissions on Android',
+        summary: 'App permissions help support user privacy by protecting access to restricted data and restricted actions.',
+        url: 'https://developer.android.com/guide/topics/permissions/overview'
+      }
+    ];
   }
   
   return {
@@ -427,6 +654,11 @@ function generateMockResult(parsedError: ParsedError): RCAResult {
     qualityScore: 0.72,  // Mock quality score (slightly lower than confidence)
     latency: 25918,      // Mock latency (~26 seconds, from real accuracy tests)
     modelName: 'granite-code:8b', // Mock model name
+    
+    // CHUNK 4.3 & 4.4: Metadata and docs
+    metadata,
+    recommendedFix,
+    docResults,
   };
 }
 
@@ -488,6 +720,16 @@ function showResult(result: RCAResult): void {
   // CHUNK 4.2: Display XML-specific hints and suggestions
   if (isXMLError(result.errorType)) {
     displayXMLHints(result);
+  }
+  
+  // CHUNK 4.3: Display Gradle-specific conflict visualization
+  if (isGradleError(result.errorType)) {
+    displayGradleConflicts(result);
+  }
+  
+  // CHUNK 4.4: Display Manifest-specific suggestions
+  if (isManifestError(result.errorType)) {
+    displayManifestHints(result);
   }
   
   // CHUNK 1.5: Enhanced fix guidelines formatting
@@ -590,6 +832,13 @@ function getErrorBadge(errorType: string): string {
     'xml_resource_not_found': '🟠 XML: Resource Not Found',
     'xml_duplicate_id': '🟠 XML: Duplicate ID',
     'xml_invalid_attribute': '🟠 XML: Invalid Attribute Value',
+    
+    // Android Manifest Errors (5 types) - Green variants - CHUNK 4.4
+    'manifest_permission': '🟢 Manifest: Missing Permission',
+    'manifest_activity': '🟢 Manifest: Activity Not Declared',
+    'manifest_service': '🟢 Manifest: Service Not Declared',
+    'manifest_receiver': '🟢 Manifest: Receiver Not Declared',
+    'manifest_version': '🟢 Manifest: Version Conflict',
     
     // General/Other Errors - Blue variants
     'unknown': '🔵 Unknown Error',
@@ -1366,10 +1615,438 @@ function displayXMLHints(result: RCAResult): void {
 }
 
 /**
+ * CHUNK 4.3: Check if error is Gradle-related
+ */
+function isGradleError(errorType: string): boolean {
+  return errorType.startsWith('gradle_');
+}
 
+/**
+ * CHUNK 4.3: Show Gradle tips on error detection
+ */
+async function showGradleTips(parsedError: ParsedError): Promise<void> {
+  log('info', 'CHUNK 4.3: Detected Gradle error', { errorType: parsedError.type });
+  
+  // Show brief notification
+  vscode.window.showInformationMessage(
+    '📦 Gradle build error detected - dependency conflict analysis will be provided'
+  );
+}
+
+/**
+ * CHUNK 4.3: Display Gradle-specific conflict visualization
+ */
+function displayGradleConflicts(result: RCAResult): void {
+  outputChannel.appendLine('\n📦 GRADLE BUILD INFO:');
+  
+  // Display module info if available
+  if (result.metadata?.module) {
+    outputChannel.appendLine(`   Module: ${result.metadata.module}`);
+  }
+  
+  // Display conflicting versions if available
+  if (result.metadata?.conflictingVersions && result.metadata.conflictingVersions.length > 0) {
+    outputChannel.appendLine(`\n   🔀 CONFLICTING VERSIONS:`);
+    result.metadata.conflictingVersions.forEach((version: string) => {
+      outputChannel.appendLine(`      • ${version}`);
+    });
+  }
+  
+  // Display recommended version
+  if (result.metadata?.recommendedVersion) {
+    outputChannel.appendLine(`\n   ✅ RECOMMENDED VERSION:`);
+    outputChannel.appendLine(`      ${result.metadata.recommendedVersion}`);
+  }
+  
+  // Display affected dependencies
+  if (result.metadata?.affectedDependencies && result.metadata.affectedDependencies.length > 0) {
+    outputChannel.appendLine(`\n   📋 AFFECTED DEPENDENCIES:`);
+    result.metadata.affectedDependencies.forEach((dep: string) => {
+      outputChannel.appendLine(`      • ${dep}`);
+    });
+  }
+  
+  // Display recommended fix command
+  if (result.recommendedFix) {
+    outputChannel.appendLine(`\n🔧 RECOMMENDED FIX:`);
+    outputChannel.appendLine(`   ${result.recommendedFix}`);
+    outputChannel.appendLine(`\n   💡 Run this in your terminal to resolve the conflict`);
+  }
+  
+  // Add Gradle documentation link
+  outputChannel.appendLine(`\n   📚 Gradle Docs: https://docs.gradle.org/current/userguide/dependency_management.html`);
+  
+  log('info', 'Gradle conflict visualization displayed', { errorType: result.errorType });
+}
+
+/**
+ * CHUNK 4.4: Check if error is Manifest-related
+ */
+function isManifestError(errorType: string): boolean {
+  return errorType.startsWith('manifest_');
+}
+
+/**
+ * CHUNK 4.4: Show Manifest tips on error detection
+ */
+async function showManifestTips(parsedError: ParsedError): Promise<void> {
+  log('info', 'CHUNK 4.4: Detected Manifest error', { errorType: parsedError.type });
+  
+  // Show brief notification
+  vscode.window.showInformationMessage(
+    '📋 Android Manifest error detected - permission and component analysis will be provided'
+  );
+}
+
+/**
+ * CHUNK 4.4: Display Manifest-specific suggestions
+ */
+function displayManifestHints(result: RCAResult): void {
+  outputChannel.appendLine('\n📋 ANDROID MANIFEST INFO:');
+  
+  // Display manifest-specific tips based on error type
+  const manifestTips: Record<string, string> = {
+    'manifest_permission': '   💡 Add missing permission to AndroidManifest.xml in <manifest> root element',
+    'manifest_activity': '   💡 Declare activity in AndroidManifest.xml inside <application> tag',
+    'manifest_service': '   💡 Declare service in AndroidManifest.xml with required intent filters',
+    'manifest_receiver': '   💡 Declare broadcast receiver in AndroidManifest.xml or register dynamically',
+    'manifest_version': '   💡 Check targetSdkVersion and minSdkVersion for API compatibility'
+  };
+  
+  const tip = manifestTips[result.errorType] || '   💡 Review AndroidManifest.xml for missing declarations';
+  outputChannel.appendLine(tip);
+  
+  // Display required permission if available
+  if (result.metadata?.requiredPermission) {
+    outputChannel.appendLine(`\n   ⚠️  MISSING PERMISSION: ${result.metadata.requiredPermission}`);
+    outputChannel.appendLine(`\n✏️  ADD TO AndroidManifest.xml:`);
+    outputChannel.appendLine(`   <manifest xmlns:android="http://schemas.android.com/apk/res/android">`);
+    outputChannel.appendLine(`       <uses-permission android:name="${result.metadata.requiredPermission}" />`);
+    outputChannel.appendLine(`       ...`);
+    outputChannel.appendLine(`   </manifest>`);
+  }
+  
+  // Display permission-specific warnings based on common permissions
+  if (result.metadata?.requiredPermission) {
+    const permission = result.metadata.requiredPermission;
+    
+    if (permission.includes('INTERNET')) {
+      outputChannel.appendLine(`\n   ℹ️  Note: INTERNET permission doesn't require runtime permission request`);
+    } else if (permission.includes('CAMERA') || permission.includes('LOCATION') || permission.includes('STORAGE')) {
+      outputChannel.appendLine(`\n   ⚠️  Note: This is a dangerous permission - requires runtime permission request on Android 6.0+`);
+      outputChannel.appendLine(`   📖 See: https://developer.android.com/training/permissions/requesting`);
+    }
+  }
+  
+  // Documentation results (if available from Kai's backend)
+  if (result.docResults && result.docResults.length > 0) {
+    outputChannel.appendLine(`\n📚 RELEVANT DOCUMENTATION:`);
+    result.docResults.forEach((doc, index) => {
+      outputChannel.appendLine(`\n   ${index + 1}. ${doc.title}`);
+      outputChannel.appendLine(`      ${doc.summary}`);
+      if (doc.url) {
+        outputChannel.appendLine(`      🔗 ${doc.url}`);
+      }
+    });
+  }
+  
+  // Add Android Manifest documentation link
+  outputChannel.appendLine(`\n   📚 Manifest Guide: https://developer.android.com/guide/topics/manifest/manifest-intro`);
+  
+  log('info', 'Manifest hints displayed', { errorType: result.errorType });
+}
+
+/**
  * Extension cleanup
  */
 export function deactivate(): void {
   log('info', 'RCA Agent extension deactivated');
+  
+  // Clean up webview
+  if (currentWebview) {
+    currentWebview.dispose();
+    currentWebview = undefined;
+  }
+  
   // Resources are disposed automatically via context.subscriptions
+}
+
+/**
+ * CHUNK 5.1: Analyze error with webview display
+ */
+async function analyzeErrorWithWebview(): Promise<void> {
+  // Get error text from user
+  const errorText = await getErrorText();
+  if (!errorText) {
+    vscode.window.showWarningMessage('No error text provided');
+    return;
+  }
+  
+  // Validate and sanitize input
+  const sanitized = sanitizeErrorText(errorText);
+  log('info', 'Received error text for webview analysis', { length: sanitized.length });
+  
+  // Parse error
+  const parsedError = parseError(sanitized);
+  
+  if (!parsedError) {
+    vscode.window.showErrorMessage(
+      'Could not parse error. Is this a Kotlin/Android error?',
+      'View Debug Logs'
+    ).then((selection: string | undefined) => {
+      if (selection === 'View Debug Logs') {
+        debugChannel.show();
+      }
+    });
+    return;
+  }
+  
+  // Create or reuse webview
+  if (!currentWebview) {
+    currentWebview = RCAWebview.create(extensionContext, educationalMode);
+  } else {
+    currentWebview.reset();
+  }
+  
+  // Check cache
+  const cachedResult = await checkCache(parsedError);
+  
+  if (cachedResult) {
+    log('info', 'Cache hit - displaying in webview');
+    
+    // Add educational content if in educational mode
+    if (educationalMode) {
+      cachedResult.learningNotes = generateLearningNotes(cachedResult);
+    }
+    
+    currentWebview.showFinalResult(cachedResult);
+    return;
+  }
+  
+  // Simulate agent analysis with progress updates
+  log('info', 'Starting webview analysis (mock)');
+  
+  try {
+    // Simulate progress (in real implementation, this would come from agent stream)
+    const maxIterations = 3;
+    
+    for (let i = 1; i <= maxIterations; i++) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const thoughts = [
+        'Reading error context from file...',
+        'Analyzing variable initialization patterns...',
+        'Synthesizing root cause explanation...'
+      ];
+      
+      currentWebview.updateProgress(i, maxIterations, thoughts[i - 1]);
+    }
+    
+    // Generate mock result
+    const result = generateMockResult(parsedError);
+    
+    // Add educational content if in educational mode
+    if (educationalMode) {
+      result.learningNotes = generateLearningNotes(result);
+    }
+    
+    // Display final result
+    currentWebview.showFinalResult(result);
+    
+    // CHUNK 5.3: Show performance metrics if enabled
+    const config = vscode.workspace.getConfiguration('rcaAgent');
+    const showMetrics = config.get<boolean>('showPerformanceMetrics', false);
+    
+    if (showMetrics) {
+      // Generate mock performance metrics
+      const metrics = {
+        totalTime: result.latency || 2450,
+        llmTime: 1850,
+        toolTime: 600,
+        cacheHitRate: 0,
+        tokenUsage: {
+          prompt: 1234,
+          completion: 567,
+          total: 1801
+        }
+      };
+      
+      currentWebview.showPerformanceMetrics(metrics);
+    }
+    
+    log('info', 'Webview analysis complete');
+    
+  } catch (error) {
+    const err = error as Error;
+    log('error', 'Webview analysis failed', err);
+    currentWebview.showError(err.message);
+  }
+}
+
+/**
+ * CHUNK 5.2: Generate educational learning notes
+ */
+function generateLearningNotes(result: RCAResult): string[] {
+  const notes: string[] = [];
+  const errorType = result.errorType;
+  
+  // Kotlin Core Errors
+  if (errorType === 'npe') {
+    notes.push(
+      '**What is a NullPointerException?**\n' +
+      'A NullPointerException (NPE) occurs when you try to use an object reference that points to null. ' +
+      'In Kotlin, this usually happens when working with Java interop or using the !! operator.'
+    );
+    notes.push(
+      '**Why did this happen?**\n' +
+      'The variable was null when you tried to access it. This often happens because:\n' +
+      '- You received a null value from Java code\n' +
+      '- You used the !! operator without checking for null\n' +
+      '- A lateinit property wasn\'t initialized before use'
+    );
+    notes.push(
+      '**How to prevent this:**\n' +
+      '- Use safe calls (?.) instead of !! operator\n' +
+      '- Use let { } to safely handle nullable values\n' +
+      '- Initialize lateinit properties in init blocks\n' +
+      '- Consider using nullable types (String?) with proper null handling'
+    );
+  } else if (errorType === 'lateinit') {
+    notes.push(
+      '**What is lateinit?**\n' +
+      'lateinit allows you to declare non-null properties that will be initialized later. ' +
+      'It\'s commonly used for dependency injection or properties initialized in onCreate().'
+    );
+    notes.push(
+      '**Why did this error happen?**\n' +
+      'You tried to access the property before calling the initialization code. Common scenarios:\n' +
+      '- Accessing in onCreate() before it\'s initialized\n' +
+      '- Initialization code threw an exception\n' +
+      '- Forgot to call the initialization method'
+    );
+    notes.push(
+      '**Best practices:**\n' +
+      '- Use isInitialized check: ::property.isInitialized\n' +
+      '- Initialize in constructor or init block if possible\n' +
+      '- Consider using lazy delegation: val property by lazy { ... }\n' +
+      '- For Android, initialize in onCreate() before accessing'
+    );
+  }
+  
+  // Jetpack Compose Errors
+  else if (errorType.startsWith('compose_')) {
+    if (errorType === 'compose_remember') {
+      notes.push(
+        '**Understanding remember in Compose:**\n' +
+        'remember { } is used to store state across recompositions. Without it, your state ' +
+        'gets recreated every time the composable recomposes, losing user input or data.'
+      );
+      notes.push(
+        '**When to use remember:**\n' +
+        '- For mutableStateOf() to persist state: remember { mutableStateOf("") }\n' +
+        '- For expensive calculations: remember { heavyComputation() }\n' +
+        '- For object instances that should survive recomposition'
+      );
+      notes.push(
+        '**Common mistakes:**\n' +
+        '- Forgetting remember with mutableStateOf (state resets on recompose)\n' +
+        '- Using remember for values that should change (use derivedStateOf)\n' +
+        '- Not using rememberSaveable for configuration changes'
+      );
+    } else if (errorType === 'compose_recomposition') {
+      notes.push(
+        '**What is recomposition?**\n' +
+        'Recomposition is when Compose reruns composables to update the UI. ' +
+        'Excessive recomposition can cause performance issues and unexpected behavior.'
+      );
+      notes.push(
+        '**Why this happened:**\n' +
+        'Your composable is recomposing too often, possibly because:\n' +
+        '- Unstable parameters (mutable objects, lambdas)\n' +
+        '- State changes in parent composables\n' +
+        '- Missing remember for state or calculations'
+      );
+      notes.push(
+        '**How to optimize:**\n' +
+        '- Make parameters stable (use @Stable or @Immutable)\n' +
+        '- Use remember for lambdas and callbacks\n' +
+        '- Use derivedStateOf for computed values\n' +
+        '- Check Layout Inspector for recomposition counts'
+      );
+    }
+  }
+  
+  // XML Layout Errors
+  else if (errorType.startsWith('xml_')) {
+    notes.push(
+      '**Understanding XML Layouts:**\n' +
+      'XML layouts define your UI structure. Errors here usually mean:\n' +
+      '- Missing required attributes\n' +
+      '- Wrong attribute values\n' +
+      '- Resources not found\n' +
+      '- Syntax errors in XML'
+    );
+    notes.push(
+      '**Debugging tips:**\n' +
+      '- Check the exact line number in the error\n' +
+      '- Verify all required attributes are present\n' +
+      '- Make sure resource IDs exist (colors, strings, drawables)\n' +
+      '- Use Android Studio\'s Layout Editor for validation'
+    );
+  }
+  
+  // Gradle Build Errors
+  else if (errorType.startsWith('gradle_')) {
+    notes.push(
+      '**Understanding Gradle Dependencies:**\n' +
+      'Gradle manages libraries and builds your app. Conflicts happen when:\n' +
+      '- Multiple libraries depend on different versions of the same library\n' +
+      '- Incompatible library versions are specified\n' +
+      '- Plugin versions don\'t match'
+    );
+    notes.push(
+      '**Resolution strategies:**\n' +
+      '- Use implementation() instead of compile()\n' +
+      '- Force specific versions with force = true\n' +
+      '- Use dependency resolution strategy in build.gradle\n' +
+      '- Check with: ./gradlew dependencies to see conflict tree'
+    );
+  }
+  
+  // Manifest Errors
+  else if (errorType.startsWith('manifest_')) {
+    notes.push(
+      '**What is AndroidManifest.xml?**\n' +
+      'The manifest declares essential app information:\n' +
+      '- Permissions your app needs\n' +
+      '- Activities, services, receivers\n' +
+      '- Min/target SDK versions\n' +
+      '- App features and requirements'
+    );
+    notes.push(
+      '**Permission best practices:**\n' +
+      '- Only request permissions you actually need\n' +
+      '- For dangerous permissions, request at runtime (Android 6.0+)\n' +
+      '- Explain to users WHY you need each permission\n' +
+      '- Handle permission denial gracefully'
+    );
+  }
+  
+  // Default educational content
+  if (notes.length === 0) {
+    notes.push(
+      '**Understanding the error:**\n' +
+      'This error occurred because the code tried to perform an operation that wasn\'t valid. ' +
+      'Review the error message and stack trace to understand what went wrong.'
+    );
+    notes.push(
+      '**General debugging tips:**\n' +
+      '- Read the full error message carefully\n' +
+      '- Check the line number and file mentioned\n' +
+      '- Look for recent code changes that might have caused it\n' +
+      '- Use the debugger to inspect variable values'
+    );
+  }
+  
+  return notes;
 }
