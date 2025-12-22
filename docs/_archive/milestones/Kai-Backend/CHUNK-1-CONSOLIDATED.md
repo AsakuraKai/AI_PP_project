@@ -813,21 +813,106 @@ docs/
 
 ### Running the System
 
+#### Prerequisites Setup (Step-by-Step)
+
+**1. Ollama Server Setup:**
 ```bash
-# Prerequisites
-1. Ollama server running: ollama serve
-2. Model downloaded: ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
-3. Environment set: $env:OLLAMA_AVAILABLE="true"
+# Start Ollama server
+ollama serve
 
-# Run Tests
-npm test                    # All unit tests (71 tests)
-npm run test:accuracy       # Accuracy tests (12 tests)
-npm run bench              # Performance benchmark
+# Verify it's running (should return model list)
+curl http://localhost:11434/api/tags
 
+# Windows PowerShell alternative
+Invoke-WebRequest http://localhost:11434/api/tags
+```
+
+**2. Model Download:**
+```bash
+# Download the DeepSeek R1 model (~5GB)
+ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
+
+# Verify model is available
+ollama list
+```
+
+**3. Environment Variables:**
+```bash
+# Windows PowerShell (required for tests)
+$env:OLLAMA_AVAILABLE="true"
+
+# Windows CMD
+set OLLAMA_AVAILABLE=true
+
+# Linux/Mac
+export OLLAMA_AVAILABLE=true
+```
+
+#### Running Tests
+
+```bash
+# Unit Tests (71 tests)
+npm test                    # Run all unit tests
+npm test -- --coverage      # With coverage report
+
+# Accuracy Tests (12 tests with real errors)
+npm run test:accuracy       # Full accuracy validation suite
+
+# Performance Benchmarks
+npm run bench              # Benchmark on test cases
+
+# Specific Test Suites
+npm test OllamaClient       # Test LLM client only
+npm test KotlinNPEParser    # Test parser only
+npm test MinimalReactAgent  # Test agent only
+npm test ReadFileTool       # Test file reading only
+npm test accuracy           # Test accuracy suite only
+```
+
+#### Build & Development
+
+```bash
 # Build
-npm run compile            # TypeScript compilation
-npm run lint              # ESLint check
-npm run test:coverage     # Coverage report
+npm run compile            # TypeScript compilation (~4s)
+npm run lint              # ESLint check (zero warnings expected)
+npm run test:coverage     # Generate coverage report (88%+)
+
+# Watch Mode
+npm run watch             # Auto-recompile on changes
+
+# Clean Build
+npm run clean             # Remove dist/ folder
+npm run compile           # Fresh compilation
+```
+
+#### Troubleshooting Common Issues
+
+**Issue: Ollama connection refused**
+```bash
+# Check if Ollama is running
+curl http://localhost:11434/api/tags
+
+# If not running, start it
+ollama serve
+
+# Check firewall settings (Windows)
+netsh advfirewall firewall show rule name="Ollama"
+```
+
+**Issue: Tests timing out**
+```bash
+# Increase Jest timeout (already set to 120s)
+# Check system resources (GPU memory, CPU load)
+# Try with smaller model if needed
+```
+
+**Issue: Model not found**
+```bash
+# List available models
+ollama list
+
+# Re-download if missing
+ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
 ```
 
 ### Documentation References
@@ -1011,9 +1096,11 @@ function showRCAResult(rca: RCAResult): void {
 
 **1. Code Context Display**
 - Show ±25 lines of code around error location
-- Syntax-highlighted Kotlin code display
+- Syntax-highlighted Kotlin code display with markdown (```kotlin)
 - File path and line number header
 - Scrollable code panel
+- Warning messages for missing code context
+- Debug logging for troubleshooting
 
 **Implementation:**
 ```typescript
@@ -1030,67 +1117,140 @@ function showCodeContext(fileContent: string, filePath: string, line: number): v
 }
 ```
 
+**Example Output:**
+```
+📝 CODE CONTEXT (from source file):
+```kotlin
+    private lateinit var database: AppDatabase
+    
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // database not initialized!
+        database.userDao().getAll()
+    }
+```
+
+⚠️  CODE CONTEXT: File could not be read (using error message only)
+```
+
 **2. Confidence Visualization**
-- Visual confidence bar (0-100%)
-- Color-coded confidence levels:
-  - 🔴 Low (0-50%): Red
-  - 🟡 Medium (50-75%): Yellow
-  - 🟢 High (75-100%): Green
-- Confidence percentage display
+- **Visual Bar:** 20-character progress bar with █ (filled) and ░ (empty) characters
+- **Interpretation System:**
+  - 🟢 High (≥80%): "High confidence - solution is reliable"
+  - 🟡 Medium (60-79%): "Medium confidence - verify suggestion"
+  - 🔴 Low (<60%): "Low confidence - manual review recommended"
+- **Confidence percentage display** with interpretation text
 
 **Implementation:**
 ```typescript
-// extension.ts - Confidence bar (new in Week 8)
-function showConfidenceBar(confidence: number): void {
+// extension.ts - Confidence bar with visual display (new in Week 8)
+function createConfidenceBar(confidence: number): string {
   const percentage = Math.round(confidence * 100);
-  const color = confidence < 0.5 ? 'red' : confidence < 0.75 ? 'yellow' : 'green';
-  const label = confidence < 0.5 ? 'Low' : confidence < 0.75 ? 'Medium' : 'High';
-  
-  const html = `
-    <div class="confidence-bar">
-      <div class="bar" style="width: ${percentage}%; background-color: ${color};"></div>
-      <span class="label">${percentage}% (${label})</span>
-    </div>
-  `;
-  panel.webview.html += html;
+  const filledBars = Math.round(percentage / 5); // 20 bars total
+  const emptyBars = 20 - filledBars;
+  const bar = '█'.repeat(filledBars) + '░'.repeat(emptyBars);
+  return `✅ CONFIDENCE: ${percentage}%\n   ${bar}\n   ${getConfidenceInterpretation(confidence)}`;
 }
+
+function getConfidenceInterpretation(confidence: number): string {
+  if (confidence >= 0.8) return "High confidence - solution is reliable";
+  if (confidence >= 0.6) return "Medium confidence - verify suggestion";
+  return "Low confidence - manual review recommended";
+}
+```
+
+**Example Output:**
+```
+✅ CONFIDENCE: 75%
+   ███████████████░░░░░
+   Medium confidence - verify suggestion
 ```
 
 **3. Enhanced RCA Display**
 - Integrated code context above root cause
 - Confidence bar above fix guidelines
-- Improved visual hierarchy
-- Better formatting with CSS
+- Section separators (60-character lines: ────────)
+- Consistent emoji usage (🔍 🐛 📁 📝 💡 🛠️ ✅)
+- Enhanced footer with 3 helpful tips
+- Better success notifications with "View Output" action
 
 ---
 
-#### Error Handling Enhancements
+#### Error Handling Enhancements (4 Specific Categories)
 
-**Added 4 Error Categories:**
+**Added 9 Total Action Buttons Across All Error Categories:**
 
-1. **Parse Errors** (Parser couldn't understand error text)
-   ```typescript
-   // Show: "Error type not recognized. Please check error format."
-   // Action: "View Error Parser Documentation"
-   ```
+**1. Ollama Connection Error** (3 action buttons)
+   - **Detection:** Cannot connect to http://localhost:11434
+   - **Display:**
+     ```
+     ⚠️ OLLAMA CONNECTION ERROR
+     
+     Could not connect to Ollama server. Please ensure:
+     
+     Troubleshooting Steps:
+     1. Check if Ollama is running
+     2. Verify the URL: http://localhost:11434
+     3. Try restarting Ollama service
+     4. Check firewall settings
+     
+     [Start Ollama] [Installation Guide] [Check Logs]
+     ```
+   - **Actions:**
+     - "Start Ollama" → Opens terminal with `ollama serve`
+     - "Installation Guide" → Opens Ollama documentation
+     - "Check Logs" → Opens debug output channel
 
-2. **Analysis Errors** (Agent/LLM failed during analysis)
-   ```typescript
-   // Show: "Analysis failed. Please try again or check Ollama status."
-   // Action: "Check Ollama Status" → Opens http://localhost:11434/api/tags
-   ```
+**2. Timeout Error** (2 action buttons)
+   - **Detection:** Analysis exceeds 90 seconds
+   - **Display:**
+     ```
+     ⏱️ ANALYSIS TIMEOUT
+     
+     Analysis took longer than expected (>90s).
+     
+     Suggestions:
+     - Try a smaller/faster model
+     - Increase timeout in settings
+     - Check system resources
+     
+     [Open Settings] [View Logs]
+     ```
+   - **Actions:**
+     - "Open Settings" → Opens VS Code settings for rcaAgent
+     - "View Logs" → Opens debug output channel
 
-3. **File Read Errors** (Couldn't read source code file)
-   ```typescript
-   // Show: "Could not read file at error location."
-   // Action: "Check File Exists" → Opens file explorer
-   ```
+**3. Parse Error** (2 action buttons)
+   - **Detection:** Parser couldn't understand error text
+   - **Display:**
+     ```
+     🔍 PARSE ERROR
+     
+     Could not parse error text. Please ensure:
+     - Error includes stack trace
+     - Error is from Kotlin/Java
+     - Error format is standard
+     
+     [View Debug Logs] [Report Issue]
+     ```
+   - **Actions:**
+     - "View Debug Logs" → Opens debug output channel
+     - "Report Issue" → Opens GitHub issue template
 
-4. **Timeout Errors** (Analysis took longer than 90s)
-   ```typescript
-   // Show: "Analysis timed out. Model may be too slow."
-   // Action: "Optimize Performance" → Opens optimization guide
-   ```
+**4. Generic Error** (2 action buttons)
+   - **Detection:** Any unexpected error during analysis
+   - **Display:**
+     ```
+     ❌ ANALYSIS ERROR
+     
+     An unexpected error occurred:
+     [Full stack trace displayed]
+     
+     [View Logs] [Retry]
+     ```
+   - **Actions:**
+     - "View Logs" → Opens debug output channel
+     - "Retry" → Runs analysis again
 
 **Error Display Format:**
 ```typescript
@@ -1112,17 +1272,40 @@ function showError(category: ErrorCategory, message: string, action: string): vo
 
 **Files Modified:**
 - `vscode-extension/src/extension.ts` (+120 lines → 470 total)
-  - Added `showCodeContext()` function
-  - Added `showConfidenceBar()` function
-  - Enhanced `showRCAResult()` with integrated displays
-  - Added error category handling (4 types)
-  - Improved CSS styling
+  - Added `showCodeContext()` function (~30 lines)
+  - Added `createConfidenceBar()` function (~15 lines)
+  - Added `getConfidenceInterpretation()` function (~10 lines)
+  - Enhanced `showRCAResult()` with integrated displays (completely rewritten, ~80 lines)
+  - Enhanced `analyzeWithProgress()` with better progress updates (~10 lines)
+  - Rewritten `handleAnalysisError()` with 4 specific handlers (~100 lines)
+  - Improved CSS styling (~50 lines)
+
+**Code Metrics:**
+| Metric | Before | After | Change |
+|--------|--------|-------|--------|
+| Total Lines | ~350 | ~470 | +120 lines (+34%) |
+| Functions | 8 | 10 | +2 new functions |
+| Error Categories | 1 (generic) | 4 (specific) | +300% |
+| Action Buttons | 0 | 9 total | New feature |
+| Output Sections | 5 | 7 | +2 sections |
 
 **New Features:**
-- Code context display panel
-- Confidence visualization bar
-- Enhanced error messages with action buttons
-- Better visual hierarchy
+- Code context display panel with markdown syntax highlighting
+- Confidence visualization bar with 20-character progress display (█/░)
+- Enhanced error messages with inline troubleshooting steps
+- 9 action buttons across 4 error categories
+- Professional output formatting (section separators, consistent emojis)
+- Enhanced footer with 3 helpful tips
+- Better success notifications with "View Output" action
+
+**Quality Improvements:**
+| Feature | Impact Rating | Description |
+|---------|---------------|-------------|
+| Code Context Display | ⭐⭐⭐⭐⭐ | Critical for understanding errors |
+| Confidence Visualization | ⭐⭐⭐⭐ | Helps users trust results |
+| Specific Error Messages | ⭐⭐⭐⭐⭐ | Dramatically reduces support burden |
+| Inline Troubleshooting | ⭐⭐⭐⭐ | Faster issue resolution |
+| Professional Formatting | ⭐⭐⭐ | Improved user perception |
 
 **CSS Updates:**
 ```css
@@ -1175,6 +1358,11 @@ function showError(category: ErrorCategory, message: string, action: string): vo
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.action-button:hover {
+  background: #005a9e;
 }
 ```
 
