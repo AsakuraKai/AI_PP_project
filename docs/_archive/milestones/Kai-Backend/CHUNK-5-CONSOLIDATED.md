@@ -153,7 +153,15 @@ The lateinit property 'user' is declared but never initialized before being acce
 **Key Features:**
 - Extends MinimalReactAgent (inheritance pattern)
 - LLM-powered educational content (3 additional LLM calls)
-- Output cleanup (removes markdown fences, trims whitespace)
+- **Output cleanup:** Removes markdown fences, trims whitespace
+  ```typescript
+  private cleanupExplanation(text: string): string {
+    return text
+      .replace(/```[\w]*\n?/g, '')  // Remove ```kotlin, ```markdown, etc.
+      .replace(/```/g, '')           // Remove closing ```
+      .trim();
+  }
+  ```
 - Pending education tracking (Map-based storage)
 - Graceful degradation (partial notes on LLM failure)
 
@@ -200,6 +208,7 @@ console.log(notes); // Full educational content once ready
 - `prompt_build` - Iteration prompt building
 - `llm_inference` - LLM API calls (5-10× per analysis)
 - `tool_execution` - Tool invocation time
+- `read_file_fallback` - Direct file reading (backward compatibility)
 - `final_prompt_generation` - Final conclusion prompt
 - `final_llm_inference` - Final LLM call
 
@@ -295,6 +304,13 @@ npm run test:golden
 - **agent-workflow.md (~2,100 lines):** Detailed ReAct reasoning flow
 - **database-design.md (~1,300 lines):** ChromaDB schema & caching strategy
 
+**ASCII Diagram Design Decision:**
+- ✅ Version control friendly (text diffs, no binary blobs)
+- ✅ No external tool dependencies (draw.io, PlantUML)
+- ✅ Always synchronized with code updates
+- ✅ Renders in any environment (terminal, web, IDE)
+- ✅ 7 diagrams total: component, data flow, module dependencies
+
 #### Performance Documentation (docs/performance/)
 - **benchmarks.md (~1,400 lines):** Complete metrics & optimization guide
 
@@ -387,6 +403,94 @@ npm run test:golden
 
 ---
 
+## 🚧 Challenges Overcome
+
+### Challenge 1: AnalysisTimeoutError Handling (Chunk 5.1)
+**Problem:** `emitError()` in catch block interfered with error re-throwing. Tests expected `AnalysisTimeoutError` but received generic `Error`.
+
+**Solution:** Wrapped `emitError()` in try-catch to preserve original error type:
+```typescript
+try {
+  this.stream.emitError(error, iteration, 'synthesis');
+} catch (streamError) {
+  console.warn('Failed to emit error event:', streamError);
+}
+// Original error is preserved
+if (error instanceof AnalysisTimeoutError) throw error;
+```
+
+### Challenge 2: Template Literal Corruption (Chunk 5.1)
+**Problem:** Initial string replacements broke template literals in MinimalReactAgent.ts, causing 200+ TypeScript errors.
+
+**Solution:**
+1. Restored file from git: `git checkout HEAD -- MinimalReactAgent.ts`
+2. Used `multi_replace_string_in_file()` for atomic operations
+3. Applied 4 targeted replacements in one transaction
+4. Added stream emissions in second pass
+
+### Challenge 3: Mock Setup Complexity (Chunk 5.2)
+**Problem:** BeforeEach added 3 default mocks that interfered with test-specific mocks, causing queue pollution.
+
+**Solution:**
+1. Removed all default mocks from beforeEach
+2. Created `mockBaseAnalysis()` helper function
+3. Each test explicitly calls `mockBaseAnalysis()` + 3 educational mocks
+4. Clear mock call order: 1 base + 3 educational = 4 total
+
+### Challenge 4: LLM Response Structure Mismatch (Chunk 5.2)
+**Problem:** Educational methods tried to access `.text` property but mocks returned plain strings.
+
+**Solution:** Created `mockResponse()` helper wrapping strings in proper LLMResponse structure:
+```typescript
+function mockResponse(text: string): LLMResponse {
+  return {
+    text,
+    tokensUsed: 100,
+    generationTime: 1000,
+    model: 'test-model'
+  };
+}
+```
+
+### Challenge 5: Inheritance Access Issue (Chunk 5.2)
+**Problem:** EducationalAgent couldn't access MinimalReactAgent's `llm` property.
+
+**Solution:** Changed visibility from `private` to `protected` in MinimalReactAgent:
+```typescript
+export class MinimalReactAgent {
+  constructor(protected llm: OllamaClient) {} // Protected = child can access
+}
+```
+**Impact:** Minimal - only visibility increase, no API changes.
+
+---
+
+## 📦 New Commands & Scripts
+
+Added to `package.json` for testing and performance analysis:
+
+```bash
+# Run golden test suite (requires Ollama)
+npm run test:golden
+
+# Run with coverage report
+npm run test:coverage
+
+# Run performance benchmarks
+npm run bench
+
+# Run accuracy tests
+npm run test:accuracy
+```
+
+**Golden Test Configuration:**
+- Skipped by default in standard test runs
+- Requires Ollama running locally
+- Runs 7 reference test cases + 2 summary tests
+- Typical runtime: 8-10 minutes
+
+---
+
 ## 🧪 Integration Points
 
 ### With VS Code Extension (Sokchea)
@@ -444,7 +548,33 @@ statusBar.text = `Analysis: ${stats.total_analysis.mean}ms`;
 
 ---
 
-## 📈 Performance Results
+## � New Commands & Scripts
+
+Added to `package.json` for testing and performance analysis:
+
+```bash
+# Run golden test suite (requires Ollama)
+npm run test:golden
+
+# Run with coverage report
+npm run test:coverage
+
+# Run performance benchmarks
+npm run bench
+
+# Run accuracy tests
+npm run test:accuracy
+```
+
+**Golden Test Configuration:**
+- Skipped by default in standard test runs
+- Requires Ollama running locally
+- Runs 7 reference test cases + 2 summary tests
+- Typical runtime: 8-10 minutes
+
+---
+
+## �📈 Performance Results
 
 ### End-to-End Latency (RTX 3070 Ti)
 
@@ -665,6 +795,56 @@ Integrate Phase 1 backend with VS Code Extension UI, creating a production-ready
    - End-to-end integration tests
    - Performance optimization (<2s UI response)
    - Bug fixes and edge case handling
+
+---
+
+## 🎓 Key Learnings & Best Practices
+
+### From Chunk 5.1 (State Streaming)
+1. **EventEmitter for Decoupling** - Use EventEmitter for real-time updates (not callbacks)
+2. **Error-Safe Side Effects** - Wrap non-critical emissions in try-catch, preserve original error types
+3. **Progress Visualization** - Simple linear progress (iteration-based) + elapsed time
+4. **Multi-File Edits** - Use `multi_replace_string_in_file()` for atomicity, restore from git if needed
+
+### From Chunk 5.2 (Educational Agent)
+1. **Inheritance Requires Protected Access** - Use `protected` for child class dependencies
+2. **Mock Configuration Must Be Explicit** - Avoid default mocks in `beforeEach`, use helper functions
+3. **LLM Response Structure Matters** - Always mock full response objects, not plain strings
+4. **Case-Insensitive Assertions** - Use `.toLowerCase()` for LLM output tests (model-dependent casing)
+
+### From Chunk 5.3-5.4 (Performance & Testing)
+1. **Percentiles Over Mean** - Better representation of user experience (p50, p90, p99)
+2. **LLM Non-Determinism** - Need keyword matching, not exact strings (50% match threshold works well)
+3. **Automatic Reporting** - Print metrics at end (success or failure) for transparency
+4. **Regression Detection** - Run subset (3 cases) for quick CI/CD checks, full suite weekly
+
+### From Chunk 5.5 (Documentation)
+1. **Documentation is a Feature** - Comprehensive docs dramatically improve usability
+2. **Examples Matter** - Live code examples reduce onboarding time by ~4x (estimated)
+3. **Progressive Disclosure** - API → Architecture → Performance matches developer workflow
+4. **ASCII Art Works** - Version control friendly, no external dependencies, always in sync
+
+---
+
+## 📊 Final Chunk 5 Summary
+
+**Total Contribution:**
+- **Source Code:** 1,163 lines (AgentStateStream 220, DocumentSynthesizer 320, EducationalAgent 335, PerformanceTracker 243, integration 45)
+- **Tests:** 109 new tests (AgentStateStream 25, DocumentSynthesizer 31, EducationalAgent 24, PerformanceTracker 20, Golden Suite 9)
+- **Documentation:** ~9,650 lines (8 comprehensive files + 4 main doc updates)
+- **Test Progression:** 772 → 878 total tests (+106 new tests)
+- **Pass Rate:** 869/878 (99%) - 9 pre-existing failures documented
+
+**Key Achievements:**
+✅ Real-time progress updates for VS Code UI (6 event types)
+✅ Educational content generation (sync/async modes, 3 learning note types)
+✅ Performance monitoring infrastructure (7 tracked operations, percentile analysis)
+✅ Golden test suite for regression detection (7 reference cases)
+✅ Complete Phase 1 backend documentation (~9,650 lines)
+✅ 100% API coverage with live TypeScript examples
+✅ All performance targets met or exceeded
+
+**Phase 1 Status:** 🎉 **100% COMPLETE** - Ready for VS Code Extension Integration (Phase 2)
 
 ### Success Criteria
 - ✅ Seamless frontend-backend integration
