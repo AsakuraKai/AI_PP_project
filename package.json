@@ -10,6 +10,10 @@
     "test:coverage": "jest --coverage",
     "test:accuracy": "ts-node scripts/run-accuracy-tests.ts",
     "test:golden": "RUN_GOLDEN_TESTS=true jest tests/golden",
+    "perf-test": "ts-node scripts/run-performance-tests.ts",
+    "perf-test:quick": "ts-node scripts/run-performance-tests.ts -- --complexity simple",
+    "perf-compare": "ts-node scripts/performance-comparison.ts",
+    "perf-validate": "ts-node scripts/validate-setup.ts",
     "bench": "ts-node scripts/benchmark.ts",
     "lint": "eslint src/**/*.ts",
     "format": "prettier --write src/**/*.ts"
