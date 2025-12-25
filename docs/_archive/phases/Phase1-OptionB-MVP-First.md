@@ -511,7 +511,7 @@ Successfully completed all Chunk 2 UI sub-chunks (2.1-2.3), delivering comprehen
 #### Chunk 2.3: Accuracy Metrics Display (Days 6-7, ~12h actual)
 - [x] ✅ Quality score display with visual bar chart
 - [x] ✅ Analysis latency display (ms → seconds: 25918ms → 25.9s)
-- [x] ✅ LLM model name display (e.g., 'granite-code:8b')
+- [x] ✅ LLM model name display (e.g., 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest')
 - [x] ✅ Optional metrics section (only shows when data available)
 - [x] ✅ Component reuse (confidence bar for quality score)
 - [x] ✅ Extended `RCAResult` interface with optional metrics fields

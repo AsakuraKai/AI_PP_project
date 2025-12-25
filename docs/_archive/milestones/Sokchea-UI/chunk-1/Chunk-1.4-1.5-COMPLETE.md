@@ -120,7 +120,7 @@ function getConfidenceInterpretation(confidence: number): string {
 🔧 TROUBLESHOOTING STEPS:
 1. Install Ollama: https://ollama.ai/
 2. Start Ollama: Run "ollama serve" in terminal
-3. Pull model: Run "ollama pull granite-code:8b"
+3. Pull model: Run "ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest"
 4. Check settings: File > Preferences > Settings > RCA Agent
 ```
 
@@ -133,7 +133,7 @@ function getConfidenceInterpretation(confidence: number): string {
 
 💡 SUGGESTIONS:
 • Increase timeout in settings
-• Use a faster/smaller model (e.g., granite-code:8b)
+• Use a faster/smaller model (e.g., hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest)
 • Check your network connection
 ```
 
@@ -303,7 +303,7 @@ A lateinit property was accessed before being initialized.
 🔧 TROUBLESHOOTING STEPS:
 1. Install Ollama: https://ollama.ai/
 2. Start Ollama: Run "ollama serve" in terminal
-3. Pull model: Run "ollama pull granite-code:8b"
+3. Pull model: Run "ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest"
 4. Check settings: File > Preferences > Settings > RCA Agent
 ```
 
@@ -389,7 +389,7 @@ All placeholders in the extension are ready to be replaced with Kai's backend:
    // Integration: Wire to Kai's agent
    import { MinimalReactAgent } from '../src/agent/MinimalReactAgent';
    import { OllamaClient } from '../src/llm/OllamaClient';
-   const llm = await OllamaClient.create({ model: 'granite-code:8b' });
+   const llm = await OllamaClient.create({ model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest' });
    const agent = new MinimalReactAgent(llm);
    const result = await agent.analyze(parsedError);
    ```
@@ -413,7 +413,7 @@ All placeholders in the extension are ready to be replaced with Kai's backend:
    ```typescript
    // Extension settings already configured:
    - rcaAgent.ollamaUrl (default: http://localhost:11434)
-   - rcaAgent.model (default: granite-code:8b)
+   - rcaAgent.model (default: hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest)
    
    // Ready to pass to Kai's OllamaClient
    ```
@@ -471,7 +471,7 @@ All placeholders in the extension are ready to be replaced with Kai's backend:
 
 **Pre-Integration Checklist:**
 1. Ensure Ollama is installed and running
-2. Pull required model: `ollama pull granite-code:8b`
+2. Pull required model: `ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest`
 3. Test Kai's backend components individually
 4. Verify ChromaDB connection (optional for MVP)
 
@@ -565,7 +565,7 @@ None - all placeholder implementations work as designed.
 
 Before integration testing:
 - [ ] Ollama installed and running (`ollama serve`)
-- [ ] Model pulled (`ollama pull granite-code:8b`)
+- [ ] Model pulled (`ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest`)
 - [ ] ChromaDB running (optional for MVP)
 - [ ] Test project with Kotlin errors available
 - [ ] Backend components tested individually (by Kai)

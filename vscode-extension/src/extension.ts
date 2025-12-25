@@ -28,7 +28,7 @@ interface RCAResult {
   // CHUNK 2.3: Accuracy metrics
   qualityScore?: number;  // Quality score from QualityScorer (0.0-1.0)
   latency?: number;       // Analysis latency in milliseconds
-  modelName?: string;     // LLM model used (e.g., 'granite-code:8b')
+  modelName?: string;     // LLM model used (e.g., 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest')
   
   // CHUNK 3.3: Cache metadata
   fromCache?: boolean;    // Whether result came from cache
@@ -54,6 +54,9 @@ interface RCAResult {
     summary: string;
     url?: string;
   }>;
+  
+  // CHUNK 5.2: Educational mode content
+  learningNotes?: string[];
 }
 
 // Global state
@@ -379,7 +382,7 @@ async function analyzeWithProgress(parsedError: ParsedError): Promise<void> {
       // Check if we can connect to Ollama (placeholder)
       const config = vscode.workspace.getConfiguration('rcaAgent');
       const ollamaUrl = config.get<string>('ollamaUrl') || 'http://localhost:11434';
-      const model = config.get<string>('model') || 'granite-code:8b';
+      const model = config.get<string>('model') || 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest';
       
       log('info', 'Configuration', { ollamaUrl, model });
       
@@ -653,7 +656,7 @@ function generateMockResult(parsedError: ParsedError): RCAResult {
     // CHUNK 2.3: Accuracy metrics
     qualityScore: 0.72,  // Mock quality score (slightly lower than confidence)
     latency: 25918,      // Mock latency (~26 seconds, from real accuracy tests)
-    modelName: 'granite-code:8b', // Mock model name
+    modelName: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest', // Mock model name
     
     // CHUNK 4.3 & 4.4: Metadata and docs
     metadata,
@@ -920,7 +923,7 @@ function handleAnalysisError(error: Error): void {
     outputChannel.appendLine('\n🔧 TROUBLESHOOTING STEPS:');
     outputChannel.appendLine('1. Install Ollama: https://ollama.ai/');
     outputChannel.appendLine('2. Start Ollama: Run "ollama serve" in terminal');
-    outputChannel.appendLine('3. Pull model: Run "ollama pull granite-code:8b"');
+    outputChannel.appendLine('3. Pull model: Run "ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest"');
     outputChannel.appendLine('4. Check settings: File > Preferences > Settings > RCA Agent');
     
   } else if (error.message.includes('timeout') || error.message.includes('ETIMEDOUT')) {
@@ -940,7 +943,7 @@ function handleAnalysisError(error: Error): void {
     outputChannel.appendLine('\n⏱️ ERROR: Analysis timed out');
     outputChannel.appendLine('\n💡 SUGGESTIONS:');
     outputChannel.appendLine('• Increase timeout in settings');
-    outputChannel.appendLine('• Use a faster/smaller model (e.g., granite-code:8b)');
+    outputChannel.appendLine('• Use a faster/smaller model (e.g., hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest)');
     outputChannel.appendLine('• Check your network connection');
     
   } else if (error.message.includes('parse') || error.message.includes('Could not parse')) {
@@ -1368,9 +1371,9 @@ async function showFeedbackPrompt(result: RCAResult): Promise<void> {
     });
     
     if (selection === '👍 Yes, helpful!') {
-      await handlePositiveFeedback(rcaId, errorHash, result);
+      await handlePositiveFeedback(rcaId, errorHash);
     } else if (selection === '👎 Not helpful') {
-      await handleNegativeFeedback(rcaId, errorHash, result);
+      await handleNegativeFeedback(rcaId, errorHash);
     }
   } catch (error) {
     log('error', 'Feedback prompt failed', error);
@@ -1381,7 +1384,7 @@ async function showFeedbackPrompt(result: RCAResult): Promise<void> {
 /**
  * CHUNK 3.4: Handle positive feedback (thumbs up)
  */
-async function handlePositiveFeedback(rcaId: string, errorHash: string, result: RCAResult): Promise<void> {
+async function handlePositiveFeedback(rcaId: string, errorHash: string): Promise<void> {
   try {
     log('info', 'CHUNK 3.4: Handling positive feedback', { rcaId, errorHash });
     
@@ -1433,7 +1436,7 @@ async function handlePositiveFeedback(rcaId: string, errorHash: string, result: 
 /**
  * CHUNK 3.4: Handle negative feedback (thumbs down)
  */
-async function handleNegativeFeedback(rcaId: string, errorHash: string, result: RCAResult): Promise<void> {
+async function handleNegativeFeedback(rcaId: string, errorHash: string): Promise<void> {
   try {
     log('info', 'CHUNK 3.4: Handling negative feedback', { rcaId, errorHash });
     

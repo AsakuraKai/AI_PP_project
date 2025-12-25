@@ -1,6 +1,6 @@
 # Architecture Decision Records (ADRs)
 
-> **Purpose:** Document all major architectural decisions with rationale, consequences, and alternatives considered.
+**Purpose:** Document all major architectural decisions with rationale, consequences, and alternatives considered.
 
 ---
 
@@ -56,4 +56,3 @@ Use the template in `ADR-TEMPLATE.md` when creating new ADRs.
 ## Archive
 
 Superseded or deprecated ADRs are moved to the `archive/` subdirectory but kept for historical reference.
->>>>>>> 8c58113224bbf7a87a7715a24cf9d7750b167135

@@ -196,7 +196,7 @@
 ### Primary Objectives
 1. **Desktop Environment Setup**
    - Install Ollama server
-   - Download granite-code:8b model
+   - Download hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest model
    - Verify GPU acceleration
 
 2. **Backend-Frontend Integration**

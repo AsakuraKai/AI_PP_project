@@ -60,7 +60,6 @@ export class RCAWebview {
   private panel: vscode.WebviewPanel;
   private disposables: vscode.Disposable[] = [];
   private educationalMode: boolean = false;
-  private showPerformanceMetrics: boolean = false; // CHUNK 5.3
   
   /**
    * Factory method to create RCAWebview instance
@@ -83,7 +82,7 @@ export class RCAWebview {
   
   private constructor(
     panel: vscode.WebviewPanel,
-    private context: vscode.ExtensionContext,
+    _context: vscode.ExtensionContext,
     educationalMode: boolean
   ) {
     this.panel = panel;
@@ -176,7 +175,7 @@ export class RCAWebview {
    * CHUNK 5.3: Toggle performance metrics display
    */
   setPerformanceMetrics(enabled: boolean): void {
-    this.showPerformanceMetrics = enabled;
+    // Send message to webview to toggle performance metrics display
     this.panel.webview.postMessage({
       type: 'performanceMetrics',
       enabled

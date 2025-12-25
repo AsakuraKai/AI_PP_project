@@ -214,7 +214,7 @@ All requirements met with excellent code quality.
 ### High Priority:
 1. **Integration Testing Environment**
    - Set up desktop with Ollama server
-   - Install granite-code:8b model
+   - Install hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest model
    - Prepare test Kotlin files with real errors
 
 2. **Backend Integration**

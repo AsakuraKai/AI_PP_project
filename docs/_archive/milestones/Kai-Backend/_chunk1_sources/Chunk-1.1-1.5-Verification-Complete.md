@@ -81,7 +81,7 @@ All manual tests passed, including:
 
 ### High Priority:
 1. Access desktop with Ollama server
-2. Install granite-code:8b model
+2. Install hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest model
 3. Integrate Kai's backend components:
    - Replace `parseError()` with `KotlinNPEParser`
    - Replace `generateMockResult()` with `MinimalReactAgent`

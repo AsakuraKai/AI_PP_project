@@ -340,7 +340,7 @@ code --install-extension rca-agent-0.1.0.vsix
 # 4. Test keybindings - all 4 should work
 
 # Uninstall (for testing)
-code --uninstall-extension sokchea.rca-agent-extension
+code --uninstall-extension rca-agent-extension
 ```
 
 ---

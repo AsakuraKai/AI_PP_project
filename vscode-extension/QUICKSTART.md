@@ -81,7 +81,7 @@ You should see:
 
 The real AI-powered analysis requires:
 1. Ollama server running
-2. granite-code:8b model downloaded
+2. hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest model downloaded
 3. Backend integration complete
 
 ## Troubleshooting

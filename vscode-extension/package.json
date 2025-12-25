@@ -3,7 +3,15 @@
   "displayName": "RCA Agent - Root Cause Analysis",
   "description": "AI-powered debugging assistant for Kotlin/Android",
   "version": "0.1.0",
-  "publisher": "sokchea",
+  "publisher": "Kai",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AsakuraKai/AI_PP_project.git"
+  },
+  "homepage": "https://github.com/AsakuraKai/AI_PP_project#readme",
+  "bugs": {
+    "url": "https://github.com/AsakuraKai/AI_PP_project/issues"
+  },
   "engines": {
     "vscode": "^1.80.0"
   },
@@ -72,10 +80,10 @@
         },
         "rcaAgent.model": {
           "type": "string",
-          "default": "granite-code:8b",
+          "default": "hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest",
           "description": "LLM model to use for analysis",
           "enum": [
-            "granite-code:8b",
+            "hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest",
             "codellama:7b",
             "qwen-coder:7b",
             "deepseek-coder:6.7b"

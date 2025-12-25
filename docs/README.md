@@ -1,10 +1,10 @@
 # 🚀 RCA Agent: Local-First AI Debugging Assistant
 
-> **Mission:** Build a local-first debugging assistant for Kotlin/Android development that provides deep root cause analysis using unlimited LLM iterations.
+**Mission:** Build a local-first debugging assistant for Kotlin/Android development that provides deep root cause analysis using unlimited LLM iterations.
 
-> **Focus:** Personal learning project - no deadlines, no external validation needed. Building something useful while learning about LLM agents, RAG systems, and local AI deployment.
+**Focus:** Personal learning project - no deadlines, no external validation needed. Building something useful while learning about LLM agents, RAG systems, and local AI deployment.
 
-> **Hardware:** RTX 3070 Ti (8GB VRAM), 32GB RAM, Ryzen 5 5600x
+**Hardware:** RTX 3070 Ti (8GB VRAM), 32GB RAM, Ryzen 5 5600x
 
 ---
 
@@ -230,4 +230,3 @@ No deadlines, no pressure, no publication goals. Just building something cool.
 ---
 
 **🌟 Ready to dive in? Check [DEVLOG.md](DEVLOG.md) for current progress or [API_CONTRACTS.md](API_CONTRACTS.md) to understand the system architecture.**
->>>>>>> 8c58113224bbf7a87a7715a24cf9d7750b167135

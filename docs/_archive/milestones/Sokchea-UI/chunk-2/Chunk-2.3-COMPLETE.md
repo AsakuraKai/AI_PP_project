@@ -61,7 +61,7 @@ interface RCAResult {
   // NEW: CHUNK 2.3 - Accuracy metrics
   qualityScore?: number;  // Quality score from QualityScorer (0.0-1.0)
   latency?: number;       // Analysis latency in milliseconds
-  modelName?: string;     // LLM model used (e.g., 'granite-code:8b')
+  modelName?: string;     // LLM model used (e.g., 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest')
 }
 ```
 
@@ -80,14 +80,14 @@ return {
   // NEW: CHUNK 2.3 - Mock accuracy metrics (from real test data)
   qualityScore: 0.72,  // ~72% quality score (from accuracy-metrics.json)
   latency: 25918,      // ~26 seconds (from accuracy-metrics.json averageLatency)
-  modelName: 'granite-code:8b', // Current test model
+  modelName: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest', // Current test model
 };
 ```
 
 **Data Source:** Mock values align with `docs/data/accuracy-metrics.json`:
 - Average confidence: 0.63
 - Average latency: 25918ms  
-- Model: granite-code:8b
+- Model: hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
 
 #### 3. Added Metrics Display Section
 
@@ -167,7 +167,7 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
 📊 METRICS:                                     [Chunk 2.3: NEW - Accuracy metrics]
    Quality Score: 72% ██████████████░░░░░░
    Analysis Time: 25.9s
-   Model: granite-code:8b
+   Model: hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
 
 ────────────────────────────────────────────────
 💡 TIP: This is a placeholder result. Connect to Ollama for real AI-powered analysis.
@@ -193,7 +193,7 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
 - ✅ Readable format for users
 
 **Test 3: Model Name Display**
-- ✅ Model name displays correctly ('granite-code:8b')
+- ✅ Model name displays correctly ('hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest')
 - ✅ No formatting issues with colon character
 - ✅ Clear indication of which model was used
 
@@ -363,7 +363,7 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
 ### Decision 4: Model Name Format
 
 **Options Considered:**
-1. **Display full name** (e.g., "granite-code:8b")
+1. **Display full name** (e.g., "hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest")
 2. **Parse and show version** (e.g., "8B")
 3. **Show name + size** (e.g., "Granite Code (8B parameters)")
 
@@ -420,7 +420,7 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
 📊 METRICS:                                     ← NEW: Comprehensive metrics
    Quality Score: 72% ██████████████░░░░░░      ← Objective quality assessment
    Analysis Time: 25.9s                          ← Performance transparency
-   Model: granite-code:8b                        ← Model accountability
+   Model: hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest                        ← Model accountability
 
 ────────────────────────────────────────────────
 💡 TIP: This is a placeholder result...
@@ -441,7 +441,7 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
 1. **Mock Data:** All metrics show placeholder values until backend integration
    - Quality: 0.72 (hardcoded)
    - Latency: 25918ms (hardcoded)
-   - Model: 'granite-code:8b' (hardcoded)
+   - Model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest' (hardcoded)
    - **Fix:** Wire to actual backend (Week 10-11)
 
 2. **No Latency Context:** "25.9s" without context - is this fast or slow?

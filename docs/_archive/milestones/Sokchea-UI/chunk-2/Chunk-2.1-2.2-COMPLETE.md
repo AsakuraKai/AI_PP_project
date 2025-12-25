@@ -176,7 +176,7 @@ async function analyzeWithProgress(parsedError: ParsedError) {
       
       // Step 2: LLM initialization (2-5s)
       progress.report({ message: '🤖 Initializing LLM...' });
-      const llm = await OllamaClient.create({ model: 'granite-code:8b' });
+      const llm = await OllamaClient.create({ model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest' });
       
       // Step 3: Tool execution (10-30s)
       progress.report({ message: '🔍 Executing tools...' });

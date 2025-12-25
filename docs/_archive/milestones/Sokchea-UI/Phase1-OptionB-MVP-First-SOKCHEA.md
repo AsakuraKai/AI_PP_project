@@ -1371,7 +1371,7 @@ function getConfidenceInterpretation(confidence: number): string {
 🔧 TROUBLESHOOTING STEPS:
 1. Install Ollama: https://ollama.ai/
 2. Start Ollama: Run "ollama serve" in terminal
-3. Pull model: Run "ollama pull granite-code:8b"
+3. Pull model: Run "ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest"
 4. Check settings: File > Preferences > Settings > RCA Agent
 ```
 
@@ -1384,7 +1384,7 @@ function getConfidenceInterpretation(confidence: number): string {
 
 💡 SUGGESTIONS:
 • Increase timeout in settings
-• Use a faster/smaller model (e.g., granite-code:8b)
+• Use a faster/smaller model (e.g., hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest)
 • Check your network connection
 ```
 
@@ -1709,7 +1709,7 @@ function showResult(result: RCAResult) {
 **Tests Completed:**
 - [x] ✅ Quality score displays correctly with bar chart
 - [x] ✅ Latency converts to seconds (25918ms → 25.9s)
-- [x] ✅ Model name displays correctly (e.g., 'granite-code:8b')
+- [x] ✅ Model name displays correctly (e.g., 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest')
 - [x] ✅ Optional section only shows when metrics available
 - [x] ✅ Visual bar renders properly (reuses existing component)
 - [x] ✅ Graceful degradation with partial backend data
@@ -3114,4 +3114,3 @@ tool.execute(params) → Promise<ToolResult>
 - Ask Kai for clarification on interfaces
 
 **This is Sokchea's complete work breakdown. Kai handles all backend separately.**
->>>>>>> 8c58113224bbf7a87a7715a24cf9d7750b167135

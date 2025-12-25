@@ -31,7 +31,7 @@ AI-powered debugging assistant that analyzes your Kotlin/Android errors and sugg
    ollama serve
    
    # Pull recommended model (8B parameters, ~4.7GB)
-   ollama pull granite-code:8b
+   ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
    ```
 
 2. **ChromaDB** (Optional - for learning from past errors)
@@ -115,7 +115,7 @@ Access settings: `File > Preferences > Settings > RCA Agent`
   "rcaAgent.ollamaUrl": "http://localhost:11434",
   
   // LLM model to use
-  "rcaAgent.model": "granite-code:8b",
+  "rcaAgent.model": "hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest",
   
   // Show performance metrics
   "rcaAgent.showPerformanceMetrics": false
@@ -126,7 +126,7 @@ Access settings: `File > Preferences > Settings > RCA Agent`
 
 | Model | Size | Best For |
 |-------|------|----------|
-| `granite-code:8b` | 4.7GB | **Recommended** - Best balance of speed/accuracy |
+| `hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest` | 4.7GB | **Recommended** - Best balance of speed/accuracy |
 | `codellama:7b` | 3.8GB | Fast, good for quick analyses |
 | `qwen-coder:7b` | 4.2GB | Strong reasoning, slightly slower |
 | `deepseek-coder:6.7b` | 3.6GB | Compact, good for low-memory systems |
