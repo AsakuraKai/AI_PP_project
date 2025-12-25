@@ -852,7 +852,7 @@ code --install-extension rca-agent-0.1.0.vsix
 # 5. Test all 4 keybindings
 
 # Uninstall (for testing)
-code --uninstall-extension sokchea.rca-agent-extension
+code --uninstall-extension rca-agent-extension
 ```
 
 ---

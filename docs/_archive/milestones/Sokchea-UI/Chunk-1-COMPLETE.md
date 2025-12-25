@@ -99,7 +99,7 @@ vscode-extension/
   },
   "rcaAgent.model": {
     "type": "string",
-    "default": "granite-code:8b",
+    "default": "hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest",
     "description": "LLM model to use"
   },
   "rcaAgent.debugLogging": {
@@ -502,7 +502,7 @@ function getConfidenceInterpretation(confidence: number): string {
 🔧 TROUBLESHOOTING STEPS:
 1. Install Ollama: https://ollama.ai/
 2. Start Ollama: Run "ollama serve" in terminal
-3. Pull model: Run "ollama pull granite-code:8b"
+3. Pull model: Run "ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest"
 4. Check settings: File > Preferences > Settings > RCA Agent
 ```
 
@@ -515,7 +515,7 @@ function getConfidenceInterpretation(confidence: number): string {
 
 💡 SUGGESTIONS:
 • Increase timeout in settings
-• Use a faster/smaller model (e.g., granite-code:8b)
+• Use a faster/smaller model (e.g., hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest)
 • Check your network connection
 ```
 
@@ -733,7 +733,7 @@ A lateinit property was accessed before being initialized.
 🔧 TROUBLESHOOTING STEPS:
 1. Install Ollama: https://ollama.ai/
 2. Start Ollama: Run "ollama serve" in terminal
-3. Pull model: Run "ollama pull granite-code:8b"
+3. Pull model: Run "ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest"
 4. Check settings: File > Preferences > Settings > RCA Agent
 ```
 
@@ -824,7 +824,7 @@ const result = generateMockResult(parsedError);
 import { MinimalReactAgent } from '../src/agent/MinimalReactAgent';
 import { OllamaClient } from '../src/llm/OllamaClient';
 
-const llm = await OllamaClient.create({ model: 'granite-code:8b' });
+const llm = await OllamaClient.create({ model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest' });
 const agent = new MinimalReactAgent(llm);
 const result = await agent.analyze(parsedError);
 ```
@@ -850,7 +850,7 @@ const fileContent = await tool.execute({
 // Extension settings already configured:
 const config = vscode.workspace.getConfiguration('rcaAgent');
 const ollamaUrl = config.get<string>('ollamaUrl', 'http://localhost:11434');
-const model = config.get<string>('model', 'granite-code:8b');
+const model = config.get<string>('model', 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest');
 
 // Ready to pass to Kai's OllamaClient
 const llm = await OllamaClient.create({
@@ -1019,7 +1019,7 @@ const llm = await OllamaClient.create({
 
 **Pre-Integration Checklist:**
 - [ ] Ensure Ollama is installed and running
-- [ ] Pull required model: `ollama pull granite-code:8b`
+- [ ] Pull required model: `ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest`
 - [ ] Test Kai's backend components individually
 - [ ] Verify ChromaDB connection (optional for MVP)
 - [ ] Prepare test project with real Kotlin errors

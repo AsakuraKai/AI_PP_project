@@ -95,7 +95,7 @@ interface RCAResult {
   // CHUNK 2.3: Accuracy metrics
   qualityScore?: number;   // Quality score from QualityScorer (0.0-1.0)
   latency?: number;        // Analysis latency in milliseconds
-  modelName?: string;      // LLM model used (e.g., 'granite-code:8b')
+  modelName?: string;      // LLM model used (e.g., 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest')
 }
 ```
 
@@ -187,7 +187,7 @@ async function analyzeWithProgress(parsedError: ParsedError) {
       
       // Step 2: LLM initialization (2-5s)
       progress.report({ message: '🤖 Initializing LLM...' });
-      const llm = await OllamaClient.create({ model: 'granite-code:8b' });
+      const llm = await OllamaClient.create({ model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest' });
       
       // Step 3: Tool execution (10-30s)
       progress.report({ message: '🔍 Executing tools...' });
@@ -342,7 +342,7 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
 📊 METRICS:                                     [Chunk 2.3: Accuracy metrics]
    Quality Score: 72% ██████████████░░░░░░
    Analysis Time: 25.9s
-   Model: granite-code:8b
+   Model: hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
 
 ────────────────────────────────────────────────
 💡 TIP: This is a placeholder result. Connect to Ollama for real AI-powered analysis.
@@ -682,7 +682,7 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
 📊 METRICS:                                     ← NEW: Comprehensive metrics
    Quality Score: 72% ██████████████░░░░░░
    Analysis Time: 25.9s
-   Model: granite-code:8b
+   Model: hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
 
 ────────────────────────────────────────────────
 💡 TIP: This is a placeholder result. Connect to Ollama for real AI-powered analysis.
@@ -710,7 +710,7 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
    - Iteration count is hardcoded (3)
    - Quality score is hardcoded (0.72)
    - Latency is hardcoded (25918ms)
-   - Model name is hardcoded ('granite-code:8b')
+   - Model name is hardcoded ('hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest')
    - **Fix:** Backend integration (Week 10-11)
 
 2. **No Real-time Streaming (Chunk 2.2)**

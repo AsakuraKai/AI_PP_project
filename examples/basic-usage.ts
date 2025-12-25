@@ -139,7 +139,7 @@ async function checkOllamaStatus() {
     models.forEach((model) => console.log(`  - ${model}`));
 
     const hasGraniteCode = models.includes('hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest');
-    console.log('\ngranite-code:8b:', hasGraniteCode ? '✓ Installed' : '✗ Not found');
+    console.log('\nhf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest:', hasGraniteCode ? '✓ Installed' : '✗ Not found');
 
     if (!hasGraniteCode) {
       console.log('\n❌ Required model not found!');

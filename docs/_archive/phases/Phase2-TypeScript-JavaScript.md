@@ -152,4 +152,3 @@ if (file.endsWith('.ts') || file.endsWith('.tsx')) {
 ---
 
 [← Previous: Phase 1](Phase1-Foundation-Kotlin-Android.md) | [Next: Phase 3 - Python →](Phase3-Python.md) | [← Back to Main Roadmap](../Roadmap.md)
->>>>>>> 8c58113224bbf7a87a7715a24cf9d7750b167135

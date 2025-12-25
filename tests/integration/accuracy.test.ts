@@ -120,14 +120,19 @@ describe('Accuracy Testing Suite - Chunk 1.5', () => {
           const endTime = Date.now();
           result.latency = endTime - startTime;
 
-          console.log(`  ✓ Root Cause: ${rcaResult.rootCause.substring(0, 80)}...`);
+          // Handle rootCause as string or object
+          const rootCauseStr = typeof rcaResult.rootCause === 'string' 
+            ? rcaResult.rootCause 
+            : JSON.stringify(rcaResult.rootCause);
+          
+          console.log(`  ✓ Root Cause: ${rootCauseStr.substring(0, 80)}...`);
           console.log(`  ✓ Confidence: ${rcaResult.confidence}`);
           console.log(`  ✓ Latency: ${result.latency}ms`);
           console.log(`  ✓ Fix Guidelines: ${rcaResult.fixGuidelines.length} steps`);
 
           // Validate result structure
           expect(rcaResult.rootCause).toBeTruthy();
-          expect(rcaResult.rootCause.length).toBeGreaterThan(10);
+          expect(rootCauseStr.length).toBeGreaterThan(10);
           expect(rcaResult.fixGuidelines).toBeDefined();
           expect(rcaResult.fixGuidelines.length).toBeGreaterThan(0);
           expect(rcaResult.confidence).toBeGreaterThanOrEqual(0);

@@ -48,3 +48,7 @@ temp/
 
 # ChromaDB data (if running locally)
 chroma_data/
+
+# Other
+
+/MVP/
