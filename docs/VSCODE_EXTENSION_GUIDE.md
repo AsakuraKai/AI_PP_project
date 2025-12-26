@@ -827,8 +827,3 @@ Found a bug or want to request a feature?
 ## 📄 License
 
 MIT License - See [LICENSE](../LICENSE)
-
----
-
-**Made with ❤️ for the Kotlin/Android community**
-
