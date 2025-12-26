@@ -28,7 +28,8 @@
 **Current Milestone:** Week 13 - **PHASE 1 BACKEND COMPLETE** ✅  
 **Next:** VS Code Extension Integration (Sokchea's work)
 
-See [DEVLOG.md](DEVLOG.md) for detailed weekly progress.
+See [DEVLOG.md](DEVLOG.md) for detailed weekly progress.  
+See [TESTING_COMPLETE.md](TESTING_COMPLETE.md) for comprehensive test results and performance metrics.
 
 ---
 
@@ -104,6 +105,8 @@ npm test
 
 ## 📚 Documentation
 
+**📑 For complete documentation index, see [DOCS_INDEX.md](DOCS_INDEX.md)**
+
 ### API Documentation (New!)
 - **[api/Agent.md](api/Agent.md)** - Agent APIs (MinimalReactAgent, EducationalAgent, PromptEngine, etc.)
 - **[api/Parsers.md](api/Parsers.md)** - Parser APIs (KotlinParser, GradleParser, JetpackComposeParser, etc.)
@@ -120,11 +123,12 @@ npm test
 
 ### Essential Docs
 - **[DEVLOG.md](DEVLOG.md)** - Weekly development journal with progress, metrics, and learnings
+- **[TESTING_COMPLETE.md](TESTING_COMPLETE.md)** - Comprehensive test results, performance tools, and validation (99% pass rate)
 - **[API_CONTRACTS.md](API_CONTRACTS.md)** - Tool interfaces and JSON schemas  
 - **[PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)** - Complete file tree with descriptions
 
 ### Archived Docs
-- **[_archive/](\_archive/)** - Old milestones, phase guides, completion summaries
+- **[_archive/](\_archive/)** - Old milestones, phase guides, completion summaries, raw test outputs
 - **[_archive/phases/](\_archive/phases/)** - Detailed implementation guides (Phase 1-5)
 - **[_archive/milestones/](\_archive/milestones/)** - Chunk completion reports
 

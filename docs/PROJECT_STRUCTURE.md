@@ -2,7 +2,7 @@
 
 > **Auto-generated snapshot of project file tree**  
 > **Project Type:** Personal learning project - Kotlin/Android debugging assistant  
-> **Last Updated:** December 17, 2025 (Week 14 - Chunks 5.3-5.5 UI Complete - PROJECT COMPLETE 🎉)  
+> **Last Updated:** December 26, 2025 (Documentation Consolidation)  
 > **Next Update:** After Release v0.1.0
 
 ---
@@ -15,26 +15,42 @@ rca-agent/
 │   └── copilot-instructions.md    # AI agent guidance document (comprehensive roadmap)
 ├── docs/
 │   ├── README.md                  # Main roadmap: 12-week production-ready plan
-│   ├── DEVLOG.md                  # Central development journal (weekly updates) - UPDATED Week 14
-│   ├── PROJECT_STRUCTURE.md       # This file - project tree snapshot - UPDATED Week 14
+│   ├── DEVLOG.md                  # Central development journal (weekly updates)
+│   ├── PROJECT_STRUCTURE.md       # This file - project tree snapshot
 │   ├── API_CONTRACTS.md           # Tool interface specifications (JSON schemas)
-│   ├── WEEK-8-SUMMARY.md          # Week 8 completion summary
-│   ├── WEEK-9-SUMMARY.md          # Week 9 completion summary
-│   ├── WEEK-10-SUMMARY.md         # Week 10 completion summary (Chunks 3.1-3.2)
-│   ├── WEEK-11-SUMMARY.md         # Week 11 completion summary (Chunks 3.3-3.4)
-│   ├── WEEK-12-SUMMARY.md         # Week 12 completion summary (Chunks 4.1-4.5, Phase 4 Complete)
-│   ├── WEEK-13-SUMMARY.md         # Week 13 completion summary (Chunks 5.1-5.2 Webview & Educational Mode)
-│   ├── WEEK-14-SUMMARY.md         # Week 14 completion summary (Chunks 5.3-5.5 Final Polish & Docs) - NEW
+│   ├── TESTING_COMPLETE.md        # **NEW: Consolidated testing documentation (all test results + tools)**
+│   ├── AGENT_LEARNING_SUMMARY.md  # Agent learning patterns and insights
+│   ├── IMPROVEMENT_ROADMAP.md     # Future enhancement roadmap
+│   ├── EXTENSION_ARCHITECTURE.md  # VS Code extension technical architecture
+│   ├── EXTENSION_DOCS_INDEX.md    # VS Code extension documentation index
+│   ├── EXTENSION_VISUAL_WORKFLOW.md # VS Code extension visual workflow
+│   ├── VSCODE_EXTENSION_GUIDE.md  # Complete VS Code extension user guide
 │   ├── architecture/
+│   │   ├── overview.md            # System architecture with component diagrams
+│   │   ├── agent-workflow.md      # Detailed agent reasoning flow (ReAct pattern)
+│   │   ├── database-design.md     # ChromaDB schema and caching strategy
 │   │   ├── decisions/             # Architecture Decision Records (ADRs)
 │   │   │   ├── README.md          # ADR index and guidelines
 │   │   │   └── ADR-TEMPLATE.md    # Template for new ADRs
-│   │   └── diagrams/              # Diagram directory (ASCII art diagrams in markdown files)
-│   ├── performance/               # **NEW: Performance Documentation**
+│   │   └── diagrams/              # Diagram directory (ASCII art diagrams)
+│   ├── api/
+│   │   ├── Agent.md               # Agent APIs documentation
+│   │   ├── Database.md            # Database APIs documentation
+│   │   ├── Parsers.md             # Parser APIs documentation
+│   │   └── Tools.md               # Tool APIs documentation
+│   ├── performance/
 │   │   └── benchmarks.md          # Complete performance metrics and optimization guide
 │   ├── data/
-│   │   └── accuracy-metrics.json  # Test results from Chunk 1.5 validation
+│   │   ├── results.json           # Latest test results (10 test cases)
+│   │   ├── full-results.json      # Complete test results (36 test cases)
+│   │   └── accuracy-metrics.json  # Accuracy test metrics
+│   ├── RCA-AGENT-UPDATE-12-25-2025/ (moved to _archive/)
 │   └── _archive/
+│       ├── TEST_RUN_SUMMARY.md    # Moved from root (consolidated into TESTING_COMPLETE.md)
+│       ├── TESTING_SUMMARY.md     # Moved from root (consolidated into TESTING_COMPLETE.md)
+│       ├── COMPLETION_SUMMARY.md  # Moved from root (consolidated into TESTING_COMPLETE.md)
+│       ├── data/
+│       │   └── test-output.txt    # Raw test output (archived)
 │       ├── milestones/            # Milestone completion summaries
 │       │   ├── Chunk-1.1-1.3-COMPLETE.md         # Extension Bootstrap & Basic UI
 │       │   ├── Chunk-1.4-COMPLETE.md             # Backend: ReadFileTool
