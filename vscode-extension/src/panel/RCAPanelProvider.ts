@@ -1,11 +1,13 @@
 /**
  * RCAPanelProvider - WebviewView provider for the RCA Agent panel
- * Chunk 1: Foundation & Activity Bar
+ * Chunk 2: Core Panel UI - Enhanced with webview content generation
  */
 
 import * as vscode from 'vscode';
 import { StateManager } from './StateManager';
 import { WebviewMessage, ExtensionMessage, PanelState } from './types';
+import { WebviewContentGenerator } from './webview-content';
+import { AnalysisService } from '../services/AnalysisService';
 
 /**
  * Provides the webview for the RCA Agent panel in the activity bar
@@ -15,12 +17,14 @@ export class RCAPanelProvider implements vscode.WebviewViewProvider {
   
   private _view?: vscode.WebviewView;
   private _stateManager: StateManager;
+  private _analysisService: AnalysisService;
   
   constructor(
     private readonly _extensionUri: vscode.Uri,
     private readonly _context: vscode.ExtensionContext
   ) {
     this._stateManager = StateManager.getInstance(_context);
+    this._analysisService = AnalysisService.getInstance();
     
     // Listen for state changes and update webview
     this._stateManager.onStateChange(state => {
@@ -47,8 +51,13 @@ export class RCAPanelProvider implements vscode.WebviewViewProvider {
       ]
     };
     
-    // Set initial HTML content
-    webviewView.webview.html = this._getHtmlContent(webviewView.webview);
+    // Set initial HTML content using WebviewContentGenerator
+    const currentState = this._stateManager.getState();
+    webviewView.webview.html = WebviewContentGenerator.getHtmlContent(
+      webviewView.webview,
+      this._extensionUri,
+      currentState
+    );
     
     // Handle messages from webview
     webviewView.webview.onDidReceiveMessage(
@@ -60,7 +69,7 @@ export class RCAPanelProvider implements vscode.WebviewViewProvider {
     // Send initial state to webview
     this._sendState();
     
-    console.log('[RCAPanelProvider] Webview resolved');
+    console.log('[RCAPanelProvider] Webview resolved with enhanced UI');
   }
   
   /**
@@ -71,8 +80,12 @@ export class RCAPanelProvider implements vscode.WebviewViewProvider {
     
     switch (message.type) {
       case 'analyze':
-        // Will be implemented in Chunk 2
-        vscode.window.showInformationMessage(`Analyze error: ${message.errorId} (Chunk 2)`);
+        await this._handleAnalyze(message.errorId);
+        break;
+        
+      case 'analyzeNew':
+        // Reset to empty state
+        this._stateManager.setState({ view: 'empty' });
         break;
         
       case 'analyzeAll':
@@ -81,8 +94,7 @@ export class RCAPanelProvider implements vscode.WebviewViewProvider {
         break;
         
       case 'stop':
-        // Will be implemented in Chunk 2
-        vscode.window.showInformationMessage('Stop analysis (Chunk 2)');
+        this._handleStop();
         break;
         
       case 'refresh':
@@ -94,13 +106,54 @@ export class RCAPanelProvider implements vscode.WebviewViewProvider {
         break;
         
       case 'reanalyze':
-        // Will be implemented in Chunk 2
-        vscode.window.showInformationMessage(`Reanalyze: ${message.historyId} (Chunk 2)`);
+        // Get error from history and reanalyze
+        const historyItem = this._stateManager.getHistoryItem(message.historyId);
+        if (historyItem) {
+          const error = this._stateManager.getError(historyItem.errorId);
+          if (error) {
+            await this._handleAnalyze(error.id);
+          }
+        }
         break;
         
       case 'feedback':
-        // Will be implemented in Chunk 2
-        vscode.window.showInformationMessage('Feedback received (Chunk 2)');
+        await this._handleFeedback(message.value);
+        break;
+        
+      case 'copy':
+        await this._handleCopy(message.fixIndex);
+        break;
+        
+      case 'checkConnection':
+        await this._checkOllamaConnection();
+        break;
+        
+      case 'installModel':
+        await this._installModel();
+        break;
+        
+      case 'viewLogs':
+        vscode.commands.executeCommand('rcaAgent.viewLogs');
+        break;
+        
+      case 'openDocs':
+        vscode.env.openExternal(vscode.Uri.parse('https://github.com/your-repo/docs'));
+        break;
+        
+      case 'toggleEducational':
+        vscode.commands.executeCommand('rcaAgent.toggleEducationalMode');
+        break;
+        
+      case 'togglePerf':
+        // Toggle performance metrics setting
+        const config = vscode.workspace.getConfiguration('rcaAgent');
+        const current = config.get<boolean>('showPerformanceMetrics', false);
+        await config.update('showPerformanceMetrics', !current, true);
+        vscode.window.showInformationMessage(`Performance metrics ${!current ? 'enabled' : 'disabled'}`);
+        break;
+        
+      case 'clearCache':
+        vscode.commands.executeCommand('rcaAgent.clearCache');
         break;
         
       case 'requestState':
@@ -113,7 +166,202 @@ export class RCAPanelProvider implements vscode.WebviewViewProvider {
   }
   
   /**
-   * Send current state to webview
+   * Handle analyze error
+   */
+  private async _handleAnalyze(errorId?: string): Promise<void> {
+    try {
+      // Get error to analyze
+      let error;
+      if (errorId) {
+        error = this._stateManager.getError(errorId);
+      } else {
+        // Get selected text from editor
+        const editor = vscode.window.activeTextEditor;
+        if (!editor || !editor.selection || editor.selection.isEmpty) {
+          vscode.window.showWarningMessage('Please select error text in the editor');
+          return;
+        }
+        
+        const selectedText = editor.document.getText(editor.selection);
+        const filePath = editor.document.uri.fsPath;
+        const line = editor.selection.start.line + 1;
+        
+        // Create new error item
+        error = {
+          id: `error-${Date.now()}`,
+          message: selectedText,
+          filePath,
+          line,
+          severity: 'high' as const,
+          status: 'analyzing' as const,
+          timestamp: Date.now()
+        };
+        
+        // Add to queue
+        await this._stateManager.addError(error);
+      }
+      
+      if (!error) {
+        vscode.window.showWarningMessage('No error to analyze');
+        return;
+      }
+      
+      // Update state to analyzing
+      this._stateManager.setState({
+        view: 'analyzing',
+        currentError: error,
+        progress: 0,
+        currentIteration: 1,
+        maxIterations: 3,
+        currentThought: 'Starting analysis...',
+        toolsUsed: [],
+        elapsed: 0
+      });
+      
+      // Run analysis
+      const result = await this._analysisService.analyzeError(
+        error,
+        (progress) => {
+          // Update progress in state
+          this._stateManager.setState({
+            view: 'analyzing',
+            currentError: error,
+            progress: progress.progress,
+            currentIteration: progress.iteration,
+            maxIterations: progress.maxIterations,
+            currentThought: progress.currentThought,
+            toolsUsed: progress.toolsUsed,
+            elapsed: progress.elapsed
+          });
+        }
+      );
+      
+      // Update error status
+      error.status = 'complete';
+      await this._stateManager.updateError(error);
+      
+      // Add to history
+      await this._stateManager.addHistoryItem({
+        id: `history-${Date.now()}`,
+        timestamp: Date.now(),
+        errorId: error.id,
+        result,
+        duration: result.latency || 0
+      });
+      
+      // Update state to complete
+      this._stateManager.setState({
+        view: 'complete',
+        result
+      });
+      
+      vscode.window.showInformationMessage('Analysis complete!');
+      
+    } catch (error) {
+      console.error('[RCAPanelProvider] Analysis failed:', error);
+      
+      const err = error as Error;
+      
+      // Check if it's an Ollama connection error
+      if (err.message.includes('Ollama server unavailable')) {
+        this._stateManager.setState({
+          view: 'error',
+          errorType: 'ollama-unavailable',
+          errorMessage: err.message,
+          ollamaUrl: vscode.workspace.getConfiguration('rcaAgent').get<string>('ollamaUrl', 'http://localhost:11434')
+        });
+      } else if (err.message.includes('Model') && err.message.includes('not found')) {
+        this._stateManager.setState({
+          view: 'error',
+          errorType: 'model-not-found',
+          errorMessage: err.message,
+          modelName: vscode.workspace.getConfiguration('rcaAgent').get<string>('model', 'deepseek-r1')
+        });
+      } else {
+        this._stateManager.setState({
+          view: 'error',
+          errorType: 'unknown',
+          errorMessage: err.message
+        });
+      }
+      
+      vscode.window.showErrorMessage(`Analysis failed: ${err.message}`);
+    }
+  }
+  
+  /**
+   * Handle stop analysis
+   */
+  private _handleStop(): void {
+    this._analysisService.stopAnalysis();
+    this._stateManager.setState({ view: 'empty' });
+    vscode.window.showInformationMessage('Analysis stopped');
+  }
+  
+  /**
+   * Handle feedback
+   */
+  private async _handleFeedback(value: string): Promise<void> {
+    if (value === 'custom') {
+      const feedback = await vscode.window.showInputBox({
+        prompt: 'Please provide your feedback',
+        placeHolder: 'Enter your feedback here...'
+      });
+      
+      if (feedback) {
+        // TODO: Store feedback in database or send to analytics
+        vscode.window.showInformationMessage('Thank you for your feedback!');
+      }
+    } else {
+      // TODO: Store simple feedback (helpful/not-helpful)
+      vscode.window.showInformationMessage(`Feedback recorded: ${value}`);
+    }
+  }
+  
+  /**
+   * Handle copy fix
+   */
+  private async _handleCopy(fixIndex: string): Promise<void> {
+    const state = this._stateManager.getState();
+    if (state.result && state.result.fixGuidelines) {
+      const fix = state.result.fixGuidelines[parseInt(fixIndex)];
+      if (fix) {
+        await vscode.env.clipboard.writeText(fix);
+        vscode.window.showInformationMessage('Fix copied to clipboard');
+      }
+    }
+  }
+  
+  /**
+   * Check Ollama connection
+   */
+  private async _checkOllamaConnection(): Promise<void> {
+    const result = await this._analysisService.checkOllamaConnection();
+    if (result.available) {
+      vscode.window.showInformationMessage('Ollama server is running');
+      this._stateManager.setState({ view: 'empty' });
+    } else {
+      vscode.window.showErrorMessage(`Ollama server unavailable: ${result.error}`);
+    }
+  }
+  
+  /**
+   * Install model
+   */
+  private async _installModel(): Promise<void> {
+    const config = vscode.workspace.getConfiguration('rcaAgent');
+    const modelName = config.get<string>('model', 'deepseek-r1');
+    
+    const terminal = vscode.window.createTerminal('Ollama Install');
+    terminal.show();
+    terminal.sendText(`ollama pull ${modelName}`);
+    
+    vscode.window.showInformationMessage(`Installing model: ${modelName}. Check terminal for progress.`);
+  }
+  }
+  
+  /**
+   * Send current state to webview (Chunk 2: regenerate HTML)
    */
   private _sendState(): void {
     if (!this._view) {
@@ -121,253 +369,30 @@ export class RCAPanelProvider implements vscode.WebviewViewProvider {
     }
     
     const state = this._stateManager.getState();
-    const message: ExtensionMessage = {
-      type: 'stateUpdate',
-      state
-    };
     
-    this._view.webview.postMessage(message);
+    // Regenerate HTML with current state
+    this._view.webview.html = WebviewContentGenerator.getHtmlContent(
+      this._view.webview,
+      this._extensionUri,
+      state
+    );
+    
     console.log('[RCAPanelProvider] Sent state update to webview');
   }
   
   /**
-   * Update webview with new state
+   * Update webview with new state (Chunk 2: regenerate HTML)
    */
   private _updateWebview(state: PanelState): void {
     if (!this._view) {
       return;
     }
     
-    const message: ExtensionMessage = {
-      type: 'stateUpdate',
+    // Regenerate HTML with new state
+    this._view.webview.html = WebviewContentGenerator.getHtmlContent(
+      this._view.webview,
+      this._extensionUri,
       state
-    };
-    
-    this._view.webview.postMessage(message);
-  }
-  
-  /**
-   * Generate HTML content for the webview
-   */
-  private _getHtmlContent(webview: vscode.Webview): string {
-    // For Chunk 1, we just display a basic "Hello World" UI
-    // Full UI will be implemented in Chunk 2
-    
-    const nonce = this._getNonce();
-    
-    return `<!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
-      <title>RCA Agent</title>
-      <style>
-        body {
-          font-family: var(--vscode-font-family);
-          font-size: var(--vscode-font-size);
-          color: var(--vscode-foreground);
-          background-color: var(--vscode-editor-background);
-          padding: 20px;
-          margin: 0;
-        }
-        
-        .container {
-          max-width: 600px;
-          margin: 0 auto;
-        }
-        
-        h1 {
-          font-size: 20px;
-          font-weight: 600;
-          margin-bottom: 16px;
-          color: var(--vscode-foreground);
-        }
-        
-        .status {
-          padding: 12px;
-          border-radius: 4px;
-          background-color: var(--vscode-textBlockQuote-background);
-          border-left: 4px solid var(--vscode-textLink-foreground);
-          margin-bottom: 16px;
-        }
-        
-        .status-icon {
-          font-size: 24px;
-          margin-bottom: 8px;
-        }
-        
-        .info {
-          color: var(--vscode-descriptionForeground);
-          font-size: 13px;
-          line-height: 1.6;
-        }
-        
-        button {
-          background-color: var(--vscode-button-background);
-          color: var(--vscode-button-foreground);
-          border: none;
-          padding: 8px 16px;
-          border-radius: 2px;
-          cursor: pointer;
-          font-size: 13px;
-          margin-right: 8px;
-          margin-bottom: 8px;
-        }
-        
-        button:hover {
-          background-color: var(--vscode-button-hoverBackground);
-        }
-        
-        .checklist {
-          list-style: none;
-          padding: 0;
-          margin: 16px 0;
-        }
-        
-        .checklist li {
-          padding: 8px 0;
-          border-bottom: 1px solid var(--vscode-panel-border);
-        }
-        
-        .checklist li:before {
-          content: "✓ ";
-          color: var(--vscode-testing-iconPassed);
-          font-weight: bold;
-          margin-right: 8px;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <h1>🤖 RCA Agent Panel</h1>
-        
-        <div class="status">
-          <div class="status-icon">✅</div>
-          <strong>Chunk 1: Foundation Complete!</strong>
-          <div class="info">
-            The panel infrastructure is now in place. This is the foundational layer
-            for the new RCA Agent UI experience.
-          </div>
-        </div>
-        
-        <h2 style="font-size: 16px; margin-top: 24px; margin-bottom: 12px;">Completed:</h2>
-        <ul class="checklist">
-          <li>Activity bar icon registered</li>
-          <li>Panel provider implemented</li>
-          <li>State management system created</li>
-          <li>Type definitions established</li>
-          <li>Command registration updated</li>
-        </ul>
-        
-        <div class="info" style="margin-top: 24px;">
-          <strong>Next Steps (Chunk 2):</strong><br>
-          • Implement full panel UI with all 3 states<br>
-          • Connect to backend analysis engine<br>
-          • Add real-time progress tracking<br>
-          • Integrate settings dropdown
-        </div>
-        
-        <div style="margin-top: 24px;">
-          <button onclick="testRefresh()">🔄 Refresh State</button>
-          <button onclick="testAnalyze()">▶ Test Analyze</button>
-        </div>
-        
-        <div id="state-display" style="margin-top: 16px; font-size: 11px; color: var(--vscode-descriptionForeground);"></div>
-      </div>
-      
-      <script nonce="${nonce}">
-        const vscode = acquireVsCodeApi();
-        
-        function testRefresh() {
-          vscode.postMessage({ type: 'requestState' });
-        }
-        
-        function testAnalyze() {
-          vscode.postMessage({ type: 'analyze', errorId: 'test-1' });
-        }
-        
-        // Listen for messages from extension
-        window.addEventListener('message', event => {
-          const message = event.data;
-          console.log('Received message:', message.type);
-          
-          if (message.type === 'stateUpdate') {
-            const stateDisplay = document.getElementById('state-display');
-            stateDisplay.innerHTML = '<strong>Current State:</strong><br><pre>' + 
-              JSON.stringify(message.state, null, 2) + '</pre>';
-          }
-        });
-        
-        // Request initial state
-        vscode.postMessage({ type: 'requestState' });
-      </script>
-    </body>
-    </html>`;
-  }
-  
-  /**
-   * Generate a random nonce for CSP
-   */
-  private _getNonce(): string {
-    let text = '';
-    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (let i = 0; i < 32; i++) {
-      text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-    return text;
-  }
-  
-  /**
-   * Public method to update analysis progress (for Chunk 2)
-   */
-  public updateProgress(iteration: number, thought: string, progress: number): void {
-    if (!this._view) {
-      return;
-    }
-    
-    const message: ExtensionMessage = {
-      type: 'progressUpdate',
-      progress: {
-        iteration,
-        maxIterations: 3,
-        progress,
-        currentThought: thought
-      }
-    };
-    
-    this._view.webview.postMessage(message);
-  }
-  
-  /**
-   * Public method to show analysis result (for Chunk 2)
-   */
-  public showResult(result: any): void {
-    if (!this._view) {
-      return;
-    }
-    
-    const message: ExtensionMessage = {
-      type: 'analysisComplete',
-      result
-    };
-    
-    this._view.webview.postMessage(message);
-  }
-  
-  /**
-   * Public method to show error (for Chunk 2)
-   */
-  public showError(error: string): void {
-    if (!this._view) {
-      return;
-    }
-    
-    const message: ExtensionMessage = {
-      type: 'analysisError',
-      error
-    };
-    
-    this._view.webview.postMessage(message);
+    );
   }
 }
