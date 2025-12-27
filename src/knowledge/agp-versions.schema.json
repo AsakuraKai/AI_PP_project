@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AGP Version Database",
+  "description": "Comprehensive database of Android Gradle Plugin versions with compatibility information",
+  "type": "object",
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "lastUpdated": { "type": "string", "format": "date-time" },
+        "totalVersions": { "type": "integer" },
+        "source": { "type": "string" },
+        "maintainer": { "type": "string" }
+      }
+    },
+    "versions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9]+)?$",
+            "description": "AGP version number (e.g., 8.7.3, 9.0.0-alpha01)"
+          },
+          "releaseDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Official release date"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["stable", "beta", "alpha", "deprecated", "rc"],
+            "description": "Release status"
+          },
+          "minGradleVersion": {
+            "type": "string",
+            "description": "Minimum required Gradle version"
+          },
+          "maxGradleVersion": {
+            "type": "string",
+            "description": "Maximum tested Gradle version (optional)"
+          },
+          "minKotlinVersion": {
+            "type": "string",
+            "description": "Minimum compatible Kotlin version"
+          },
+          "recommendedKotlinVersion": {
+            "type": "string",
+            "description": "Recommended Kotlin version for optimal compatibility"
+          },
+          "minJdk": {
+            "type": "integer",
+            "description": "Minimum JDK version required"
+          },
+          "recommendedJdk": {
+            "type": "integer",
+            "description": "Recommended JDK version"
+          },
+          "breakingChanges": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "List of breaking changes from previous versions"
+          },
+          "knownIssues": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Known bugs or limitations"
+          },
+          "migrationGuide": {
+            "type": "string",
+            "description": "URL to official migration guide (if applicable)"
+          },
+          "deprecated": {
+            "type": "boolean",
+            "description": "Whether this version is deprecated"
+          },
+          "deprecationDate": {
+            "type": "string",
+            "format": "date",
+            "description": "When this version was deprecated (if applicable)"
+          }
+        },
+        "required": ["version", "releaseDate", "status", "minGradleVersion", "minKotlinVersion", "minJdk"]
+      }
+    }
+  },
+  "required": ["metadata", "versions"]
+}

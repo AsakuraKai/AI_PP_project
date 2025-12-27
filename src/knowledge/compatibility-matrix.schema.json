@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Compatibility Matrix",
+  "description": "Cross-reference compatibility between AGP, Kotlin, Gradle, and JDK versions",
+  "type": "object",
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "lastUpdated": { "type": "string", "format": "date-time" },
+        "source": { "type": "string" },
+        "maintainer": { "type": "string" }
+      }
+    },
+    "compatibilityRules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "agpVersionRange": {
+            "type": "string",
+            "description": "AGP version or range (e.g., '9.0.0', '8.7.x', '8.5.0-8.7.3')"
+          },
+          "kotlinVersionRange": {
+            "type": "string",
+            "description": "Compatible Kotlin version range"
+          },
+          "gradleVersionRange": {
+            "type": "string",
+            "description": "Compatible Gradle version range"
+          },
+          "jdkVersions": {
+            "type": "array",
+            "items": { "type": "integer" },
+            "description": "Supported JDK versions"
+          },
+          "recommendedKotlin": {
+            "type": "string",
+            "description": "Recommended Kotlin version for this AGP"
+          },
+          "recommendedGradle": {
+            "type": "string",
+            "description": "Recommended Gradle version for this AGP"
+          },
+          "recommendedJdk": {
+            "type": "integer",
+            "description": "Recommended JDK version"
+          },
+          "notes": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Important compatibility notes"
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "description": { "type": "string" },
+                "workaround": { "type": "string" }
+              }
+            },
+            "description": "Known compatibility issues and workarounds"
+          }
+        },
+        "required": ["agpVersionRange", "kotlinVersionRange", "gradleVersionRange", "jdkVersions"]
+      }
+    },
+    "versionMappings": {
+      "type": "object",
+      "description": "Quick lookup tables for version compatibility",
+      "properties": {
+        "agpToKotlin": {
+          "type": "object",
+          "additionalProperties": { "type": "array", "items": { "type": "string" } }
+        },
+        "agpToGradle": {
+          "type": "object",
+          "additionalProperties": { "type": "array", "items": { "type": "string" } }
+        },
+        "kotlinToJdk": {
+          "type": "object",
+          "additionalProperties": { "type": "array", "items": { "type": "integer" } }
+        }
+      }
+    }
+  },
+  "required": ["metadata", "compatibilityRules", "versionMappings"]
+}

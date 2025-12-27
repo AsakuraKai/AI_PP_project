@@ -1,0 +1,95 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Kotlin Version Database",
+  "description": "Comprehensive database of Kotlin versions with JDK and AGP compatibility",
+  "type": "object",
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "lastUpdated": { "type": "string", "format": "date-time" },
+        "totalVersions": { "type": "integer" },
+        "source": { "type": "string" },
+        "maintainer": { "type": "string" }
+      }
+    },
+    "versions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9\\.]+)?$",
+            "description": "Kotlin version number (e.g., 2.0.20, 1.9.25)"
+          },
+          "releaseDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Official release date"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["stable", "beta", "rc", "eap", "deprecated"],
+            "description": "Release status"
+          },
+          "minJdk": {
+            "type": "integer",
+            "description": "Minimum JDK version required"
+          },
+          "recommendedJdk": {
+            "type": "integer",
+            "description": "Recommended JDK version"
+          },
+          "maxJdk": {
+            "type": "integer",
+            "description": "Maximum tested JDK version (optional)"
+          },
+          "minAGP": {
+            "type": "string",
+            "description": "Minimum AGP version compatible"
+          },
+          "recommendedAGP": {
+            "type": "string",
+            "description": "Recommended AGP version for optimal compatibility"
+          },
+          "jvmTarget": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Supported JVM target versions"
+          },
+          "languageFeatures": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Major language features introduced"
+          },
+          "breakingChanges": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Breaking changes from previous versions"
+          },
+          "knownIssues": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Known bugs or limitations"
+          },
+          "compilerType": {
+            "type": "string",
+            "enum": ["K1", "K2"],
+            "description": "Compiler version (K1 = legacy, K2 = new)"
+          },
+          "migrationGuide": {
+            "type": "string",
+            "description": "URL to official migration guide (if applicable)"
+          },
+          "deprecated": {
+            "type": "boolean",
+            "description": "Whether this version is deprecated"
+          }
+        },
+        "required": ["version", "releaseDate", "status", "minJdk", "minAGP", "jvmTarget", "compilerType"]
+      }
+    }
+  },
+  "required": ["metadata", "versions"]
+}

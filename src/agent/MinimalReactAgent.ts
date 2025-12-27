@@ -23,6 +23,7 @@
 import { OllamaClient } from '../llm/OllamaClient';
 import { ReadFileTool } from '../tools/ReadFileTool';
 import { LSPTool } from '../tools/LSPTool';
+import { VersionLookupTool } from '../tools/VersionLookupTool';
 import { ToolRegistry } from '../tools/ToolRegistry';
 import { PromptEngine } from './PromptEngine';
 import { AgentStateStream } from './AgentStateStream';
@@ -122,6 +123,40 @@ export class MinimalReactAgent {
             {
               parameters: { functionName: 'onCreate', filePath: 'MainActivity.kt' },
               outcome: 'Returns list of callers',
+            },
+          ],
+        });
+      }
+      
+      // Register VersionLookupTool (Phase 3, Chunk 2)
+      if (!this.toolRegistry.has('version_lookup')) {
+        const versionLookupTool = new VersionLookupTool();
+        const versionLookupSchema = z.object({
+          tool: z.enum(['agp', 'kotlin', 'gradle']),
+          queryType: z.enum(['exists', 'latest-stable', 'latest-any', 'compatible', 'suggest']),
+          version: z.string().optional(),
+          referenceVersion: z.string().optional(),
+          referenceTool: z.enum(['agp', 'kotlin', 'gradle']).optional(),
+          statusFilter: z.array(z.string()).optional(),
+        });
+
+        this.toolRegistry.register('version_lookup', versionLookupTool, versionLookupSchema, {
+          examples: [
+            {
+              parameters: { tool: 'agp', queryType: 'exists', version: '8.7.3' },
+              outcome: 'Check if AGP 8.7.3 exists in Maven',
+            },
+            {
+              parameters: { tool: 'agp', queryType: 'latest-stable' },
+              outcome: 'Get latest stable AGP version',
+            },
+            {
+              parameters: { tool: 'agp', queryType: 'suggest', version: '8.10.0' },
+              outcome: 'Suggest valid alternatives for non-existent version',
+            },
+            {
+              parameters: { tool: 'agp', queryType: 'compatible', version: '8.7.3', referenceTool: 'kotlin', referenceVersion: '1.9.0' },
+              outcome: 'Check AGP-Kotlin compatibility',
             },
           ],
         });
