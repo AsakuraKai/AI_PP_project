@@ -7,6 +7,10 @@
 **Goal:** Build an awesome AI debugging assistant for learning and fun  
 **Philosophy:** Experiment freely, learn constantly, ship when ready (not when deadline says)
 
+**👥 Team Roles:**
+- **Kai (Backend Developer):** ALL implementation (parsers, agents, tools, database, APIs, algorithms)
+- **Sokchea (Frontend Developer):** UI + wiring ONLY (panels, buttons, VS Code extension API, calling Kai's functions)
+
 ---
 
 ## 🎉 MVP Test Results (December 26, 2025)
@@ -40,12 +44,19 @@ Result: 40% usable (100% diagnosis, 17% solution quality)
 ## 🎯 Vision Statement
 
 **Current State:** Functional RCA agent with 99% passing tests, 40% real-world usability (100% diagnosis, 17% solution)  
-**Target State:** Highly accurate AI debugging assistant (90%+ usability) that provides specific, actionable fixes
+**Target State:** High success rate Kotlin error fixing agent (85-90%+ success) that provides specific, actionable fixes
+
+**Scope Focus:**
+- **Phase 3-4 (Now):** Master Kotlin/Android errors (Kotlin NPE, lateinit, Compose, coroutines)
+- **Phase 5+ (Later):** Expand to other languages (TypeScript, Python, Rust, Go)
+- **Role Division:** 
+  - **Kai (Backend):** All implementation (parsers, agents, tools, database, APIs)
+  - **Sokchea (Frontend):** UI + wiring (panels, buttons, extension API, calling Kai's functions)
 
 **Hobby Project Philosophy:**
 1. **Learning First** - Every feature is a learning opportunity (mess up? That's a lesson!)
 2. **Accuracy Over Speed** - Better to be slow and correct than fast and wrong
-3. **Practical Value** - Focus on features that genuinely help debug Android apps
+3. **Practical Value** - Focus on fixing Kotlin errors with high success rate
 4. **No Monetization Ever** - Free, open-source, built for the pure joy of building cool stuff
 5. **Experimentation Welcome** - Try crazy ideas, break things, iterate quickly, have fun!
 6. **Privacy? Not an Issue** - Everything runs locally, your code never leaves your machine
@@ -84,220 +95,758 @@ Result: 40% usable (100% diagnosis, 17% solution quality)
 
 ---
 
-## 🗺️ Roadmap Overview
+## 🗺️ Roadmap Overview (Streamlined for Real-World Impact)
 
-### Phase 2: VS Code Extension (Ongoing) 🔄
+**New Philosophy:** Focus on HIGH-IMPACT improvements that make the agent actually useful in complex projects. Skip experimental features until core usability is solid.
+
+### Phase 2: VS Code Extension Enhancement 🔄
+**Duration:** 3-4 weeks (streamlined from 5-chunk plan)  
 **Status:** With Sokchea (Frontend Developer)  
-**Goal:** Functional extension with basic features
+**Goal:** Panel-based UI with essential features only
 
-### Phase 2.5: Understanding the 50% Accuracy Problem (NEW - CRITICAL) 🔴
-**Duration:** 1-2 weeks  
-**Goal:** Figure out WHY the agent fails before building more features
+**What Changed:** Cut scope to ONLY essentials:
+- ✅ Keep: Panel UI, error queue, batch processing, history
+- ❌ Remove for now: Chat interface, visual debugging, educational modes
+- **Why:** These are nice-to-have, not core usability
 
-### Phase 3: Fixing the Accuracy Problem 🎯
-**Duration:** 4-8 weeks  
-**Goal:** Get from 50% → 80%+ accuracy through better prompts, knowledge, and tools
+### Phase 3: Solution Quality Enhancement (HIGHEST PRIORITY) 🔴
+**Duration:** 2-3 weeks  
+**Goal:** Get from 40% → 80% usability by fixing solution specificity
 
-### Phase 4: Making it Actually Useful 🚀
-**Duration:** 4-6 weeks  
-**Goal:** Real-time detection, chat interface, visual debugging
-
-### Phase 5: Fun Experimental Features 🎨
-**Duration:** Ongoing  
-**Goal:** Try cool ideas like multi-model orchestration, autonomous fixes, etc.
-
----
-
-## 🚀 Immediate Next Steps (Based on MVP Test)
-
-**This Week:**
-1. ✅ MVP Test completed (40% usability confirmed)
-2. 📝 Usability assessment documented (`docs/REAL-PROJECT-TEST/USABILITY_ASSESSMENT.md`)
-3. 🎯 **Next: Build AGP version database** (highest impact fix)
-4. 🎯 **Next: Enhance prompt specificity** (add "show exact file" instruction)
-5. 🧪 **Next: Test 5 more MVP errors** (Kotlin, Compose, XML, Manifest)
-
-**Why These First:**
-- AGP database: Enables version suggestions (0% → 90%)
-- Prompt fixes: Easy win, immediate improvement (40% → 60%)
-- More tests: Validate improvements on diverse errors
-
-**Success = 2 weeks:**
-- AGP version database working (can suggest 8.7.3 instead of nothing)
-- Prompts specify exact files (gradle/libs.versions.toml, not "build.gradle")
-- Usability jumps from 40% to 70%+
-
----
-
-# 🔴 PHASE 2.5: Usability Deep Dive (NEW - HIGH PRIORITY)
-**Duration:** 1-2 weeks (or more, it's a hobby project!)  
-**Focus:** Fix the 40% usability problem (diagnosis works, solutions don't)
-**Vibe:** Detective work! Let's figure out why the agent is being vague
-
-**Key Finding from MVP Test:**
-- ✅ Diagnosis: 100% accurate (knows it's AGP version error)
-- ❌ Solutions: 17% usable (doesn't provide specific fix)
-
-**Why This Matters:** A correct diagnosis with vague solution is almost useless.
-**Privacy Note:** All debugging data stays on your local machine - experiment freely!
-
----
-
-## Week 0: Solution Quality Analysis
-
-### Objective
-We know WHAT fails (solutions), now fix WHY they're vague
-
-### 2.5.1: Solution Quality Breakdown
-**Priority:** 🔴 CRITICAL  
-**Status:** ✅ MVP Test Completed - Have Real Data!
-
-**MVP Test Results (December 26, 2025):**
-```typescript
-✅ Gradle Dependency Error:
-   - Diagnosis: 100% (correctly identified AGP 8.10.0 missing)
-   - File identification: 30% (said "build.gradle" not "libs.versions.toml")
-   - Version suggestion: 0% (didn't suggest valid versions)
-   - Code example: 0% (no before/after)
-   - Overall usability: 40%
+**Focus Areas (Based on MVP Test):**
+1. **Week 1:** Version knowledge base (0% → 90%)
+   - AGP version database (8.0.0 - 9.0.0+)
+   - Kotlin version database (1.5.0 - 2.0.0+)
+   - Compatibility matrix
    
-Problems Found:
-❌ Missing: Valid version numbers (8.7.3, 8.6.1)
-❌ Missing: Exact file path with line number
-❌ Missing: Code snippet showing change
-❌ Given: Generic advice "update build.gradle"
-❌ Given: Vague "ensure Maven Central configured"
+2. **Week 2:** Prompt engineering (17% → 70%)
+   - Add "MUST specify exact file path with line number"
+   - Add "MUST provide code snippet showing change"
+   - Add few-shot examples (5 per error type)
+   
+3. **Week 3:** Fix generation (0% → 60%)
+   - Generate code diffs (before/after)
+   - File path resolution (detect exact file)
+   - Validation logic (check if fix makes sense)
+
+**Success Metric:** Usability 40% → 80%+
+
+### Phase 4: Real-World Testing & Iteration 🎯
+**Duration:** 2 weeks  
+**Goal:** Test on 20+ complex Android projects, fix edge cases
+
+**What to Test:**
+- Multi-module projects (5+ modules)
+- Legacy codebases (pre-2020)
+- Jetpack Compose errors
+- Gradle version conflicts
+- Manifest permission issues
+
+**Deliverable:** 80%+ usability on diverse project types
+
+---
+
+## 🚀 72-Hour Development Chunks (10 Chunks = ~30 Days)
+
+### 📦 Chunk 1: Version Database Foundation (Days 1-3)
+**Priority:** 🔴 CRITICAL  
+**Goal:** Build AGP + Kotlin version databases  
+**Duration:** 72 hours
+
+**Tasks:**
+- Hour 0-24: Scrape Maven Central for AGP versions (7.x - 9.x)
+  - Create JSON schema
+  - Write scraper script
+  - Validate 150+ versions
+- Hour 24-48: Build Kotlin version database
+  - Scrape Kotlin releases (1.5.0 - 2.0.0+)
+  - Add JDK compatibility data
+  - Add AGP compatibility matrix
+- Hour 48-72: Create compatibility matrix
+  - AGP ↔ Kotlin version mapping
+  - Gradle ↔ AGP compatibility
+  - Test data integrity
+
+**Deliverables:**
+- [ ] `src/knowledge/agp-versions.json` (150+ versions)
+- [ ] `src/knowledge/kotlin-versions.json` (50+ versions)
+- [ ] `src/knowledge/compatibility-matrix.json`
+- [ ] Unit tests for version data
+
+**Success Metric:** Database completeness 95%+
+
+---
+
+### 📦 Chunk 2: Version Lookup Tool (Days 4-6)
+**Priority:** 🔴 CRITICAL  
+**Goal:** Enable agent to query version databases  
+**Duration:** 72 hours
+
+**Tasks:**
+- Hour 0-24: Build VersionLookupTool.ts
+  - Query AGP versions by range
+  - Query Kotlin versions
+  - Find latest stable/compatible versions
+- Hour 24-48: Integration with agent workflow
+  - Add tool to ToolRegistry
+  - Test agent can use tool
+  - Verify prompts trigger tool usage
+- Hour 48-72: Validation + edge cases
+  - Handle non-existent versions
+  - Suggest alternatives
+  - Test on MVP error case
+
+**Deliverables:**
+- [ ] `src/tools/VersionLookupTool.ts`
+- [ ] Integration tests (20+ cases)
+- [ ] Agent workflow integration
+- [ ] Re-test MVP case (expect version suggestion)
+
+**Success Metric:** Agent suggests valid versions 90%+ of time
+
+---
+
+### 📦 Chunk 3: Prompt Engineering - Specificity (Days 7-9)
+**Priority:** 🔴 CRITICAL  
+**Goal:** Fix vague solutions with better prompts  
+**Duration:** 72 hours
+
+**Tasks:**
+- Hour 0-24: Add specificity instructions
+  - "MUST specify exact file path"
+  - "MUST include line numbers"
+  - "MUST show code examples"
+- Hour 24-48: Create structured response format
+  - JSON schema for RCA responses
+  - Enforce: problem, root cause, fix, code diff
+  - Add validation logic
+- Hour 48-72: Test on 10 error types
+  - Gradle, Kotlin, Compose, XML, Manifest
+  - Measure before/after specificity
+  - Collect improvement metrics
+
+**Deliverables:**
+- [ ] Updated system prompts in `src/agent/PromptEngine.ts`
+- [ ] Response validation schema
+- [ ] Before/after comparison report
+- [ ] Specificity metrics dashboard
+
+**Success Metric:** Solution specificity 17% → 70%
+
+---
+
+### 📦 Chunk 4: Few-Shot Examples Library (Days 10-12)
+**Priority:** 🔴 CRITICAL  
+**Goal:** Teach agent with concrete examples  
+**Duration:** 72 hours
+
+**Tasks:**
+- Hour 0-24: Create 15 Gradle error examples
+  - AGP version conflicts
+  - Dependency resolution failures
+  - Plugin compatibility issues
+- Hour 24-48: Create 15 Kotlin error examples
+  - NPE (lateinit not initialized)
+  - Type mismatches
+  - Coroutine issues
+- Hour 48-72: Create 10+ Compose/XML/Manifest examples
+  - Compose API breakages
+  - XML layout inflation
+  - Manifest permission errors
+- Integration: Add to PromptEngine
+
+**Deliverables:**
+- [ ] `src/knowledge/few-shot-examples.json` (40+ examples)
+- [ ] Each example: error → diagnosis → specific fix → code diff
+- [ ] PromptEngine integration
+- [ ] A/B test: with/without examples
+
+**Success Metric:** Fix quality improved on 80%+ of error types
+
+---
+
+### 📦 Chunk 5: Fix Generator Foundation (Days 13-15)
+**Priority:** 🟡 HIGH  
+**Goal:** Generate code diffs, not just text  
+**Duration:** 72 hours
+
+**Tasks:**
+- Hour 0-24: Build FixGenerator.ts
+  - Parse error location (file, line)
+  - Read surrounding code context
+  - Generate before/after diff
+- Hour 24-48: Diff formatting utilities
+  - Markdown code blocks with syntax highlighting
+  - Unified diff format (- / +)
+  - Multi-file diff support
+- Hour 48-72: Integration + testing
+  - Add to agent workflow
+  - Test on 10 error types
+  - Validate diff correctness
+
+**Deliverables:**
+- [ ] `src/agent/FixGenerator.ts`
+- [ ] Diff formatting utilities
+- [ ] Integration tests (15+ cases)
+- [ ] VS Code diff preview support
+
+**Success Metric:** Fix generation rate 0% → 60%
+
+---
+
+### 📦 Chunk 6: File Path Resolution (Days 16-18)
+**Priority:** 🟡 HIGH  
+**Goal:** Find exact files, not generic names  
+**Duration:** 72 hours
+
+**Tasks:**
+- Hour 0-24: Build FileResolver.ts
+  - Analyze project structure
+  - Detect Gradle catalogs vs build.gradle
+  - Map generic names to exact paths
+- Hour 24-48: Pattern matching logic
+  - "build.gradle" → detect which one (root, app, module)
+  - "libs.versions.toml" → detect if catalog used
+  - Handle multi-module projects
+- Hour 48-72: Integration + edge cases
+  - Test on 5 different project structures
+  - Handle missing files gracefully
+  - Suggest file creation if not exists
+
+**Deliverables:**
+- [ ] `src/utils/FileResolver.ts`
+- [ ] Project structure analyzer
+- [ ] Integration with FixGenerator
+- [ ] Tests on diverse project types
+
+**Success Metric:** File identification 30% → 85%
+
+---
+
+### 📦 Chunk 7: Real-World Test Suite Part 1 (Days 19-21)
+**Priority:** 🔴 CRITICAL  
+**Goal:** Test on 10+ diverse Android errors  
+**Duration:** 72 hours
+
+**Test Cases (5 for this chunk):**
+1. AGP version conflict (already tested)
+2. Kotlin lateinit NPE
+3. Compose API breakage (1.5 → 1.6)
+4. XML layout inflation error
+5. Multi-module dependency conflict
+
+**Tasks:**
+- Hour 0-48: Create test projects + run RCA
+  - Each error in isolated project
+  - Document expected vs actual results
+  - Measure all metrics (usability, specificity, etc.)
+- Hour 48-72: Analyze failures + quick fixes
+  - Identify top 3 failure patterns
+  - Fix critical issues
+  - Re-test
+
+**Deliverables:**
+- [ ] 5 test projects in `tests/real-world/`
+- [ ] Test results with metrics
+- [ ] Failure analysis report
+- [ ] Critical bug fixes
+
+**Success Metric:** 70%+ usability on 5 error types
+
+---
+
+### 📦 Chunk 8: Real-World Test Suite Part 2 (Days 22-24)
+**Priority:** 🔴 CRITICAL  
+**Goal:** Test remaining error types  
+**Duration:** 72 hours
+
+**Test Cases (5 more):**
+6. Manifest permission missing
+7. Gradle sync failed (network)
+8. Build cache corruption
+9. R8/ProGuard rule missing
+10. Jetpack Navigation argument mismatch
+
+**Tasks:**
+- Hour 0-48: Create test projects + run RCA
+  - Same process as Chunk 7
+  - Collect comprehensive metrics
+- Hour 48-72: Compare with Phase 3 baseline
+  - Overall usability improvement
+  - Identify remaining weak spots
+  - Plan Phase 4 focus areas
+
+**Deliverables:**
+- [ ] 5 more test projects
+- [ ] Complete 10-case test suite results
+- [ ] Usability comparison report (40% → ?%)
+- [ ] Phase 4 priority list
+
+**Success Metric:** 80%+ average usability across all 10 cases
+
+---
+
+### 📦 Chunk 9: Bug Fixes & Iteration (Days 25-27)
+**Priority:** 🔴 CRITICAL  
+**Goal:** Fix remaining issues from testing  
+**Duration:** 72 hours
+
+**Tasks:**
+- Hour 0-24: Fix top 5 bugs from test results
+  - Prioritize by impact
+  - Test fixes thoroughly
+- Hour 24-48: Edge case handling
+  - Multi-module projects
+  - Legacy codebases (pre-2020)
+  - Non-standard project structures
+- Hour 48-72: Performance tuning
+  - Optimize slow queries
+  - Improve caching
+  - Maintain <15s latency
+
+**Deliverables:**
+- [ ] 5+ bug fixes
+- [ ] Edge case handling
+- [ ] Performance optimizations
+- [ ] Regression tests
+
+**Success Metric:** No critical bugs, usability maintained
+
+---
+
+### 📦 Chunk 10: Final Validation & Documentation (Days 28-30)
+**Priority:** 🟡 HIGH  
+**Goal:** Polish, document, prepare for Phase 4  
+**Duration:** 72 hours
+
+**Tasks:**
+- Hour 0-24: Final end-to-end testing
+  - Re-run all 10 test cases
+  - Verify improvements are stable
+  - Document final metrics
+- Hour 24-48: Update documentation
+  - Update IMPROVEMENT_ROADMAP.md with results
+  - Write Phase 3 completion summary
+  - Create Phase 4 detailed plan
+- Hour 48-72: Demo preparation
+  - Create demo video
+  - Write blog post about journey
+  - Prepare GitHub README update
+
+**Deliverables:**
+- [ ] Final test results report
+- [ ] Phase 3 completion document
+- [ ] Updated documentation
+- [ ] Demo materials
+- [ ] Phase 4 kickoff plan
+
+**Success Metric:** Overall usability 80%+ achieved and documented
+
+---
+
+## 📊 Chunk Progress Tracking (LLM/Vector DB Focused)
+
+| Chunk | Focus | Duration | LLM/Vector DB Work | Status | Usability Impact |
+|-------|-------|----------|---------------------|--------|------------------|
+| 1 | Version DB + Embeddings | 72h | 🧠 ChromaDB collections, semantic search | ⏳ Not Started | +0% (foundation) |
+| 2 | Version Tool + RAG | 72h | 🧠 RAG retrieval, prompt integration | ⏳ Not Started | +15% (suggestions) |
+| 3 | LLM Prompt Engineering | 72h | 🧠 CoT, structured output, JSON mode | ⏳ Not Started | +25% (specificity) |
+| 4 | Few-Shot RAG | 72h | 🧠 Dynamic example retrieval, embeddings | ⏳ Not Started | +10% (quality) |
+| 5 | Fix Generator + LLM | 72h | 🧠 LLM-powered diff generation | ⏳ Not Started | +10% (code diffs) |
+| 6 | File Resolver + Embeddings | 72h | 🧠 Semantic file search via vectors | ⏳ Not Started | +10% (accuracy) |
+| 7 | Testing Part 1 | 72h | 🧠 LLM output quality metrics | ⏳ Not Started | Validation |
+| 8 | Testing Part 2 | 72h | 🧠 Prompt variant A/B testing | ⏳ Not Started | Validation |
+| 9 | LLM Fine-Tuning Prep | 72h | 🧠 Dataset curation, embedding optimization | ⏳ Not Started | +10% (polish) |
+| 10 | Final Validation | 72h | 🧠 End-to-end RAG pipeline test | ⏳ Not Started | Documentation |
+
+**Total Duration:** 30 days (720 hours)  
+**Expected Improvement:** 40% → 80%+ usability  
+**Target Completion:** Late January 2026
+
+**🧠 LLM/Vector DB Focus Throughout:**
+- **Chunks 1-2:** Foundation (ChromaDB setup, RAG architecture)
+- **Chunks 3-4:** Advanced prompt engineering + few-shot learning
+- **Chunks 5-6:** LLM-powered code generation + semantic search
+- **Chunks 7-8:** LLM output quality testing + optimization
+- **Chunks 9-10:** Fine-tuning preparation + RAG refinement
+
+---
+
+## 🚀 Immediate Next Steps (Week-by-Week Plan)
+
+### Week 1: Version Knowledge Base (HIGHEST IMPACT) 🔴
+**Goal:** Enable specific version suggestions (0% → 90%)
+
+**Tasks:**
+1. **Day 1-2:** Build AGP version database
+   - Scrape Maven Central for all AGP versions (7.x - 9.x)
+   - Store: version, release date, status (stable/alpha/beta), compatibility
+   - Create JSON: `src/knowledge/agp-versions.json`
+
+2. **Day 3-4:** Build Kotlin version database
+   - Scrape Kotlin releases (1.5.0 - 2.0.0+)
+   - Store: version, release date, JDK compatibility, AGP compatibility
+
+3. **Day 5:** Version lookup tool
+   - `VersionLookupTool.ts` - Query versions from database
+   - Integrate into agent's tool registry
+   - Test: Can agent suggest "8.7.3" instead of "update to latest"?
+
+**Success Metric:** Agent can suggest valid versions 90%+ of the time
+
+### Week 2: Prompt Engineering (QUICK WIN) ⚡
+**Goal:** Fix vague solutions (17% → 70%)
+
+**Tasks:**
+1. **Day 1-2:** Add specificity instructions to prompts
+   ```typescript
+   System prompt changes:
+   - "MUST specify exact file path (e.g., gradle/libs.versions.toml line 5)"
+   - "MUST provide code snippet showing before/after"
+   - "MUST suggest specific version numbers, not 'latest'"
+   - "MUST validate version compatibility before suggesting"
+   ```
+
+2. **Day 3-4:** Add few-shot examples
+   - 5 examples per error type (Gradle, Kotlin, Compose, XML, Manifest)
+   - Each example shows: error → diagnosis → specific fix with code
+
+3. **Day 5:** Test on MVP project
+   - Re-run AGP error test
+   - Measure improvement in solution specificity
+
+**Success Metric:** Solution quality 17% → 70%
+
+### Week 3: Fix Generation (CODE DIFFS) 📝
+**Goal:** Generate actual code changes (0% → 60%)
+
+**Tasks:**
+1. **Day 1-3:** Build FixGenerator.ts
+   - Parse file structure to find exact file
+   - Generate before/after code diff
+   - Format as markdown code block with syntax highlighting
+
+2. **Day 4-5:** File path resolution
+   - `FileResolver.ts` - Detect exact file from generic reference
+   - Example: "build.gradle" → "gradle/libs.versions.toml" (if catalog used)
+
+**Success Metric:** Agent shows code diffs 60%+ of the time
+
+### Week 4: Testing & Validation 🧪
+**Goal:** Test on 10+ diverse errors, reach 80% usability
+
+**Test Matrix:**
+```
+Error Types to Test:
+✅ Gradle dependency (AGP version) - already tested
+⏳ Kotlin NPE (lateinit not initialized)
+⏳ Compose API breakage (1.5.0 → 1.6.0)
+⏳ XML layout inflation error
+⏳ Manifest permission missing
+⏳ Multi-module dependency conflict
+⏳ Gradle sync failed (network issue)
+⏳ Build cache corruption
+⏳ R8/ProGuard rule missing
+⏳ Jetpack Navigation argument mismatch
 ```
 
-**Next: Test more error types to find patterns**
-
-2. **Solution Failure Pattern Analysis (MVP Test)**
-   ```typescript
-   Confirmed failure modes from real test:
-   1. No version suggestions (100% of cases) - Doesn't know valid versions
-   2. Generic file references (70% vague) - "build.gradle" instead of exact path
-   3. No code examples (100% missing) - No before/after snippets
-   4. Vague instructions (90% unclear) - "Update to latest" without specifics
-   5. Missing verification (100%) - Doesn't explain how to test fix
-   
-   Diagnosis works perfectly:
-   ✅ Correctly identifies error type (100%)
-   ✅ Extracts relevant info (100%)
-   ✅ Fast performance (10.35s vs 90s target)
-   ```
-
-3. **User Scenario Analysis**
-   ```typescript
-   When does it fail?
-   - Large codebases (>10k LOC)
-   - Legacy code (pre-2020)
-   - Uncommon error types (<5% frequency)
-   - Multi-module projects
-   - Mixed Kotlin/Java projects
-   ```
-
-**Deliverables:**
-- [ ] Failure analysis script
-- [ ] Error type accuracy breakdown
-- [ ] Top 5 failure patterns identified
-- [ ] List of highest-impact improvements
+**Success Metric:** 80%+ usability across all error types
 
 ---
 
-### 2.5.2: Agent Debugging Tools
-**Priority:** 🔴 CRITICAL  
+# 🔴 PHASE 3: Solution Quality Enhancement (4 WEEKS - FOCUSED)
 
-**Tasks:**
-1. **Prompt Inspector**
-   ```typescript
-   // src/debugging/PromptInspector.ts
-   // Save every prompt sent to LLM
-   // Compare successful vs failed prompts
-   // Identify what context is missing
-   
-   Example Output:
-   FAILED CASE:
-   Prompt: "Fix this Gradle error: [error text]"
-   Missing: Version context, compatibility matrix, valid versions
-   
-   SUCCESSFUL CASE:
-   Prompt: "Fix Kotlin NPE. Context: [25 lines of code]. 
-            Kotlin version: 1.9.0. Common cause: lateinit not initialized"
-   ```
+**Duration:** 4 weeks  
+**Focus:** Fix the 40% usability problem through targeted improvements  
+**Goal:** 40% → 80%+ usability on real-world complex projects
 
-2. **Reasoning Trace Viewer**
-   ```typescript
-   // Show step-by-step agent decisions
-   Iteration 1:
-   - Thought: "This looks like an AGP version error"
-   - Action: ReadFile(build.gradle)
-   - Observation: "AGP version is 8.10.0"
-   - Issue: Agent didn't validate if 8.10.0 exists!
-   
-   Iteration 2:
-   - Thought: "Should suggest updating to latest"
-   - Issue: No knowledge base to query valid versions!
-   ```
-
-3. **Confidence Breakdown Analyzer**
-   ```typescript
-   // Why did agent give 85% confidence when wrong?
-   Confidence = 0.85 because:
-   - Parser found error type: +0.30
-   - File location identified: +0.25
-   - Similar pattern in training: +0.30
-   
-   Should have been lower because:
-   - Version not validated: -0.40
-   - No documentation check: -0.20
-   - No similar cases in ChromaDB: -0.15
-   ```
-
-**Deliverables:**
-- [ ] PromptInspector.ts
-- [ ] ReasoningTraceViewer.ts
-- [ ] ConfidenceAnalyzer.ts
-- [ ] Analysis of 20+ failed cases
+**What Changed from Original Plan:**
+- ❌ Removed: Multi-pass reasoning, semantic code search, historical patterns (nice-to-have)
+- ✅ Kept: Version knowledge, prompt engineering, fix generation (MUST-have)
+- **Why:** Focus on 20% of features that deliver 80% of value
 
 ---
 
-### 2.5.3: Ground Truth Dataset
+## Week 1: Version Knowledge Base
+
+### 3.1: Domain Knowledge Database (STREAMLINED)
 **Priority:** 🔴 CRITICAL  
+**Impact:** Eliminate version hallucinations (0% → 90%)
 
 **Tasks:**
-1. **Collect Real-World Errors**
+1. **AGP Version Database** (2 days)
    ```typescript
-   // Gather from:
-   // - Your own Android projects
-   // - Open-source projects on GitHub
-   // - Stack Overflow questions
-   // - Android issue tracker
-   
-   Target: 100+ errors with known correct fixes
-   ```
-
-2. **Expert Annotation**
-   ```typescript
-   // For each error, document:
+   // src/knowledge/agp-versions.json
    {
-     error: "Could not find com.android.tools.build:gradle:8.10.0",
-     correctRootCause: "AGP 8.10.0 doesn't exist. Valid: 8.7.3, 8.9.x-alpha, 9.0.0",
-     correctFix: "Change gradle/libs.versions.toml line 2 to agp = \"8.7.3\"",
-     difficulty: "easy",
-     category: "gradle_dependency"
+     "versions": [
+       {
+         "version": "8.7.3",
+         "releaseDate": "2024-11-15",
+         "status": "stable",
+         "minKotlin": "1.9.0",
+         "minJdk": "17",
+         "breaking_changes": []
+       },
+       // ... 150+ versions from Maven Central
+     ]
+   }
+   
+   // src/tools/VersionLookupTool.ts
+   class VersionLookupTool {
+     async findValidVersions(requested: string): Promise<Version[]> {
+       // Query JSON database
+       // Return nearest stable versions
+     }
+     
+     async checkCompatibility(agp: string, kotlin: string): Promise<boolean> {
+       // Check compatibility matrix
+     }
    }
    ```
 
-3. **Synthetic Data Generation**
+2. **Kotlin Version Database** (1 day)
    ```typescript
-   // Create variations of known errors
-   // - Different AGP versions
-   // - Different Kotlin versions
-   // - Different error message formats
-   // - Different file structures
+   // src/knowledge/kotlin-versions.json
+   {
+     "versions": [
+       {
+         "version": "2.0.0",
+         "releaseDate": "2024-05-21",
+         "jvmTarget": ["17", "21"],
+         "compatibleAgp": ["8.3.0+"]
+       }
+     ]
+   }
    ```
 
+3. **Integration into Agent** (1 day)
+   ```typescript
+   // Add to tool registry
+   toolRegistry.register(new VersionLookupTool());
+   
+   // Update prompts to use it
+   "When encountering version errors, ALWAYS use VersionLookupTool 
+    to find valid versions before suggesting fixes"
+   ```
+
+**Success Metrics:**
+- Version suggestions: 0% → 90%
+- Version accuracy: 95%+ (suggests actual valid versions)
+- Agent uses tool: 100% of version-related errors
+
 **Deliverables:**
+- [ ] agp-versions.json (150+ versions)
+- [ ] kotlin-versions.json (50+ versions)
+- [ ] VersionLookupTool.ts
+- [ ] Integration tests (20+ cases)
+
+---
+
+## Week 2: Prompt Engineering Overhaul
+
+### 3.2: Context-Aware System Prompts (SIMPLIFIED)
+**Priority:** 🔴 CRITICAL  
+**Impact:** Better specificity (17% → 70%)
+
+**Tasks:**
+1. **Add Specificity Instructions** (2 days)
+   ```typescript
+   // src/agent/prompts/system-prompt.ts
+   const SPECIFICITY_RULES = `
+   CRITICAL RULES FOR SOLUTIONS:
+   
+   1. File Paths: MUST be exact with line numbers
+      ❌ Bad: "Update build.gradle"
+      ✅ Good: "Update gradle/libs.versions.toml line 5"
+   
+   2. Version Numbers: MUST be specific and validated
+      ❌ Bad: "Update to latest AGP"
+      ✅ Good: "Update to AGP 8.7.3 (stable, released Nov 2024)"
+      
+   3. Code Examples: MUST show before/after
+      ❌ Bad: "Change the version"
+      ✅ Good:
+      Before: agp = "8.10.0"
+      After:  agp = "8.7.3"
+   
+   4. Verification Steps: MUST explain how to test fix
+      ❌ Bad: "This should fix it"
+      ✅ Good: "Run './gradlew build' to verify fix works"
+   `;
+   ```
+
+2. **Few-Shot Examples by Error Type** (2 days)
+   ```typescript
+   // For Gradle errors:
+   const GRADLE_FEW_SHOT = `
+   Example 1:
+   Error: "Could not find com.android.tools.build:gradle:8.10.0"
+   
+   Diagnosis:
+   - Error type: Gradle dependency not found
+   - Root cause: AGP 8.10.0 doesn't exist in Maven Central
+   - File: gradle/libs.versions.toml, line 5
+   
+   Solution:
+   1. Check valid versions using VersionLookupTool
+   2. Latest stable: 8.7.3 (Nov 2024)
+   3. Update gradle/libs.versions.toml line 5:
+      
+      Before:
+      agp = "8.10.0"
+      
+      After:
+      agp = "8.7.3"
+   
+   4. Verify: Run './gradlew --version' to confirm AGP updated
+   `;
+   
+   // Add 5 examples each for: Gradle, Kotlin, Compose, XML, Manifest
+   ```
+
+**Success Metrics:**
+- Solution specificity: 17% → 70%
+- File identification: 30% → 90%
+- Code examples: 0% → 80%
+
+**Deliverables:**
+- [ ] Updated system prompts with specificity rules
+- [ ] 25+ few-shot examples (5 per category)
+- [ ] Before/after comparison on MVP test
+
+---
+
+## Week 3: Fix Generation & File Resolution
+
+### 3.3: Code Diff Generation (NEW FEATURE)
+**Priority:** 🟡 HIGH  
+**Impact:** Visual code fixes (0% → 60%)
+
+**Tasks:**
+1. **FixGenerator Module** (3 days)
+   ```typescript
+   // src/agent/FixGenerator.ts
+   class FixGenerator {
+     async generateFix(error: ParsedError, rootCause: string): Promise<Fix> {
+       // 1. Identify exact file and line
+       const file = await this.resolveFile(error.filePath);
+       
+       // 2. Read current content
+       const content = await fs.readFile(file, 'utf-8');
+       
+       // 3. Generate proposed change
+       const fix = await this.llm.generateFix({
+         error,
+         rootCause,
+         currentContent: content,
+         context: await this.getContext(file)
+       });
+       
+       // 4. Create diff
+       const diff = this.createDiff(content, fix.newContent);
+       
+       return {
+         file: file.path,
+         line: fix.line,
+         before: fix.oldCode,
+         after: fix.newCode,
+         diff: diff,
+         explanation: fix.reasoning
+       };
+     }
+   }
+   ```
+
+2. **File Resolution Logic** (2 days)
+   ```typescript
+   // src/utils/FileResolver.ts
+   class FileResolver {
+     async resolveFile(genericPath: string, projectRoot: string): Promise<string> {
+       // Handle common cases:
+       // "build.gradle" → could be:
+       //   - build.gradle (root)
+       //   - app/build.gradle (module)
+       //   - gradle/libs.versions.toml (catalog)
+       
+       // Strategy:
+       // 1. Check if version catalog exists
+       // 2. Parse build.gradle for dependencies
+       // 3. Determine which file actually contains the error
+       
+       const candidates = await this.findCandidates(genericPath);
+       return this.selectMostLikely(candidates, error);
+     }
+   }
+   ```
+
+**Success Metrics:**
+- Fix generation rate: 0% → 60%
+- File resolution accuracy: 30% → 85%
+- Diff format quality: Readable and actionable
+
+**Deliverables:**
+- [ ] FixGenerator.ts
+- [ ] FileResolver.ts
+- [ ] Diff formatting utilities
+- [ ] Integration with agent workflow
+
+---
+
+## Week 4: Testing & Iteration
+
+### 3.4: Real-World Validation (ESSENTIAL)
+**Priority:** 🔴 CRITICAL  
+**Goal:** Test on 10 diverse error types, measure improvement
+
+**Test Suite:**
+```typescript
+// tests/real-world/
+const TEST_CASES = [
+  {
+    name: "Gradle AGP version error",
+    project: "MVP_Android_Lab3",
+    error: "Could not find AGP 8.10.0",
+    expectedFix: "Update gradle/libs.versions.toml line 5 to 8.7.3",
+    baseline: { usability: 40% },
+    target: { usability: 80% }
+  },
+  {
+    name: "Kotlin lateinit NPE",
+    project: "Real_Kotlin_Project",
+    error: "lateinit property not initialized",
+    expectedFix: "Initialize viewModel in onCreate() before use",
+    baseline: { usability: "unknown" },
+    target: { usability: 75% }
+  },
+  // ... 8 more test cases
+];
+```
+
+**Tasks:**
+1. **Day 1-2:** Run all 10 test cases
+   - Collect baseline metrics
+   - Identify failure patterns
+
+2. **Day 3-4:** Fix top 3 failure modes
+   - Adjust prompts based on failures
+   - Update knowledge base with missing info
+   - Re-test
+
+3. **Day 5:** Final validation
+   - Overall usability: Target 80%+
+   - Document remaining gaps
+   - Plan Phase 4 improvements
+
+**Success Metrics:**
+- Overall usability: 40% → 80%+
+- Test coverage: 10+ diverse error types
+- No regressions: Existing cases still work
+
+**Deliverables:**
+- [ ] 10-case test suite with results
+- [ ] Performance comparison report
+- [ ] Documented failure cases for Phase 4
+- [ ] Usability scores by error type
 - [ ] 100+ labeled errors dataset
 - [ ] Annotation guidelines
 - [ ] Dataset split (train 70%, val 15%, test 15%)
@@ -1538,6 +2087,56 @@ const best = combineResults(results);
 
 ---
 
+# 🛠️ Tech Stack (Hobby Project)
+
+## Current Setup (LLM/Vector DB Focused)
+- **LLM:** DeepSeek-R1-Distill-Qwen-7B (~5GB) - Reasoning model for RCA
+  - Strength: Chain-of-thought reasoning, code understanding
+  - Alternative models: CodeLlama, Mistral, Llama 3
+- **Vector Database:** ChromaDB (local, persistent)
+  - Embeddings: all-MiniLM-L6-v2 (default, can upgrade to bge-large)
+  - Collections: error patterns, version knowledge, few-shot examples
+  - Search: Semantic similarity + metadata filtering
+- **RAG Pipeline:** 
+  - Error → Embed → ChromaDB query → Top-K retrieval → LLM context
+  - Hybrid: Exact match (keywords) + Semantic search (embeddings)
+- **Hardware:** RTX 3070 Ti (8GB VRAM) + Ryzen 5 5600x
+  - LLM inference: ~3-5 tokens/sec (depends on model)
+  - Embedding: ~100 docs/sec
+- **Framework:** TypeScript + Node.js
+- **Extension:** VS Code Extension API
+- **Testing:** Jest
+
+## LLM/Vector DB Architecture
+```
+User Error Input
+    ↓
+[Error Parser] → Extract structured data
+    ↓
+[Embedding Service] → Convert to vector
+    ↓
+[ChromaDB] → Retrieve similar errors, versions, examples (RAG)
+    ↓
+[Prompt Engine] → Build context with RAG results + few-shot examples
+    ↓
+[LLM (DeepSeek-R1)] → Reason about error + generate fix (Chain-of-Thought)
+    ↓
+[Output Validator] → Check JSON structure, code validity
+    ↓
+Fix Presented to User
+```
+
+## Key LLM/Vector DB Techniques Used
+1. **Retrieval-Augmented Generation (RAG)**: Combine LLM with external knowledge base
+2. **Few-Shot Learning**: Dynamic example retrieval based on error similarity
+3. **Chain-of-Thought Prompting**: Leverage DeepSeek-R1's reasoning capabilities
+4. **Structured Output Generation**: Force JSON schema compliance for consistency
+5. **Semantic Search**: Vector embeddings for intelligent knowledge retrieval
+6. **Hybrid Retrieval**: Combine keyword (BM25) + semantic (vector) search
+7. **Prompt Engineering**: Error-type specific prompts with constraints and examples
+
+---
+
 # 🎯 Priority Matrix (Updated with MVP Test Data)
 
 ## Do First (Proven High Impact)
@@ -1584,39 +2183,6 @@ const best = combineResults(results);
 - ❌ Audit logging
 - ❌ Cost management
 - ❌ SLA monitoring
-
----
-
-# 🚀 Development Philosophy
-
-## How to Stay Motivated
-
-### 1. Work on What's Interesting
-- If stuck on accuracy, work on UI instead
-- If bored with backend, try frontend
-- Follow curiosity, not a rigid plan
-
-### 2. Ship Small, Often
-- Don't wait for perfection
-- Get something working, then improve
-- Celebrate small wins
-
-### 3. Share Progress
-- Blog about interesting problems
-- Demo to friends
-- Open source when ready
-- Get feedback early
-
-### 4. Learn by Doing
-- Every feature teaches something new
-- Try technologies you're curious about
-- Fail fast, iterate quickly
-
-### 5. No Deadlines, No Stress
-- It's a hobby, not a job
-- Work when inspired
-- Take breaks when needed
-- Quality over schedule
 
 ---
 

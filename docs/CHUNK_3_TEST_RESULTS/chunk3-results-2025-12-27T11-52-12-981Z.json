@@ -1,0 +1,115 @@
+{
+  "timestamp": "2025-12-27T11:52:12.983Z",
+  "summary": {
+    "totalTests": 2,
+    "averageSpecificity": 25,
+    "averageBaseline": 8.5,
+    "targetMet": false
+  },
+  "results": [
+    {
+      "testCase": "MVP Case: AGP Version 8.10.0 Not Found",
+      "response": {
+        "thought": "The requested AGP 8.10.0 isn't available. Use the latest stable version that exists.",
+        "action": null,
+        "rootCause": "The requested AGP 8.10.0 isn't available. Use the latest stable version that exists.",
+        "fixGuidelines": [
+          "Update AGP version to 8.7.3 (known compatible with current setup)"
+        ],
+        "confidence": 0.7
+      },
+      "validationResult": {
+        "valid": false,
+        "specificityScore": 40,
+        "issues": [
+          "❌ Missing exact file path with line number (e.g., \"gradle/libs.versions.toml at line 5\")",
+          "⚠️ Missing code example showing before/after (recommended)",
+          "⚠️ Missing specific variable/function names (generic references used)"
+        ],
+        "strengths": [
+          "✅ Includes specific version numbers",
+          "✅ Includes verification/testing steps",
+          "✅ Mentions version compatibility"
+        ],
+        "breakdown": {
+          "hasExactFilePath": false,
+          "hasVersionValidation": true,
+          "hasCodeExample": false,
+          "hasActualNames": false,
+          "hasVerificationSteps": true,
+          "hasCompatibilityCheck": true
+        }
+      },
+      "specificityScore": 40,
+      "specificityLevel": "Poor",
+      "improvements": [
+        "✅ Includes specific version numbers",
+        "✅ Includes verification/testing steps",
+        "✅ Mentions version compatibility"
+      ],
+      "issues": [
+        "❌ Missing exact file path with line number (e.g., \"gradle/libs.versions.toml at line 5\")",
+        "⚠️ Missing code example showing before/after (recommended)",
+        "⚠️ Missing specific variable/function names (generic references used)"
+      ],
+      "comparisonWithBaseline": {
+        "baselineSpecificity": 17,
+        "currentSpecificity": 40,
+        "improvement": 23,
+        "percentageImprovement": 135.29411764705884
+      }
+    },
+    {
+      "testCase": "Kotlin lateinit NPE",
+      "response": {
+        "thought": "The viewModel property in MainActivity.kt was not properly initialized because it's missing necessary lifecycle annotations such as @Preinit and @OnInit.",
+        "action": null,
+        "rootCause": "The viewModel property in MainActivity.kt was not properly initialized because it's missing necessary lifecycle annotations such as @Preinit and @OnInit.",
+        "fixGuidelines": [
+          "Ensure the ViewModel has proper lifecycle annotations like @Preinit",
+          "Check that the activity is created with correct initializers when using Provider",
+          "Add @Preinit to the ViewModel class if not already present"
+        ],
+        "confidence": 0.7
+      },
+      "validationResult": {
+        "valid": false,
+        "specificityScore": 10,
+        "issues": [
+          "❌ Missing exact file path with line number (e.g., \"gradle/libs.versions.toml at line 5\")",
+          "❌ Missing specific version numbers (e.g., \"AGP 8.7.3\" not \"latest version\")",
+          "⚠️ Missing code example showing before/after (recommended)",
+          "⚠️ Missing specific variable/function names (generic references used)"
+        ],
+        "strengths": [
+          "✅ Includes verification/testing steps"
+        ],
+        "breakdown": {
+          "hasExactFilePath": false,
+          "hasVersionValidation": false,
+          "hasCodeExample": false,
+          "hasActualNames": false,
+          "hasVerificationSteps": true,
+          "hasCompatibilityCheck": false
+        }
+      },
+      "specificityScore": 10,
+      "specificityLevel": "Very Poor",
+      "improvements": [
+        "✅ Includes verification/testing steps"
+      ],
+      "issues": [
+        "❌ Missing exact file path with line number (e.g., \"gradle/libs.versions.toml at line 5\")",
+        "❌ Missing specific version numbers (e.g., \"AGP 8.7.3\" not \"latest version\")",
+        "⚠️ Missing code example showing before/after (recommended)",
+        "⚠️ Missing specific variable/function names (generic references used)"
+      ],
+      "comparisonWithBaseline": {
+        "baselineSpecificity": 0,
+        "currentSpecificity": 10,
+        "improvement": 10,
+        "percentageImprovement": 0
+      }
+    }
+  ]
+}
