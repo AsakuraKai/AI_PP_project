@@ -1,23 +1,70 @@
 # RCA Agent - Root Cause Analysis for Kotlin/Android
 
-![Version](https://img.shields.io/badge/version-0.1.0-blue)
+![Version](https://img.shields.io/badge/version-2.0.0-blue)
 ![VS Code](https://img.shields.io/badge/VS%20Code-1.80%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
+![Accessibility](https://img.shields.io/badge/accessibility-WCAG%202.1%20AA-green)
 
-AI-powered debugging assistant that analyzes your Kotlin/Android errors and suggests actionable fixes.
+AI-powered debugging assistant that analyzes your Kotlin/Android errors and suggests actionable fixes. **New in 2.0:** Redesigned panel-based UI with always-visible error queue, batch analysis, and full keyboard navigation!
+
+## ✨ What's New in 2.0
+
+- **🎯 Always-Visible Panel** - Docked to activity bar, no more hidden commands
+- **📋 Error Queue** - Auto-detected errors with priority sorting
+- **⚡ Batch Analysis** - Analyze multiple errors at once
+- **💡 Lightbulb Integration** - Quick actions directly on error lines
+- **⌨️ Full Keyboard Navigation** - WCAG 2.1 AA compliant accessibility
+- **🎨 Theme-Aware UI** - Beautiful dark/light/high-contrast support
+- **📊 Real-time Progress** - Live analysis progress with iteration tracking
+- **🚩 Feature Flags** - Safe opt-in/opt-out for new features
 
 ## 🚀 Features
 
-- **🔍 Automatic Error Analysis**: Select any error message or stack trace and get instant root cause analysis
-- **💡 Root Cause Identification**: AI-powered analysis identifies the underlying issue, not just symptoms
-- **🛠️ Actionable Fix Guidelines**: Step-by-step instructions to resolve errors
+### Core Analysis
+- **🔍 Intelligent Error Detection**: Auto-detects errors in your workspace with priority sorting (Critical → High → Medium)
+- **💡 Root Cause Identification**: AI-powered analysis identifies underlying issues, not just symptoms
+- **🛠️ Actionable Fix Guidelines**: Step-by-step instructions with code examples you can copy
 - **🎓 Educational Mode**: Beginner-friendly explanations with "What/Why/How" learning notes
 - **📚 Learns from Your Errors**: Stores past analyses to provide faster, smarter solutions over time
-- **⚡ Performance Metrics**: Optional display of analysis latency, cache hit rates, and token usage
-- **🎨 Jetpack Compose Support**: Specialized handling for Compose recomposition and state errors
-- **📄 XML Layout Analysis**: Smart parsing of Android layout inflation errors
-- **🔧 Gradle Conflict Resolution**: Visual dependency conflict detection with version recommendations
-- **📋 Manifest Analysis**: Permission and component configuration suggestions
+
+### UI & Interaction
+- **🎯 Panel Interface**: Always-visible panel in activity bar for quick access
+- **📋 Error Queue TreeView**: Visual list of detected errors with status indicators
+- **⚡ Batch Processing**: Analyze all errors in queue with one click
+- **💡 Inline Quick Actions**: Click lightbulb on errors for instant analysis
+- **📊 Real-time Progress**: Live iteration tracking with thought process display
+- **📜 History Tracking**: Full history of past analyses with reanalyze option
+
+### Specialized Support
+- **🎨 Jetpack Compose**: Specialized handling for Compose recomposition and state errors
+- **📄 XML Layouts**: Smart parsing of Android layout inflation errors
+- **🔧 Gradle Conflicts**: Visual dependency conflict detection with version recommendations
+- **📋 Manifest Issues**: Permission and component configuration suggestions
+
+### Accessibility & Performance
+- **♿ WCAG 2.1 AA Compliant**: Full keyboard navigation, screen reader support, ARIA labels
+- **🎨 Theme Support**: Adapts to dark/light/high-contrast themes automatically
+- **⚡ Performance Optimized**: Virtual scrolling for 1000+ errors, <100ms panel load time
+- **🔄 Virtual Scrolling**: Handles massive error queues efficiently
+- **📈 Performance Metrics**: Optional display of analysis latency, cache hit rates, and token usage
+
+## 📸 Screenshots
+
+### Main Panel Interface
+<!-- Screenshot placeholder -->
+The RCA Agent panel docked in the activity bar, showing error queue, live analysis, and history.
+
+### Error Queue with Batch Analysis
+<!-- Screenshot placeholder -->
+Auto-detected errors sorted by priority with "Analyze All" button for batch processing.
+
+### Lightbulb Quick Actions
+<!-- Screenshot placeholder -->
+Click the lightbulb on any error line to analyze with RCA Agent instantly.
+
+### Analysis Results
+<!-- Screenshot placeholder -->
+Comprehensive root cause analysis with code context and actionable fix guidelines.
 
 ## 📦 Installation
 
@@ -61,19 +108,48 @@ AI-powered debugging assistant that analyzes your Kotlin/Android errors and sugg
 
 ## 🎯 Usage
 
-### Basic Analysis
+### Quick Start (New 2.0 UI)
 
+1. **Open RCA Agent Panel** - Click the RCA icon in the activity bar (left sidebar)
+2. **Auto-detected Errors** - Errors appear in the queue automatically
+3. **One-Click Analysis** - Click "Analyze" on any error OR click "Analyze All" for batch processing
+4. **View Results** - Results display in the panel with code context and fix guidelines
+
+### Alternative Methods
+
+#### Lightbulb Quick Action (NEW!)
+1. Hover over any error in your code
+2. Click the 💡 lightbulb that appears
+3. Select "🤖 Analyze with RCA Agent"
+4. Results appear instantly in the panel
+
+#### Manual Selection (Classic)
 1. **Select error text** in your editor (stack trace, error message, build output)
 2. Press **`Ctrl+Shift+R`** (or `Cmd+Shift+R` on Mac)
-   - Or open Command Palette: **"RCA Agent: Analyze Error"**
-3. View results in the webview panel
+3. View results in the panel
 
 ### Keyboard Shortcuts
 
+For complete keyboard shortcuts guide, see [KEYBOARD_SHORTCUTS.md](KEYBOARD_SHORTCUTS.md)
+
+#### Primary Actions
 | Action | Windows/Linux | macOS |
 |--------|---------------|-------|
-| Analyze Error (Output Channel) | `Ctrl+Shift+R` | `Cmd+Shift+R` |
-| Analyze Error (Webview) | `Ctrl+Shift+W` | `Cmd+Shift+W` |
+| **Toggle RCA Panel** | `Ctrl+Shift+A` | `Cmd+Shift+A` |
+| **Analyze Selected Error** | `Ctrl+Shift+R` | `Cmd+Shift+R` |
+| **Analyze in Panel** | `Ctrl+Shift+W` | `Cmd+Shift+W` |
+| **Analyze All Errors** | `Ctrl+Shift+Alt+A` | `Cmd+Shift+Alt+A` |
+
+#### Panel Navigation
+| Action | Windows/Linux | macOS |
+|--------|---------------|-------|
+| Next Error | `Alt+F8` | `Option+F8` |
+| Previous Error | `Shift+Alt+F8` | `Shift+Option+F8` |
+| Stop Analysis | `Escape` | `Escape` |
+
+#### Settings Toggles
+| Action | Windows/Linux | macOS |
+|--------|---------------|-------|
 | Toggle Educational Mode | `Ctrl+Shift+E` | `Cmd+Shift+E` |
 | Toggle Performance Metrics | `Ctrl+Shift+P` | `Cmd+Shift+P` |
 
@@ -109,6 +185,7 @@ Metrics include:
 
 Access settings: `File > Preferences > Settings > RCA Agent`
 
+### Core Settings
 ```json
 {
   // Ollama server URL
@@ -119,6 +196,31 @@ Access settings: `File > Preferences > Settings > RCA Agent`
   
   // Show performance metrics
   "rcaAgent.showPerformanceMetrics": false
+}
+```
+
+### New UI Settings (2.0)
+```json
+{
+  // Enable new panel-based UI (default: true)
+  "rcaAgent.experimental.newUI": true,
+  
+  // Enable batch error analysis
+  "rcaAgent.experimental.batchAnalysis": true,
+  
+  // Auto-detect errors in workspace
+  "rcaAgent.autoDetectErrors": true,
+  
+  // Maximum errors to show in queue
+  "rcaAgent.maxErrorQueueSize": 100,
+  
+  // Performance monitoring
+  "rcaAgent.performance.enableMonitoring": true,
+  "rcaAgent.performance.showMetrics": false,
+  
+  // Accessibility features
+  "rcaAgent.accessibility.announceChanges": true,
+  "rcaAgent.accessibility.reducedMotion": false
 }
 ```
 

@@ -223,6 +223,22 @@ export class StateManager {
   }
   
   /**
+   * Update history item feedback
+   */
+  async updateHistoryItemFeedback(id: string, helpful: boolean, feedback?: string): Promise<void> {
+    const item = this._history.find(h => h.id === id);
+    if (item) {
+      item.helpful = helpful;
+      if (feedback) {
+        item.feedback = feedback;
+      }
+      console.log(`[StateManager] Updated history item ${id} feedback: ${helpful}`);
+      await this._saveState();
+      this._onHistoryChange.fire(this._history);
+    }
+  }
+  
+  /**
    * Get an error by ID
    */
   getError(id: string): ErrorItem | undefined {

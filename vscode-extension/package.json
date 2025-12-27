@@ -24,6 +24,10 @@
     "onCommand:rcaAgent.analyzeErrorWebview",
     "onCommand:rcaAgent.toggleEducationalMode",
     "onCommand:rcaAgent.togglePerformanceMetrics",
+    "onCommand:rca-agent.analyzeFromDiagnostic",
+    "onCommand:rca-agent.analyzeCurrentError",
+    "onCommand:rca-agent.nextError",
+    "onCommand:rca-agent.previousError",
     "onView:rca-agent.mainPanel"
   ],
   "main": "./out/extension.js",
@@ -44,6 +48,16 @@
           "id": "rca-agent.mainPanel",
           "name": "Analysis",
           "contextualTitle": "RCA Agent"
+        },
+        {
+          "id": "rca-agent.errorQueue",
+          "name": "Error Queue",
+          "when": "rca-agent.hasErrors || rca-agent.enabled"
+        },
+        {
+          "id": "rca-agent.history",
+          "name": "History",
+          "when": "rca-agent.hasHistory || rca-agent.enabled"
         }
       ]
     },
@@ -69,6 +83,131 @@
         "command": "rcaAgent.togglePanel",
         "title": "RCA Agent: Toggle Panel",
         "icon": "$(layout-sidebar-right)"
+      },
+      {
+        "command": "rca-agent.analyzeAll",
+        "title": "RCA Agent: Analyze All Errors",
+        "icon": "$(run-all)"
+      },
+      {
+        "command": "rca-agent.analyzePending",
+        "title": "RCA Agent: Analyze Pending Errors",
+        "icon": "$(run)"
+      },
+      {
+        "command": "rca-agent.cancelBatch",
+        "title": "RCA Agent: Cancel Batch Analysis",
+        "icon": "$(stop)"
+      },
+      {
+        "command": "rca-agent.refreshErrorQueue",
+        "title": "Refresh Error Queue",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "rca-agent.clearErrorQueue",
+        "title": "Clear Error Queue",
+        "icon": "$(clear-all)"
+      },
+      {
+        "command": "rca-agent.clearCompleted",
+        "title": "Clear Completed Errors",
+        "icon": "$(check-all)"
+      },
+      {
+        "command": "rca-agent.removeError",
+        "title": "Remove Error",
+        "icon": "$(close)"
+      },
+      {
+        "command": "rca-agent.pinError",
+        "title": "Pin Error",
+        "icon": "$(pin)"
+      },
+      {
+        "command": "rca-agent.unpinError",
+        "title": "Unpin Error",
+        "icon": "$(pinned)"
+      },
+      {
+        "command": "rca-agent.openErrorLocation",
+        "title": "Go to Error Location",
+        "icon": "$(go-to-file)"
+      },
+      {
+        "command": "rca-agent.refreshHistory",
+        "title": "Refresh History",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "rca-agent.clearHistory",
+        "title": "Clear History",
+        "icon": "$(clear-all)"
+      },
+      {
+        "command": "rca-agent.deleteHistoryItem",
+        "title": "Delete History Item",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "rca-agent.reanalyzeHistoryItem",
+        "title": "Reanalyze",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "rca-agent.exportHistoryItem",
+        "title": "Export Analysis",
+        "icon": "$(export)"
+      },
+      {
+        "command": "rca-agent.viewHistoryItem",
+        "title": "View Analysis",
+        "icon": "$(eye)"
+      },
+      {
+        "command": "rca-agent.markHelpful",
+        "title": "Mark as Helpful",
+        "icon": "$(thumbsup)"
+      },
+      {
+        "command": "rca-agent.markUnhelpful",
+        "title": "Mark as Unhelpful",
+        "icon": "$(thumbsdown)"
+      },
+      {
+        "command": "rca-agent.analyzeFromDiagnostic",
+        "title": "RCA Agent: Analyze with RCA Agent",
+        "icon": "$(robot)"
+      },
+      {
+        "command": "rca-agent.analyzeCurrentError",
+        "title": "RCA Agent: Analyze Error at Cursor",
+        "icon": "$(debug-alt)"
+      },
+      {
+        "command": "rca-agent.nextError",
+        "title": "RCA Agent: Go to Next Error",
+        "icon": "$(arrow-down)"
+      },
+      {
+        "command": "rca-agent.previousError",
+        "title": "RCA Agent: Go to Previous Error",
+        "icon": "$(arrow-up)"
+      },
+      {
+        "command": "rca-agent.togglePanel",
+        "title": "RCA Agent: Toggle Panel",
+        "icon": "$(layout-sidebar-right)"
+      },
+      {
+        "command": "rca-agent.showPerformanceMetrics",
+        "title": "RCA Agent: Show Performance Metrics",
+        "icon": "$(graph)"
+      },
+      {
+        "command": "rca-agent.toggleFeatureFlag",
+        "title": "RCA Agent: Toggle Feature Flag",
+        "icon": "$(settings-gear)"
       }
     ],
     "keybindings": [
@@ -98,8 +237,125 @@
         "command": "rcaAgent.togglePerformanceMetrics",
         "key": "ctrl+shift+p",
         "mac": "cmd+shift+p"
+      },
+      {
+        "command": "rca-agent.analyzeAll",
+        "key": "ctrl+shift+alt+a",
+        "mac": "cmd+shift+alt+a"
+      },
+      {
+        "command": "rca-agent.cancelBatch",
+        "key": "escape",
+        "when": "rca-agent.batchAnalyzing"
+      },
+      {
+        "command": "rca-agent.analyzeCurrentError",
+        "key": "ctrl+shift+.",
+        "mac": "cmd+shift+.",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "rca-agent.nextError",
+        "key": "alt+f8",
+        "mac": "alt+f8"
+      },
+      {
+        "command": "rca-agent.previousError",
+        "key": "shift+alt+f8",
+        "mac": "shift+alt+f8"
       }
     ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "rca-agent.refreshErrorQueue",
+          "when": "view == rca-agent.errorQueue",
+          "group": "navigation@1"
+        },
+        {
+          "command": "rca-agent.analyzeAll",
+          "when": "view == rca-agent.errorQueue",
+          "group": "navigation@2"
+        },
+        {
+          "command": "rca-agent.clearErrorQueue",
+          "when": "view == rca-agent.errorQueue",
+          "group": "1_actions@1"
+        },
+        {
+          "command": "rca-agent.clearCompleted",
+          "when": "view == rca-agent.errorQueue",
+          "group": "1_actions@2"
+        },
+        {
+          "command": "rca-agent.refreshHistory",
+          "when": "view == rca-agent.history",
+          "group": "navigation@1"
+        },
+        {
+          "command": "rca-agent.clearHistory",
+          "when": "view == rca-agent.history",
+          "group": "1_actions@1"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "rcaAgent.analyzeError",
+          "when": "view == rca-agent.errorQueue && viewItem == error-pending",
+          "group": "inline@1"
+        },
+        {
+          "command": "rca-agent.pinError",
+          "when": "view == rca-agent.errorQueue && viewItem == error-pending",
+          "group": "1_actions@1"
+        },
+        {
+          "command": "rca-agent.unpinError",
+          "when": "view == rca-agent.errorQueue && viewItem == error-pinned",
+          "group": "1_actions@1"
+        },
+        {
+          "command": "rca-agent.openErrorLocation",
+          "when": "view == rca-agent.errorQueue && viewItem =~ /error-.*/",
+          "group": "2_navigation@1"
+        },
+        {
+          "command": "rca-agent.removeError",
+          "when": "view == rca-agent.errorQueue && viewItem =~ /error-.*/",
+          "group": "3_remove@1"
+        },
+        {
+          "command": "rca-agent.viewHistoryItem",
+          "when": "view == rca-agent.history && viewItem == history-item",
+          "group": "inline@1"
+        },
+        {
+          "command": "rca-agent.reanalyzeHistoryItem",
+          "when": "view == rca-agent.history && viewItem == history-item",
+          "group": "1_actions@1"
+        },
+        {
+          "command": "rca-agent.exportHistoryItem",
+          "when": "view == rca-agent.history && viewItem == history-item",
+          "group": "1_actions@2"
+        },
+        {
+          "command": "rca-agent.markHelpful",
+          "when": "view == rca-agent.history && viewItem == history-item",
+          "group": "2_feedback@1"
+        },
+        {
+          "command": "rca-agent.markUnhelpful",
+          "when": "view == rca-agent.history && viewItem == history-item",
+          "group": "2_feedback@2"
+        },
+        {
+          "command": "rca-agent.deleteHistoryItem",
+          "when": "view == rca-agent.history && viewItem == history-item",
+          "group": "3_remove@1"
+        }
+      ]
+    },
     "configuration": {
       "title": "RCA Agent",
       "properties": {
@@ -122,12 +378,62 @@
         "rcaAgent.experimental.newUI": {
           "type": "boolean",
           "default": true,
-          "description": "Enable the new panel-based UI (experimental)"
+          "description": "Enable the new panel-based UI (requires reload)",
+          "order": 0
+        },
+        "rcaAgent.experimental.advancedDiagnostics": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable advanced diagnostic features (experimental)",
+          "order": 1
+        },
+        "rcaAgent.experimental.batchAnalysis": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable batch error analysis",
+          "order": 2
+        },
+        "rcaAgent.experimental.performanceMetrics": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show performance metrics in UI (experimental)",
+          "order": 3
+        },
+        "rcaAgent.experimental.experimentalFeatures": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable all experimental features",
+          "order": 4
         },
         "rcaAgent.showPerformanceMetrics": {
           "type": "boolean",
           "default": false,
           "description": "Show performance metrics (latency, cache hit rate, token usage) in analysis results"
+        },
+        "rcaAgent.accessibility.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable accessibility features (ARIA labels, keyboard navigation)"
+        },
+        "rcaAgent.theme.autoDetect": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically detect and adapt to VS Code theme changes"
+        },
+        "rcaAgent.performance.enableMonitoring": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable performance monitoring and tracking"
+        },
+        "rcaAgent.performance.panelLoadThreshold": {
+          "type": "number",
+          "default": 100,
+          "description": "Panel load time threshold in milliseconds (shows warning if exceeded)"
+        },
+        "rcaAgent.errorHandling.gracefulDegradation": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable graceful degradation when services are unavailable"
         }
       }
     }
