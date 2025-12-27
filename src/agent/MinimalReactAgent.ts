@@ -221,7 +221,7 @@ export class MinimalReactAgent {
         
         if (this.usePromptEngine) {
           const stopPromptBuild = this.performanceTracker.startTimer('prompt_build');
-          const prompt = this.promptEngine.buildIterationPrompt({
+          const prompt = await this.promptEngine.buildIterationPrompt({
             systemPrompt: systemPrompt || '',
             examples: i === 0 ? examples : [], // Only first iteration
             error,

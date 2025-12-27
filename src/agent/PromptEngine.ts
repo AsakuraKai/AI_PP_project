@@ -19,9 +19,10 @@
  */
 
 import { ParsedError, AgentState } from '../types';
+import { getFewShotService, FewShotExample as KnowledgeBaseExample } from '../knowledge/FewShotExampleService';
 
 /**
- * Few-shot example for teaching agent
+ * Few-shot example for teaching agent (legacy format - kept for backward compatibility)
  */
 export interface FewShotExample {
   /** Error description */
@@ -48,6 +49,30 @@ export interface FewShotExample {
  * Prompt templates for different analysis stages
  */
 export class PromptEngine {
+  private fewShotService = getFewShotService();
+  private fewShotLoaded = false;
+
+  constructor() {
+    // Load few-shot examples asynchronously
+    this.loadFewShotExamples();
+  }
+
+  /**
+   * Load few-shot examples database
+   */
+  private async loadFewShotExamples(): Promise<void> {
+    try {
+      await this.fewShotService.loadDatabase();
+      this.fewShotLoaded = true;
+      const stats = this.fewShotService.getStatistics();
+      if (stats) {
+        console.log(`✅ Loaded ${stats.totalExamples} few-shot examples (v${stats.version})`);
+      }
+    } catch (error) {
+      console.error('⚠️  Failed to load few-shot examples:', error);
+      this.fewShotLoaded = false;
+    }
+  }
   /**
    * Get system prompt with agent instructions
    */
@@ -483,8 +508,9 @@ ${example.conclusion.fixGuidelines.map(step => `    - ${step}`).join('\n')}
 
   /**
    * Build iteration prompt with comprehensive context (NEW - for Chunk 2.4)
+   * NOW ENHANCED: Includes relevant few-shot examples from knowledge base
    */
-  buildIterationPrompt(params: {
+  async buildIterationPrompt(params: {
     systemPrompt: string;
     examples: FewShotExample[];
     error: ParsedError;
@@ -493,14 +519,28 @@ ${example.conclusion.fixGuidelines.map(step => `    - ${step}`).join('\n')}
     previousObservations: string[];
     iteration: number;
     maxIterations: number;
-  }): string {
+  }): Promise<string> {
     const { systemPrompt, examples, error, previousThoughts, previousActions, previousObservations, iteration, maxIterations } = params;
 
     let prompt = `${systemPrompt}\n\n`;
 
-    // Add examples only on first iteration
+    // Add legacy examples (from old system) only on first iteration
     if (iteration === 1 && examples.length > 0) {
       prompt += `**EXAMPLES OF SIMILAR ANALYSIS:**\n${this.formatExamples(examples)}\n\n`;
+    }
+
+    // Add few-shot examples from knowledge base (on first iteration only)
+    if (iteration === 1 && this.fewShotLoaded) {
+      try {
+        const relevantExamples = await this.fewShotService.findRelevantExamples(error, 3);
+        if (relevantExamples.length > 0) {
+          const formattedExamples = this.fewShotService.formatExamplesForPrompt(relevantExamples);
+          prompt += `${formattedExamples}\n\n`;
+          console.log(`📚 Added ${relevantExamples.length} relevant examples to prompt`);
+        }
+      } catch (error) {
+        console.warn('Failed to retrieve few-shot examples:', error);
+      }
     }
 
     prompt += `**ERROR TO ANALYZE:**
@@ -543,6 +583,11 @@ Consider using the read_file tool to examine the code at the error location.\n`;
   "action": { "tool": "tool_name", "parameters": {...} } OR null if concluding,
   "rootCause": "Explanation" (only when action is null),
   "fixGuidelines": ["Step 1", "Step 2", ...] (only when action is null),
+  "confidence": 0.0-1.0 (only when action is null)
+}`;
+
+    return prompt;
+  }
   "confidence": 0.0-1.0 (only when action is null)
 }`;
 
