@@ -1,0 +1,252 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/AsakuraKai/AI_PP_project/schemas/few-shot-examples.json",
+  "title": "Few-Shot Examples Schema",
+  "description": "Schema for RCA agent few-shot learning examples",
+  "type": "object",
+  "required": ["version", "lastUpdated", "description", "categories"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version of examples database"
+    },
+    "lastUpdated": {
+      "type": "string",
+      "format": "date",
+      "description": "Last update date in YYYY-MM-DD format"
+    },
+    "description": {
+      "type": "string",
+      "description": "Purpose of this examples database"
+    },
+    "categories": {
+      "type": "object",
+      "description": "Error categories with examples",
+      "additionalProperties": {
+        "$ref": "#/definitions/category"
+      }
+    }
+  },
+  "definitions": {
+    "category": {
+      "type": "object",
+      "required": ["description", "examples"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "Category description"
+        },
+        "examples": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/example"
+          }
+        }
+      }
+    },
+    "example": {
+      "type": "object",
+      "required": ["id", "title", "errorType", "errorMessage", "analysis", "solution", "confidence", "tags"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z]+-\\d{3}$",
+          "description": "Unique example ID (e.g., gradle-001)"
+        },
+        "title": {
+          "type": "string",
+          "description": "Short descriptive title"
+        },
+        "errorType": {
+          "type": "string",
+          "enum": [
+            "GRADLE_DEPENDENCY",
+            "GRADLE_COMPATIBILITY",
+            "GRADLE_PLUGIN",
+            "GRADLE_REPOSITORY",
+            "GRADLE_CACHE",
+            "GRADLE_MANIFEST",
+            "GRADLE_R8",
+            "GRADLE_NATIVE",
+            "GRADLE_MEMORY",
+            "GRADLE_CATALOG",
+            "GRADLE_BUILD_TYPE",
+            "GRADLE_CONFIG_CACHE",
+            "KOTLIN_NPE",
+            "KOTLIN_TYPE_MISMATCH",
+            "KOTLIN_LATEINIT",
+            "KOTLIN_COROUTINE",
+            "COMPOSE_API_BREAKAGE",
+            "COMPOSE_RECOMPOSITION",
+            "COMPOSE_STATE",
+            "XML_INFLATION",
+            "XML_ATTRIBUTE",
+            "MANIFEST_PERMISSION",
+            "MANIFEST_COMPONENT",
+            "MANIFEST_MERGE"
+          ],
+          "description": "Standardized error type"
+        },
+        "errorMessage": {
+          "type": "string",
+          "description": "Actual error message from build/compiler"
+        },
+        "filePath": {
+          "type": ["string", "null"],
+          "description": "File where error occurs (null if not file-specific)"
+        },
+        "lineNumber": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "description": "Line number where error occurs"
+        },
+        "context": {
+          "type": "object",
+          "description": "Additional context about the error",
+          "additionalProperties": true
+        },
+        "analysis": {
+          "$ref": "#/definitions/analysis"
+        },
+        "solution": {
+          "$ref": "#/definitions/solution"
+        },
+        "confidence": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Confidence level in solution correctness (0-100)"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "description": "Tags for searchability"
+        }
+      }
+    },
+    "analysis": {
+      "type": "object",
+      "required": ["problem", "rootCause", "evidence"],
+      "properties": {
+        "problem": {
+          "type": "string",
+          "description": "What is the immediate problem?"
+        },
+        "rootCause": {
+          "type": "string",
+          "description": "Why does this problem occur?"
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "description": "Supporting evidence for root cause"
+        }
+      }
+    },
+    "solution": {
+      "type": "object",
+      "required": ["summary", "steps", "verification"],
+      "properties": {
+        "summary": {
+          "type": "string",
+          "description": "One-line solution summary"
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "description": "Step-by-step instructions"
+        },
+        "codeChange": {
+          "type": ["object", "null"],
+          "required": ["file", "before", "after", "explanation"],
+          "properties": {
+            "file": {
+              "type": ["string", "null"],
+              "description": "File to modify"
+            },
+            "lineNumber": {
+              "type": ["integer", "null"],
+              "minimum": 1,
+              "description": "Line number to modify"
+            },
+            "before": {
+              "type": ["string", "null"],
+              "description": "Code before fix (null if no code change)"
+            },
+            "after": {
+              "type": ["string", "null"],
+              "description": "Code after fix (null if no code change)"
+            },
+            "explanation": {
+              "type": "string",
+              "description": "Why this change fixes the problem"
+            }
+          }
+        },
+        "verification": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "description": "Steps to verify fix worked"
+        },
+        "alternatives": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/alternative"
+          },
+          "description": "Alternative solutions"
+        }
+      }
+    },
+    "alternative": {
+      "type": "object",
+      "required": ["pros", "cons"],
+      "properties": {
+        "version": {
+          "type": "string",
+          "description": "Alternative version number (if version-specific)"
+        },
+        "approach": {
+          "type": "string",
+          "description": "Alternative approach description"
+        },
+        "code": {
+          "type": "string",
+          "description": "Code example for alternative"
+        },
+        "pros": {
+          "type": "string",
+          "description": "Advantages of this alternative"
+        },
+        "cons": {
+          "type": "string",
+          "description": "Disadvantages of this alternative"
+        },
+        "migrationRequired": {
+          "type": "boolean",
+          "description": "Whether migration/refactoring is needed"
+        },
+        "note": {
+          "type": "string",
+          "description": "Additional notes about this alternative"
+        }
+      }
+    }
+  }
+}

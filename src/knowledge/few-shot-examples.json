@@ -1,0 +1,2489 @@
+{
+  "$schema": "./few-shot-examples.schema.json",
+  "version": "1.0.0",
+  "lastUpdated": "2025-12-27",
+  "description": "Few-shot learning examples for RCA agent to improve solution quality",
+  "categories": {
+    "gradle": {
+      "description": "Gradle build system errors including dependency resolution, version conflicts, and plugin issues",
+      "examples": [
+        {
+          "id": "gradle-001",
+          "title": "AGP Version Not Found",
+          "errorType": "GRADLE_DEPENDENCY",
+          "errorMessage": "Could not find com.android.tools.build:gradle:8.10.0",
+          "filePath": "gradle/libs.versions.toml",
+          "lineNumber": 5,
+          "context": {
+            "buildTool": "Gradle",
+            "language": "Kotlin",
+            "framework": "Android"
+          },
+          "analysis": {
+            "problem": "Gradle cannot download Android Gradle Plugin (AGP) version 8.10.0 from Maven Central",
+            "rootCause": "AGP version 8.10.0 does not exist. The 8.x series skips 8.8.x, 8.9.x, and 8.10.x versions. Valid stable versions in the 8.x series are 8.0.0 through 8.7.3, with the next stable being 9.0.0.",
+            "evidence": [
+              "Maven Central query shows no 8.10.0 artifact",
+              "Version database confirms 8.7.3 is latest stable 8.x",
+              "Version numbering jumps from 8.7.x to 9.0.x"
+            ]
+          },
+          "solution": {
+            "summary": "Update AGP version to valid stable release",
+            "steps": [
+              "Open gradle/libs.versions.toml in your project root",
+              "Locate the agp version declaration (line 5)",
+              "Change version from 8.10.0 to 8.7.3 (latest stable 8.x)",
+              "Sync Gradle to apply changes"
+            ],
+            "codeChange": {
+              "file": "gradle/libs.versions.toml",
+              "lineNumber": 5,
+              "before": "agp = \"8.10.0\"",
+              "after": "agp = \"8.7.3\"",
+              "explanation": "8.7.3 is the latest stable version in the 8.x series, released November 2024. It's compatible with Kotlin 1.9.0+ and Gradle 8.2+"
+            },
+            "verification": [
+              "Run './gradlew --version' to confirm AGP version",
+              "Run './gradlew build' to verify build succeeds",
+              "Check that no version-related warnings appear"
+            ],
+            "alternatives": [
+              {
+                "version": "9.0.0",
+                "pros": "Latest stable release with newest features",
+                "cons": "Requires Kotlin 2.0.0+ and Gradle 8.9+",
+                "migrationRequired": true
+              },
+              {
+                "version": "8.6.0",
+                "pros": "Widely tested, very stable",
+                "cons": "Missing some bug fixes from 8.7.x",
+                "migrationRequired": false
+              }
+            ]
+          },
+          "confidence": 95,
+          "tags": ["gradle", "agp", "version-not-found", "dependency"]
+        },
+        {
+          "id": "gradle-002",
+          "title": "Kotlin Version Compatibility Issue",
+          "errorType": "GRADLE_COMPATIBILITY",
+          "errorMessage": "The current Gradle version 7.5 is not compatible with Kotlin Gradle Plugin 2.0.0",
+          "filePath": "build.gradle.kts",
+          "lineNumber": 10,
+          "context": {
+            "buildTool": "Gradle",
+            "gradleVersion": "7.5",
+            "kotlinVersion": "2.0.0",
+            "language": "Kotlin"
+          },
+          "analysis": {
+            "problem": "Gradle 7.5 cannot work with Kotlin 2.0.0",
+            "rootCause": "Kotlin 2.0.0 requires Gradle 8.5 or higher due to new K2 compiler architecture. Gradle 7.x series is not compatible with Kotlin 2.x.",
+            "evidence": [
+              "Compatibility matrix shows Kotlin 2.0.0 requires Gradle 8.5+",
+              "Gradle 7.5 released before Kotlin 2.0.0 existed",
+              "K2 compiler uses new Gradle APIs not available in 7.x"
+            ]
+          },
+          "solution": {
+            "summary": "Upgrade Gradle to version 8.5 or higher",
+            "steps": [
+              "Open gradle/wrapper/gradle-wrapper.properties",
+              "Update distributionUrl to Gradle 8.9 (latest stable)",
+              "Run './gradlew wrapper --gradle-version=8.9' to update wrapper",
+              "Sync Gradle and rebuild project"
+            ],
+            "codeChange": {
+              "file": "gradle/wrapper/gradle-wrapper.properties",
+              "lineNumber": 3,
+              "before": "distributionUrl=https\\://services.gradle.org/distributions/gradle-7.5-bin.zip",
+              "after": "distributionUrl=https\\://services.gradle.org/distributions/gradle-8.9-bin.zip",
+              "explanation": "Gradle 8.9 is the latest stable version compatible with Kotlin 2.0.0 and provides optimal performance for K2 compiler"
+            },
+            "verification": [
+              "Run './gradlew --version' to confirm Gradle 8.9",
+              "Run './gradlew build' to verify compilation succeeds",
+              "Check that K2 compiler warnings/errors are resolved"
+            ],
+            "alternatives": [
+              {
+                "version": "8.5",
+                "pros": "Minimum required version, well-tested",
+                "cons": "Missing performance improvements from 8.6+",
+                "migrationRequired": false
+              },
+              {
+                "version": "Kotlin 1.9.24",
+                "pros": "Works with Gradle 7.5 (no Gradle upgrade needed)",
+                "cons": "Doesn't get K2 compiler benefits",
+                "migrationRequired": false,
+                "note": "Alternative if Gradle upgrade is not feasible"
+              }
+            ]
+          },
+          "confidence": 98,
+          "tags": ["gradle", "kotlin", "compatibility", "version-mismatch"]
+        },
+        {
+          "id": "gradle-003",
+          "title": "Dependency Resolution Failure - Transitive Conflict",
+          "errorType": "GRADLE_DEPENDENCY",
+          "errorMessage": "Conflict with dependency 'androidx.compose.ui:ui' in project ':app'. Resolved versions for app (1.6.0) and test app (1.5.0) differ.",
+          "filePath": "app/build.gradle.kts",
+          "lineNumber": 45,
+          "context": {
+            "buildTool": "Gradle",
+            "language": "Kotlin",
+            "framework": "Jetpack Compose"
+          },
+          "analysis": {
+            "problem": "Multiple Compose UI versions are pulled by different dependencies, causing conflict",
+            "rootCause": "App dependencies request Compose 1.6.0, but a test library transitively depends on Compose 1.5.0. Gradle cannot resolve which version to use.",
+            "evidence": [
+              "Dependency tree shows androidx.compose.ui:ui:1.6.0 from implementation",
+              "Test dependency androidx.compose.ui:ui-test-junit4:1.5.0 pulls ui:1.5.0",
+              "Gradle requires all versions of same library to match"
+            ]
+          },
+          "solution": {
+            "summary": "Force resolution to single Compose version using BOM (Bill of Materials)",
+            "steps": [
+              "Open app/build.gradle.kts",
+              "Add Compose BOM to dependencies section",
+              "Remove explicit version numbers from Compose dependencies",
+              "BOM will enforce consistent versions across all Compose libraries"
+            ],
+            "codeChange": {
+              "file": "app/build.gradle.kts",
+              "lineNumber": 45,
+              "before": "dependencies {\n    implementation(\"androidx.compose.ui:ui:1.6.0\")\n    implementation(\"androidx.compose.material3:material3:1.2.0\")\n    androidTestImplementation(\"androidx.compose.ui:ui-test-junit4:1.5.0\")\n}",
+              "after": "dependencies {\n    // Compose BOM enforces consistent versions\n    implementation(platform(\"androidx.compose:compose-bom:2024.02.00\"))\n    implementation(\"androidx.compose.ui:ui\")\n    implementation(\"androidx.compose.material3:material3\")\n    androidTestImplementation(\"androidx.compose.ui:ui-test-junit4\")\n}",
+              "explanation": "Compose BOM 2024.02.00 includes Compose UI 1.6.0 and ensures all Compose dependencies use compatible versions. Remove explicit version numbers to let BOM manage them."
+            },
+            "verification": [
+              "Run './gradlew app:dependencies' to see resolved versions",
+              "Verify all androidx.compose.* libraries show same version",
+              "Run './gradlew build' to confirm conflict is resolved",
+              "Run unit and instrumentation tests to ensure compatibility"
+            ],
+            "alternatives": [
+              {
+                "approach": "Force resolution without BOM",
+                "code": "configurations.all {\n    resolutionStrategy {\n        force(\"androidx.compose.ui:ui:1.6.0\")\n    }\n}",
+                "pros": "Simpler if only one library conflicts",
+                "cons": "Doesn't prevent future conflicts, manual version management",
+                "migrationRequired": false
+              }
+            ]
+          },
+          "confidence": 92,
+          "tags": ["gradle", "compose", "dependency-conflict", "transitive"]
+        },
+        {
+          "id": "gradle-004",
+          "title": "Plugin Version Mismatch",
+          "errorType": "GRADLE_PLUGIN",
+          "errorMessage": "Plugin [id: 'org.jetbrains.kotlin.android', version: '1.8.0'] was not found in any of the following sources",
+          "filePath": "build.gradle.kts",
+          "lineNumber": 8,
+          "context": {
+            "buildTool": "Gradle",
+            "kotlinVersion": "1.8.0",
+            "language": "Kotlin"
+          },
+          "analysis": {
+            "problem": "Gradle cannot find Kotlin Android plugin version 1.8.0",
+            "rootCause": "Plugin declaration uses invalid version 1.8.0. Kotlin versions follow 1.x.y format (e.g., 1.8.22, 1.9.0), not 1.x.0. Version 1.8.0 specifically doesn't exist; the 1.8 series started with 1.8.10.",
+            "evidence": [
+              "Plugin repository query returns 404 for version 1.8.0",
+              "Version database shows 1.8 series: 1.8.10, 1.8.20, 1.8.21, 1.8.22",
+              "Next major version is 1.9.0, then 1.9.10, etc."
+            ]
+          },
+          "solution": {
+            "summary": "Update Kotlin plugin version to valid release",
+            "steps": [
+              "Open build.gradle.kts (project root)",
+              "Locate plugins block at top of file",
+              "Change Kotlin plugin version to 1.9.24 (latest stable 1.x)",
+              "Update in both plugins block and buildscript dependencies if present"
+            ],
+            "codeChange": {
+              "file": "build.gradle.kts",
+              "lineNumber": 8,
+              "before": "plugins {\n    id(\"com.android.application\") version \"8.2.0\" apply false\n    id(\"org.jetbrains.kotlin.android\") version \"1.8.0\" apply false\n}",
+              "after": "plugins {\n    id(\"com.android.application\") version \"8.2.0\" apply false\n    id(\"org.jetbrains.kotlin.android\") version \"1.9.24\" apply false\n}",
+              "explanation": "Kotlin 1.9.24 is the latest stable 1.x release, fully compatible with AGP 8.2.0. It includes all 1.8.x improvements plus additional bug fixes and K2 compiler beta."
+            },
+            "verification": [
+              "Run './gradlew --version' to check Kotlin plugin version",
+              "Run './gradlew build' to verify successful compilation",
+              "Check build output for any deprecation warnings"
+            ],
+            "alternatives": [
+              {
+                "version": "2.0.21",
+                "pros": "Latest Kotlin with K2 compiler, better performance",
+                "cons": "Requires Gradle 8.5+, may have breaking changes",
+                "migrationRequired": true
+              },
+              {
+                "version": "1.8.22",
+                "pros": "Latest 1.8.x, minimal changes from 1.8.0 intent",
+                "cons": "Older, missing 1.9.x improvements",
+                "migrationRequired": false
+              }
+            ]
+          },
+          "confidence": 94,
+          "tags": ["gradle", "kotlin", "plugin", "version-not-found"]
+        },
+        {
+          "id": "gradle-005",
+          "title": "Gradle Sync Failed - Repository Not Found",
+          "errorType": "GRADLE_REPOSITORY",
+          "errorMessage": "Could not resolve all dependencies for configuration ':app:debugCompileClasspath'. > Could not find androidx.core:core-ktx:1.12.0. Searched in the following locations: - https://jcenter.bintray.com/androidx/core/core-ktx/1.12.0/core-ktx-1.12.0.pom",
+          "filePath": "settings.gradle.kts",
+          "lineNumber": 15,
+          "context": {
+            "buildTool": "Gradle",
+            "repository": "JCenter",
+            "language": "Kotlin"
+          },
+          "analysis": {
+            "problem": "Gradle searches for AndroidX dependency in JCenter, which is deprecated and shut down",
+            "rootCause": "Project configuration uses JCenter as repository, but JCenter was shut down in May 2021. AndroidX libraries are hosted on Google Maven Repository and Maven Central, not JCenter.",
+            "evidence": [
+              "Error shows Gradle searching jcenter.bintray.com",
+              "JCenter shut down notice: February 2021 announcement, full shutdown May 2021",
+              "androidx.core:core-ktx:1.12.0 exists on Google Maven, not JCenter"
+            ]
+          },
+          "solution": {
+            "summary": "Replace JCenter with Google Maven and Maven Central repositories",
+            "steps": [
+              "Open settings.gradle.kts (project root)",
+              "Locate repositories block in pluginManagement and dependencyResolutionManagement",
+              "Remove jcenter() declarations",
+              "Add google() and mavenCentral() if not present",
+              "Sync Gradle to re-download dependencies from correct repositories"
+            ],
+            "codeChange": {
+              "file": "settings.gradle.kts",
+              "lineNumber": 15,
+              "before": "dependencyResolutionManagement {\n    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)\n    repositories {\n        jcenter()\n        google()\n    }\n}",
+              "after": "dependencyResolutionManagement {\n    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)\n    repositories {\n        google()  // Required for AndroidX and Google libraries\n        mavenCentral()  // Required for most open-source libraries\n    }\n}",
+              "explanation": "Remove jcenter() as it's shut down. Google Maven hosts all AndroidX libraries. Maven Central hosts most other dependencies. Order matters: google() first for faster AndroidX resolution."
+            },
+            "verification": [
+              "Run './gradlew clean' to clear cached JCenter attempts",
+              "Run './gradlew build --refresh-dependencies' to force re-download",
+              "Verify build output shows downloads from maven.google.com and repo.maven.apache.org",
+              "Check that no JCenter warnings appear in logs"
+            ],
+            "alternatives": [
+              {
+                "approach": "Add custom repository if using private libraries",
+                "code": "repositories {\n    google()\n    mavenCentral()\n    maven { url = uri(\"https://your-company.com/maven\") }\n}",
+                "pros": "Supports private/enterprise dependencies",
+                "cons": "Requires additional repository hosting",
+                "migrationRequired": false
+              }
+            ]
+          },
+          "confidence": 99,
+          "tags": ["gradle", "repository", "jcenter", "migration"]
+        },
+        {
+          "id": "gradle-006",
+          "title": "Build Cache Corruption",
+          "errorType": "GRADLE_CACHE",
+          "errorMessage": "Execution failed for task ':app:compileDebugKotlin'. > Compilation error. See log for more details",
+          "filePath": null,
+          "lineNumber": null,
+          "context": {
+            "buildTool": "Gradle",
+            "language": "Kotlin",
+            "intermittent": true
+          },
+          "analysis": {
+            "problem": "Kotlin compilation fails with vague error, build succeeds on clean machine",
+            "rootCause": "Gradle build cache contains corrupted compilation artifacts. This often happens after: 1) Force-killed builds, 2) Disk full during build, 3) Gradle version changes, 4) Plugin version changes. Cached state is now inconsistent with source code.",
+            "evidence": [
+              "Error message lacks specific file/line details (indicates cache issue)",
+              "Clean build on CI/CD passes",
+              "Problem started after Gradle or plugin version change",
+              "Intermittent: sometimes works, sometimes fails"
+            ]
+          },
+          "solution": {
+            "summary": "Clear Gradle build caches and rebuild",
+            "steps": [
+              "Stop any running Gradle daemons: './gradlew --stop'",
+              "Delete .gradle folder in project root",
+              "Delete build folders in all modules",
+              "Delete ~/.gradle/caches (global Gradle cache)",
+              "Sync Gradle and perform clean build"
+            ],
+            "codeChange": {
+              "file": null,
+              "lineNumber": null,
+              "before": null,
+              "after": null,
+              "explanation": "This is a cache corruption issue, not a code problem. Solution is to clear caches, not change code."
+            },
+            "verification": [
+              "Run: './gradlew --stop' to kill daemons",
+              "Delete: rm -rf .gradle/ **/build/",
+              "Delete: rm -rf ~/.gradle/caches/ (or %USERPROFILE%\\.gradle\\caches on Windows)",
+              "Run: './gradlew clean build' to verify build succeeds",
+              "If issue persists, check for file system corruption"
+            ],
+            "alternatives": [
+              {
+                "approach": "Disable build cache if corruption persists",
+                "code": "// gradle.properties\norg.gradle.caching=false",
+                "pros": "Prevents future cache corruption",
+                "cons": "Slower builds (no cache benefit)",
+                "migrationRequired": false
+              }
+            ]
+          },
+          "confidence": 85,
+          "tags": ["gradle", "cache", "corruption", "intermittent"]
+        },
+        {
+          "id": "gradle-007",
+          "title": "Manifest Merger Failure - Activity Declaration Conflict",
+          "errorType": "GRADLE_MANIFEST",
+          "errorMessage": "Execution failed for task ':app:processDebugManifest'. > Manifest merger failed : Attribute application@theme value=(@style/AppTheme) from AndroidManifest.xml:10:9-40 is also present at [com.example:library:1.0.0] AndroidManifest.xml:15:9-45 value=(@style/LibraryTheme)",
+          "filePath": "app/src/main/AndroidManifest.xml",
+          "lineNumber": 10,
+          "context": {
+            "buildTool": "Gradle",
+            "framework": "Android",
+            "moduleType": "app"
+          },
+          "analysis": {
+            "problem": "App manifest and library manifest both define application theme, causing merge conflict",
+            "rootCause": "Android manifest merger cannot automatically resolve conflicts when both app and library modules define the same attribute (application@theme) with different values. Gradle doesn't know which theme to use in final merged manifest.",
+            "evidence": [
+              "Error shows conflict at AndroidManifest.xml:10 (app) and library manifest:15",
+              "Both define application@theme attribute",
+              "App uses @style/AppTheme, library uses @style/LibraryTheme",
+              "No merge strategy specified for this attribute"
+            ]
+          },
+          "solution": {
+            "summary": "Add merge strategy to prioritize app manifest over library manifest",
+            "steps": [
+              "Open app/src/main/AndroidManifest.xml",
+              "Locate <application> tag with android:theme attribute",
+              "Add tools:replace=\"android:theme\" to <application> tag",
+              "Ensure xmlns:tools namespace is declared in <manifest> root tag"
+            ],
+            "codeChange": {
+              "file": "app/src/main/AndroidManifest.xml",
+              "lineNumber": 10,
+              "before": "<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    package=\"com.example.app\">\n    <application\n        android:theme=\"@style/AppTheme\"\n        android:label=\"@string/app_name\">",
+              "after": "<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    xmlns:tools=\"http://schemas.android.com/tools\"\n    package=\"com.example.app\">\n    <application\n        android:theme=\"@style/AppTheme\"\n        android:label=\"@string/app_name\"\n        tools:replace=\"android:theme\">",
+              "explanation": "tools:replace=\"android:theme\" tells manifest merger to use app's theme value and discard library's theme. Add xmlns:tools to manifest root to enable tools namespace."
+            },
+            "verification": [
+              "Run './gradlew :app:processDebugManifest' to test manifest merge",
+              "Check build/intermediates/merged_manifests/debug/AndroidManifest.xml",
+              "Verify merged manifest contains @style/AppTheme",
+              "Run app to confirm theme is applied correctly"
+            ],
+            "alternatives": [
+              {
+                "approach": "Remove theme from library manifest",
+                "code": "// In library/src/main/AndroidManifest.xml, remove android:theme",
+                "pros": "Cleaner solution if library shouldn't define theme",
+                "cons": "Requires editing library code (not always possible)",
+                "migrationRequired": true
+              },
+              {
+                "approach": "Use merge strategy for all attributes",
+                "code": "tools:replace=\"android:theme,android:label\"",
+                "pros": "Resolves multiple conflicts at once",
+                "cons": "More aggressive, may hide other issues",
+                "migrationRequired": false
+              }
+            ]
+          },
+          "confidence": 96,
+          "tags": ["gradle", "manifest", "merge-conflict", "android"]
+        },
+        {
+          "id": "gradle-008",
+          "title": "R8 Minification - Missing Proguard Rules",
+          "errorType": "GRADLE_R8",
+          "errorMessage": "Execution failed for task ':app:minifyReleaseWithR8'. > Missing class com.google.gson.Gson (referenced from: void com.example.app.DataManager.saveData(java.lang.Object))",
+          "filePath": "app/proguard-rules.pro",
+          "lineNumber": null,
+          "context": {
+            "buildTool": "Gradle",
+            "buildType": "release",
+            "minifyEnabled": true
+          },
+          "analysis": {
+            "problem": "R8 code shrinker removes Gson class, causing runtime crash in release builds",
+            "rootCause": "R8 analyzes code and removes 'unused' classes. Gson uses reflection to serialize/deserialize objects, so R8 doesn't see direct references and removes it. Release builds enable minification, debug builds don't, explaining why debug works but release fails.",
+            "evidence": [
+              "Error only occurs in release builds (minifyEnabled = true)",
+              "Gson class is referenced but removed by R8",
+              "Reflection-based libraries commonly affected",
+              "No ProGuard rules found for Gson in proguard-rules.pro"
+            ]
+          },
+          "solution": {
+            "summary": "Add ProGuard rules to keep Gson and reflection-accessed classes",
+            "steps": [
+              "Open app/proguard-rules.pro",
+              "Add keep rules for Gson library",
+              "Add keep rules for data classes used with Gson",
+              "Rebuild release variant to verify fix"
+            ],
+            "codeChange": {
+              "file": "app/proguard-rules.pro",
+              "lineNumber": 1,
+              "before": "# Add project specific ProGuard rules here",
+              "after": "# Add project specific ProGuard rules here\n\n# Gson\n-keepattributes Signature\n-keepattributes *Annotation*\n-dontwarn sun.misc.**\n-keep class com.google.gson.** { *; }\n-keep class * implements com.google.gson.TypeAdapter\n-keep class * implements com.google.gson.TypeAdapterFactory\n-keep class * implements com.google.gson.JsonSerializer\n-keep class * implements com.google.gson.JsonDeserializer\n\n# Keep data classes used with Gson\n-keep class com.example.app.models.** { *; }",
+              "explanation": "Keep rules prevent R8 from removing Gson classes and data model classes. -keepattributes preserves generic type information needed for reflection. Adjust com.example.app.models.** to match your data class package."
+            },
+            "verification": [
+              "Run './gradlew :app:assembleRelease' to build release APK",
+              "Install and run release build on device",
+              "Test features that use Gson (API calls, data persistence)",
+              "Check R8 report: build/outputs/mapping/release/missing_rules.txt"
+            ],
+            "alternatives": [
+              {
+                "approach": "Use @Keep annotation on classes",
+                "code": "@androidx.annotation.Keep\ndata class User(val name: String)",
+                "pros": "More granular, self-documenting",
+                "cons": "Requires adding annotation to every class",
+                "migrationRequired": true
+              },
+              {
+                "approach": "Disable minification (not recommended)",
+                "code": "buildTypes {\n    release {\n        minifyEnabled false\n    }\n}",
+                "pros": "Avoids ProGuard issues",
+                "cons": "Larger APK, slower app, exposed code",
+                "migrationRequired": false
+              }
+            ]
+          },
+          "confidence": 93,
+          "tags": ["gradle", "r8", "proguard", "minification", "reflection"]
+        },
+        {
+          "id": "gradle-009",
+          "title": "Duplicate Class Found - Dependency Conflict",
+          "errorType": "GRADLE_DEPENDENCY",
+          "errorMessage": "Execution failed for task ':app:checkDebugDuplicateClasses'. > Duplicate class org.apache.commons.logging.Log found in modules commons-logging-1.2.jar and jcl-over-slf4j-1.7.36.jar",
+          "filePath": "app/build.gradle.kts",
+          "lineNumber": 50,
+          "context": {
+            "buildTool": "Gradle",
+            "language": "Kotlin",
+            "conflictType": "duplicate-class"
+          },
+          "analysis": {
+            "problem": "Two different JAR files provide the same class, causing compilation error",
+            "rootCause": "Project depends on both commons-logging and jcl-over-slf4j. jcl-over-slf4j is a bridge that implements commons-logging API but routes to SLF4J. Both provide same class files (org.apache.commons.logging.Log), confusing compiler about which to use.",
+            "evidence": [
+              "Error shows duplicate class in two JARs",
+              "commons-logging is original implementation",
+              "jcl-over-slf4j is SLF4J bridge replacement",
+              "Both pulled by different transitive dependencies"
+            ]
+          },
+          "solution": {
+            "summary": "Exclude commons-logging to use only SLF4J bridge",
+            "steps": [
+              "Run './gradlew :app:dependencies' to find which dependency pulls commons-logging",
+              "Open app/build.gradle.kts",
+              "Add dependency exclusion for commons-logging",
+              "Keep jcl-over-slf4j (modern SLF4J integration)"
+            ],
+            "codeChange": {
+              "file": "app/build.gradle.kts",
+              "lineNumber": 50,
+              "before": "dependencies {\n    implementation(\"org.springframework:spring-web:5.3.20\")\n    implementation(\"org.slf4j:slf4j-api:1.7.36\")\n    implementation(\"org.slf4j:jcl-over-slf4j:1.7.36\")\n}",
+              "after": "dependencies {\n    implementation(\"org.springframework:spring-web:5.3.20\") {\n        exclude(group = \"commons-logging\", module = \"commons-logging\")\n    }\n    implementation(\"org.slf4j:slf4j-api:1.7.36\")\n    implementation(\"org.slf4j:jcl-over-slf4j:1.7.36\")\n}",
+              "explanation": "Exclude commons-logging from spring-web (which transitively depends on it). jcl-over-slf4j provides same API but routes to SLF4J, giving unified logging. Modern approach uses SLF4J as logging facade."
+            },
+            "verification": [
+              "Run './gradlew :app:dependencies' to verify exclusion worked",
+              "Check that only jcl-over-slf4j appears, not commons-logging",
+              "Run './gradlew build' to confirm duplicate class error gone",
+              "Test logging functionality to ensure it still works"
+            ],
+            "alternatives": [
+              {
+                "approach": "Exclude jcl-over-slf4j instead, keep commons-logging",
+                "code": "exclude(group = \"org.slf4j\", module = \"jcl-over-slf4j\")",
+                "pros": "Uses original commons-logging implementation",
+                "cons": "Loses SLF4J integration benefits (unified logging)",
+                "migrationRequired": false
+              },
+              {
+                "approach": "Global exclusion in configurations block",
+                "code": "configurations.all {\n    exclude(group = \"commons-logging\", module = \"commons-logging\")\n}",
+                "pros": "Applies to all dependencies automatically",
+                "cons": "More aggressive, may break dependencies that need commons-logging",
+                "migrationRequired": false
+              }
+            ]
+          },
+          "confidence": 90,
+          "tags": ["gradle", "duplicate-class", "dependency-conflict", "logging"]
+        },
+        {
+          "id": "gradle-010",
+          "title": "Native Library Conflict - ABI Mismatch",
+          "errorType": "GRADLE_NATIVE",
+          "errorMessage": "Execution failed for task ':app:mergeDebugNativeLibs'. > More than one file was found with OS independent path 'lib/arm64-v8a/libc++_shared.so'",
+          "filePath": "app/build.gradle.kts",
+          "lineNumber": 70,
+          "context": {
+            "buildTool": "Gradle",
+            "language": "Kotlin",
+            "nativeLibs": true
+          },
+          "analysis": {
+            "problem": "Multiple dependencies provide same native library (.so file), causing packaging conflict",
+            "rootCause": "Two or more dependencies include libc++_shared.so (C++ standard library) for arm64-v8a architecture. Gradle cannot decide which version to include in APK. Common when using multiple native libraries (NDK, OpenCV, TensorFlow Lite, etc.) that bundle their own C++ runtime.",
+            "evidence": [
+              "Error shows duplicate lib/arm64-v8a/libc++_shared.so",
+              "Multiple native dependencies in build.gradle",
+              "Each native library bundles its own C++ runtime",
+              "Gradle merge task fails due to file conflict"
+            ]
+          },
+          "solution": {
+            "summary": "Configure packaging options to pick first occurrence of duplicate native libraries",
+            "steps": [
+              "Open app/build.gradle.kts",
+              "Locate android {} block",
+              "Add packaging options to pick first duplicate",
+              "Rebuild to verify conflict resolved"
+            ],
+            "codeChange": {
+              "file": "app/build.gradle.kts",
+              "lineNumber": 70,
+              "before": "android {\n    compileSdk = 34\n    defaultConfig {\n        minSdk = 24\n        targetSdk = 34\n    }\n}",
+              "after": "android {\n    compileSdk = 34\n    defaultConfig {\n        minSdk = 24\n        targetSdk = 34\n    }\n    packaging {\n        resources {\n            pickFirst(\"lib/arm64-v8a/libc++_shared.so\")\n            pickFirst(\"lib/armeabi-v7a/libc++_shared.so\")\n            pickFirst(\"lib/x86/libc++_shared.so\")\n            pickFirst(\"lib/x86_64/libc++_shared.so\")\n        }\n    }\n}",
+              "explanation": "pickFirst tells Gradle to use first encountered version of each duplicate .so file. All C++ standard library versions are typically compatible, so this is safe. Add pickFirst for all ABIs your app supports."
+            },
+            "verification": [
+              "Run './gradlew :app:assembleDebug' to build APK",
+              "Verify build succeeds without duplicate file errors",
+              "Check APK contents: unzip -l app-debug.apk | grep libc++",
+              "Test app on device to ensure native libraries load correctly"
+            ],
+            "alternatives": [
+              {
+                "approach": "Exclude .so files from specific dependencies",
+                "code": "implementation(\"com.example:native-lib:1.0\") {\n    exclude(\"**/*.so\")\n}",
+                "pros": "More precise control over which library's .so to use",
+                "cons": "Requires knowing which dependency to exclude from",
+                "migrationRequired": false
+              },
+              {
+                "approach": "Use merged native libs (advanced)",
+                "code": "// Configure NDK to use single shared C++ runtime",
+                "pros": "Smaller APK, single C++ runtime",
+                "cons": "Complex setup, requires NDK knowledge",
+                "migrationRequired": true
+              }
+            ]
+          },
+          "confidence": 88,
+          "tags": ["gradle", "native-libs", "abi", "duplicate", "ndk"]
+        },
+        {
+          "id": "gradle-011",
+          "title": "Gradle Daemon Memory Exhaustion",
+          "errorType": "GRADLE_MEMORY",
+          "errorMessage": "Expiring Daemon because JVM heap space is exhausted. GC overhead limit exceeded",
+          "filePath": "gradle.properties",
+          "lineNumber": 15,
+          "context": {
+            "buildTool": "Gradle",
+            "projectSize": "large",
+            "moduleCount": 50
+          },
+          "analysis": {
+            "problem": "Gradle daemon runs out of heap memory during build, causing slow builds or failures",
+            "rootCause": "Large project with many modules exceeds default Gradle JVM heap size (usually 512MB-2GB). Build process needs more memory for dependency resolution, compilation, and caching. Daemon expires and restarts frequently, slowing builds significantly.",
+            "evidence": [
+              "Error message explicitly states 'JVM heap space is exhausted'",
+              "Large multi-module project (50+ modules)",
+              "Builds take much longer than expected",
+              "Frequent daemon restarts visible in build logs"
+            ]
+          },
+          "solution": {
+            "summary": "Increase Gradle daemon heap size in gradle.properties",
+            "steps": [
+              "Open gradle.properties in project root",
+              "Locate org.gradle.jvmargs line (or add if missing)",
+              "Increase -Xmx value to 4GB or higher based on available RAM",
+              "Restart Gradle daemon to apply new settings"
+            ],
+            "codeChange": {
+              "file": "gradle.properties",
+              "lineNumber": 15,
+              "before": "org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8",
+              "after": "org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=512m -Dfile.encoding=UTF-8\norg.gradle.parallel=true\norg.gradle.caching=true",
+              "explanation": "Increase heap to 4GB (-Xmx4096m) for large projects. Add MaxMetaspaceSize (512MB) for class metadata. Enable parallel builds and caching to speed up compilation. Adjust Xmx based on available RAM: 4GB for 8GB RAM, 6-8GB for 16GB+ RAM."
+            },
+            "verification": [
+              "Run './gradlew --stop' to kill existing daemons",
+              "Run './gradlew build --info' to verify new settings",
+              "Check build logs for 'Max memory' to confirm 4GB heap",
+              "Monitor build performance: should be faster and more stable",
+              "Use './gradlew --status' to check daemon health"
+            ],
+            "alternatives": [
+              {
+                "approach": "Configure per-project in command line",
+                "code": "GRADLE_OPTS=\"-Xmx4096m\" ./gradlew build",
+                "pros": "Temporary override without editing files",
+                "cons": "Must set every time, not persistent",
+                "migrationRequired": false
+              },
+              {
+                "approach": "Global Gradle settings in ~/.gradle/gradle.properties",
+                "code": "# Applies to all projects",
+                "pros": "One-time configuration for all projects",
+                "cons": "May give too much memory to small projects",
+                "migrationRequired": false
+              }
+            ]
+          },
+          "confidence": 95,
+          "tags": ["gradle", "memory", "performance", "daemon", "jvm"]
+        },
+        {
+          "id": "gradle-012",
+          "title": "Gradle Version Catalogs - Invalid Version Reference",
+          "errorType": "GRADLE_CATALOG",
+          "errorMessage": "Dependency verification failed for configuration ':app:debugCompileClasspath': - Could not resolve androidx.core:core-ktx:{strictly 1.12.0}. > Cannot find a version of 'androidx.core:core-ktx' that satisfies the version constraints: Dependency path 'app:app:unspecified' --> 'androidx.core:core-ktx:{strictly 1.12.0}' requires '1.12.0'",
+          "filePath": "gradle/libs.versions.toml",
+          "lineNumber": 8,
+          "context": {
+            "buildTool": "Gradle",
+            "catalogVersion": "1.0",
+            "language": "Kotlin"
+          },
+          "analysis": {
+            "problem": "Version catalog references AndroidX Core KTX 1.12.0, which doesn't exist",
+            "rootCause": "gradle/libs.versions.toml declares core-ktx version as 1.12.0, but this version is not published. Latest stable version is 1.13.1 (as of Dec 2024). Version 1.12.0 was likely a typo or outdated documentation reference. {strictly 1.12.0} means Gradle will only accept exactly 1.12.0, no alternatives.",
+            "evidence": [
+              "Maven Central search shows no 1.12.0 artifact",
+              "Version history jumps from 1.10.1 to 1.12.1 (skipped 1.11.x, 1.12.0)",
+              "Error specifically says 'Cannot find a version'",
+              "Version catalog uses strictly constraint"
+            ]
+          },
+          "solution": {
+            "summary": "Update core-ktx version in libs.versions.toml to latest stable",
+            "steps": [
+              "Open gradle/libs.versions.toml",
+              "Locate [versions] section",
+              "Find core-ktx version declaration",
+              "Update to 1.13.1 (or latest from maven.google.com)"
+            ],
+            "codeChange": {
+              "file": "gradle/libs.versions.toml",
+              "lineNumber": 8,
+              "before": "[versions]\nagp = \"8.2.0\"\nkotlin = \"1.9.0\"\ncore-ktx = \"1.12.0\"\n\n[libraries]\nandroidx-core-ktx = { group = \"androidx.core\", name = \"core-ktx\", version.ref = \"core-ktx\" }",
+              "after": "[versions]\nagp = \"8.2.0\"\nkotlin = \"1.9.0\"\ncore-ktx = \"1.13.1\"\n\n[libraries]\nandroidx-core-ktx = { group = \"androidx.core\", name = \"core-ktx\", version.ref = \"core-ktx\" }",
+              "explanation": "Update core-ktx version to 1.13.1, the latest stable as of Dec 2024. Version 1.13.1 is compatible with AGP 8.2.0 and Kotlin 1.9.0. Check maven.google.com for newest versions periodically."
+            },
+            "verification": [
+              "Run './gradlew --refresh-dependencies' to clear cached resolution",
+              "Run './gradlew :app:dependencies' to verify correct version resolved",
+              "Check output for 'androidx.core:core-ktx:1.13.1'",
+              "Run './gradlew build' to confirm successful compilation"
+            ],
+            "alternatives": [
+              {
+                "version": "1.12.1",
+                "pros": "Slightly older, very stable",
+                "cons": "Missing bug fixes from 1.13.x",
+                "migrationRequired": false
+              },
+              {
+                "approach": "Use version range instead of strict",
+                "code": "core-ktx = { strictly = \"[1.12, 1.14)\" }",
+                "pros": "More flexible, allows patch updates",
+                "cons": "Less reproducible builds",
+                "migrationRequired": false
+              }
+            ]
+          },
+          "confidence": 97,
+          "tags": ["gradle", "version-catalog", "androidx", "version-not-found"]
+        },
+        {
+          "id": "gradle-013",
+          "title": "Build Type Not Found - Variant Configuration",
+          "errorType": "GRADLE_BUILD_TYPE",
+          "errorMessage": "Could not determine the dependencies of task ':app:assembleStaging'. > Build type 'staging' not found",
+          "filePath": "app/build.gradle.kts",
+          "lineNumber": 30,
+          "context": {
+            "buildTool": "Gradle",
+            "language": "Kotlin",
+            "buildType": "staging"
+          },
+          "analysis": {
+            "problem": "Gradle cannot find 'staging' build type when assembling variant",
+            "rootCause": "Project tries to build 'staging' variant, but build.gradle.kts only defines default build types ('debug' and 'release'). Custom build types must be explicitly declared in buildTypes {} block. Without declaration, Gradle doesn't know how to configure staging variant.",
+            "evidence": [
+              "Error explicitly states 'Build type 'staging' not found'",
+              "Common pattern: need staging environment between debug and release",
+              "Build types block likely only has debug and release",
+              "Command line or IDE tried to build assembleStaging"
+            ]
+          },
+          "solution": {
+            "summary": "Add 'staging' build type to buildTypes configuration",
+            "steps": [
+              "Open app/build.gradle.kts",
+              "Locate android { buildTypes { } } block",
+              "Add staging build type configuration",
+              "Configure staging to extend release with debug features"
+            ],
+            "codeChange": {
+              "file": "app/build.gradle.kts",
+              "lineNumber": 30,
+              "before": "android {\n    buildTypes {\n        debug {\n            isDebuggable = true\n        }\n        release {\n            isMinifyEnabled = true\n            proguardFiles(getDefaultProguardFile(\"proguard-android-optimize.txt\"), \"proguard-rules.pro\")\n        }\n    }\n}",
+              "after": "android {\n    buildTypes {\n        debug {\n            isDebuggable = true\n        }\n        staging {\n            initWith(getByName(\"release\"))  // Start with release settings\n            isDebuggable = true  // Override: enable debugging\n            applicationIdSuffix = \".staging\"  // Different package name\n            versionNameSuffix = \"-staging\"  // Distinguish in version\n        }\n        release {\n            isMinifyEnabled = true\n            proguardFiles(getDefaultProguardFile(\"proguard-android-optimize.txt\"), \"proguard-rules.pro\")\n        }\n    }\n}",
+              "explanation": "Create staging build type that inherits release configuration but enables debugging. Use applicationIdSuffix so staging and release can coexist on device. versionNameSuffix helps distinguish builds. Customize as needed (e.g., different API endpoints)."
+            },
+            "verification": [
+              "Run './gradlew tasks --all' to verify stagingDebug and stagingRelease variants exist",
+              "Run './gradlew :app:assembleStaging' to build staging variant",
+              "Check build/outputs/apk/staging/ for generated APK",
+              "Install and verify staging app shows correct version suffix"
+            ],
+            "alternatives": [
+              {
+                "approach": "Use product flavors instead of build type",
+                "code": "flavorDimensions += \"environment\"\nproductFlavors {\n    create(\"staging\") { dimension = \"environment\" }\n}",
+                "pros": "More flexible, can combine with multiple dimensions",
+                "cons": "More complex variant matrix",
+                "migrationRequired": true
+              }
+            ]
+          },
+          "confidence": 94,
+          "tags": ["gradle", "build-type", "variant", "configuration"]
+        },
+        {
+          "id": "gradle-014",
+          "title": "Circular Dependency Between Modules",
+          "errorType": "GRADLE_DEPENDENCY",
+          "errorMessage": "Circular dependency between the following modules: :app -> :feature-login -> :core -> :app",
+          "filePath": "settings.gradle.kts",
+          "lineNumber": null,
+          "context": {
+            "buildTool": "Gradle",
+            "projectType": "multi-module",
+            "language": "Kotlin"
+          },
+          "analysis": {
+            "problem": "Modules form dependency cycle, preventing Gradle from determining build order",
+            "rootCause": "Module dependency chain forms a loop: app depends on feature-login, feature-login depends on core, core depends back on app. Gradle cannot build in correct order because each module needs another to be built first. Typically caused by poor architecture where utility module (core) depends on app-level code.",
+            "evidence": [
+              "Error shows exact cycle: app → feature-login → core → app",
+              "Multi-module project with 3+ modules",
+              "Likely architectural issue: core should not depend on app",
+              "Build fails during configuration phase"
+            ]
+          },
+          "solution": {
+            "summary": "Refactor to break circular dependency by moving shared code",
+            "steps": [
+              "Identify what code in 'app' module is used by 'core'",
+              "Move shared interfaces/classes to 'core' module",
+              "Update 'app' module to implement interfaces from 'core'",
+              "Remove 'core' dependency on 'app' module"
+            ],
+            "codeChange": {
+              "file": "core/build.gradle.kts",
+              "lineNumber": 25,
+              "before": "dependencies {\n    implementation(project(\":app\"))  // CIRCULAR - Remove this\n    implementation(project(\":common\"))\n}",
+              "after": "dependencies {\n    // Removed project(\":app\") to break circular dependency\n    implementation(project(\":common\"))\n}\n\n// In core module, define interfaces instead of depending on app:\n// interface NavigationHandler { fun navigate(route: String) }\n// Then app implements this interface and passes it to core modules",
+              "explanation": "Remove core's dependency on app. Instead, define interfaces in core that app implements. Use dependency injection to provide app implementations to core. Common pattern: core defines contracts (interfaces), app provides implementations."
+            },
+            "verification": [
+              "Run './gradlew build' to verify circular dependency is broken",
+              "Check module dependencies: './gradlew :core:dependencies'",
+              "Verify core module no longer lists :app as dependency",
+              "Ensure all functionality still works with refactored architecture"
+            ],
+            "alternatives": [
+              {
+                "approach": "Create new shared module below core",
+                "code": "// settings.gradle.kts\ninclude(\":common\", \":core\", \":feature-login\", \":app\")\n// Move shared code to :common, have both :core and :app depend on it",
+                "pros": "Cleaner separation, both can depend on common",
+                "cons": "Requires more refactoring",
+                "migrationRequired": true
+              },
+              {
+                "approach": "Use interfaces with dependency injection",
+                "code": "// Define interface in core, implement in app, inject at runtime",
+                "pros": "Proper dependency inversion principle",
+                "cons": "Requires DI framework (Hilt, Koin)",
+                "migrationRequired": true
+              }
+            ]
+          },
+          "confidence": 91,
+          "tags": ["gradle", "circular-dependency", "multi-module", "architecture"]
+        },
+        {
+          "id": "gradle-015",
+          "title": "Configuration Cache Problem - Non-Serializable Field",
+          "errorType": "GRADLE_CONFIG_CACHE",
+          "errorMessage": "Configuration cache problems found in this build. > Build file 'app/build.gradle.kts': field 'customTask' of task ':app:processDebugManifest' of type 'com.android.build.gradle.internal.tasks.ProcessApplicationManifest' cannot be serialized",
+          "filePath": "app/build.gradle.kts",
+          "lineNumber": 90,
+          "context": {
+            "buildTool": "Gradle",
+            "gradleVersion": "8.5+",
+            "configCache": true
+          },
+          "analysis": {
+            "problem": "Gradle configuration cache cannot serialize custom task field",
+            "rootCause": "Gradle 8.5+ enables configuration cache by default to speed up builds. Configuration cache stores task graph as serialized data. Custom tasks or task extensions with non-serializable fields (lambdas, inner classes, open connections) break caching. processDebugManifest task has field that holds non-serializable reference.",
+            "evidence": [
+              "Error explicitly mentions configuration cache",
+              "Gradle version 8.5 or higher (config cache default)",
+              "Custom task or plugin modifies Android tasks",
+              "Field cannot be serialized (likely lambda or connection)"
+            ]
+          },
+          "solution": {
+            "summary": "Make task fields serializable or disable configuration cache",
+            "steps": [
+              "Locate custom task code in build.gradle.kts",
+              "Replace non-serializable fields with Property<T> or Provider<T>",
+              "Use Gradle's lazy configuration APIs",
+              "Or temporarily disable configuration cache if refactoring is complex"
+            ],
+            "codeChange": {
+              "file": "app/build.gradle.kts",
+              "lineNumber": 90,
+              "before": "tasks.named<ProcessApplicationManifest>(\"processDebugManifest\") {\n    doLast {\n        val customValue = project.properties[\"myProperty\"]  // Not serializable\n        println(\"Processing with $customValue\")\n    }\n}",
+              "after": "tasks.named<ProcessApplicationManifest>(\"processDebugManifest\") {\n    // Use Provider for lazy, serializable configuration\n    val customValue = providers.gradleProperty(\"myProperty\")\n    doLast {\n        println(\"Processing with ${customValue.orNull}\")\n    }\n}\n\n// Alternative: Disable configuration cache if refactoring is too complex\n// In gradle.properties:\n// org.gradle.configuration-cache=false",
+              "explanation": "Use Gradle's Provider API for lazy, serializable configuration. providers.gradleProperty() returns Provider<String> which is serializable. Avoid direct project property access in task closures. If refactoring is complex, temporarily disable config cache in gradle.properties."
+            },
+            "verification": [
+              "Run './gradlew --configuration-cache :app:processDebugManifest'",
+              "Check for 'Configuration cache entry stored' message",
+              "Run again to verify cache reuse: 'Configuration cache entry reused'",
+              "Ensure task executes correctly with cached configuration",
+              "Check build reports: build/reports/configuration-cache/"
+            ],
+            "alternatives": [
+              {
+                "approach": "Disable configuration cache globally",
+                "code": "# gradle.properties\norg.gradle.configuration-cache=false",
+                "pros": "Quick fix, no refactoring needed",
+                "cons": "Loses build performance benefits (30-90% faster builds)",
+                "migrationRequired": false
+              },
+              {
+                "approach": "Use @Input and @Internal annotations",
+                "code": "abstract class MyTask : DefaultTask() {\n    @get:Input abstract val myProperty: Property<String>\n}",
+                "pros": "Proper task API, fully supports caching",
+                "cons": "Requires task class refactoring",
+                "migrationRequired": true
+              }
+            ]
+          },
+          "confidence": 87,
+          "tags": ["gradle", "configuration-cache", "serialization", "performance"]
+        }
+      ]
+    },
+    "kotlin": {
+      "description": "Kotlin language errors including null pointer exceptions, type mismatches, lateinit issues, and coroutine problems",
+      "examples": [
+        {
+          "id": "kotlin-001",
+          "title": "lateinit Property Not Initialized",
+          "errorType": "KOTLIN_LATEINIT",
+          "errorMessage": "lateinit property viewModel has not been initialized",
+          "filePath": "app/src/main/kotlin/com/example/MainActivity.kt",
+          "lineNumber": 25,
+          "context": {
+            "language": "Kotlin",
+            "framework": "Android",
+            "propertyName": "viewModel"
+          },
+          "analysis": {
+            "problem": "Code accesses lateinit property before it has been initialized",
+            "rootCause": "lateinit property 'viewModel' is declared but never assigned a value before first access. lateinit allows non-null properties to be initialized after object construction, but requires manual initialization. Common causes: 1) Initialization code in wrong lifecycle method (accessing in onCreate before initialization), 2) Conditional initialization that didn't execute, 3) Initialization in one code path but accessed from another.",
+            "evidence": [
+              "Runtime crash with UninitializedPropertyAccessException",
+              "Property declared with 'lateinit var' keyword",
+              "Property accessed before assignment",
+              "Error occurs at specific line where property is first used"
+            ]
+          },
+          "solution": {
+            "summary": "Initialize lateinit property before first access, typically in onCreate or initialization block",
+            "steps": [
+              "Open MainActivity.kt",
+              "Find where viewModel is first accessed (line 25)",
+              "Trace back to find where it should be initialized",
+              "Add initialization in onCreate() before any access",
+              "Or consider using 'by lazy {}' for automatic lazy initialization"
+            ],
+            "codeChange": {
+              "file": "app/src/main/kotlin/com/example/MainActivity.kt",
+              "lineNumber": 15,
+              "before": "class MainActivity : AppCompatActivity() {\n    private lateinit var viewModel: MainViewModel\n    \n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n        setContentView(R.layout.activity_main)\n        \n        // viewModel not initialized here!\n        viewModel.loadData()  // Crash on line 25\n    }\n}",
+              "after": "class MainActivity : AppCompatActivity() {\n    private lateinit var viewModel: MainViewModel\n    \n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n        setContentView(R.layout.activity_main)\n        \n        // Initialize before first use\n        viewModel = ViewModelProvider(this)[MainViewModel::class.java]\n        viewModel.loadData()  // Now safe\n    }\n}",
+              "explanation": "Initialize viewModel in onCreate() using ViewModelProvider before accessing it. Always initialize lateinit properties before first access. Initialization typically happens in onCreate(), onViewCreated(), or init {} blocks."
+            },
+            "verification": [
+              "Run the app and navigate to MainActivity",
+              "Verify no crash occurs when accessing viewModel",
+              "Check that viewModel methods execute successfully",
+              "Add logs to confirm initialization order"
+            ],
+            "alternatives": [
+              {
+                "approach": "Use 'by lazy {}' for automatic initialization",
+                "code": "private val viewModel: MainViewModel by lazy {\n    ViewModelProvider(this)[MainViewModel::class.java]\n}",
+                "pros": "Auto-initialized on first access, no explicit initialization needed",
+                "cons": "Thread-safe by default (slight overhead), cannot reassign",
+                "migrationRequired": false
+              },
+              {
+                "approach": "Use nullable type with null check",
+                "code": "private var viewModel: MainViewModel? = null\n// Later: viewModel?.loadData()",
+                "pros": "Compiler enforces null checks",
+                "cons": "Requires '?' or '!!' on every access, more verbose",
+                "migrationRequired": false
+              },
+              {
+                "approach": "Use Hilt/Dagger dependency injection",
+                "code": "@AndroidEntryPoint\nclass MainActivity : AppCompatActivity() {\n    @Inject lateinit var viewModel: MainViewModel\n}",
+                "pros": "DI framework handles initialization automatically",
+                "cons": "Requires DI setup",
+                "migrationRequired": true
+              }
+            ]
+          },
+          "confidence": 98,
+          "tags": ["kotlin", "lateinit", "npe", "initialization", "viewmodel"]
+        },
+        {
+          "id": "kotlin-002",
+          "title": "Type Mismatch - Cannot Assign String to Int",
+          "errorType": "KOTLIN_TYPE_MISMATCH",
+          "errorMessage": "Type mismatch: inferred type is String but Int was expected",
+          "filePath": "app/src/main/kotlin/com/example/User.kt",
+          "lineNumber": 12,
+          "context": {
+            "language": "Kotlin",
+            "expectedType": "Int",
+            "actualType": "String"
+          },
+          "analysis": {
+            "problem": "Attempting to assign String value to Int property/parameter",
+            "rootCause": "Kotlin is strongly typed and doesn't allow implicit type conversions between incompatible types. Code tries to assign String (e.g., from JSON, user input, or API) directly to Int field. Unlike JavaScript, '\"42\"' is not automatically converted to 42. Common in: 1) JSON parsing without proper deserialization, 2) Reading from EditText without parsing, 3) Mixing up function parameters.",
+            "evidence": [
+              "Compilation error at line 12",
+              "Variable/parameter declared as Int",
+              "Value being assigned is String type",
+              "Kotlin type inference detects mismatch"
+            ]
+          },
+          "solution": {
+            "summary": "Convert String to Int using toInt() or toIntOrNull() with error handling",
+            "steps": [
+              "Identify source of String value",
+              "Decide if String is guaranteed to be valid integer",
+              "Use toInt() if sure value is valid, or toIntOrNull() for safety",
+              "Add error handling for invalid input"
+            ],
+            "codeChange": {
+              "file": "app/src/main/kotlin/com/example/User.kt",
+              "lineNumber": 12,
+              "before": "data class User(val id: Int, val name: String)\n\nfun createUser(jsonString: String): User {\n    val json = JSONObject(jsonString)\n    return User(\n        id = json.getString(\"id\"),  // Returns String, needs Int\n        name = json.getString(\"name\")\n    )\n}",
+              "after": "data class User(val id: Int, val name: String)\n\nfun createUser(jsonString: String): User {\n    val json = JSONObject(jsonString)\n    return User(\n        id = json.getString(\"id\").toInt(),  // Convert String to Int\n        name = json.getString(\"name\")\n    )\n}\n\n// Better: Use getInt() directly if JSON field is numeric\nfun createUserBetter(jsonString: String): User {\n    val json = JSONObject(jsonString)\n    return User(\n        id = json.getInt(\"id\"),  // Gets Int directly\n        name = json.getString(\"name\")\n    )\n}",
+              "explanation": "Use toInt() to convert String to Int. Better yet, use json.getInt() which handles conversion and throws clear error if value isn't numeric. For user input (e.g., EditText), use toIntOrNull() and handle null case."
+            },
+            "verification": [
+              "Code compiles without type mismatch errors",
+              "Run unit tests with various input values",
+              "Test with valid integers: \"42\" → 42",
+              "Test error handling: \"abc\" should throw or return null"
+            ],
+            "alternatives": [
+              {
+                "approach": "Use toIntOrNull() with null safety",
+                "code": "val id: Int? = json.getString(\"id\").toIntOrNull()\nif (id == null) {\n    // Handle invalid input\n}",
+                "pros": "Safe, doesn't crash on invalid input",
+                "cons": "Requires null handling, more verbose",
+                "migrationRequired": false
+              },
+              {
+                "approach": "Use try-catch for toInt()",
+                "code": "val id = try {\n    json.getString(\"id\").toInt()\n} catch (e: NumberFormatException) {\n    0  // Default value\n}",
+                "pros": "Handles exceptions explicitly",
+                "cons": "Verbose, uses exceptions for control flow",
+                "migrationRequired": false
+              },
+              {
+                "approach": "Use proper JSON parsing library (Gson, Moshi, kotlinx.serialization)",
+                "code": "@Serializable\ndata class User(val id: Int, val name: String)\nval user = Json.decodeFromString<User>(jsonString)",
+                "pros": "Type-safe, automatic conversion, less error-prone",
+                "cons": "Requires adding library dependency",
+                "migrationRequired": true
+              }
+            ]
+          },
+          "confidence": 96,
+          "tags": ["kotlin", "type-mismatch", "string", "int", "conversion"]
+        },
+        {
+          "id": "kotlin-003",
+          "title": "Null Pointer Exception - Unsafe Call on Nullable Type",
+          "errorType": "KOTLIN_NPE",
+          "errorMessage": "Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type String?",
+          "filePath": "app/src/main/kotlin/com/example/Utils.kt",
+          "lineNumber": 18,
+          "context": {
+            "language": "Kotlin",
+            "receiverType": "String?",
+            "operation": "length"
+          },
+          "analysis": {
+            "problem": "Attempting to access property/method on nullable type without null safety operator",
+            "rootCause": "Variable is declared as nullable type (String?) but code accesses it as if non-null. Kotlin's null safety system prevents this at compile time. Common causes: 1) Function returns nullable type (e.g., find(), get() from collections), 2) API returns nullable, 3) Property declared as nullable, 4) After filtering/transformation that might produce null.",
+            "evidence": [
+              "Compilation error at line 18",
+              "Variable type ends with '?' (nullable)",
+              "Direct property/method access without '?.' or '!!'",
+              "Kotlin compiler enforces null safety"
+            ]
+          },
+          "solution": {
+            "summary": "Use safe call operator (?.), null check (if != null), or Elvis operator (?:) to handle nullability",
+            "steps": [
+              "Determine if value can truly be null at runtime",
+              "Use safe call (?.) if you want null-safe access",
+              "Use null check (if) if you need different logic for null",
+              "Use Elvis operator (?:) if you want default value for null",
+              "Only use !! if you're 100% sure value is not null (avoid when possible)"
+            ],
+            "codeChange": {
+              "file": "app/src/main/kotlin/com/example/Utils.kt",
+              "lineNumber": 18,
+              "before": "fun getUserNameLength(userId: String): Int {\n    val userName: String? = database.findUser(userId)?.name\n    return userName.length  // Error: userName is nullable\n}",
+              "after": "// Option 1: Safe call with Elvis operator (recommended)\nfun getUserNameLength(userId: String): Int {\n    val userName: String? = database.findUser(userId)?.name\n    return userName?.length ?: 0  // Returns 0 if userName is null\n}\n\n// Option 2: Null check with if\nfun getUserNameLengthAlt(userId: String): Int {\n    val userName: String? = database.findUser(userId)?.name\n    if (userName != null) {\n        return userName.length  // Smart cast to non-null\n    }\n    return 0\n}\n\n// Option 3: let block (functional style)\nfun getUserNameLengthLet(userId: String): Int {\n    val userName: String? = database.findUser(userId)?.name\n    return userName?.let { it.length } ?: 0\n}",
+              "explanation": "Use '?.' for safe call (returns null if receiver is null), then '?:' (Elvis) to provide default value. Alternatively, use if-check which smart-casts to non-null inside block. Avoid '!!' unless absolutely certain value is non-null."
+            },
+            "verification": [
+              "Code compiles without null safety errors",
+              "Test with existing user: should return actual name length",
+              "Test with non-existent user: should return 0 (or handle gracefully)",
+              "Verify no NullPointerException at runtime"
+            ],
+            "alternatives": [
+              {
+                "approach": "Use non-null assertion (!!.) - NOT RECOMMENDED",
+                "code": "return userName!!.length",
+                "pros": "Concise",
+                "cons": "Throws NPE if null, defeats purpose of null safety",
+                "migrationRequired": false,
+                "note": "Only use if you're 100% certain value is non-null and can prove it"
+              },
+              {
+                "approach": "Use requireNotNull() with message",
+                "code": "val userName = requireNotNull(database.findUser(userId)?.name) {\n    \"User not found: $userId\"\n}",
+                "pros": "Clear error message, documents assumption",
+                "cons": "Throws exception, should only be used for invariants",
+                "migrationRequired": false
+              },
+              {
+                "approach": "Return nullable Int",
+                "code": "fun getUserNameLength(userId: String): Int? {\n    val userName: String? = database.findUser(userId)?.name\n    return userName?.length\n}",
+                "pros": "Propagates nullability to caller, explicit about uncertainty",
+                "cons": "Caller must handle null",
+                "migrationRequired": true
+              }
+            ]
+          },
+          "confidence": 97,
+          "tags": ["kotlin", "npe", "nullable", "null-safety", "safe-call"]
+        },
+        {
+          "id": "kotlin-004",
+          "title": "Coroutine CancellationException - Job Was Cancelled",
+          "errorType": "KOTLIN_COROUTINE",
+          "errorMessage": "Job was cancelled: JobCancellationException: Job was cancelled; job=SupervisorJobImpl{Cancelled}@abc123",
+          "filePath": "app/src/main/kotlin/com/example/ViewModel.kt",
+          "lineNumber": 35,
+          "context": {
+            "language": "Kotlin",
+            "framework": "Coroutines",
+            "scope": "viewModelScope"
+          },
+          "analysis": {
+            "problem": "Coroutine throws CancellationException after job is cancelled",
+            "rootCause": "ViewModel's viewModelScope is tied to ViewModel lifecycle. When ViewModel is cleared (e.g., Activity destroyed, user navigates away), all coroutines in viewModelScope are automatically cancelled. If coroutine is still running (e.g., network request, database operation), it receives CancellationException. This is normal behavior, not an error. Issues arise when: 1) Exception is caught and logged as error, 2) Code doesn't handle cancellation gracefully, 3) Non-cancellable operations are used improperly.",
+            "evidence": [
+              "JobCancellationException in logs",
+              "Occurs when Activity/Fragment is destroyed",
+              "Job state shows 'Cancelled'",
+              "Using viewModelScope or lifecycleScope"
+            ]
+          },
+          "solution": {
+            "summary": "Handle CancellationException properly or use structured concurrency patterns",
+            "steps": [
+              "Understand cancellation is normal, not an error",
+              "Don't catch CancellationException unless re-throwing",
+              "Use try-finally to clean up resources on cancellation",
+              "For critical operations, use NonCancellable context if needed"
+            ],
+            "codeChange": {
+              "file": "app/src/main/kotlin/com/example/ViewModel.kt",
+              "lineNumber": 35,
+              "before": "class MyViewModel : ViewModel() {\n    fun loadData() {\n        viewModelScope.launch {\n            try {\n                val data = api.fetchData()  // Long-running operation\n                _uiState.value = data\n            } catch (e: Exception) {\n                // BAD: Catches CancellationException, prevents proper cleanup\n                _error.value = \"Error: ${e.message}\"\n            }\n        }\n    }\n}",
+              "after": "class MyViewModel : ViewModel() {\n    fun loadData() {\n        viewModelScope.launch {\n            try {\n                val data = api.fetchData()\n                _uiState.value = data\n            } catch (e: CancellationException) {\n                // Re-throw to preserve cancellation behavior\n                throw e\n            } catch (e: Exception) {\n                // Handle other exceptions\n                _error.value = \"Error: ${e.message}\"\n            }\n        }\n    }\n    \n    // Better: Separate exception types\n    fun loadDataBetter() {\n        viewModelScope.launch {\n            val result = runCatching {\n                api.fetchData()\n            }\n            result.onSuccess { data ->\n                _uiState.value = data\n            }.onFailure { e ->\n                if (e is CancellationException) throw e\n                _error.value = \"Error: ${e.message}\"\n            }\n        }\n    }\n}",
+              "explanation": "Never catch CancellationException without re-throwing. It's part of structured concurrency for proper cleanup. Use runCatching with manual check, or separate catch blocks. CancellationException indicates coroutine was stopped intentionally (lifecycle ended), not a real error."
+            },
+            "verification": [
+              "Run app and navigate to screen with ViewModel",
+              "Quickly navigate away (destroying ViewModel)",
+              "Check logs: CancellationException should not be logged as error",
+              "Verify no memory leaks (no ongoing operations after scope cancelled)",
+              "Use LeakCanary to verify ViewModel is properly cleared"
+            ],
+            "alternatives": [
+              {
+                "approach": "Use isActive check for long operations",
+                "code": "while (isActive) {\n    // Process items\n    processNextItem()\n}",
+                "pros": "Cooperative cancellation, exits loop when cancelled",
+                "cons": "Manual checks needed, more verbose",
+                "migrationRequired": false
+              },
+              {
+                "approach": "Use NonCancellable for critical cleanup",
+                "code": "withContext(NonCancellable) {\n    database.commitTransaction()\n}",
+                "pros": "Ensures cleanup runs even if cancelled",
+                "cons": "Can delay cancellation, use sparingly",
+                "migrationRequired": false,
+                "note": "Only use for critical cleanup that must complete"
+              },
+              {
+                "approach": "Use supervisorScope for independent children",
+                "code": "supervisorScope {\n    launch { task1() }  // Failure doesn't cancel task2\n    launch { task2() }\n}",
+                "pros": "Child failures don't cancel siblings",
+                "cons": "Different error propagation semantics",
+                "migrationRequired": false
+              }
+            ]
+          },
+          "confidence": 94,
+          "tags": ["kotlin", "coroutines", "cancellation", "viewmodel", "lifecycle"]
+        },
+        {
+          "id": "kotlin-005",
+          "title": "Smart Cast Impossible - Variable Could Be Modified",
+          "errorType": "KOTLIN_TYPE_MISMATCH",
+          "errorMessage": "Smart cast to 'String' is impossible, because 'user.name' is a mutable property that could have been changed by this time",
+          "filePath": "app/src/main/kotlin/com/example/UserValidator.kt",
+          "lineNumber": 22,
+          "context": {
+            "language": "Kotlin",
+            "property": "user.name",
+            "smartCastTarget": "String"
+          },
+          "analysis": {
+            "problem": "Kotlin cannot smart cast mutable property because it might be modified by another thread",
+            "rootCause": "Smart cast works by narrowing type after null/type check. For mutable properties (var), Kotlin can't guarantee property hasn't changed between check and use (especially in multi-threaded contexts). Even after 'if (user.name != null)', compiler can't smart cast because user.name could be modified by another thread to null before next line. Affects: 1) var properties (not val), 2) Properties from other classes, 3) Non-local variables.",
+            "evidence": [
+              "Property declared with 'var' keyword",
+              "Property is not local variable",
+              "Null check present but smart cast fails",
+              "Compiler error mentions 'mutable property'"
+            ]
+          },
+          "solution": {
+            "summary": "Copy to local val variable or use safe call operator",
+            "steps": [
+              "After null check, copy property to local val variable",
+              "Local val is immutable and thread-safe for smart cast",
+              "Alternatively, use safe call (?.) if single access"
+            ],
+            "codeChange": {
+              "file": "app/src/main/kotlin/com/example/UserValidator.kt",
+              "lineNumber": 22,
+              "before": "data class User(var name: String?, val email: String)\n\nfun validateUser(user: User): Boolean {\n    if (user.name != null) {\n        // Smart cast impossible\n        return user.name.length > 3  // Error: can't smart cast\n    }\n    return false\n}",
+              "after": "data class User(var name: String?, val email: String)\n\n// Option 1: Copy to local val (recommended for multiple uses)\nfun validateUser(user: User): Boolean {\n    val userName = user.name  // Local val can be smart cast\n    if (userName != null) {\n        return userName.length > 3  // Smart cast works!\n    }\n    return false\n}\n\n// Option 2: Safe call (for single access)\nfun validateUserAlt(user: User): Boolean {\n    return user.name?.length?.let { it > 3 } ?: false\n}\n\n// Option 3: Make property val instead of var (best if possible)\ndata class UserBetter(val name: String?, val email: String)\nfun validateUserBest(user: UserBetter): Boolean {\n    if (user.name != null) {\n        return user.name.length > 3  // Smart cast works with val\n    }\n    return false\n}",
+              "explanation": "Copy mutable property to local val before smart cast. Local variables are thread-safe and can be smart cast. If property only used once, use safe call (?.). Best solution: use val instead of var when possible for immutability."
+            },
+            "verification": [
+              "Code compiles without smart cast errors",
+              "Test validation with null name: returns false",
+              "Test validation with short name (< 3 chars): returns false",
+              "Test validation with valid name (> 3 chars): returns true"
+            ],
+            "alternatives": [
+              {
+                "approach": "Use let with safe call",
+                "code": "user.name?.let { name ->\n    return name.length > 3\n} ?: false",
+                "pros": "Concise functional style, safe",
+                "cons": "Can be harder to read for complex logic",
+                "migrationRequired": false
+              },
+              {
+                "approach": "Use !! (non-null assertion) - NOT RECOMMENDED",
+                "code": "if (user.name != null) {\n    return user.name!!.length > 3\n}",
+                "pros": "Forces access",
+                "cons": "Defeats null safety, can crash if modified to null",
+                "migrationRequired": false,
+                "note": "Avoid this approach"
+              },
+              {
+                "approach": "Change to val property",
+                "code": "data class User(val name: String?, val email: String)",
+                "pros": "Immutable, thread-safe, enables smart cast",
+                "cons": "Property can't be modified after creation",
+                "migrationRequired": true
+              }
+            ]
+          },
+          "confidence": 95,
+          "tags": ["kotlin", "smart-cast", "mutability", "thread-safety", "null-check"]
+        },
+        {
+          "id": "kotlin-006",
+          "title": "Suspend Function Called from Non-Suspend Context",
+          "errorType": "KOTLIN_COROUTINE",
+          "errorMessage": "Suspend function 'fetchData' should be called only from a coroutine or another suspend function",
+          "filePath": "app/src/main/kotlin/com/example/Repository.kt",
+          "lineNumber": 45,
+          "context": {
+            "language": "Kotlin",
+            "framework": "Coroutines"
+          },
+          "analysis": {
+            "problem": "Trying to call suspend function from regular (non-suspend) function",
+            "rootCause": "Suspend functions can only be called from: 1) Other suspend functions, 2) Coroutine builders (launch, async), 3) runBlocking for tests. Cannot call directly from regular functions like onCreate(), onClick(), etc. Suspend functions need coroutine context to handle suspension and resumption.",
+            "evidence": [
+              "Compilation error on function call",
+              "Function is marked with 'suspend' modifier",
+              "Caller is not suspend and not in coroutine scope",
+              "Kotlin compiler enforces suspend call restrictions"
+            ]
+          },
+          "solution": {
+            "summary": "Launch coroutine using appropriate scope (viewModelScope, lifecycleScope, or custom scope)",
+            "steps": [
+              "Identify appropriate coroutine scope for context",
+              "ViewModel: use viewModelScope",
+              "Activity/Fragment: use lifecycleScope",
+              "Custom class: create own CoroutineScope",
+              "Wrap suspend call in launch or async block"
+            ],
+            "codeChange": {
+              "file": "app/src/main/kotlin/com/example/Repository.kt",
+              "lineNumber": 45,
+              "before": "class MyViewModel : ViewModel() {\n    fun loadUser(id: String) {\n        val user = repository.fetchUser(id)  // Error: can't call suspend\n        _uiState.value = user\n    }\n}",
+              "after": "class MyViewModel : ViewModel() {\n    // Option 1: Launch coroutine in viewModelScope\n    fun loadUser(id: String) {\n        viewModelScope.launch {\n            val user = repository.fetchUser(id)  // Now OK\n            _uiState.value = user\n        }\n    }\n    \n    // Option 2: Make function suspend (if caller can handle it)\n    suspend fun loadUserSuspend(id: String) {\n        val user = repository.fetchUser(id)\n        _uiState.value = user\n    }\n    \n    // Option 3: Use async for parallel operations\n    fun loadMultipleUsers(ids: List<String>) {\n        viewModelScope.launch {\n            val users = ids.map { id ->\n                async { repository.fetchUser(id) }\n            }.awaitAll()\n            _uiState.value = users\n        }\n    }\n}",
+              "explanation": "Use viewModelScope.launch {} to create coroutine for suspend calls in ViewModel. In Activity/Fragment, use lifecycleScope.launch {}. For parallel operations, use async/await. Only make caller suspend if it's part of suspend chain."
+            },
+            "verification": [
+              "Code compiles without suspend function errors",
+              "Run app and trigger function",
+              "Verify data loads correctly",
+              "Check that coroutine is cancelled when ViewModel/Activity destroyed",
+              "Test error handling (network failure, etc.)"
+            ],
+            "alternatives": [
+              {
+                "approach": "Use runBlocking (tests only)",
+                "code": "fun loadUser(id: String) = runBlocking {\n    repository.fetchUser(id)\n}",
+                "pros": "Simple, blocks until complete",
+                "cons": "Blocks thread (bad for UI), only use in tests",
+                "migrationRequired": false,
+                "note": "NEVER use runBlocking on Android main thread"
+              },
+              {
+                "approach": "Create custom CoroutineScope",
+                "code": "class MyRepository : CoroutineScope {\n    override val coroutineContext = Dispatchers.IO + SupervisorJob()\n}",
+                "pros": "Full control over scope lifecycle",
+                "cons": "Must manage cancellation manually",
+                "migrationRequired": true
+              }
+            ]
+          },
+          "confidence": 98,
+          "tags": ["kotlin", "coroutines", "suspend", "async", "scope"]
+        },
+        {
+          "id": "kotlin-007",
+          "title": "When Expression Must Be Exhaustive",
+          "errorType": "KOTLIN_TYPE_MISMATCH",
+          "errorMessage": "'when' expression must be exhaustive, add necessary 'is Success', 'is Loading' branches or 'else' branch instead",
+          "filePath": "app/src/main/kotlin/com/example/UIState.kt",
+          "lineNumber": 30,
+          "context": {
+            "language": "Kotlin",
+            "construct": "when expression"
+          },
+          "analysis": {
+            "problem": "When expression used as value must cover all possible cases",
+            "rootCause": "When used as expression (assigned to variable or returned), Kotlin requires all possibilities to be handled. For sealed classes/enums, compiler knows all subtypes and enforces exhaustiveness. Missing branches means some code paths don't return a value, causing compilation error. When as statement (not returning value) doesn't require exhaustiveness.",
+            "evidence": [
+              "when expression returns value",
+              "Working with sealed class or enum",
+              "Not all subclasses/enum values covered",
+              "No else branch present"
+            ]
+          },
+          "solution": {
+            "summary": "Add missing branches or else clause to cover all cases",
+            "steps": [
+              "Identify missing sealed class subtypes or enum values",
+              "Add branch for each missing case",
+              "Or add else branch if generic handling is acceptable",
+              "Consider if new subtypes might be added later"
+            ],
+            "codeChange": {
+              "file": "app/src/main/kotlin/com/example/UIState.kt",
+              "lineNumber": 30,
+              "before": "sealed class UIState {\n    object Loading : UIState()\n    data class Success(val data: String) : UIState()\n    data class Error(val message: String) : UIState()\n}\n\nfun renderUI(state: UIState): String = when (state) {\n    is UIState.Error -> \"Error: ${state.message}\"\n    // Missing: Loading and Success branches\n}",
+              "after": "sealed class UIState {\n    object Loading : UIState()\n    data class Success(val data: String) : UIState()\n    data class Error(val message: String) : UIState()\n}\n\n// Option 1: Exhaustive when with all branches\nfun renderUI(state: UIState): String = when (state) {\n    is UIState.Loading -> \"Loading...\"\n    is UIState.Success -> \"Data: ${state.data}\"\n    is UIState.Error -> \"Error: ${state.message}\"\n    // Compiler verifies all cases covered\n}\n\n// Option 2: With else (less safe for future changes)\nfun renderUIWithElse(state: UIState): String = when (state) {\n    is UIState.Error -> \"Error: ${state.message}\"\n    else -> \"Loading or Success\"  // Covers all other cases\n}\n\n// Option 3: Combine cases with similar handling\nfun renderUICompact(state: UIState): String = when (state) {\n    is UIState.Loading -> \"Please wait\"\n    is UIState.Success -> state.data\n    is UIState.Error -> state.message\n}",
+              "explanation": "Add all missing branches for sealed class subtypes. Compiler will error if new subtype added later without handling (good for safety). Use else only if truly generic handling, but you lose compile-time safety for new subtypes."
+            },
+            "verification": [
+              "Code compiles without exhaustiveness errors",
+              "Test all UIState cases: Loading, Success, Error",
+              "Verify each case returns correct value",
+              "Add new sealed class subtype: compiler should error on when expressions"
+            ],
+            "alternatives": [
+              {
+                "approach": "Convert to when statement (no return value)",
+                "code": "fun renderUI(state: UIState) {\n    when (state) {\n        is UIState.Error -> showError(state.message)\n    }\n}",
+                "pros": "No exhaustiveness required for statements",
+                "cons": "Silently ignores unhandled cases",
+                "migrationRequired": false,
+                "note": "Only if you intentionally want partial handling"
+              },
+              {
+                "approach": "Use if-else for partial checks",
+                "code": "fun renderUI(state: UIState): String {\n    if (state is UIState.Error) return \"Error\"\n    return \"OK\"\n}",
+                "pros": "More flexible",
+                "cons": "No compiler verification of coverage",
+                "migrationRequired": false
+              }
+            ]
+          },
+          "confidence": 97,
+          "tags": ["kotlin", "when", "sealed-class", "exhaustive", "pattern-matching"]
+        },
+        {
+          "id": "kotlin-008",
+          "title": "Data Class Copy With Immutable Collection",
+          "errorType": "KOTLIN_TYPE_MISMATCH",
+          "errorMessage": "Type mismatch: inferred type is ArrayList<String> but List<String> was expected",
+          "filePath": "app/src/main/kotlin/com/example/State.kt",
+          "lineNumber": 55,
+          "context": {
+            "language": "Kotlin",
+            "construct": "data class",
+            "collectionType": "List"
+          },
+          "analysis": {
+            "problem": "Attempting to assign mutable ArrayList to immutable List property in data class",
+            "rootCause": "Kotlin distinguishes between mutable (MutableList, ArrayList) and immutable (List) collections. Data class property declared as List (read-only interface), but code tries to assign ArrayList (mutable implementation). While ArrayList implements List, explicit type declaration prevents this assignment to enforce immutability. Common when: 1) Building lists with ArrayList then assigning, 2) Receiving mutable collections from Java code, 3) Incorrectly copying data classes.",
+            "evidence": [
+              "Property type is List<T> (immutable)",
+              "Value type is ArrayList<T> or MutableList<T>",
+              "Type mismatch error at assignment",
+              "Attempting to maintain immutability"
+            ]
+          },
+          "solution": {
+            "summary": "Convert mutable collection to immutable using toList() or use immutable builders",
+            "steps": [
+              "Use toList() to create immutable copy",
+              "Or use listOf(...) for construction",
+              "Or declare property as MutableList if mutability needed (not recommended for data classes)"
+            ],
+            "codeChange": {
+              "file": "app/src/main/kotlin/com/example/State.kt",
+              "lineNumber": 55,
+              "before": "data class AppState(\n    val users: List<User>,\n    val selectedIds: List<String>\n)\n\nfun updateState(current: AppState, newIds: ArrayList<String>): AppState {\n    return current.copy(\n        selectedIds = newIds  // Error: ArrayList vs List\n    )\n}",
+              "after": "data class AppState(\n    val users: List<User>,\n    val selectedIds: List<String>\n)\n\n// Option 1: Use toList() to convert (recommended)\nfun updateState(current: AppState, newIds: ArrayList<String>): AppState {\n    return current.copy(\n        selectedIds = newIds.toList()  // Creates immutable copy\n    )\n}\n\n// Option 2: Use immutable collection from start\nfun updateStateBetter(current: AppState, vararg newIds: String): AppState {\n    return current.copy(\n        selectedIds = listOf(*newIds)  // Immutable from construction\n    )\n}\n\n// Option 3: If mutability needed (avoid for shared state)\ndata class AppStateMutable(\n    val users: List<User>,\n    val selectedIds: MutableList<String>  // Explicit mutability\n)",
+              "explanation": "Use toList() to convert mutable to immutable copy. This creates defensive copy, preventing external modification. For data classes representing state, prefer immutable List over MutableList to avoid unintended mutations."
+            },
+            "verification": [
+              "Code compiles without type mismatch",
+              "Verify original mutable list can't affect data class",
+              "Test: modify ArrayList after creating AppState, AppState should be unaffected",
+              "Ensure copy() creates new List instances"
+            ],
+            "alternatives": [
+              {
+                "approach": "Declare as MutableList",
+                "code": "data class AppState(\n    val selectedIds: MutableList<String>\n)",
+                "pros": "Direct assignment works",
+                "cons": "Breaks immutability, allows external mutation",
+                "migrationRequired": false,
+                "note": "Avoid for shared state objects"
+              },
+              {
+                "approach": "Use toList() at call site",
+                "code": "updateState(current, arrayList.toList())",
+                "pros": "Conversion at caller",
+                "cons": "Easy to forget, not enforced",
+                "migrationRequired": false
+              },
+              {
+                "approach": "Use Kotlin collections builders",
+                "code": "val immutableList = buildList {\n    add(\"item1\")\n    addAll(mutableList)\n}",
+                "pros": "Build immutable with mutable operations",
+                "cons": "More verbose",
+                "migrationRequired": false
+              }
+            ]
+          },
+          "confidence": 93,
+          "tags": ["kotlin", "collections", "immutability", "data-class", "type-mismatch"]
+        },
+        {
+          "id": "kotlin-009",
+          "title": "Extension Function Receiver Cannot Be Nullable",
+          "errorType": "KOTLIN_TYPE_MISMATCH",
+          "errorMessage": "Unresolved reference. None of the following candidates is applicable: public fun String.capitalize(): String",
+          "filePath": "app/src/main/kotlin/com/example/StringUtils.kt",
+          "lineNumber": 12,
+          "context": {
+            "language": "Kotlin",
+            "receiverType": "String?",
+            "extensionFunction": "capitalize"
+          },
+          "analysis": {
+            "problem": "Calling extension function on nullable receiver without null safety",
+            "rootCause": "Extension function capitalize() is defined for String (non-null), but called on String? (nullable). Most standard library extensions are for non-null types. Must use null-safe call (?.) or smart cast to non-null before calling. Common mistake when: 1) Function returns nullable type, 2) Property is nullable, 3) Nullable parameters passed to functions expecting non-null extensions.",
+            "evidence": [
+              "Receiver type is nullable (String?)",
+              "Extension function defined for non-null type (String)",
+              "Called without null safety operator (?.)",
+              "Unresolved reference error"
+            ]
+          },
+          "solution": {
+            "summary": "Use safe call (?.) or create nullable-receiver extension",
+            "steps": [
+              "Use safe call (?.) for null-safe invocation",
+              "Or smart cast to non-null with null check",
+              "Or define custom extension for nullable receiver",
+              "Or use Elvis operator for default value"
+            ],
+            "codeChange": {
+              "file": "app/src/main/kotlin/com/example/StringUtils.kt",
+              "lineNumber": 12,
+              "before": "fun formatName(name: String?): String {\n    return name.capitalize()  // Error: String? vs String\n}",
+              "after": "// Option 1: Safe call with Elvis operator (recommended)\nfun formatName(name: String?): String {\n    return name?.capitalize() ?: \"Unknown\"\n}\n\n// Option 2: Smart cast with null check\nfun formatNameAlt(name: String?): String {\n    if (name != null) {\n        return name.capitalize()  // Smart cast to String\n    }\n    return \"Unknown\"\n}\n\n// Option 3: Define nullable-receiver extension\nfun String?.capitalizeOrEmpty(): String {\n    return this?.capitalize() ?: \"\"\n}\n\nfun formatNameCustom(name: String?): String {\n    return name.capitalizeOrEmpty()\n}\n\n// Option 4: replaceFirstChar (modern Kotlin)\nfun formatNameModern(name: String?): String {\n    return name?.replaceFirstChar { \n        if (it.isLowerCase()) it.titlecase() else it.toString() \n    } ?: \"Unknown\"\n}",
+              "explanation": "Use ?. for safe call that returns null if receiver is null, then ?? for default. Or check for null and smart cast. Note: capitalize() is deprecated in Kotlin 1.5+, use replaceFirstChar instead. Can also define custom extension for nullable receiver."
+            },
+            "verification": [
+              "Code compiles without unresolved reference errors",
+              "Test with null input: should return default value",
+              "Test with valid string: should capitalize correctly",
+              "Test with empty string: verify behavior is correct"
+            ],
+            "alternatives": [
+              {
+                "approach": "Use orEmpty() then extension",
+                "code": "return name.orEmpty().capitalize()",
+                "pros": "Converts null to empty string",
+                "cons": "Might not distinguish between null and empty",
+                "migrationRequired": false
+              },
+              {
+                "approach": "requireNotNull for invariants",
+                "code": "return requireNotNull(name).capitalize()",
+                "pros": "Documents assumption that name should never be null",
+                "cons": "Throws exception if null",
+                "migrationRequired": false,
+                "note": "Only if null truly represents programming error"
+              }
+            ]
+          },
+          "confidence": 94,
+          "tags": ["kotlin", "extension-function", "nullable", "safe-call", "string"]
+        },
+        {
+          "id": "kotlin-010",
+          "title": "Object Not Initialized - Singleton Access Before Init",
+          "errorType": "KOTLIN_NPE",
+          "errorMessage": "lateinit property database has not been initialized in DatabaseModule",
+          "filePath": "app/src/main/kotlin/com/example/di/DatabaseModule.kt",
+          "lineNumber": 18,
+          "context": {
+            "language": "Kotlin",
+            "pattern": "object",
+            "propertyType": "lateinit"
+          },
+          "analysis": {
+            "problem": "Accessing lateinit property in object (singleton) before it's initialized",
+            "rootCause": "Kotlin object is lazily initialized on first access, but lateinit properties inside object need explicit initialization. Object initialization doesn't automatically initialize lateinit properties. Common pattern in DI modules where database/dependencies are initialized in Application.onCreate() but accessed before initialization. Race condition: object accessed from multiple threads before init completes.",
+            "evidence": [
+              "Object (singleton) contains lateinit property",
+              "Property accessed before explicit initialization",
+              "UninitializedPropertyAccessException at runtime",
+              "Happens during app startup or first access"
+            ]
+          },
+          "solution": {
+            "summary": "Initialize lateinit property before first access, or use lazy initialization",
+            "steps": [
+              "Ensure init() called in Application.onCreate() before any object access",
+              "Or use 'by lazy {}' for automatic initialization",
+              "Or use nullable with null check instead of lateinit",
+              "Add initialization check for debugging"
+            ],
+            "codeChange": {
+              "file": "app/src/main/kotlin/com/example/di/DatabaseModule.kt",
+              "lineNumber": 18,
+              "before": "object DatabaseModule {\n    lateinit var database: AppDatabase\n    \n    fun provideUserDao(): UserDao {\n        return database.userDao()  // Crash if not initialized\n    }\n}\n\n// In Application\nclass MyApp : Application() {\n    override fun onCreate() {\n        super.onCreate()\n        // If this runs late, crashes occur\n        DatabaseModule.database = Room.databaseBuilder(...).build()\n    }\n}",
+              "after": "// Option 1: Use lazy initialization (recommended)\nobject DatabaseModule {\n    val database: AppDatabase by lazy {\n        Room.databaseBuilder(\n            applicationContext,\n            AppDatabase::class.java,\n            \"app-database\"\n        ).build()\n    }\n    \n    fun provideUserDao(): UserDao {\n        return database.userDao()  // Auto-initialized on first access\n    }\n}\n\n// Option 2: Explicit init with check\nobject DatabaseModuleWithCheck {\n    private lateinit var _database: AppDatabase\n    \n    fun init(context: Context) {\n        _database = Room.databaseBuilder(\n            context,\n            AppDatabase::class.java,\n            \"app-database\"\n        ).build()\n    }\n    \n    val database: AppDatabase\n        get() {\n            check(::_database.isInitialized) {\n                \"DatabaseModule not initialized. Call init() first.\"\n            }\n            return _database\n        }\n}\n\n// Option 3: Nullable with null check\nobject DatabaseModuleNullable {\n    private var database: AppDatabase? = null\n    \n    fun init(context: Context) {\n        database = Room.databaseBuilder(context, ...).build()\n    }\n    \n    fun provideUserDao(): UserDao {\n        return requireNotNull(database) {\n            \"Database not initialized\"\n        }.userDao()\n    }\n}",
+              "explanation": "Use 'by lazy' for automatic thread-safe initialization on first access (best for singletons). Or add ::property.isInitialized check for debugging. Avoid lateinit in objects if initialization order is uncertain."
+            },
+            "verification": [
+              "App starts without crashes",
+              "Database accessed successfully from any thread",
+              "Test cold start: no initialization errors",
+              "Verify initialization happens exactly once",
+              "Check thread safety with StrictMode"
+            ],
+            "alternatives": [
+              {
+                "approach": "Use dependency injection framework (Hilt/Koin)",
+                "code": "@Singleton\n@Provides\nfun provideDatabase(@ApplicationContext context: Context): AppDatabase",
+                "pros": "Automatic lifecycle management, proper DI",
+                "cons": "Requires framework setup",
+                "migrationRequired": true
+              },
+              {
+                "approach": "Pass as parameters instead of singleton",
+                "code": "fun provideUserDao(database: AppDatabase): UserDao",
+                "pros": "No global state, testable",
+                "cons": "More verbose, need to pass around",
+                "migrationRequired": true
+              }
+            ]
+          },
+          "confidence": 91,
+          "tags": ["kotlin", "object", "singleton", "lateinit", "initialization"]
+        },
+        {
+          "id": "kotlin-011",
+          "title": "Delegated Property Access Before Initialization",
+          "errorType": "KOTLIN_NPE",
+          "errorMessage": "Cannot read property 'binding' before it's initialized",
+          "filePath": "app/src/main/kotlin/com/example/ui/MainFragment.kt",
+          "lineNumber": 28,
+          "context": {
+            "language": "Kotlin",
+            "framework": "View Binding",
+            "delegateType": "lazy"
+          },
+          "analysis": {
+            "problem": "ViewBinding accessed in Fragment before onCreateView initializes it",
+            "rootCause": "Fragment lifecycle: onCreateView() hasn't been called yet, but code in onCreate() or elsewhere tries to access binding. View binding should only be accessed after onCreateView() returns. Common mistake: accessing binding in init{}, onCreate(), or before view is created. Fragment view can be destroyed and recreated without Fragment being destroyed, causing stale binding references.",
+            "evidence": [
+              "ViewBinding accessed before onCreateView()",
+              "NPE or uninitialized property error",
+              "Fragment lifecycle ordering issue",
+              "Happens during configuration changes or backstack operations"
+            ]
+          },
+          "solution": {
+            "summary": "Initialize binding in onCreateView(), access only after view created, clear in onDestroyView()",
+            "steps": [
+              "Declare binding as nullable private var",
+              "Initialize in onCreateView()",
+              "Access only after onCreateView() through onDestroyView()",
+              "Clear in onDestroyView() to avoid memory leaks"
+            ],
+            "codeChange": {
+              "file": "app/src/main/kotlin/com/example/ui/MainFragment.kt",
+              "lineNumber": 28,
+              "before": "class MainFragment : Fragment() {\n    // BAD: lateinit, no lifecycle handling\n    private lateinit var binding: FragmentMainBinding\n    \n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n        // Error: binding not initialized yet\n        binding.textView.text = \"Hello\"\n    }\n}",
+              "after": "class MainFragment : Fragment() {\n    // Nullable backing property\n    private var _binding: FragmentMainBinding? = null\n    // Non-null property for safe access\n    private val binding get() = _binding!!\n    \n    override fun onCreateView(\n        inflater: LayoutInflater,\n        container: ViewGroup?,\n        savedInstanceState: Bundle?\n    ): View {\n        _binding = FragmentMainBinding.inflate(inflater, container, false)\n        return binding.root\n    }\n    \n    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {\n        super.onViewCreated(view, savedInstanceState)\n        // Now safe to access binding\n        binding.textView.text = \"Hello\"\n    }\n    \n    override fun onDestroyView() {\n        super.onDestroyView()\n        // Critical: clear binding to prevent memory leak\n        _binding = null\n    }\n}",
+              "explanation": "Use nullable backing property (_binding) and non-null getter (binding). Initialize in onCreateView(), clear in onDestroyView(). This pattern is official Google recommendation for Fragment view binding. Never access binding before onCreateView() or after onDestroyView()."
+            },
+            "verification": [
+              "Fragment displays correctly",
+              "Rotate device: no crash on configuration change",
+              "Navigate away and back: no memory leak",
+              "Use LeakCanary to verify binding is released",
+              "Check logs for proper lifecycle order"
+            ],
+            "alternatives": [
+              {
+                "approach": "Use viewLifecycleOwner.lifecycle",
+                "code": "private val binding: FragmentMainBinding by viewLifecycleOwner.lifecycle.viewBinding(FragmentMainBinding::inflate)",
+                "pros": "Automatic lifecycle handling",
+                "cons": "Requires custom delegate or library",
+                "migrationRequired": true
+              },
+              {
+                "approach": "Use Jetpack Compose instead",
+                "code": "@Composable\nfun MainScreen() { /* No binding needed */ }",
+                "pros": "No view binding lifecycle issues",
+                "cons": "Major migration to Compose",
+                "migrationRequired": true
+              }
+            ]
+          },
+          "confidence": 96,
+          "tags": ["kotlin", "fragment", "view-binding", "lifecycle", "memory-leak"]
+        },
+        {
+          "id": "kotlin-012",
+          "title": "Inline Function Return Type Mismatch",
+          "errorType": "KOTLIN_TYPE_MISMATCH",
+          "errorMessage": "Return type mismatch: expected Unit, actual String",
+          "filePath": "app/src/main/kotlin/com/example/Utils.kt",
+          "lineNumber": 42,
+          "context": {
+            "language": "Kotlin",
+            "functionModifier": "inline"
+          },
+          "analysis": {
+            "problem": "Inline function lambda parameter returns value but function expects Unit",
+            "rootCause": "Inline function with lambda parameter that implicitly returns last expression value. When function signature specifies lambda returns Unit, but lambda body returns non-Unit value, type mismatch occurs. Common with forEach, onEach which expect Unit, but lambda returns value. Also when using return without label in inline function.",
+            "evidence": [
+              "Function marked inline or using inline standard function",
+              "Lambda last expression returns value",
+              "Function expects Unit return type",
+              "Type mismatch error at lambda"
+            ]
+          },
+          "solution": {
+            "summary": "Use explicit Unit return, or change lambda to return Unit, or use correct function (map vs forEach)",
+            "steps": [
+              "Identify if lambda should return value or Unit",
+              "If should return value: use map, filter, etc. (not forEach)",
+              "If should return Unit: discard lambda result explicitly",
+              "Add explicit Unit return or use expression that evaluates to Unit"
+            ],
+            "codeChange": {
+              "file": "app/src/main/kotlin/com/example/Utils.kt",
+              "lineNumber": 42,
+              "before": "fun processUsers(users: List<User>) {\n    users.forEach { user ->\n        val name = user.name.uppercase()  // Returns String\n        // Error: forEach expects Unit, lambda returns String\n    }\n}",
+              "after": "// Option 1: Discard result explicitly\nfun processUsers(users: List<User>) {\n    users.forEach { user ->\n        val name = user.name.uppercase()\n        // Explicitly ignore result or use it\n        println(name)  // Unit-returning statement\n    }\n}\n\n// Option 2: Use result (map instead of forEach)\nfun processUsersMap(users: List<User>): List<String> {\n    return users.map { user ->\n        user.name.uppercase()  // Returns String, collected\n    }\n}\n\n// Option 3: Store result if needed\nfun processUsersStore(users: List<User>) {\n    users.forEach { user ->\n        val name = user.name.uppercase()\n        saveToDatabase(name)  // Use the value\n    }  // Lambda returns Unit\n}\n\n// Option 4: onEach for side effects with chaining\nfun processUsersOnEach(users: List<User>): List<User> {\n    return users.onEach { user ->\n        println(user.name.uppercase())\n    }  // Returns original list\n}",
+              "explanation": "forEach expects lambda returning Unit (for side effects). If you want to transform and collect results, use map. If side effects only, ensure lambda ends with Unit-returning expression. onEach is forEach that returns the collection for chaining."
+            },
+            "verification": [
+              "Code compiles without type mismatch",
+              "Test with sample users list",
+              "Verify expected behavior: transformation vs side effect",
+              "Check performance: forEach is inline, no allocation overhead"
+            ],
+            "alternatives": [
+              {
+                "approach": "Explicit Unit assignment",
+                "code": "users.forEach { user ->\n    val name = user.name.uppercase()\n    Unit  // Explicit Unit return\n}",
+                "pros": "Clear intent",
+                "cons": "Verbose, unusual pattern",
+                "migrationRequired": false
+              },
+              {
+                "approach": "Use also {} block",
+                "code": "users.forEach { user ->\n    user.name.uppercase().also { /* side effect */ }\n}",
+                "pros": "Chains side effects",
+                "cons": "More complex",
+                "migrationRequired": false
+              }
+            ]
+          },
+          "confidence": 92,
+          "tags": ["kotlin", "inline", "lambda", "unit", "type-mismatch", "foreach"]
+        },
+        {
+          "id": "kotlin-013",
+          "title": "Property Initialization Using 'this' in Constructor",
+          "errorType": "KOTLIN_NPE",
+          "errorMessage": "Cannot access 'name' before superclass constructor has been called",
+          "filePath": "app/src/main/kotlin/com/example/models/User.kt",
+          "lineNumber": 8,
+          "context": {
+            "language": "Kotlin",
+            "construct": "class initialization"
+          },
+          "analysis": {
+            "problem": "Property initialized using 'this' or other properties before object fully constructed",
+            "rootCause": "Kotlin initialization order: 1) Primary constructor parameters, 2) Property initializers and init blocks (in declaration order), 3) Secondary constructor body. Cannot access 'this' or other properties in superclass constructor call or before they're initialized. Common when: 1) Property depends on another property declared later, 2) Passing 'this' to superclass, 3) Circular property dependencies.",
+            "evidence": [
+              "Error during class initialization",
+              "Property accessed before initialization",
+              "Superclass constructor call uses 'this'",
+              "Properties referenced out of order"
+            ]
+          },
+          "solution": {
+            "summary": "Reorder properties, use lazy initialization, or extract to separate initialization",
+            "steps": [
+              "Identify initialization order dependencies",
+              "Declare properties in dependency order (dependencies first)",
+              "Use 'by lazy' for properties with complex initialization",
+              "Move initialization to init{} block if needed",
+              "Avoid passing 'this' to superclass constructor"
+            ],
+            "codeChange": {
+              "file": "app/src/main/kotlin/com/example/models/User.kt",
+              "lineNumber": 8,
+              "before": "open class Person(val displayName: String)\n\nclass User(val firstName: String, val lastName: String) \n    : Person(fullName)  // Error: fullName not initialized yet\n{\n    private val fullName = \"$firstName $lastName\"\n}",
+              "after": "open class Person(val displayName: String)\n\n// Option 1: Compute in superclass call (best)\nclass User(val firstName: String, val lastName: String) \n    : Person(\"$firstName $lastName\")  // Compute directly\n{\n    val fullName: String\n        get() = \"$firstName $lastName\"  // Property with getter\n}\n\n// Option 2: Use init block\nclass UserWithInit(val firstName: String, val lastName: String) \n    : Person(firstName)  // Use partial value temporarily\n{\n    val fullName: String\n    \n    init {\n        fullName = \"$firstName $lastName\"\n        // Can't change superclass here, but can initialize properties\n    }\n}\n\n// Option 3: Factory function (most flexible)\nclass UserFactory private constructor(\n    firstName: String,\n    lastName: String,\n    displayName: String\n) : Person(displayName) {\n    companion object {\n        fun create(firstName: String, lastName: String): UserFactory {\n            val fullName = \"$firstName $lastName\"\n            return UserFactory(firstName, lastName, fullName)\n        }\n    }\n}",
+              "explanation": "Properties are initialized in declaration order. Cannot reference property before it's declared. Compute values directly in superclass constructor call, or use property getter (recomputed each access), or use factory function for complex initialization."
+            },
+            "verification": [
+              "Code compiles without initialization errors",
+              "Create User instance: no exceptions",
+              "Verify displayName and fullName match",
+              "Test with various firstName/lastName combinations"
+            ],
+            "alternatives": [
+              {
+                "approach": "Use lateinit with manual init",
+                "code": "class User(...) : Person(firstName) {\n    lateinit var fullName: String\n    init { fullName = \"...\" }\n}",
+                "pros": "Deferred initialization",
+                "cons": "Can forget to initialize, not thread-safe",
+                "migrationRequired": false
+              },
+              {
+                "approach": "Use lazy delegate",
+                "code": "class User(...) : Person(firstName) {\n    val fullName by lazy { \"$firstName $lastName\" }\n}",
+                "pros": "Thread-safe, auto-initialized on first access",
+                "cons": "Slight overhead, can't use in superclass call",
+                "migrationRequired": false
+              }
+            ]
+          },
+          "confidence": 90,
+          "tags": ["kotlin", "initialization", "constructor", "this", "circular-dependency"]
+        },
+        {
+          "id": "kotlin-014",
+          "title": "Companion Object Member Access Before Initialization",
+          "errorType": "KOTLIN_NPE",
+          "errorMessage": "lateinit property instance has not been initialized in Singleton companion object",
+          "filePath": "app/src/main/kotlin/com/example/Singleton.kt",
+          "lineNumber": 15,
+          "context": {
+            "language": "Kotlin",
+            "pattern": "companion object",
+            "instanceType": "singleton"
+          },
+          "analysis": {
+            "problem": "Companion object property accessed before explicit initialization",
+            "rootCause": "Companion objects are initialized when containing class is first accessed, but lateinit properties still need explicit assignment. Unlike object (standalone singleton), companion object is tied to class and initialized lazily. Common singleton pattern pitfall: lateinit instance accessed before init() method called. Can cause issues in multi-threaded environments or when class loaded before Application.onCreate().",
+            "evidence": [
+              "Companion object contains lateinit property",
+              "Property accessed before explicit initialization",
+              "UninitializedPropertyAccessException",
+              "Singleton pattern implementation"
+            ]
+          },
+          "solution": {
+            "summary": "Use lazy delegate for thread-safe singleton, or nullable with synchronized init",
+            "steps": [
+              "Replace lateinit with 'by lazy {}' for automatic initialization",
+              "Or use @Volatile nullable var with synchronized initialization",
+              "Or use object (standalone) instead of companion object",
+              "Add isInitialized check for debugging"
+            ],
+            "codeChange": {
+              "file": "app/src/main/kotlin/com/example/Singleton.kt",
+              "lineNumber": 15,
+              "before": "class ApiClient private constructor() {\n    companion object {\n        lateinit var instance: ApiClient\n        \n        fun init() {\n            instance = ApiClient()\n        }\n        \n        fun get(): ApiClient {\n            return instance  // Crash if init() not called\n        }\n    }\n}",
+              "after": "// Option 1: Thread-safe lazy singleton (recommended)\nclass ApiClient private constructor() {\n    companion object {\n        val instance: ApiClient by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {\n            ApiClient()\n        }\n    }\n}\n\n// Usage: ApiClient.instance (auto-initialized)\n\n// Option 2: Double-checked locking pattern\nclass ApiClientDoubleCheck private constructor() {\n    companion object {\n        @Volatile\n        private var _instance: ApiClient? = null\n        \n        fun getInstance(): ApiClient {\n            return _instance ?: synchronized(this) {\n                _instance ?: ApiClient().also { _instance = it }\n            }\n        }\n    }\n}\n\n// Option 3: Use object (simplest)\nobject ApiClientObject {\n    // Properties initialized when first accessed\n    private val client = OkHttpClient()\n    \n    fun makeRequest(url: String) {\n        // Use client\n    }\n}\n\n// Option 4: lateinit with check\nclass ApiClientWithCheck private constructor() {\n    companion object {\n        private lateinit var _instance: ApiClient\n        \n        fun init() {\n            _instance = ApiClient()\n        }\n        \n        fun getInstance(): ApiClient {\n            check(::_instance.isInitialized) {\n                \"ApiClient not initialized. Call init() first.\"\n            }\n            return _instance\n        }\n    }\n}",
+              "explanation": "Use 'by lazy' for thread-safe automatic initialization. LazyThreadSafetyMode.SYNCHRONIZED ensures only one thread initializes. For more control, use double-checked locking with @Volatile. Simplest: use object instead of class with companion object."
+            },
+            "verification": [
+              "Access singleton from multiple threads simultaneously",
+              "Verify only one instance created",
+              "Check initialization happens exactly once",
+              "Test under race conditions (stress test)",
+              "Use @Synchronized annotation or synchronized{} if needed"
+            ],
+            "alternatives": [
+              {
+                "approach": "Dependency injection (Hilt/Koin)",
+                "code": "@Singleton\nclass ApiClient @Inject constructor()",
+                "pros": "Framework manages lifecycle, testable",
+                "cons": "Requires DI setup",
+                "migrationRequired": true
+              },
+              {
+                "approach": "Bill Pugh singleton (Java-style)",
+                "code": "class ApiClient {\n    companion object {\n        private class Holder {\n            companion object {\n                val INSTANCE = ApiClient()\n            }\n        }\n        fun getInstance() = Holder.INSTANCE\n    }\n}",
+                "pros": "Lazy, thread-safe without synchronized",
+                "cons": "Overly complex for Kotlin, prefer 'by lazy'",
+                "migrationRequired": false
+              }
+            ]
+          },
+          "confidence": 93,
+          "tags": ["kotlin", "singleton", "companion-object", "thread-safety", "lazy"]
+        },
+        {
+          "id": "kotlin-015",
+          "title": "Destructuring Declaration Type Mismatch",
+          "errorType": "KOTLIN_TYPE_MISMATCH",
+          "errorMessage": "Destructuring declaration initializer of type Pair<String, Int> must have a 'component2()' function",
+          "filePath": "app/src/main/kotlin/com/example/DataProcessor.kt",
+          "lineNumber": 32,
+          "context": {
+            "language": "Kotlin",
+            "construct": "destructuring declaration"
+          },
+          "analysis": {
+            "problem": "Attempting to destructure type that doesn't support destructuring or has wrong number of components",
+            "rootCause": "Destructuring declarations require componentN() functions (component1(), component2(), etc.). Data classes automatically generate these for all properties. Pair and Triple have them. Regular classes don't unless explicitly defined. Error occurs when: 1) Destructuring non-data class, 2) Too many variables in destructure (accessing component3() on Pair), 3) Custom class without operator componentN().",
+            "evidence": [
+              "Destructuring declaration used: val (a, b, c) = ...",
+              "Type doesn't have sufficient componentN() functions",
+              "Non-data class being destructured",
+              "Number of variables exceeds available components"
+            ]
+          },
+          "solution": {
+            "summary": "Use data class, or add operator componentN() functions, or access properties directly",
+            "steps": [
+              "Convert class to data class if possible (automatic components)",
+              "Or manually define operator componentN() functions",
+              "Or access properties directly without destructuring",
+              "Ensure component count matches destructure variables"
+            ],
+            "codeChange": {
+              "file": "app/src/main/kotlin/com/example/DataProcessor.kt",
+              "lineNumber": 32,
+              "before": "// Regular class without componentN()\nclass UserData(val name: String, val age: Int, val email: String)\n\nfun processUser(userData: UserData) {\n    // Error: UserData doesn't have component functions\n    val (name, age, email) = userData\n}",
+              "after": "// Option 1: Convert to data class (recommended)\ndata class UserData(val name: String, val age: Int, val email: String)\n\nfun processUser(userData: UserData) {\n    val (name, age, email) = userData  // Works! componentN() auto-generated\n    println(\"$name, $age, $email\")\n}\n\n// Option 2: Manual operator functions\nclass UserDataManual(val name: String, val age: Int, val email: String) {\n    operator fun component1() = name\n    operator fun component2() = age\n    operator fun component3() = email\n}\n\n// Option 3: Access properties directly (no destructuring)\nfun processUserDirect(userData: UserData) {\n    val name = userData.name\n    val age = userData.age\n    val email = userData.email\n}\n\n// Option 4: Destructure only what you need\nfun processUserPartial(userData: UserData) {\n    val (name, age) = userData  // Only first two components\n    val _ = userData.email  // Access third separately\n}\n\n// Example: Destructure Pair correctly\nfun processPair(pair: Pair<String, Int>) {\n    val (name, age) = pair  // OK: Pair has component1() and component2()\n    // val (name, age, x) = pair  // Error: Pair doesn't have component3()\n}",
+              "explanation": "Use data class for automatic componentN() generation. Kotlin generates component1(), component2(), etc. for each constructor parameter. For regular classes, manually define operator functions. Can destructure fewer variables than available components (val (a, b) on Triple)."
+            },
+            "verification": [
+              "Code compiles without destructuring errors",
+              "Test destructuring with various instances",
+              "Verify each component extracts correct value",
+              "Test partial destructuring (fewer variables than components)"
+            ],
+            "alternatives": [
+              {
+                "approach": "Use underscore for unused components",
+                "code": "val (name, _, email) = userData  // Skip age",
+                "pros": "Explicit about which components used",
+                "cons": "Still requires all componentN() to exist",
+                "migrationRequired": false
+              },
+              {
+                "approach": "Extension functions for existing classes",
+                "code": "operator fun UserData.component1() = name\noperator fun UserData.component2() = age",
+                "pros": "Add destructuring to classes you don't own",
+                "cons": "Can be confusing, not discoverable",
+                "migrationRequired": false
+              },
+              {
+                "approach": "Use collection destructuring",
+                "code": "val (first, second) = listOf(1, 2, 3)  // List has component1(), component2(), ...",
+                "pros": "Works with collections",
+                "cons": "Runtime error if list too small",
+                "migrationRequired": false
+              }
+            ]
+          },
+          "confidence": 94,
+          "tags": ["kotlin", "destructuring", "data-class", "componentN", "operators"]
+        }
+      ]
+    },
+    "compose": {
+      "description": "Jetpack Compose errors including API breakages, recomposition issues, and state management",
+      "examples": [
+        {
+          "id": "compose-001",
+          "title": "Remember State Lost on Recomposition",
+          "errorType": "COMPOSE_STATE",
+          "errorMessage": "State resets to initial value on every recomposition",
+          "filePath": "app/src/main/kotlin/com/example/ui/Counter.kt",
+          "lineNumber": 15,
+          "context": {
+            "framework": "Jetpack Compose",
+            "composeVersion": "1.6.0",
+            "language": "Kotlin"
+          },
+          "analysis": {
+            "problem": "Counter resets to 0 on every recomposition instead of maintaining state",
+            "rootCause": "Using regular 'var' instead of 'remember { mutableStateOf() }' for state. Compose recomposes functions when state changes, recreating local variables. Without 'remember', state is recreated with initial value on every recomposition. State must be remembered across recompositions using remember{}.",
+            "evidence": [
+              "State variable declared with var, not remember",
+              "State resets unexpectedly",
+              "Occurs on screen rotation, keyboard appearance, or other recomposition triggers",
+              "Counter, input fields, or UI state loses values"
+            ]
+          },
+          "solution": {
+            "summary": "Use remember { mutableStateOf() } to preserve state across recompositions",
+            "steps": [
+              "Replace var with remember { mutableStateOf() }",
+              "Access state value with .value",
+              "For config changes, use rememberSaveable instead",
+              "Use by delegation for cleaner syntax"
+            ],
+            "codeChange": {
+              "file": "app/src/main/kotlin/com/example/ui/Counter.kt",
+              "lineNumber": 15,
+              "before": "@Composable\nfun Counter() {\n    var count = 0  // Lost on recomposition!\n    \n    Button(onClick = { count++ }) {\n        Text(\"Count: $count\")\n    }\n}",
+              "after": "@Composable\nfun Counter() {\n    // Option 1: remember with .value\n    val count = remember { mutableStateOf(0) }\n    \n    Button(onClick = { count.value++ }) {\n        Text(\"Count: ${count.value}\")\n    }\n}\n\n// Option 2: remember with by delegation (cleaner)\n@Composable\nfun CounterDelegated() {\n    var count by remember { mutableStateOf(0) }\n    \n    Button(onClick = { count++ }) {\n        Text(\"Count: $count\")\n    }\n}\n\n// Option 3: rememberSaveable (survives config changes)\n@Composable\nfun CounterSaveable() {\n    var count by rememberSaveable { mutableStateOf(0) }\n    \n    Button(onClick = { count++ }) {\n        Text(\"Count: $count\")  // Survives rotation!\n    }\n}",
+              "explanation": "remember{} preserves value across recompositions. rememberSaveable{} also survives config changes (rotation). Use 'by' delegation to avoid .value syntax. This is fundamental Compose state management."
+            },
+            "verification": [
+              "Click button multiple times: counter increments correctly",
+              "Rotate device: with rememberSaveable, counter persists",
+              "Change theme/language: state maintained",
+              "Navigate away and back: state may be lost (use ViewModel for persistence)"
+            ],
+            "alternatives": [
+              {
+                "approach": "Use ViewModel with State",
+                "code": "class CounterViewModel : ViewModel() {\n    var count by mutableStateOf(0)\n}",
+                "pros": "Survives config changes AND navigation",
+                "cons": "More setup, requires ViewModel dependency",
+                "migrationRequired": true
+              },
+              {
+                "approach": "Hoist state to parent",
+                "code": "@Composable\nfun Parent() {\n    var count by remember { mutableStateOf(0) }\n    Counter(count, { count = it })\n}",
+                "pros": "Better testability, composable is stateless",
+                "cons": "More boilerplate",
+                "migrationRequired": false
+              }
+            ]
+          },
+          "confidence": 99,
+          "tags": ["compose", "state", "remember", "recomposition"]
+        },
+        {
+          "id": "compose-002",
+          "title": "Compose API Breakage - Material3 Migration",
+          "errorType": "COMPOSE_API_BREAKAGE",
+          "errorMessage": "Unresolved reference: MaterialTheme was expecting androidx.compose.material3 but found androidx.compose.material",
+          "filePath": "app/src/main/kotlin/com/example/ui/theme/Theme.kt",
+          "lineNumber": 20,
+          "context": {
+            "framework": "Jetpack Compose",
+            "composeVersion": "1.6.0",
+            "migration": "Material 2 to Material 3"
+          },
+          "analysis": {
+            "problem": "Code uses Material 2 APIs but project migrated to Material 3",
+            "rootCause": "Compose Material 3 (androidx.compose.material3) has different package and some API changes from Material 2. Common breaking changes: colors.primary → colorScheme.primary, Button params changed, Some components renamed. Import statements and usage must be updated together.",
+            "evidence": [
+              "Unresolved reference errors",
+              "Import androidx.compose.material used instead of material3",
+              "Build.gradle has material3 dependency",
+              "Colors, shapes APIs don't match"
+            ]
+          },
+          "solution": {
+            "summary": "Update imports and API usage to Material 3",
+            "steps": [
+              "Change imports from material to material3",
+              "Update MaterialTheme.colors to MaterialTheme.colorScheme",
+              "Update color references (primary, secondary, etc.)",
+              "Check component API changes (Button, TextField, etc.)"
+            ],
+            "codeChange": {
+              "file": "app/src/main/kotlin/com/example/ui/theme/Theme.kt",
+              "lineNumber": 20,
+              "before": "import androidx.compose.material.MaterialTheme\nimport androidx.compose.material.lightColors\nimport androidx.compose.material.darkColors\n\nprivate val LightColors = lightColors(\n    primary = Purple500,\n    primaryVariant = Purple700,\n    secondary = Teal200\n)\n\n@Composable\nfun MyAppTheme(content: @Composable () -> Unit) {\n    MaterialTheme(\n        colors = LightColors,\n        content = content\n    )\n}",
+              "after": "import androidx.compose.material3.MaterialTheme\nimport androidx.compose.material3.lightColorScheme\nimport androidx.compose.material3.darkColorScheme\n\nprivate val LightColors = lightColorScheme(\n    primary = Purple500,\n    // primaryVariant removed in M3\n    secondary = Teal200,\n    tertiary = Purple700  // Use tertiary instead\n)\n\n@Composable\nfun MyAppTheme(content: @Composable () -> Unit) {\n    MaterialTheme(\n        colorScheme = LightColors,  // colors → colorScheme\n        content = content\n    )\n}\n\n// Usage changes:\n// Material 2: MaterialTheme.colors.primary\n// Material 3: MaterialTheme.colorScheme.primary",
+              "explanation": "Material 3 uses 'colorScheme' instead of 'colors', lightColorScheme() instead of lightColors(), and removes primaryVariant. Update all imports to material3 package. Check Material3 migration guide for component-specific changes."
+            },
+            "verification": [
+              "Code compiles without unresolved references",
+              "App theme displays correctly",
+              "Check all colors: primary, secondary, tertiary, background, surface",
+              "Test dark mode if implemented",
+              "Verify Button, TextField, TopAppBar styling"
+            ],
+            "alternatives": [
+              {
+                "approach": "Gradual migration with both dependencies",
+                "code": "// build.gradle\nimplementation(\"androidx.compose.material:material\")\nimplementation(\"androidx.compose.material3:material3\")",
+                "pros": "Migrate component by component",
+                "cons": "Larger APK, potential conflicts",
+                "migrationRequired": false,
+                "note": "Temporary during migration only"
+              },
+              {
+                "approach": "Use Material Theme Builder",
+                "code": "// Generate theme from material-theme-builder.glitch.me",
+                "pros": "Auto-generates Material 3 theme code",
+                "cons": "Still need manual migration of components",
+                "migrationRequired": false
+              }
+            ]
+          },
+          "confidence": 95,
+          "tags": ["compose", "material3", "migration", "api-breakage", "theme"]
+        },
+        {
+          "id": "compose-003",
+          "title": "LaunchedEffect Infinite Recomposition Loop",
+          "errorType": "COMPOSE_RECOMPOSITION",
+          "errorMessage": "App freezes with 100% CPU usage, endless recompositions",
+          "filePath": "app/src/main/kotlin/com/example/ui/DataScreen.kt",
+          "lineNumber": 35,
+          "context": {
+            "framework": "Jetpack Compose",
+            "composeVersion": "1.6.0",
+            "effect": "LaunchedEffect"
+          },
+          "analysis": {
+            "problem": "LaunchedEffect triggers state change that causes recomposition, which restarts LaunchedEffect, creating infinite loop",
+            "rootCause": "LaunchedEffect key changes on every recomposition, or effect updates state that causes recomposition without proper keys. Common pattern: LaunchedEffect(true) or LaunchedEffect with state that the effect modifies. Effect must have stable key that doesn't change unless you want effect to restart.",
+            "evidence": [
+              "App freezes or becomes unresponsive",
+              "CPU usage spikes to 100%",
+              "Logcat shows rapid recompositions",
+              "LaunchedEffect executes repeatedly",
+              "State updates in effect trigger recomposition"
+            ]
+          },
+          "solution": {
+            "summary": "Use stable keys for LaunchedEffect, or use proper effect APIs",
+            "steps": [
+              "Identify what triggers effect restart",
+              "Use Unit or specific stable keys, not changing state",
+              "For one-time effects, use LaunchedEffect(Unit)",
+              "For lifecycle effects, use DisposableEffect",
+              "Avoid updating state that's used as effect key"
+            ],
+            "codeChange": {
+              "file": "app/src/main/kotlin/com/example/ui/DataScreen.kt",
+              "lineNumber": 35,
+              "before": "@Composable\nfun DataScreen(viewModel: DataViewModel) {\n    val data by viewModel.data.collectAsState()\n    \n    // Infinite loop: data changes → recomposition → effect runs → data changes\n    LaunchedEffect(data) {\n        viewModel.loadData()\n    }\n    \n    Text(\"Data: $data\")\n}",
+              "after": "@Composable\nfun DataScreen(viewModel: DataViewModel) {\n    val data by viewModel.data.collectAsState()\n    \n    // Option 1: Run once on composition (correct for initial load)\n    LaunchedEffect(Unit) {\n        viewModel.loadData()\n    }\n    \n    Text(\"Data: $data\")\n}\n\n// Option 2: Re-run only when specific ID changes\n@Composable\nfun DataScreenWithKey(viewModel: DataViewModel, userId: String) {\n    val data by viewModel.data.collectAsState()\n    \n    LaunchedEffect(userId) {  // Only restart when userId changes\n        viewModel.loadData(userId)\n    }\n    \n    Text(\"Data: $data\")\n}\n\n// Option 3: Use remember to prevent key change\n@Composable\nfun DataScreenRemember(viewModel: DataViewModel) {\n    val data by viewModel.data.collectAsState()\n    val loadKey = remember { Any() }  // Stable key\n    \n    LaunchedEffect(loadKey) {\n        viewModel.loadData()\n    }\n    \n    Text(\"Data: $data\")\n}",
+              "explanation": "Use LaunchedEffect(Unit) for effects that should run once. Use specific keys (like userId) for effects that should re-run only when those values change. Never use state that the effect modifies as the key."
+            },
+            "verification": [
+              "App runs without freezing",
+              "CPU usage normal",
+              "LaunchedEffect runs expected number of times (check logs)",
+              "Enable Compose metrics to see recomposition count",
+              "Use Layout Inspector to verify recomposition behavior"
+            ],
+            "alternatives": [
+              {
+                "approach": "Move logic to ViewModel",
+                "code": "class DataViewModel : ViewModel() {\n    init { loadData() }  // Load in ViewModel\n}",
+                "pros": "No effect needed, simpler",
+                "cons": "Less flexible for composition-specific logic",
+                "migrationRequired": true
+              },
+              {
+                "approach": "Use SideEffect for synchronization",
+                "code": "SideEffect {\n    // Runs on every successful recomposition\n}",
+                "pros": "Different use case: sync state to non-Compose",
+                "cons": "Not for async operations",
+                "migrationRequired": false
+              }
+            ]
+          },
+          "confidence": 96,
+          "tags": ["compose", "LaunchedEffect", "recomposition", "infinite-loop", "performance"]
+        },
+        {
+          "id": "compose-004",
+          "title": "Modifier Order Issues - ClickableNot Working",
+          "errorType": "COMPOSE_STATE",
+          "errorMessage": "Button click not detected, padding seems wrong",
+          "filePath": "app/src/main/kotlin/com/example/ui/CustomButton.kt",
+          "lineNumber": 22,
+          "context": {
+            "framework": "Jetpack Compose",
+            "composeVersion": "1.6.0"
+          },
+          "analysis": {
+            "problem": "Modifier order affects behavior - clickable area, padding, sizing not working as expected",
+            "rootCause": "Modifiers in Compose are applied in order (like method chaining). Order matters significantly: size().clickable() creates small clickable area, clickable().size() creates large clickable area. padding() before/after background changes appearance. Common mistake: putting clickable after padding, making padding not clickable.",
+            "evidence": [
+              "Click detection doesn't work in expected area",
+              "Visual appearance doesn't match intention",
+              "Padding or sizing behaves unexpectedly",
+              "Modifier order seems arbitrary"
+            ]
+          },
+          "solution": {
+            "summary": "Understand modifier order: earlier modifiers affect inner content, later modifiers affect outer",
+            "steps": [
+              "Remember: modifiers apply outside-in for layout, inside-out for drawing",
+              "For clickable area: size first, then clickable",
+              "For background padding: background first, then padding",
+              "Common pattern: size/fillMax → background → padding → border"
+            ],
+            "codeChange": {
+              "file": "app/src/main/kotlin/com/example/ui/CustomButton.kt",
+              "lineNumber": 22,
+              "before": "@Composable\nfun CustomButton(onClick: () -> Unit) {\n    Box(\n        modifier = Modifier\n            .clickable { onClick() }  // Click area is 100x100\n            .size(100.dp)             // Then sized to 100x100\n            .padding(16.dp)           // Padding OUTSIDE clickable area!\n            .background(Color.Blue)   // Background tiny (100-32=68dp)\n    ) {\n        Text(\"Click me\")\n    }\n}",
+              "after": "@Composable\nfun CustomButton(onClick: () -> Unit) {\n    // Correct order for most use cases:\n    Box(\n        modifier = Modifier\n            .size(100.dp)             // 1. Overall size\n            .background(Color.Blue)   // 2. Background fills size\n            .clickable { onClick() }  // 3. Entire area clickable\n            .padding(16.dp)           // 4. Padding inside clickable\n    ) {\n        Text(\"Click me\")\n    }\n}\n\n// Alternative: Make padding part of clickable area\n@Composable\nfun CustomButtonClickablePadding(onClick: () -> Unit) {\n    Box(\n        modifier = Modifier\n            .padding(16.dp)           // 1. Outer padding (not clickable)\n            .size(100.dp)             // 2. Size after padding\n            .clickable { onClick() }  // 3. Clickable includes inner padding\n            .background(Color.Blue)   // 4. Background\n            .padding(8.dp)            // 5. Inner padding (clickable)\n    ) {\n        Text(\"Click me\")\n    }\n}\n\n// Rule of thumb:\n// Modifier.size().background().clickable().padding()\n//         ↑       ↑           ↑            ↑\n//      outer   behind      interaction  inner spacing",
+              "explanation": "Modifiers compose outside-in. Read right to left for visual result. Common order: size/fillMax (outer) → background → clickable → padding (inner) → border. Experiment with order to understand effects."
+            },
+            "verification": [
+              "Click entire box: click registers",
+              "Visual: background and padding appear correct",
+              "Use Layout Inspector to see actual bounds",
+              "Test with different orders to understand effects"
+            ],
+            "alternatives": [
+              {
+                "approach": "Use combinedClickable for ripple",
+                "code": "Modifier.combinedClickable(\n    onClick = { },\n    indication = rememberRipple(),\n    interactionSource = remember { MutableInteractionSource() }\n)",
+                "pros": "Visual feedback with ripple",
+                "cons": "More complex setup",
+                "migrationRequired": false
+              }
+            ]
+          },
+          "confidence": 93,
+          "tags": ["compose", "modifier", "clickable", "padding", "order"]
+        }
+      ]
+    },
+    "xml": {
+      "description": "XML layout errors including inflation failures, attribute issues, and resource conflicts",
+      "examples": [
+        {
+          "id": "xml-001",
+          "title": "Layout Inflation Exception - Unknown View",
+          "errorType": "XML_INFLATION",
+          "errorMessage": "Binary XML file line #23: Error inflating class com.example.CustomView",
+          "filePath": "app/src/main/res/layout/activity_main.xml",
+          "lineNumber": 23,
+          "context": {
+            "framework": "Android XML",
+            "language": "XML"
+          },
+          "analysis": {
+            "problem": "LayoutInflater cannot instantiate custom view from XML",
+            "rootCause": "Custom view class must have specific constructor signature for XML inflation: constructor(context: Context, attrs: AttributeSet?). Common causes: 1) Constructor missing or wrong signature, 2) Class not public, 3) Typo in XML class name, 4) ProGuard removed class (missing keep rule), 5) View in wrong package.",
+            "evidence": [
+              "App crashes when inflating layout",
+              "Error message shows specific view class and line number",
+              "Custom view used in XML",
+              "Works in code but not XML inflation"
+            ]
+          },
+          "solution": {
+            "summary": "Add proper constructor for XML inflation and ensure class is public",
+            "steps": [
+              "Add constructor with (Context, AttributeSet?) signature",
+              "Make class public or internal",
+              "Verify XML uses fully qualified class name",
+              "Add ProGuard keep rule if using minification"
+            ],
+            "codeChange": {
+              "file": "app/src/main/kotlin/com/example/CustomView.kt",
+              "lineNumber": 5,
+              "before": "class CustomView(context: Context) : View(context) {\n    // Only has single-arg constructor\n}",
+              "after": "class CustomView @JvmOverloads constructor(\n    context: Context,\n    attrs: AttributeSet? = null,\n    defStyleAttr: Int = 0\n) : View(context, attrs, defStyleAttr) {\n    // XML inflation requires this constructor signature\n    \n    init {\n        // Read custom attributes\n        attrs?.let {\n            val typedArray = context.obtainStyledAttributes(it, R.styleable.CustomView)\n            // Read attributes\n            typedArray.recycle()\n        }\n    }\n}\n\n// In proguard-rules.pro:\n-keep class com.example.CustomView { *; }",
+              "explanation": "@JvmOverloads generates all constructor overloads. XML inflation uses (Context, AttributeSet?) constructor. defStyleAttr allows theming. Use init{} to process custom XML attributes."
+            },
+            "verification": [
+              "App launches without inflation errors",
+              "Custom view displays in layout",
+              "Test with custom attributes in XML",
+              "Build release APK with minification: still works"
+            ],
+            "alternatives": [
+              {
+                "approach": "Separate constructors without @JvmOverloads",
+                "code": "constructor(context: Context) : this(context, null)\nconstructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)\nconstructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)",
+                "pros": "More explicit, no JVM annotation",
+                "cons": "More boilerplate",
+                "migrationRequired": false
+              }
+            ]
+          },
+          "confidence": 97,
+          "tags": ["xml", "inflation", "custom-view", "constructor"]
+        },
+        {
+          "id": "xml-002",
+          "title": "Missing Resource - Layout Not Found",
+          "errorType": "XML_INFLATION",
+          "errorMessage": "android.content.res.Resources$NotFoundException: Resource ID #0x7f0b001a",
+          "filePath": "app/src/main/kotlin/com/example/MainActivity.kt",
+          "lineNumber": 18,
+          "context": {
+            "framework": "Android",
+            "buildVariant": "debug"
+          },
+          "analysis": {
+            "problem": "R.layout.activity_main refers to non-existent or incorrectly generated resource",
+            "rootCause": "Build system hasn't generated resource ID, or XML has syntax errors preventing generation. Common causes: 1) Clean build didn't regenerate R file, 2) XML syntax error in layout file, 3) File in wrong directory (layout/ vs layout-v21/), 4) Build cache corruption, 5) Wrong product flavor/build variant.",
+            "evidence": [
+              "Resource ID not found at runtime",
+              "R.layout reference compiles but crashes",
+              "Recent layout file additions or changes",
+              "Hex resource ID in error message"
+            ]
+          },
+          "solution": {
+            "summary": "Clean and rebuild project, fix XML syntax errors",
+            "steps": [
+              "Check XML file for syntax errors (red underlines)",
+              "Clean project: Build → Clean Project",
+              "Rebuild: Build → Rebuild Project",
+              "Invalidate caches: File → Invalidate Caches / Restart",
+              "Check build variant matches resource location"
+            ],
+            "codeChange": {
+              "file": "app/src/main/res/layout/activity_main.xml",
+              "lineNumber": 1,
+              "before": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<LinearLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    android:layout_width=\"match_parent\"\n    android:layout_height=\"match_parent\n    <!-- Missing closing quote ^^ -->\n    android:orientation=\"vertical\">\n</LinearLayout>",
+              "after": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<LinearLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    android:layout_width=\"match_parent\"\n    android:layout_height=\"match_parent\"  <!-- Fixed closing quote -->\n    android:orientation=\"vertical\">\n</LinearLayout>",
+              "explanation": "Fix XML syntax errors first. Then clean and rebuild. Check for: missing quotes, unclosed tags, invalid attributes, wrong namespaces. Gradle sync regenerates R file."
+            },
+            "verification": [
+              "XML file shows no errors in IDE",
+              "Build succeeds without warnings",
+              "R.layout.activity_main resolves correctly",
+              "App launches and displays layout",
+              "Check Build → Make Project completes successfully"
+            ],
+            "alternatives": [
+              {
+                "approach": "Delete build folder manually",
+                "code": "rm -rf app/build/",
+                "pros": "Forces complete rebuild",
+                "cons": "Slower than clean",
+                "migrationRequired": false
+              },
+              {
+                "approach": "Use View Binding instead of findViewById",
+                "code": "private lateinit var binding: ActivityMainBinding\nbinding = ActivityMainBinding.inflate(layoutInflater)",
+                "pros": "Type-safe, no resource ID lookup",
+                "cons": "Requires enabling View Binding",
+                "migrationRequired": true
+              }
+            ]
+          },
+          "confidence": 94,
+          "tags": ["xml", "resources", "R-file", "build", "syntax-error"]
+        }
+      ]
+    },
+    "manifest": {
+      "description": "AndroidManifest.xml errors including permission issues, component declaration problems, and merge conflicts",
+      "examples": [
+        {
+          "id": "manifest-001",
+          "title": "Missing Internet Permission",
+          "errorType": "MANIFEST_PERMISSION",
+          "errorMessage": "java.lang.SecurityException: Permission denied (missing INTERNET permission?)",
+          "filePath": "app/src/main/AndroidManifest.xml",
+          "lineNumber": null,
+          "context": {
+            "framework": "Android",
+            "permission": "INTERNET"
+          },
+          "analysis": {
+            "problem": "App crashes when attempting network requests due to missing INTERNET permission",
+            "rootCause": "Android requires explicit INTERNET permission in manifest for all network operations. Without it, SecurityException thrown at runtime. Common oversight: permission works in debug (some IDEs auto-add) but fails in release, or forgotten after clean manifest setup.",
+            "evidence": [
+              "SecurityException when making network requests",
+              "Error mentions missing INTERNET permission",
+              "OkHttp, Retrofit, or HttpURLConnection throws exception",
+              "Works on some devices/builds but not others"
+            ]
+          },
+          "solution": {
+            "summary": "Add <uses-permission android:name=\"android.permission.INTERNET\" /> to manifest",
+            "steps": [
+              "Open app/src/main/AndroidManifest.xml",
+              "Add INTERNET permission before <application> tag",
+              "Sync project",
+              "Rebuild and reinstall app"
+            ],
+            "codeChange": {
+              "file": "app/src/main/AndroidManifest.xml",
+              "lineNumber": 3,
+              "before": "<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    package=\"com.example.app\">\n\n    <application\n        android:label=\"@string/app_name\">\n        <!-- App content -->\n    </application>\n</manifest>",
+              "after": "<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    package=\"com.example.app\">\n\n    <!-- Required for network requests -->\n    <uses-permission android:name=\"android.permission.INTERNET\" />\n    \n    <!-- Optional: Check network state -->\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\n\n    <application\n        android:label=\"@string/app_name\">\n        <!-- App content -->\n    </application>\n</manifest>",
+              "explanation": "INTERNET permission is normal permission (auto-granted, no runtime request needed). Add before <application> tag. ACCESS_NETWORK_STATE is optional but useful for checking connectivity before requests."
+            },
+            "verification": [
+              "App installs successfully",
+              "Network requests complete without SecurityException",
+              "Test on fresh install (uninstall first)",
+              "Check merged manifest: Build → Analyze APK → AndroidManifest.xml"
+            ],
+            "alternatives": [
+              {
+                "approach": "Request at runtime (not needed for INTERNET)",
+                "code": "// INTERNET is normal permission, no runtime request needed",
+                "pros": "N/A - INTERNET is automatically granted",
+                "cons": "Unnecessary for INTERNET permission",
+                "migrationRequired": false,
+                "note": "Only dangerous permissions require runtime requests (CAMERA, LOCATION, etc.)"
+              }
+            ]
+          },
+          "confidence": 99,
+          "tags": ["manifest", "permission", "internet", "security-exception"]
+        },
+        {
+          "id": "manifest-002",
+          "title": "Activity Not Declared in Manifest",
+          "errorType": "MANIFEST_COMPONENT",
+          "errorMessage": "android.content.ActivityNotFoundException: Unable to find explicit activity class {com.example/com.example.SecondActivity}",
+          "filePath": "app/src/main/AndroidManifest.xml",
+          "lineNumber": null,
+          "context": {
+            "framework": "Android",
+            "component": "Activity"
+          },
+          "analysis": {
+            "problem": "Attempting to start Activity that isn't declared in AndroidManifest.xml",
+            "rootCause": "All Activities must be declared in manifest with <activity> tag. Android can't start undeclared activities for security reasons. Common causes: 1) New activity created but not added to manifest, 2) Typo in activity name, 3) Manifest merge removed activity declaration, 4) Activity in wrong module/flavor.",
+            "evidence": [
+              "ActivityNotFoundException at runtime",
+              "Error shows exact activity class name",
+              "startActivity() call crashes",
+              "Activity class exists in code but not in manifest"
+            ]
+          },
+          "solution": {
+            "summary": "Add <activity> declaration to AndroidManifest.xml",
+            "steps": [
+              "Open app/src/main/AndroidManifest.xml",
+              "Add <activity> tag inside <application>",
+              "Specify android:name with fully qualified class name or relative name",
+              "Add exported=\"true\" if activity can be started by other apps",
+              "Rebuild project"
+            ],
+            "codeChange": {
+              "file": "app/src/main/AndroidManifest.xml",
+              "lineNumber": 12,
+              "before": "<application\n    android:icon=\"@mipmap/ic_launcher\"\n    android:label=\"@string/app_name\">\n    \n    <activity android:name=\".MainActivity\"\n        android:exported=\"true\">\n        <intent-filter>\n            <action android:name=\"android.intent.action.MAIN\" />\n            <category android:name=\"android.intent.category.LAUNCHER\" />\n        </intent-filter>\n    </activity>\n    \n    <!-- SecondActivity missing! -->\n    \n</application>",
+              "after": "<application\n    android:icon=\"@mipmap/ic_launcher\"\n    android:label=\"@string/app_name\">\n    \n    <activity android:name=\".MainActivity\"\n        android:exported=\"true\">\n        <intent-filter>\n            <action android:name=\"android.intent.action.MAIN\" />\n            <category android:name=\"android.intent.category.LAUNCHER\" />\n        </intent-filter>\n    </activity>\n    \n    <!-- Add SecondActivity -->\n    <activity \n        android:name=\".SecondActivity\"\n        android:exported=\"false\"  <!-- Only app can start it -->\n        android:label=\"Second Screen\" />\n    \n</application>",
+              "explanation": "Add <activity> for each Activity class. android:name can be relative (.SecondActivity) if in same package as manifest package attribute, or fully qualified (com.example.SecondActivity). exported=\"false\" means only your app can start it (recommended for internal activities)."
+            },
+            "verification": [
+              "App builds successfully",
+              "Navigate to SecondActivity: no crash",
+              "Check merged manifest: Build → Analyze APK → AndroidManifest.xml",
+              "Verify all activities in app are declared"
+            ],
+            "alternatives": [
+              {
+                "approach": "Use android:exported explicitly (required Android 12+)",
+                "code": "<activity android:name=\".SecondActivity\" android:exported=\"false\" />",
+                "pros": "Required for targetSdk 31+, explicit intent",
+                "cons": "Mandatory, not optional",
+                "migrationRequired": false,
+                "note": "Android 12+ requires explicit exported declaration"
+              }
+            ]
+          },
+          "confidence": 98,
+          "tags": ["manifest", "activity", "component", "activitynotfound"]
+        },
+        {
+          "id": "manifest-003",
+          "title": "Manifest Merger - Duplicate Attribute",
+          "errorType": "MANIFEST_MERGE",
+          "errorMessage": "Manifest merger failed : Attribute application@allowBackup value=(false) from AndroidManifest.xml:10 is also present at [library] AndroidManifest.xml:8 value=(true)",
+          "filePath": "app/src/main/AndroidManifest.xml",
+          "lineNumber": 10,
+          "context": {
+            "framework": "Android",
+            "buildSystem": "Gradle"
+          },
+          "analysis": {
+            "problem": "App manifest and library manifest both define android:allowBackup with different values",
+            "rootCause": "Gradle merges manifests from app module and all library dependencies. When both define same attribute with conflicting values, merger fails. Common with: allowBackup, theme, icon, label. Need explicit merge strategy to resolve conflicts.",
+            "evidence": [
+              "Build fails with manifest merger error",
+              "Error shows conflicting attributes from app and library",
+              "Multiple modules define same manifest attribute",
+              "Error message shows both file locations and line numbers"
+            ]
+          },
+          "solution": {
+            "summary": "Add tools:replace to override library manifest values with app values",
+            "steps": [
+              "Open app/src/main/AndroidManifest.xml",
+              "Add xmlns:tools namespace to <manifest> tag",
+              "Add tools:replace=\"android:allowBackup\" to <application> tag",
+              "List all conflicting attributes in tools:replace",
+              "Rebuild project"
+            ],
+            "codeChange": {
+              "file": "app/src/main/AndroidManifest.xml",
+              "lineNumber": 10,
+              "before": "<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    package=\"com.example.app\">\n\n    <application\n        android:allowBackup=\"false\"\n        android:icon=\"@mipmap/ic_launcher\"\n        android:label=\"@string/app_name\">\n        <!-- Conflict with library -->\n    </application>\n</manifest>",
+              "after": "<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    xmlns:tools=\"http://schemas.android.com/tools\"\n    package=\"com.example.app\">\n\n    <application\n        android:allowBackup=\"false\"\n        android:icon=\"@mipmap/ic_launcher\"\n        android:label=\"@string/app_name\"\n        tools:replace=\"android:allowBackup\">  <!-- Override library value -->\n        <!-- App value takes precedence -->\n    </application>\n</manifest>",
+              "explanation": "tools:replace tells merger to use app's value instead of library's. Can list multiple attributes: tools:replace=\"android:allowBackup,android:icon\". Alternative merge strategies: tools:merge (combine), tools:remove (remove attribute)."
+            },
+            "verification": [
+              "Build succeeds without merger errors",
+              "Check merged manifest: Build → Analyze APK → AndroidManifest.xml",
+              "Verify app's allowBackup value used in merged manifest",
+              "Test backup behavior matches intent (false = no backup)"
+            ],
+            "alternatives": [
+              {
+                "approach": "Remove attribute from library (if possible)",
+                "code": "// In library's AndroidManifest.xml, remove android:allowBackup",
+                "pros": "Cleaner, no merge conflict",
+                "cons": "Only if you control library code",
+                "migrationRequired": true
+              },
+              {
+                "approach": "Use tools:remove to remove library attribute",
+                "code": "tools:remove=\"android:allowBackup\"",
+                "pros": "Removes attribute entirely from merged manifest",
+                "cons": "Might not be desired behavior",
+                "migrationRequired": false
+              }
+            ]
+          },
+          "confidence": 96,
+          "tags": ["manifest", "merge", "conflict", "tools-namespace", "library"]
+        }
+      ]
+    }
+  }
+}
