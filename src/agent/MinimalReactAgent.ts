@@ -28,6 +28,7 @@ import { ToolRegistry } from '../tools/ToolRegistry';
 import { PromptEngine } from './PromptEngine';
 import { AgentStateStream } from './AgentStateStream';
 import { PerformanceTracker } from '../monitoring/PerformanceTracker';
+import { FixGenerator } from './FixGenerator'; // Chunk 5: Fix Generator
 import { z } from 'zod';
 import {
   ParsedError,
@@ -46,6 +47,7 @@ export interface AgentConfig {
   timeout?: number;
   usePromptEngine?: boolean;
   useToolRegistry?: boolean;
+  generateFix?: boolean; // Chunk 5: Enable fix generation
 }
 
 export class MinimalReactAgent {
@@ -53,11 +55,13 @@ export class MinimalReactAgent {
   private readonly timeout: number;
   private readonly usePromptEngine: boolean;
   private readonly useToolRegistry: boolean;
+  private readonly generateFix: boolean; // Chunk 5: Fix generation flag
   private readonly toolRegistry: ToolRegistry;
   private readonly promptEngine: PromptEngine;
   private readonly readFileTool: ReadFileTool;
   private readonly stream: AgentStateStream;
   private readonly performanceTracker: PerformanceTracker;
+  private readonly fixGenerator: FixGenerator; // Chunk 5: Fix Generator
 
   constructor(
     protected llm: OllamaClient,
@@ -68,6 +72,7 @@ export class MinimalReactAgent {
     this.timeout = config?.timeout ?? 90000;
     this.usePromptEngine = config?.usePromptEngine ?? true;
     this.useToolRegistry = config?.useToolRegistry ?? true;
+    this.generateFix = config?.generateFix ?? true; // Chunk 5: Default enabled
 
     // Initialize tools
     this.readFileTool = new ReadFileTool();
@@ -75,6 +80,7 @@ export class MinimalReactAgent {
     this.promptEngine = new PromptEngine();
     this.stream = new AgentStateStream();
     this.performanceTracker = new PerformanceTracker();
+    this.fixGenerator = new FixGenerator(this.llm, this.readFileTool); // Chunk 5
 
     // Register tools if using ToolRegistry
     if (this.useToolRegistry) {
@@ -317,6 +323,29 @@ export class MinimalReactAgent {
           
           stopTotal();
           
+          // Chunk 5: Generate code fix if enabled
+          let codeFix = undefined;
+          if (this.generateFix) {
+            console.log('🔧 Generating code fix...');
+            const stopFixGen = this.performanceTracker.startTimer('fix_generation');
+            try {
+              codeFix = await this.fixGenerator.generateFix(
+                error,
+                response.rootCause,
+                state.thoughts.join('\n')
+              );
+              
+              if (codeFix) {
+                console.log(`✓ Code fix generated (confidence: ${codeFix.confidence}%)`);
+              } else {
+                console.log('⚠ Could not generate code fix');
+              }
+            } catch (fixError) {
+              console.warn('⚠ Fix generation failed:', fixError);
+            }
+            stopFixGen();
+          }
+          
           const result: RCAResult = {
             error: error.message,
             rootCause: response.rootCause,
@@ -324,6 +353,7 @@ export class MinimalReactAgent {
             confidence: response.confidence || 0.5,
             iterations: i + 1,
             toolsUsed: state.actions.map((a) => a.tool),
+            codeFix: codeFix || undefined, // Chunk 5: Include generated fix
           };
 
           // Emit completion event
@@ -356,6 +386,24 @@ export class MinimalReactAgent {
 
       if (this.usePromptEngine) {
         const parsed = this.promptEngine.parseResponse(finalResponse.text);
+        
+        // Chunk 5: Generate code fix if enabled (for max iterations case)
+        let codeFix = undefined;
+        if (this.generateFix && parsed.rootCause) {
+          console.log('🔧 Generating code fix (max iterations)...');
+          const stopFixGen = this.performanceTracker.startTimer('fix_generation');
+          try {
+            codeFix = await this.fixGenerator.generateFix(
+              error,
+              parsed.rootCause,
+              state.thoughts.join('\n')
+            );
+          } catch (fixError) {
+            console.warn('⚠ Fix generation failed:', fixError);
+          }
+          stopFixGen();
+        }
+        
         const result: RCAResult = {
           error: error.message,
           rootCause: parsed.rootCause || 'Analysis incomplete - reached max iterations',
@@ -363,6 +411,7 @@ export class MinimalReactAgent {
           confidence: parsed.confidence || 0.3,
           iterations: this.maxIterations,
           toolsUsed: state.actions.map((a) => a.tool),
+          codeFix: codeFix || undefined, // Chunk 5: Include generated fix
         };
 
         // Emit completion event
