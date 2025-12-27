@@ -23,10 +23,30 @@
     "onCommand:rcaAgent.analyzeError",
     "onCommand:rcaAgent.analyzeErrorWebview",
     "onCommand:rcaAgent.toggleEducationalMode",
-    "onCommand:rcaAgent.togglePerformanceMetrics"
+    "onCommand:rcaAgent.togglePerformanceMetrics",
+    "onView:rca-agent.mainPanel"
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "rca-agent",
+          "title": "RCA Agent",
+          "icon": "resources/icons/rca-agent.svg"
+        }
+      ]
+    },
+    "views": {
+      "rca-agent": [
+        {
+          "type": "webview",
+          "id": "rca-agent.mainPanel",
+          "name": "Analysis",
+          "contextualTitle": "RCA Agent"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "rcaAgent.analyzeError",
@@ -44,6 +64,11 @@
       {
         "command": "rcaAgent.togglePerformanceMetrics",
         "title": "RCA Agent: Toggle Performance Metrics ⚡"
+      },
+      {
+        "command": "rcaAgent.togglePanel",
+        "title": "RCA Agent: Toggle Panel",
+        "icon": "$(layout-sidebar-right)"
       }
     ],
     "keybindings": [
@@ -63,6 +88,11 @@
         "command": "rcaAgent.toggleEducationalMode",
         "key": "ctrl+shift+e",
         "mac": "cmd+shift+e"
+      },
+      {
+        "command": "rcaAgent.togglePanel",
+        "key": "ctrl+shift+a",
+        "mac": "cmd+shift+a"
       },
       {
         "command": "rcaAgent.togglePerformanceMetrics",
@@ -88,6 +118,11 @@
             "qwen-coder:7b",
             "deepseek-coder:6.7b"
           ]
+        },
+        "rcaAgent.experimental.newUI": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable the new panel-based UI (experimental)"
         },
         "rcaAgent.showPerformanceMetrics": {
           "type": "boolean",
