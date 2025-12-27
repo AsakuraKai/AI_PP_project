@@ -4,6 +4,20 @@ import { RCAWebview } from './ui/RCAWebview';
 import { RCAPanelProvider } from './panel/RCAPanelProvider';
 import { StateManager } from './panel/StateManager';
 
+// CHUNK 4: Inline editor integration imports
+import { RCACodeActionProvider } from './integrations/RCACodeActionProvider';
+import { RCADiagnosticProvider } from './integrations/RCADiagnosticProvider';
+import { StatusBarManager } from './integrations/StatusBarManager';
+import { InlineIntegrationCommands } from './commands/InlineIntegrationCommands';
+import { ErrorQueueManager } from './panel/ErrorQueueManager';
+
+// CHUNK 5: Polish & Production Ready imports
+import { AccessibilityService } from './services/AccessibilityService';
+import { ThemeManager } from './services/ThemeManager';
+import { PerformanceMonitor } from './services/PerformanceMonitor';
+import { FeatureFlagManager } from './services/FeatureFlagManager';
+import { ErrorBoundary } from './panel/ErrorBoundary';
+
 // Import Kai's backend components (will be wired from ../src)
 // These will be implemented by Kai - we just call them
 interface ParsedError {
@@ -70,6 +84,19 @@ let extensionContext: vscode.ExtensionContext;
 let rcaPanelProvider: RCAPanelProvider | undefined;
 let stateManager: StateManager | undefined;
 
+// CHUNK 4: Inline integration state
+let errorQueueManager: ErrorQueueManager | undefined;
+let diagnosticProvider: RCADiagnosticProvider | undefined;
+let statusBarManager: StatusBarManager | undefined;
+let inlineCommands: InlineIntegrationCommands | undefined;
+
+// CHUNK 5: Service instances
+let accessibilityService: AccessibilityService | undefined;
+let themeManager: ThemeManager | undefined;
+let performanceMonitor: PerformanceMonitor | undefined;
+let featureFlagManager: FeatureFlagManager | undefined;
+let errorBoundary: ErrorBoundary | undefined;
+
 /**
  * CHUNK 1.1: Extension Bootstrap
  * Entry point - Called when extension is activated
@@ -77,7 +104,10 @@ let stateManager: StateManager | undefined;
 export function activate(context: vscode.ExtensionContext): void {
   extensionContext = context;
   
-  // Initialize output channels
+  // Initia5: Initialize core services
+  initializeChunk5Services(context);
+  
+  // CHUNK lize output channels
   outputChannel = vscode.window.createOutputChannel('RCA Agent');
   debugChannel = vscode.window.createOutputChannel('RCA Agent Debug');
   context.subscriptions.push(outputChannel, debugChannel);
@@ -104,6 +134,38 @@ export function activate(context: vscode.ExtensionContext): void {
         }
       )
     );
+    
+    // CHUNK 3: Initialize error queue manager
+    errorQueueManager = ErrorQueueManager.getInstance();
+    
+    // CHUNK 4: Initialize inline editor integrations
+    log('info', 'Initializing inline editor integrations (Chunk 4)');
+    
+    // Initialize diagnostic provider
+    diagnosticProvider = new RCADiagnosticProvider(errorQueueManager);
+    context.subscriptions.push(diagnosticProvider);
+    
+    // Initialize status bar manager
+    statusBarManager = new StatusBarManager(errorQueueManager);
+    context.subscriptions.push(statusBarManager);
+    
+    // Register code action provider (lightbulb)
+    const codeActionProvider = new RCACodeActionProvider();
+    context.subscriptions.push(
+      vscode.languages.registerCodeActionsProvider(
+        { scheme: 'file', pattern: '**/*' },
+        codeActionProvider,
+        {
+          providedCodeActionKinds: RCACodeActionProvider.getProvidedCodeActionKinds()
+        }
+      )
+    );
+    
+    // Register inline integration commands
+    inlineCommands = new InlineIntegrationCommands(errorQueueManager, rcaPanelProvider);
+    inlineCommands.register(context);
+    
+    log('info', 'Inline editor integrations initialized successfully');
     
     // Register panel toggle command
     context.subscriptions.push(
@@ -2089,4 +2151,91 @@ function generateLearningNotes(result: RCAResult): string[] {
   }
   
   return notes;
+}
+
+/**
+ * CHUNK 5: Initialize core services
+ * Sets up accessibility, theme management, performance monitoring, and feature flags
+ */
+function initializeChunk5Services(context: vscode.ExtensionContext): void {
+  try {
+    // Start performance monitoring
+    performanceMonitor = PerformanceMonitor.getInstance();
+    performanceMonitor.startTimer('extension-activation');
+    
+    // Initialize services
+    accessibilityService = AccessibilityService.getInstance();
+    themeManager = ThemeManager.getInstance();
+    featureFlagManager = FeatureFlagManager.getInstance();
+    errorBoundary = ErrorBoundary.getInstance();
+    
+    log('info', 'Chunk 5 services initialized successfully');
+    
+    // Register theme change listener
+    themeManager.onThemeChange((theme) => {
+      log('info', `Theme changed to: ${theme}`);
+      // Notify panel to update theme
+      if (rcaPanelProvider) {
+        rcaPanelProvider.updateTheme(theme);
+      }
+    });
+    
+    // Register feature flag change listener
+    featureFlagManager.onFlagChange((change) => {
+      log('info', `Feature flag '${change.flag}' changed to: ${change.value}`);
+      
+      // Handle new UI flag change
+      if (change.flag === 'newUI') {
+        featureFlagManager.promptReloadIfNeeded('newUI');
+      }
+    });
+    
+    // Register error listener
+    errorBoundary.onError((errorContext) => {
+      log('error', `Error in ${errorContext.component}.${errorContext.action}: ${errorContext.error.message}`);
+      
+      // Update status bar to show error
+      if (statusBarManager) {
+        statusBarManager.showError();
+      }
+    });
+    
+    // Check if new UI should be used
+    const useNewUI = featureFlagManager.shouldUseNewUI();
+    log('info', `Using ${useNewUI ? 'NEW' : 'OLD'} UI based on feature flag`);
+    
+    // Record activation time
+    const activationTime = performanceMonitor.endTimer('extension-activation');
+    log('info', `Extension activation took ${activationTime}ms`);
+    
+    // Register command to view performance metrics
+    context.subscriptions.push(
+      vscode.commands.registerCommand('rca-agent.showPerformanceMetrics', async () => {
+        const report = performanceMonitor.generateReport();
+        const document = await vscode.workspace.openTextDocument({
+          content: report,
+          language: 'plaintext'
+        });
+        await vscode.window.showTextDocument(document);
+      })
+    );
+    
+    // Register command to toggle feature flags
+    context.subscriptions.push(
+      vscode.commands.registerCommand('rca-agent.toggleFeatureFlag', async () => {
+        await featureFlagManager.showFeatureFlagPicker();
+      })
+    );
+    
+    // Show new UI prompt for first-time users (only once)
+    const hasSeenPrompt = context.globalState.get('rca-agent.hasSeenNewUIPrompt', false);
+    if (!hasSeenPrompt && !useNewUI) {
+      featureFlagManager.showNewUIPrompt();
+      context.globalState.update('rca-agent.hasSeenNewUIPrompt', true);
+    }
+    
+  } catch (error) {
+    log('error', `Failed to initialize Chunk 5 services: ${error}`);
+    // Continue activation even if services fail
+  }
 }

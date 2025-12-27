@@ -36,6 +36,9 @@ export interface ErrorItem {
   
   /** Optional error type (e.g., 'kotlin_npe', 'gradle_conflict') */
   errorType?: string;
+  
+  /** Optional source of the diagnostic (e.g., 'typescript', 'eslint') */
+  source?: string;
 }
 
 /**
