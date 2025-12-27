@@ -1,6 +1,8 @@
 // The module 'vscode' contains the VS Code extensibility API
 import * as vscode from 'vscode';
 import { RCAWebview } from './ui/RCAWebview';
+import { RCAPanelProvider } from './panel/RCAPanelProvider';
+import { StateManager } from './panel/StateManager';
 
 // Import Kai's backend components (will be wired from ../src)
 // These will be implemented by Kai - we just call them
@@ -65,6 +67,8 @@ let debugChannel: vscode.OutputChannel;
 let currentWebview: RCAWebview | undefined;
 let educationalMode: boolean = false;
 let extensionContext: vscode.ExtensionContext;
+let rcaPanelProvider: RCAPanelProvider | undefined;
+let stateManager: StateManager | undefined;
 
 /**
  * CHUNK 1.1: Extension Bootstrap
@@ -79,6 +83,39 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(outputChannel, debugChannel);
   
   log('info', 'RCA Agent extension activated');
+  
+  // CHUNK 1: Initialize new panel-based UI
+  const useNewUI = vscode.workspace.getConfiguration('rcaAgent').get<boolean>('experimental.newUI', true);
+  
+  if (useNewUI) {
+    log('info', 'Initializing new panel-based UI (Chunk 1)');
+    
+    // Initialize state manager
+    stateManager = StateManager.getInstance(context);
+    
+    // Register panel provider
+    rcaPanelProvider = new RCAPanelProvider(context.extensionUri, context);
+    context.subscriptions.push(
+      vscode.window.registerWebviewViewProvider(
+        RCAPanelProvider.viewType,
+        rcaPanelProvider,
+        {
+          webviewOptions: { retainContextWhenHidden: true }
+        }
+      )
+    );
+    
+    // Register panel toggle command
+    context.subscriptions.push(
+      vscode.commands.registerCommand('rcaAgent.togglePanel', () => {
+        vscode.commands.executeCommand('workbench.view.extension.rca-agent');
+      })
+    );
+    
+    log('info', 'Panel-based UI initialized successfully');
+  } else {
+    log('info', 'Using legacy command-based UI');
+  }
   
   // Register analyze command with comprehensive error handling
   const analyzeCommand = vscode.commands.registerCommand(
