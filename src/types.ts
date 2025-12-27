@@ -81,6 +81,52 @@ export interface RCAResult {
   
   /** Optional: Similar past errors */
   similarErrors?: string[];
+  
+  /** Optional: Generated code fix with diff (added in Chunk 5) */
+  codeFix?: CodeFix;
+}
+
+/**
+ * Generated code fix with diff information (Chunk 5: Fix Generator)
+ */
+export interface CodeFix {
+  /** File being fixed */
+  filePath: string;
+  
+  /** Line number where fix applies */
+  line: number;
+  
+  /** Original code (before fix) */
+  originalCode: string;
+  
+  /** Fixed code (after fix) */
+  fixedCode: string;
+  
+  /** Formatted diff (markdown or unified) */
+  diff: string;
+  
+  /** Explanation of what changed and why */
+  explanation: string;
+  
+  /** Confidence score (0-100) */
+  confidence: number;
+  
+  /** Whether fix is syntactically valid */
+  syntaxValid: boolean;
+  
+  /** Optional: Additional files that need changes */
+  relatedFiles?: RelatedFileFix[];
+}
+
+/**
+ * Fix for related files (e.g., Gradle + Kotlin)
+ */
+export interface RelatedFileFix {
+  filePath: string;
+  line: number;
+  originalCode: string;
+  fixedCode: string;
+  explanation: string;
 }
 
 /**

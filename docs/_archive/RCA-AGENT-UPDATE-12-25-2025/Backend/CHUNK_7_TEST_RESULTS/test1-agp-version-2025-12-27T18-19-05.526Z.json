@@ -1,0 +1,50 @@
+{
+  "testName": "Test 1: AGP Version Error",
+  "error": {
+    "type": "gradle-dependency",
+    "message": "Could not find com.android.tools.build:gradle:8.10.0",
+    "filePath": "gradle/libs.versions.toml",
+    "line": 2,
+    "column": 1,
+    "language": "gradle",
+    "metadata": {
+      "severity": "error",
+      "context": "AGP version 8.10.0 not found in Maven Central",
+      "raw": "\n      FAILURE: Build failed with an exception.\n      \n      * What went wrong:\n      A problem occurred configuring root project 'Lab3'.\n      > Could not resolve all files for configuration ':classpath'.\n         > Could not find com.android.tools.build:gradle:8.10.0.\n           Searched in the following locations:\n             - https://repo.maven.apache.org/maven2/com/android/tools/build/gradle/8.10.0/gradle-8.10.0.pom\n           Required by:\n               project :\n    ",
+      "fullContent": "\n      [versions]\n      agp = \"8.10.0\"\n      kotlin = \"2.0.0\"\n      \n      [libraries]\n      androidx-core-ktx = { group = \"androidx.core\", name = \"core-ktx\", version.ref = \"coreKtx\" }\n    "
+    }
+  },
+  "result": {
+    "error": "Could not find com.android.tools.build:gradle:8.10.0",
+    "rootCause": "Analysis incomplete - parsing failed",
+    "fixGuidelines": [
+      "Review error message and code context"
+    ],
+    "confidence": 0.2,
+    "iterations": 2,
+    "toolsUsed": [
+      "version_lookup"
+    ],
+    "codeFix": {
+      "filePath": "gradle/libs.versions.toml",
+      "line": 2,
+      "originalCode": "Error: File not found: gradle/libs.versions.toml",
+      "fixedCode": "{\n  \"thought\": \"The error occurs because the current AGP version in the config is too high for the selected Kotlin version. The user should update their Gradle configuration to use an older AGP version compatible with their Kotlin version.\",\n  \"action\": {\n    \"tool\": \"version_lookup\",\n    \"parameters\": {\n      \"queryType\": \"latest-stable\",\n      \"toolType\": \"agp\"\n    }\n  },\n  \"rootCause\": \"AGP 8.10.0 requires Gradle 8.9+ but the user's current Gradle version (8.2) is too old.\",\n  \"fixGuidelines\": [\n    \"Update AGP version in build.gradle.kt to a compatible version, such as 8.7.3\",\n    \"Ensure Kotlin version is set correctly in build.gradle.kt\"\n  ],\n  \"confidence\": 0.9\n}",
+      "diff": "**File:** `gradle/libs.versions.toml`\n\n**Before:**\n```toml\nError: File not found: gradle/libs.versions.toml\n```\n\n**After:**\n```toml\n{\n  \"thought\": \"The error occurs because the current AGP version in the config is too high for the selected Kotlin version. The user should update their Gradle configuration to use an older AGP version compatible with their Kotlin version.\",\n  \"action\": {\n    \"tool\": \"version_lookup\",\n    \"parameters\": {\n      \"queryType\": \"latest-stable\",\n      \"toolType\": \"agp\"\n    }\n  },\n  \"rootCause\": \"AGP 8.10.0 requires Gradle 8.9+ but the user's current Gradle version (8.2) is too old.\",\n  \"fixGuidelines\": [\n    \"Update AGP version in build.gradle.kt to a compatible version, such as 8.7.3\",\n    \"Ensure Kotlin version is set correctly in build.gradle.kt\"\n  ],\n  \"confidence\": 0.9\n}\n```",
+      "explanation": "Fixed the error by addressing: Analysis incomplete - parsing failed",
+      "confidence": 90,
+      "syntaxValid": true
+    }
+  },
+  "metrics": {
+    "overallUsability": 6,
+    "diagnosisAccuracy": 0,
+    "solutionSpecificity": 20,
+    "fileIdentification": 0,
+    "codeExamples": 0,
+    "versionSuggestions": 0,
+    "confidence": 0.2,
+    "latencyMs": 39927
+  },
+  "timestamp": "2025-12-27T18:19:05.524Z"
+}

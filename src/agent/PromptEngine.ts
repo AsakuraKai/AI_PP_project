@@ -19,7 +19,7 @@
  */
 
 import { ParsedError, AgentState } from '../types';
-import { getFewShotService, FewShotExample as KnowledgeBaseExample } from '../knowledge/FewShotExampleService';
+import { getFewShotService } from '../knowledge/FewShotExampleService';
 
 /**
  * Few-shot example for teaching agent (legacy format - kept for backward compatibility)
@@ -491,19 +491,41 @@ ${example.conclusion.fixGuidelines.map(step => `    - ${step}`).join('\n')}
 
   /**
    * Extract JSON from LLM response (handles extra text)
+   * Multi-strategy parsing with fallbacks and repair logic
    */
   extractJSON(response: string): any {
-    // Try to find JSON object in response
-    const jsonMatch = response.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error('No JSON found in response');
+    // Strategy 1: Try direct parsing
+    try {
+      return JSON.parse(response.trim());
+    } catch {}
+
+    // Strategy 2: Extract from markdown code blocks
+    const codeBlockMatch = response.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
+    if (codeBlockMatch) {
+      try {
+        return JSON.parse(codeBlockMatch[1]);
+      } catch {}
     }
 
-    try {
-      return JSON.parse(jsonMatch[0]);
-    } catch (error) {
-      throw new Error(`Invalid JSON in response: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    // Strategy 3: Extract JSON object (greedy)
+    const jsonMatch = response.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      try {
+        return JSON.parse(jsonMatch[0]);
+      } catch (e) {
+        // Strategy 4: Try to fix common JSON issues
+        const fixed = jsonMatch[0]
+          .replace(/,(\s*[}\]])/g, '$1')  // Remove trailing commas
+          .replace(/'/g, '"')              // Replace single quotes
+          .replace(/(\w+):/g, '"$1":');    // Quote unquoted keys
+        
+        try {
+          return JSON.parse(fixed);
+        } catch {}
+      }
     }
+
+    throw new Error(`Invalid JSON in response: ${response.substring(0, 100)}...`);
   }
 
   /**
@@ -583,11 +605,6 @@ Consider using the read_file tool to examine the code at the error location.\n`;
   "action": { "tool": "tool_name", "parameters": {...} } OR null if concluding,
   "rootCause": "Explanation" (only when action is null),
   "fixGuidelines": ["Step 1", "Step 2", ...] (only when action is null),
-  "confidence": 0.0-1.0 (only when action is null)
-}`;
-
-    return prompt;
-  }
   "confidence": 0.0-1.0 (only when action is null)
 }`;
 
