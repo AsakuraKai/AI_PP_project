@@ -44,6 +44,10 @@ interface TestResult {
 async function runTest1(): Promise<TestResult> {
   console.log('\n🧪 Running Chunk 7 Test 1: AGP Version Error (Re-test MVP)\n');
   
+  // Chunk 7: Set project root for FileResolver integration
+  const projectRoot = 'c:/Users/Admin/OneDrive/Desktop/Nuclear Creation/AI/AI_PP_project/tests/fixtures/mvp-test-project';
+  console.log(`📁 Project root: ${projectRoot}\n`);
+  
   // The original MVP error
   const error: ParsedError = {
     type: 'gradle-dependency',
@@ -89,13 +93,15 @@ async function runTest1(): Promise<TestResult> {
   // Initialize agent with all improvements
   const agent = new MinimalReactAgent(ollama, {
     maxIterations: 5,
-    generateFix: true  // Chunk 5: Enable fix generation
+    generateFix: true,  // Chunk 5: Enable fix generation
+    projectRoot: projectRoot  // Chunk 7: FileResolver integration
   });
 
   console.log('⚙️  Agent configured with improvements');
   console.log('   - Model: DeepSeek-R1-Distill-Qwen-7B');
   console.log('   - Max iterations: 5');
   console.log('   - Fix generation: ✅');
+  console.log(`   - Project root: ${projectRoot}`);
   console.log('   - Timeout: 120s\n');
 
   const startTime = Date.now();
@@ -184,23 +190,22 @@ function calculateMetrics(result: any, _error: ParsedError): {
     if (fixGuidelines.length >= 3) solutionSpecificity += 20;
   }
 
-  // 3. File Identification
-  if (result.filePath && result.filePath.includes('gradle/libs.versions.toml')) {
-    fileIdentification += 50;
-  }
-  if (result.line && result.line === 2) {
-    fileIdentification += 50;
+  // 3. File Identification (check codeFix structure)
+  const codeFix = result.codeFix;
+  if (codeFix) {
+    if (codeFix.filePath && codeFix.filePath.includes('gradle/libs.versions.toml')) {
+      fileIdentification += 50;
+    }
+    if (codeFix.line && codeFix.line === 2) {
+      fileIdentification += 50;
+    }
   }
 
   // 4. Code Examples (generated fix)
-  if (result.generatedFix) {
-    codeExamples += 40;
-    if (result.generatedFix.before && result.generatedFix.after) {
-      codeExamples += 40;
-    }
-    if (result.generatedFix.diff) {
-      codeExamples += 20;
-    }
+  if (codeFix) {
+    if (codeFix.originalCode) codeExamples += 30;
+    if (codeFix.fixedCode) codeExamples += 30;
+    if (codeFix.diff) codeExamples += 40;
   }
 
   // 5. Version Suggestions
@@ -230,7 +235,7 @@ function calculateMetrics(result: any, _error: ParsedError): {
 }
 
 async function saveResults(testResult: TestResult): Promise<void> {
-  const outputDir = path.join(__dirname, '../docs/_archive/RCA-AGENT-UPDATE-12-25-2025/Backend/CHUNK_7_TEST_RESULTS');
+  const outputDir = path.join(__dirname, '../docs/_archive/RCA-AGENT-UPDATE-12-25-2025/Backend/TEST_RESULTS');
   await fs.mkdir(outputDir, { recursive: true });
   
   const filename = `test1-agp-version-${new Date().toISOString().replace(/:/g, '-')}.json`;
@@ -252,7 +257,7 @@ if (require.main === module) {
     .then(() => {
       console.log('\n✅ Test 1 complete!');
       console.log('\n📝 Next Steps:');
-      console.log('   1. Review results in CHUNK_7_TEST_RESULTS/');
+      console.log('   1. Review results in TEST_RESULTS/');
       console.log('   2. Update CHUNK_7_COMPLETION.md');
       console.log('   3. Create Test 2 (Kotlin lateinit NPE)');
       process.exit(0);

@@ -91,11 +91,15 @@ You help developers understand WHY errors occur and HOW to fix them properly.
 
 **CRITICAL SPECIFICITY RULES (MUST FOLLOW):**
 
-1. **File Paths - MUST be exact with line numbers:**
+1. **File Paths - MUST ALWAYS include exact line numbers:**
    ❌ BAD: "Update build.gradle"
    ❌ BAD: "Fix the version in the configuration file"
+   ❌ BAD: "Check build.gradle"
    ✅ GOOD: "Update gradle/libs.versions.toml at line 5"
    ✅ GOOD: "Modify app/build.gradle.kts at line 42"
+   ✅ GOOD: "Add permission to AndroidManifest.xml at line 8"
+   
+   **MANDATORY: Every file reference MUST have ":line X" or "at line X"**
    
 2. **Version Numbers - MUST be specific and validated:**
    ❌ BAD: "Update to latest AGP"
@@ -104,10 +108,28 @@ You help developers understand WHY errors occur and HOW to fix them properly.
    ✅ GOOD: "Upgrade Kotlin to 2.0.0 (compatible with AGP 8.7.3+)"
    → ALWAYS use VersionLookupTool to validate versions before suggesting!
    
-3. **Code Examples - MUST show before/after:**
+3. **Code Examples - MANDATORY (MUST include in fixGuidelines!):**
    ❌ BAD: "Change the version"
    ❌ BAD: "Initialize the variable"
-   ✅ GOOD: Show before/after code snippets with line numbers and actual changes
+   ❌ BAD: "Update agp to 8.7.3" (no code shown)
+   ✅ GOOD:
+   Before:
+   \`\`\`gradle
+   agp = "8.10.0"  // Invalid version
+   \`\`\`
+   After:
+   \`\`\`gradle
+   agp = "8.7.3"  // Stable, compatible with Kotlin 1.9.0+
+   \`\`\`
+   
+   **REQUIRED FORMAT (AT LEAST ONE fixGuideline MUST INCLUDE THIS):**
+   - Start with "Before:" followed by code block
+   - Then "After:" followed by fixed code block
+   - Use proper markdown: \`\`\`language\\ncode\\n\`\`\`
+   - Show actual syntax (=, quotes, braces, etc.)
+   - Include comments explaining why
+   - Minimum 3 lines of code context
+   - THIS IS MANDATORY - DO NOT SKIP CODE EXAMPLES!
    
 4. **Variable/Function Names - MUST reference actual code:**
    ❌ BAD: "The variable is not initialized"
@@ -457,6 +479,197 @@ Always respond with valid JSON:
   }
 
   /**
+   * Build regeneration prompt with specific feedback (P1: Enhanced to preserve diagnoses)
+   */
+  buildRegenerationPrompt(params: {
+    error: ParsedError;
+    previousResponse: any;
+    feedback: string;
+    specificIssues: string[];
+    dimensionScores: any;
+    iteration: number;
+  }): string {
+    const { error, previousResponse, specificIssues } = params;
+    
+    // Extract core diagnosis to preserve
+    const coreDiagnosis = previousResponse.rootCause || 
+                         previousResponse.thought || 
+                         'analysis incomplete';
+    
+    // Identify error domain for domain-specific examples
+    const errorDomain = this.classifyErrorDomain(error);
+    
+    return `You're improving a previous analysis. **CRITICAL: Keep the core diagnosis intact.**
+
+**YOUR PREVIOUS DIAGNOSIS (PRESERVE THIS):**
+"${coreDiagnosis.substring(0, 200)}..."
+
+**WHAT TO KEEP:**
+- ✅ The fundamental cause you identified
+- ✅ The error category (${errorDomain})
+- ✅ The general solution approach
+
+**WHAT TO ADD (without changing core diagnosis):**
+${specificIssues.slice(0, 3).map((issue, i) => `${i + 1}. ${issue}`).join('\n')}
+
+**EXAMPLE OF ENHANCING (not replacing) for ${errorDomain} errors:**
+
+ORIGINAL (correct but vague):
+{
+  "rootCause": "${this.getVagueExample(errorDomain)}",
+  "fixGuidelines": ["${this.getVagueFix(errorDomain)}"]
+}
+
+ENHANCED (same diagnosis + detail):
+{
+  "rootCause": "${this.getDetailedExample(errorDomain)}",
+  "fixGuidelines": [
+    "${this.getDetailedFix(errorDomain, 1)}",
+    "${this.getDetailedFix(errorDomain, 2)}",
+    "${this.getDetailedFix(errorDomain, 3)}"
+  ]
+}
+
+**FORBIDDEN:**
+- ❌ Changing from ${errorDomain} error to different category
+- ❌ Abandoning your previous reasoning completely
+- ❌ Introducing new error types not in original diagnosis
+
+**NOW ENHANCE (don't replace) YOUR DIAGNOSIS - OUTPUT ONLY VALID JSON:**
+
+{
+  "thought": "Brief explanation of what you're enhancing",
+  "action": null,
+  "rootCause": "Enhanced version with file paths and line numbers",
+  "fixGuidelines": ["Step 1 with BEFORE/AFTER code", "Step 2 with specifics", "Step 3 with verification"],
+  "confidence": 0.6-0.95
+}`;
+  }
+
+  /**
+   * Classify error domain for domain-specific examples (P1)
+   */
+  private classifyErrorDomain(error: ParsedError): string {
+    const msg = error.message.toLowerCase();
+    const stack = error.stackTrace?.map(f => f.file).join(' ').toLowerCase() || '';
+    const combined = msg + ' ' + stack;
+    
+    if (combined.includes('permission') || combined.includes('securityexception')) {
+      return 'permission';
+    }
+    if (combined.includes('cache') || combined.includes('corrupted')) {
+      return 'cache';
+    }
+    if (combined.includes('network') || combined.includes('maven') || combined.includes('download')) {
+      return 'network';
+    }
+    if (combined.includes('proguard') || combined.includes('r8') || combined.includes('nosuchmethod')) {
+      return 'proguard';
+    }
+    if (combined.includes('navigation') || combined.includes('argument')) {
+      return 'navigation';
+    }
+    if (combined.includes('null') || combined.includes('npe')) {
+      return 'null-pointer';
+    }
+    
+    return 'general';
+  }
+
+  /**
+   * Get vague example for error domain (P1)
+   */
+  private getVagueExample(domain: string): string {
+    const examples: Record<string, string> = {
+      'permission': 'Permission is missing in manifest',
+      'cache': 'Build cache is corrupted',
+      'network': 'Network connection failed',
+      'proguard': 'ProGuard removed the method',
+      'navigation': 'Navigation argument is missing',
+      'null-pointer': 'Variable is null',
+      'general': 'Error in the code'
+    };
+    return examples[domain] || examples['general'];
+  }
+
+  /**
+   * Get vague fix for error domain (P1)
+   */
+  private getVagueFix(domain: string): string {
+    const fixes: Record<string, string> = {
+      'permission': 'Add the permission to manifest',
+      'cache': 'Clean the build cache',
+      'network': 'Check your internet connection',
+      'proguard': 'Update ProGuard rules',
+      'navigation': 'Pass the required argument',
+      'null-pointer': 'Initialize the variable',
+      'general': 'Fix the error'
+    };
+    return fixes[domain] || fixes['general'];
+  }
+
+  /**
+   * Get detailed example for error domain (P1)
+   */
+  private getDetailedExample(domain: string): string {
+    const examples: Record<string, string> = {
+      'permission': 'App requires CAMERA permission (android.permission.CAMERA) at MainActivity.kt line 15, but AndroidManifest.xml is missing the declaration at line 8. This causes SecurityException at runtime when camera access is attempted.',
+      'cache': 'Gradle build cache at ~/.gradle/caches/ contains corrupted metadata for dependency com.example:library:1.0.0, causing build.gradle.kts at line 42 to fail resolution with "Could not resolve" error.',
+      'network': 'Maven repository download fails at build.gradle.kts line 12 due to network timeout connecting to https://repo1.maven.org. Error occurs during dependency resolution for androidx.core:core-ktx:1.12.0.',
+      'proguard': 'ProGuard in build.gradle.kts line 28 (minifyEnabled=true) removes method getUserName() from User class at User.kt line 45, causing NoSuchMethodError at runtime in MainActivity.kt line 102.',
+      'navigation': 'NavHost in MainActivity.kt line 67 expects required argument "userId" (type: String) defined in navigation.xml line 23, but calling code at HomeFragment.kt line 89 passes no arguments.',
+      'null-pointer': 'Variable userProfile at MainActivity.kt line 56 is accessed before initialization (lateinit not initialized), causing NullPointerException when accessed at line 78 in getUserData() method.',
+      'general': 'Error occurs at specific location with detailed context about the cause and impact.'
+    };
+    return examples[domain] || examples['general'];
+  }
+
+  /**
+   * Get detailed fix for error domain (P1)
+   */
+  private getDetailedFix(domain: string, step: number): string {
+    const fixes: Record<string, string[]> = {
+      'permission': [
+        '1. Edit AndroidManifest.xml line 8: Add <uses-permission android:name="android.permission.CAMERA" /> before <application> tag | BEFORE: <manifest>\\n  <application...> | AFTER: <manifest>\\n  <uses-permission android:name="android.permission.CAMERA" />\\n  <application...>',
+        '2. For Android 6.0+ (API 23+), add runtime permission check in MainActivity.kt onCreate() at line 15: if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) { ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 100) }',
+        '3. Verify: Run "./gradlew build" to confirm build succeeds, then test camera feature - should show permission dialog on first use'
+      ],
+      'cache': [
+        '1. Clean Gradle build cache: Run "./gradlew clean --no-build-cache" to delete corrupted cache at ~/.gradle/caches/',
+        '2. Delete specific corrupted dependency cache: rm -rf ~/.gradle/caches/modules-2/files-2.1/com.example/library/1.0.0/',
+        '3. Rebuild project: Run "./gradlew build --refresh-dependencies" to re-download fresh dependency metadata and verify build.gradle.kts line 42 resolves correctly'
+      ],
+      'network': [
+        '1. Add alternative Maven repository in build.gradle.kts at line 10 before mavenCentral(): maven { url = uri("https://maven.aliyun.com/repository/central") } // China mirror',
+        '2. Increase network timeout in gradle.properties: org.gradle.daemon.idletimeout=60000 and systemProp.http.connectionTimeout=60000',
+        '3. Verify connectivity: curl -I https://repo1.maven.org/maven2/ should return 200 OK, then run "./gradlew build --refresh-dependencies"'
+      ],
+      'proguard': [
+        '1. Edit proguard-rules.pro at line 15: Add -keep class com.example.User { public java.lang.String getUserName(); } to preserve method',
+        '2. Disable minification for debug builds in build.gradle.kts line 28: buildTypes { debug { isMinifyEnabled = false } release { isMinifyEnabled = true } }',
+        '3. Verify: Run "./gradlew assembleRelease" and check build/outputs/mapping/release/usage.txt to confirm getUserName() is not removed, test at MainActivity.kt line 102'
+      ],
+      'navigation': [
+        '1. Add argument to navigation call in HomeFragment.kt at line 89: findNavController().navigate(R.id.action_home_to_profile, bundleOf("userId" to currentUserId))',
+        '2. Verify navigation.xml line 23 defines required argument: <argument android:name="userId" app:argType="string" />',
+        '3. Test navigation flow: Run app, navigate from HomeFragment to ProfileFragment - should pass userId correctly, verify in ProfileFragment onCreate() with arguments?.getString("userId")'
+      ],
+      'null-pointer': [
+        '1. Initialize lateinit variable in MainActivity.kt line 56: lateinit var userProfile: UserProfile, then initialize in onCreate() at line 60: userProfile = UserProfile(userId)',
+        '2. Alternative: Use nullable type with safe call: var userProfile: UserProfile? = null, then access with userProfile?.getUserData() at line 78',
+        '3. Add null check before access at line 78: if (::userProfile.isInitialized) { userProfile.getUserData() } else { Log.e("MainActivity", "userProfile not initialized") }'
+      ],
+      'general': [
+        '1. Identify exact file and line number where error occurs, add specific code change with BEFORE/AFTER example',
+        '2. Provide concrete implementation with actual syntax, not just description of what to do',
+        '3. Include verification steps: commands to run and expected output to confirm fix works'
+      ]
+    };
+    const domainFixes = fixes[domain] || fixes['general'];
+    return domainFixes[step - 1] || domainFixes[0];
+  }
+
+  /**
    * Build tool usage prompt
    */
   buildToolPrompt(availableTools: string[]): string {
@@ -492,40 +705,134 @@ ${example.conclusion.fixGuidelines.map(step => `    - ${step}`).join('\n')}
   /**
    * Extract JSON from LLM response (handles extra text)
    * Multi-strategy parsing with fallbacks and repair logic
+   * ENHANCED - Iteration 5: Never throws, always returns something
    */
   extractJSON(response: string): any {
+    // Pre-processing: Remove <think> tags that DeepSeek-R1 adds
+    let cleaned = response.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+    cleaned = cleaned.replace(/`<think>[\s\S]*$/gi, '').trim(); // Handle unclosed think tags
+    
     // Strategy 1: Try direct parsing
     try {
-      return JSON.parse(response.trim());
+      return JSON.parse(cleaned);
     } catch {}
 
-    // Strategy 2: Extract from markdown code blocks
-    const codeBlockMatch = response.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
+    // Strategy 2: Extract from markdown code blocks (improved regex)
+    const codeBlockMatch = cleaned.match(/```(?:json)?\s*([{[][\s\S]*?[}\]])\s*```/);
     if (codeBlockMatch) {
       try {
         return JSON.parse(codeBlockMatch[1]);
       } catch {}
     }
 
-    // Strategy 3: Extract JSON object (greedy)
-    const jsonMatch = response.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
+    // Strategy 3: Find the FIRST complete JSON object (balanced braces)
+    const jsonMatches = this.extractBalancedJSON(cleaned);
+    for (const jsonStr of jsonMatches) {
       try {
-        return JSON.parse(jsonMatch[0]);
+        return JSON.parse(jsonStr);
       } catch (e) {
         // Strategy 4: Try to fix common JSON issues
-        const fixed = jsonMatch[0]
-          .replace(/,(\s*[}\]])/g, '$1')  // Remove trailing commas
-          .replace(/'/g, '"')              // Replace single quotes
-          .replace(/(\w+):/g, '"$1":');    // Quote unquoted keys
-        
         try {
+          const fixed = jsonStr
+            .replace(/,(\s*[}\]])/g, '$1')  // Remove trailing commas
+            .replace(/\\'/g, "'")            // Fix escaped quotes
+            .replace(/\n/g, ' ')             // Remove newlines in strings
+            .replace(/\r/g, '')              // Remove carriage returns
+            .replace(/\t/g, ' ')             // Replace tabs
+            .replace(/""([^"]+)""/g, '"$1"'); // Fix double-quoted strings
+          
           return JSON.parse(fixed);
         } catch {}
       }
     }
 
-    throw new Error(`Invalid JSON in response: ${response.substring(0, 100)}...`);
+    // Strategy 5: Try to extract partial JSON and fill missing fields
+    const partialJSON = this.extractPartialJSON(cleaned);
+    if (partialJSON) {
+      return partialJSON;
+    }
+
+    // Strategy 6 (NEW): NEVER FAIL - Return minimal valid JSON
+    console.warn('\u26a0\ufe0f All JSON extraction strategies failed, creating minimal fallback');
+    return {
+      thought: 'JSON parsing failed - response was: ' + response.substring(0, 150),
+      action: null,
+      rootCause: 'Analysis incomplete - LLM response could not be parsed',
+      fixGuidelines: ['Review the raw LLM output', 'Try running analysis again'],
+      confidence: 0.1
+    };
+  }
+
+  /**
+   * Extract balanced JSON objects from text (handles nested braces)
+   * Phase 1.1 Enhancement
+   */
+  private extractBalancedJSON(text: string): string[] {
+    const results: string[] = [];
+    let depth = 0;
+    let start = -1;
+    
+    for (let i = 0; i < text.length; i++) {
+      if (text[i] === '{') {
+        if (depth === 0) start = i;
+        depth++;
+      } else if (text[i] === '}') {
+        depth--;
+        if (depth === 0 && start !== -1) {
+          results.push(text.substring(start, i + 1));
+          start = -1;
+        }
+      }
+    }
+    
+    return results;
+  }
+
+  /**
+   * Extract partial JSON and fill required fields with defaults
+   * Phase 1.1 Enhancement + Iteration 5: More lenient extraction
+   */
+  private extractPartialJSON(text: string): any | null {
+    try {
+      // Try to find thought, action, rootCause fields even if JSON is incomplete
+      const thoughtMatch = text.match(/["']thought["']\s*:\s*["']([^"']+)["']/);
+      const actionMatch = text.match(/["']action["']\s*:\s*(null|\{[^}]*\})/);
+      const rootCauseMatch = text.match(/["']rootCause["']\s*:\s*["']([^"']*)["']/);
+      const fixMatch = text.match(/["']fixGuidelines["']\s*:\s*\[([^\]]*)\]/);
+      
+      if (thoughtMatch) {
+        const partial: any = {
+          thought: thoughtMatch[1],
+          action: actionMatch ? (actionMatch[1] === 'null' ? null : JSON.parse(actionMatch[1])) : null,
+        };
+        
+        // If concluding, add required fields
+        if (partial.action === null) {
+          partial.rootCause = rootCauseMatch ? rootCauseMatch[1] : 'Analysis incomplete - see thought';
+          partial.fixGuidelines = fixMatch ? JSON.parse(`[${fixMatch[1]}]`) : ['Review error context'];
+          partial.confidence = 0.3; // Low confidence for partial extraction
+        }
+        
+        return partial;
+      }
+      
+      // Iteration 5: Even more lenient - try to salvage ANYTHING
+      // Look for rootCause or any analysis-like content
+      if (rootCauseMatch || text.includes('rootCause') || text.includes('error')) {
+        console.warn('\u26a0\ufe0f Using ultra-lenient extraction - creating minimal valid response');
+        return {
+          thought: rootCauseMatch ? `Analysis: ${rootCauseMatch[1].substring(0, 100)}` : 'See analysis below',
+          action: null,
+          rootCause: rootCauseMatch ? rootCauseMatch[1] : 'Analysis incomplete - JSON parsing failed',
+          fixGuidelines: fixMatch ? JSON.parse(`[${fixMatch[1]}]`) : ['Review error and context', 'Check system logs for more details'],
+          confidence: 0.2
+        };
+      }
+    } catch (e) {
+      // Extraction failed
+    }
+    
+    return null;
   }
 
   /**
@@ -603,10 +910,19 @@ Consider using the read_file tool to examine the code at the error location.\n`;
     prompt += `{
   "thought": "Your current reasoning",
   "action": { "tool": "tool_name", "parameters": {...} } OR null if concluding,
-  "rootCause": "Explanation" (only when action is null),
-  "fixGuidelines": ["Step 1", "Step 2", ...] (only when action is null),
+  "rootCause": "Explanation with file:line references" (only when action is null),
+  "fixGuidelines": [
+    "1. First step with exact file path and line number",
+    "2. Code example (MANDATORY - MUST INCLUDE):\\nBefore:\\n\`\`\`kotlin\\nold code here\\n\`\`\`\\nAfter:\\n\`\`\`kotlin\\nfixed code here\\n\`\`\`",
+    "3. Verification step explaining how to test the fix"
+  ] (only when action is null - NOTE: fixGuidelines is an array of STRINGS, not objects!),
   "confidence": 0.0-1.0 (only when action is null)
-}`;
+}
+
+⚠️ CRITICAL RULES:
+1. fixGuidelines MUST be an array of STRINGS (not objects!)
+2. At least ONE string MUST contain a code example with Before/After blocks
+3. Use \\n for newlines within strings, not actual line breaks`;
 
     return prompt;
   }
@@ -646,16 +962,22 @@ Respond ONLY with valid JSON (no other text):
 {
   "thought": "Your final reasoning",
   "action": null,
-  "rootCause": "Clear explanation of what went wrong and why",
-  "fixGuidelines": ["Step 1", "Step 2", "Step 3"],
+  "rootCause": "Clear explanation of what went wrong and why with file:line references",
+  "fixGuidelines": [
+    "1. First step with exact file path and line number",
+    "2. Code example (MANDATORY):\\nBefore:\\n\`\`\`kotlin\\nold code here\\n\`\`\`\\nAfter:\\n\`\`\`kotlin\\nfixed code here\\n\`\`\`",
+    "3. Verification step explaining how to test the fix"
+  ],
   "confidence": 0.0-1.0
-}`;
+}
+
+⚠️ CRITICAL: fixGuidelines is an array of STRINGS (not objects!) and MUST include code examples!`;
 
     return prompt;
   }
 
   /**
-   * Parse LLM response into structured format (NEW - for Chunk 2.4)
+   * Parse LLM response into structured format (ENHANCED - Phase 1.1 Fix)
    */
   parseResponse(response: string): {
     thought: string;
@@ -670,12 +992,36 @@ Respond ONLY with valid JSON (no other text):
 
       if (!validation.valid) {
         console.warn(`Response validation failed: ${validation.error}`);
-        // Return minimal valid response
+        
+        // Try to salvage what we can from the JSON
+        if (json.thought && typeof json.thought === 'string') {
+          // Has thought, so partially valid
+          if (json.action === null || json.action === undefined) {
+            // Concluding but missing required fields
+            return {
+              thought: json.thought,
+              action: null,
+              rootCause: json.rootCause || 'Analysis incomplete - see thought field for details',
+              fixGuidelines: Array.isArray(json.fixGuidelines) && json.fixGuidelines.length > 0 
+                ? json.fixGuidelines 
+                : ['Review the thought process above', 'Examine error context and code'],
+              confidence: typeof json.confidence === 'number' ? json.confidence : 0.3,
+            };
+          } else {
+            // Has action, return as tool call
+            return {
+              thought: json.thought,
+              action: json.action,
+            };
+          }
+        }
+        
+        // Cannot salvage - return minimal response
         return {
-          thought: json.thought || response,
+          thought: JSON.stringify(json).substring(0, 200) || response.substring(0, 200),
           action: null,
           rootCause: 'Analysis incomplete - validation failed',
-          fixGuidelines: ['Review error and context'],
+          fixGuidelines: ['Review error and context', 'Check system logs for more details'],
           confidence: 0.2,
         };
       }
@@ -689,27 +1035,35 @@ Respond ONLY with valid JSON (no other text):
       };
     } catch (error) {
       console.error('Failed to parse LLM response:', error);
-      // Fallback
+      // Fallback - extract as much meaning as possible
+      const textExtract = response.substring(0, 500);
       return {
-        thought: response,
+        thought: textExtract,
         action: null,
-        rootCause: 'Analysis incomplete - parsing failed',
-        fixGuidelines: ['Review error message and code context'],
-        confidence: 0.2,
+        rootCause: 'Analysis incomplete - JSON parsing failed',
+        fixGuidelines: [
+          'Manual review required - LLM response was not valid JSON',
+          'Check the thought field above for any insights',
+          'Review error message and code context manually'
+        ],
+        confidence: 0.15,
       };
     }
   }
 
   /**
-   * Validate agent response structure
+   * Validate agent response structure (ENHANCED - Phase 1.1 Fix)
+   * Now more lenient to handle LLM variability while still ensuring minimum quality
    */
-  validateResponse(response: any): { valid: boolean; error?: string } {
+  validateResponse(response: any): { valid: boolean; error?: string; warnings?: string[] } {
+    const warnings: string[] = [];
+    
     if (!response || typeof response !== 'object') {
       return { valid: false, error: 'Response must be an object' };
     }
 
-    if (!response.thought || typeof response.thought !== 'string') {
-      return { valid: false, error: 'Missing or invalid "thought" field' };
+    if (!response.thought || typeof response.thought !== 'string' || response.thought.trim().length === 0) {
+      return { valid: false, error: 'Missing or invalid "thought" field (required, non-empty string)' };
     }
 
     // If action is present, validate it
@@ -720,21 +1074,40 @@ Respond ONLY with valid JSON (no other text):
       if (!response.action.tool || typeof response.action.tool !== 'string') {
         return { valid: false, error: 'Action must have a "tool" field' };
       }
+      // Valid tool call response
+      return { valid: true };
     }
 
-    // If concluding (action is null), validate conclusion fields
-    if (response.action === null) {
-      if (!response.rootCause || typeof response.rootCause !== 'string') {
-        return { valid: false, error: 'Missing or invalid "rootCause" when concluding' };
+    // If concluding (action is null or undefined), validate conclusion fields
+    // BE MORE LENIENT - allow missing fields but warn
+    if (response.action === null || response.action === undefined) {
+      if (!response.rootCause || typeof response.rootCause !== 'string' || response.rootCause.trim().length === 0) {
+        warnings.push('Missing or empty "rootCause" - using fallback');
+        response.rootCause = 'See thought field for analysis'; // Auto-fix
       }
-      if (!Array.isArray(response.fixGuidelines) || response.fixGuidelines.length === 0) {
-        return { valid: false, error: 'Missing or invalid "fixGuidelines" when concluding' };
+      
+      if (!Array.isArray(response.fixGuidelines)) {
+        warnings.push('Missing "fixGuidelines" array - using defaults');
+        response.fixGuidelines = ['Review thought field above', 'Manually investigate error'];
+      } else if (response.fixGuidelines.length === 0) {
+        warnings.push('Empty "fixGuidelines" - adding default');
+        response.fixGuidelines.push('Review error context and apply fixes as needed');
       }
-      if (typeof response.confidence !== 'number' || response.confidence < 0 || response.confidence > 1) {
-        return { valid: false, error: 'Invalid "confidence" value (must be 0.0-1.0)' };
+      
+      if (typeof response.confidence !== 'number') {
+        warnings.push('Missing "confidence" - using default 0.5');
+        response.confidence = 0.5;
+      } else if (response.confidence < 0 || response.confidence > 1) {
+        warnings.push(`Invalid confidence ${response.confidence} - clamping to 0.0-1.0`);
+        response.confidence = Math.max(0, Math.min(1, response.confidence));
+      }
+      
+      // Log warnings if any
+      if (warnings.length > 0) {
+        console.warn(`⚠️ Response validation warnings (auto-fixed): ${warnings.join(', ')}`);
       }
     }
 
-    return { valid: true };
+    return { valid: true, warnings: warnings.length > 0 ? warnings : undefined };
   }
 }

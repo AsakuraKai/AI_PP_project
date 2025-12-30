@@ -32,6 +32,7 @@ import { OllamaClient } from '../llm/OllamaClient';
 import { ReadFileTool } from '../tools/ReadFileTool';
 import { ParsedError } from '../types';
 import { DiffFormatter, DiffFormat } from '../utils/DiffFormatter';
+import { FileResolver } from '../utils/FileResolver';
 
 /**
  * Generated code fix with diff information
@@ -118,13 +119,16 @@ export class FixGenerator {
   private readonly DEFAULT_CONTEXT_LINES = 10;
   private readonly DEFAULT_DIFF_FORMAT: DiffFormat = 'markdown';
   private readonly DEFAULT_MAX_ATTEMPTS = 3;
+  private readonly fileResolver: FileResolver;
 
   constructor(
     private readonly llm: OllamaClient,
-    readFileTool?: ReadFileTool
+    readFileTool?: ReadFileTool,
+    projectRoot?: string
   ) {
     this.readFileTool = readFileTool || new ReadFileTool();
     this.diffFormatter = new DiffFormatter();
+    this.fileResolver = new FileResolver(projectRoot || process.cwd());
   }
 
   /**
@@ -271,9 +275,19 @@ export class FixGenerator {
     contextLines: number
   ): Promise<string | null> {
     try {
-      // Use ReadFileTool to get context
+      // ✨ CHUNK 7: Resolve exact file path first using FileResolver
+      const resolved = await this.fileResolver.resolve(filePath);
+      
+      if (!resolved.exists) {
+        console.warn(`[FixGenerator] File not found after resolution: ${filePath}`);
+        console.warn(`[FixGenerator] Tried: ${resolved.path}`);
+        return null;
+      }
+      
+      console.log(`[FixGenerator] Resolved ${filePath} → ${resolved.path}`);      
+      // Use ReadFileTool to get context with resolved path
       const result = await this.readFileTool.execute({
-        filePath,
+        filePath: resolved.path, // ✅ Use exact resolved path
         line,
         contextLines,
       });
@@ -336,14 +350,16 @@ export class FixGenerator {
    * @returns LLM prompt
    */
   private buildFixPrompt(request: FixGenerationRequest): string {
-    return `You are a code fix expert. Generate ONLY the fixed code, without explanations.
+    return `You are a code fix expert. Your ONLY job is to output the corrected code.
+
+**CRITICAL: OUTPUT CODE ONLY, NOT JSON!**
 
 ERROR TYPE: ${request.error.type}
 ERROR MESSAGE: ${request.error.message}
 ROOT CAUSE: ${request.rootCause}
 FILE: ${request.error.filePath} (line ${request.error.line})
 
-ORIGINAL CODE:
+ORIGINAL CODE (with error):
 \`\`\`${request.error.language}
 ${request.originalCode}
 \`\`\`
@@ -355,10 +371,21 @@ INSTRUCTIONS:
 2. Preserve code structure and formatting
 3. Make minimal changes necessary
 4. Ensure syntax is valid
-5. Return ONLY the fixed code block
-6. Do NOT add explanations or comments outside the code
+5. Output MUST be valid ${request.error.language} code
+6. Do NOT wrap in JSON objects
+7. Do NOT add explanations outside code
 
-FIXED CODE:`;
+❌ DO NOT output like this:
+{
+  "fixedCode": "..."
+}
+
+✅ DO output like this (code in a fence or raw):
+\`\`\`${request.error.language}
+[your fixed code here]
+\`\`\`
+
+FIXED CODE (start with \`\`\`${request.error.language}):`;
   }
 
   /**
@@ -368,12 +395,33 @@ FIXED CODE:`;
    * @returns Extracted code
    */
   private extractCode(text: string): string {
+    // Check if LLM returned JSON object (wrong format)
+    const trimmed = text.trim();
+    if (trimmed.startsWith('{') && trimmed.length < 50) {
+      console.warn('⚠️ LLM returned JSON instead of code, attempting recovery');
+      // Try to extract from JSON
+      try {
+        const json = JSON.parse(trimmed);
+        if (json.fixedCode) return json.fixedCode;
+        if (json.code) return json.code;
+      } catch {
+        // Not valid JSON, continue
+      }
+    }
+    
     // Remove markdown code fences if present
-    const fencePattern = /```(?:\w+)?\n([\s\S]*?)\n```/;
+    const fencePattern = /```(?:\w+)?\s*\n([\s\S]*?)\n```/;
     const match = text.match(fencePattern);
     
     if (match && match[1]) {
       return match[1].trim();
+    }
+    
+    // Check for inline code (single backticks)
+    const inlinePattern = /`([^`]+)`/;
+    const inlineMatch = text.match(inlinePattern);
+    if (inlineMatch && inlineMatch[1]) {
+      return inlineMatch[1].trim();
     }
     
     // No fences, return as is (trimmed)

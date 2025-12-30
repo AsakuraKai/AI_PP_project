@@ -49,7 +49,7 @@ async function loadChunk8Baseline(): Promise<Map<number, number>> {
   
   try {
     // Load Test 1 from Chunk 7
-    const chunk7Path = path.join(__dirname, '../docs/_archive/RCA-AGENT-UPDATE-12-25-2025/Backend/CHUNK_7_TEST_RESULTS');
+    const chunk7Path = path.join(__dirname, '../docs/_archive/RCA-AGENT-UPDATE-12-25-2025/Backend/TEST_RESULTS');
     const chunk7Files = await fs.readdir(chunk7Path);
     const test1File = chunk7Files.find(f => f.startsWith('test1-agp-version'));
     
@@ -161,7 +161,9 @@ async function runAllTests(): Promise<void> {
         { 
           cwd: path.join(__dirname, '..'),
           timeout: 180000, // 3 minutes per test
-          env: { ...process.env, CHUNK9_RETEST: 'true' }
+          maxBuffer: 10 * 1024 * 1024, // 10MB buffer for large outputs
+          env: { ...process.env, CHUNK9_RETEST: 'true' },
+          windowsHide: true // Hide window on Windows to prevent handle issues
         }
       );
       
@@ -169,9 +171,13 @@ async function runAllTests(): Promise<void> {
       console.log(stdout);
       if (stderr) console.error('⚠️  Warnings:', stderr);
       
+      // Give time for resources to clean up between tests
+      console.log('\n⏳ Cleaning up resources...');
+      await new Promise(resolve => setTimeout(resolve, 2000)); // 2 second delay
+      
       // Find latest result file
       const resultsSourceDir = testNumber === 1 
-        ? path.join(__dirname, '../docs/_archive/RCA-AGENT-UPDATE-12-25-2025/Backend/CHUNK_7_TEST_RESULTS')
+        ? path.join(__dirname, '../docs/_archive/RCA-AGENT-UPDATE-12-25-2025/Backend/TEST_RESULTS')
         : path.join(__dirname, '../tests/results/chunk8');
       
       const files = await fs.readdir(resultsSourceDir);
@@ -433,7 +439,14 @@ async function runAllTests(): Promise<void> {
 }
 
 // Run all tests
-runAllTests().catch(error => {
-  console.error('\n❌ Test suite failed:', error);
-  process.exit(1);
-});
+runAllTests()
+  .then(() => {
+    console.log('\n✅ All tests completed successfully');
+    // Force exit to ensure all resources are cleaned up
+    setTimeout(() => process.exit(0), 1000);
+  })
+  .catch(error => {
+    console.error('\n❌ Test suite failed:', error);
+    // Force exit even on error
+    setTimeout(() => process.exit(1), 1000);
+  });

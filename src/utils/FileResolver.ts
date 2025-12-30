@@ -155,6 +155,15 @@ export class FileResolver {
       return this.resolveManifest(structure, context);
     }
 
+    // Chunk 9: New file type resolvers
+    if (this.isProguardReference(genericPath, context)) {
+      return this.resolveProguardRules(structure, context);
+    }
+
+    if (this.isNavigationReference(genericPath, context)) {
+      return this.resolveNavigationFile(structure, context);
+    }
+
     if (this.isSourceCodeReference(genericPath, context)) {
       return this.resolveSourceCode(structure, context, genericPath);
     }
@@ -409,6 +418,101 @@ export class FileResolver {
     }
 
     return this.createNotFoundResult('AndroidManifest.xml', structure);
+  }
+
+  /**
+   * Resolve ProGuard rules file reference (Chunk 9)
+   */
+  private async resolveProguardRules(
+    structure: ProjectStructure,
+    context?: ResolutionContext
+  ): Promise<FileResolutionResult> {
+    // Try common locations for proguard-rules.pro
+    const proguardPaths = [
+      path.join(structure.root, 'app', 'proguard-rules.pro'),
+      path.join(structure.root, 'proguard-rules.pro'),
+      path.join(structure.root, 'app', 'proguard.pro'),
+    ];
+
+    // If module specified, try that first
+    if (context?.module) {
+      proguardPaths.unshift(
+        path.join(structure.root, context.module, 'proguard-rules.pro')
+      );
+    }
+
+    for (const proguardPath of proguardPaths) {
+      const exists = await this.fileExists(proguardPath);
+      if (exists) {
+        return {
+          path: proguardPath,
+          relativePath: this.normalizePath(path.relative(structure.root, proguardPath)),
+          confidence: 0.95,
+          reason: 'ProGuard rules file found at standard location',
+          exists: true
+        };
+      }
+    }
+
+    // File doesn't exist - suggest creation
+    const suggestedPath = path.join(structure.root, 'app', 'proguard-rules.pro');
+    return {
+      path: suggestedPath,
+      relativePath: 'app/proguard-rules.pro',
+      confidence: 0.85,
+      reason: 'ProGuard rules file does not exist but should be created here',
+      exists: false,
+      creationSuggestion: 'Create app/proguard-rules.pro and add keep rules for obfuscated classes'
+    };
+  }
+
+  /**
+   * Resolve Navigation file reference (Chunk 9)
+   */
+  private async resolveNavigationFile(
+    structure: ProjectStructure,
+    context?: ResolutionContext
+  ): Promise<FileResolutionResult> {
+    // Try to find Navigation.kt or nav_graph files
+    const searchPatterns = [
+      '**/Navigation.kt',
+      '**/NavGraph.kt',
+      '**/navigation/**/*.kt',
+      '**/nav_graph.xml',
+      '**/navigation.xml'
+    ];
+
+    // Search for navigation files
+    const navigationFiles: string[] = [];
+    for (const pattern of searchPatterns) {
+      const found = await this.findFilesByPattern(pattern, structure.root);
+      navigationFiles.push(...found);
+    }
+
+    if (navigationFiles.length > 0) {
+      // Prefer Compose Navigation.kt over XML nav graphs
+      const composeNav = navigationFiles.find(f => f.endsWith('Navigation.kt') || f.endsWith('NavGraph.kt'));
+      const targetFile = composeNav || navigationFiles[0];
+
+      const line = await this.findLineInFile(targetFile, context);
+
+      return {
+        path: targetFile,
+        relativePath: this.normalizePath(path.relative(structure.root, targetFile)),
+        confidence: 0.90,
+        reason: composeNav ? 'Compose Navigation file' : 'Navigation graph file',
+        exists: true,
+        line,
+        alternatives: navigationFiles.slice(1).map(alt => ({
+          path: alt,
+          relativePath: this.normalizePath(path.relative(structure.root, alt)),
+          confidence: 0.75,
+          reason: 'Alternative navigation file'
+        }))
+      };
+    }
+
+    return this.createNotFoundResult('Navigation.kt', structure);
   }
 
   /**
@@ -676,6 +780,78 @@ export class FileResolver {
   }
 
   /**
+   * Find files matching pattern (Chunk 9)
+   * Simple glob pattern matching (supports ** and *)
+   */
+  private async findFilesByPattern(
+    pattern: string,
+    directory: string,
+    maxDepth: number = 5,
+    currentDepth: number = 0
+  ): Promise<string[]> {
+    if (currentDepth >= maxDepth) return [];
+
+    const results: string[] = [];
+    const patternParts = pattern.split('/').filter(p => p);
+    
+    try {
+      const entries = await fs.readdir(directory, { withFileTypes: true });
+      
+      for (const entry of entries) {
+        const fullPath = path.join(directory, entry.name);
+        
+        // Skip common ignored directories
+        if (entry.isDirectory() && (
+          entry.name.startsWith('.') ||
+          entry.name === 'node_modules' ||
+          entry.name === 'build' ||
+          entry.name === 'out'
+        )) {
+          continue;
+        }
+        
+        // Check if this entry matches the pattern
+        if (this.matchesPattern(entry.name, patternParts[patternParts.length - 1])) {
+          if (entry.isFile()) {
+            results.push(fullPath);
+          }
+        }
+        
+        // Recurse into subdirectories
+        if (entry.isDirectory()) {
+          const subResults = await this.findFilesByPattern(
+            pattern,
+            fullPath,
+            maxDepth,
+            currentDepth + 1
+          );
+          results.push(...subResults);
+        }
+      }
+    } catch (error) {
+      // Directory read error, continue
+    }
+
+    return results;
+  }
+
+  /**
+   * Simple pattern matching helper (Chunk 9)
+   */
+  private matchesPattern(fileName: string, pattern: string): boolean {
+    if (pattern === '**' || pattern === '*') return true;
+    
+    // Convert glob pattern to regex
+    const regexPattern = pattern
+      .replace(/\./g, '\\.')
+      .replace(/\*/g, '.*')
+      .replace(/\?/g, '.');
+    
+    const regex = new RegExp(`^${regexPattern}$`, 'i');
+    return regex.test(fileName);
+  }
+
+  /**
    * Create "not found" result with suggestions
    */
   private createNotFoundResult(
@@ -731,6 +907,38 @@ export class FileResolver {
   private isManifestReference(genericPath: string, _context?: ResolutionContext): boolean {
     const lowerPath = genericPath.toLowerCase();
     return lowerPath.includes('manifest') || lowerPath.includes('androidmanifest');
+  }
+
+  /**
+   * Check if reference is to ProGuard rules file (Chunk 9)
+   */
+  private isProguardReference(genericPath: string, context?: ResolutionContext): boolean {
+    const lowerPath = genericPath.toLowerCase();
+    const lowerContext = context?.context?.toLowerCase() || '';
+    const errorType = context?.errorType?.toLowerCase() || '';
+    
+    return lowerPath.includes('proguard') || 
+           lowerPath.includes('r8') ||
+           lowerPath.includes('minification') ||
+           lowerContext.includes('proguard') ||
+           lowerContext.includes('obfuscation') ||
+           errorType.includes('proguard');
+  }
+
+  /**
+   * Check if reference is to Navigation file (Chunk 9)
+   */
+  private isNavigationReference(genericPath: string, context?: ResolutionContext): boolean {
+    const lowerPath = genericPath.toLowerCase();
+    const lowerContext = context?.context?.toLowerCase() || '';
+    const errorType = context?.errorType?.toLowerCase() || '';
+    
+    return lowerPath.includes('navigation') ||
+           lowerPath.includes('navgraph') ||
+           lowerPath.includes('nav_graph') ||
+           lowerContext.includes('navigation') ||
+           lowerContext.includes('routing') ||
+           errorType.includes('navigation');
   }
 
   private isSourceCodeReference(genericPath: string, _context?: ResolutionContext): boolean {

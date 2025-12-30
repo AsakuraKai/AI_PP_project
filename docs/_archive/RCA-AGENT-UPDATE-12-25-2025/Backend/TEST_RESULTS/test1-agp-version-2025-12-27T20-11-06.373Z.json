@@ -1,0 +1,51 @@
+{
+  "testName": "Test 1: AGP Version Error",
+  "error": {
+    "type": "gradle-dependency",
+    "message": "Could not find com.android.tools.build:gradle:8.10.0",
+    "filePath": "gradle/libs.versions.toml",
+    "line": 2,
+    "column": 1,
+    "language": "gradle",
+    "metadata": {
+      "severity": "error",
+      "context": "AGP version 8.10.0 not found in Maven Central",
+      "raw": "\n      FAILURE: Build failed with an exception.\n      \n      * What went wrong:\n      A problem occurred configuring root project 'Lab3'.\n      > Could not resolve all files for configuration ':classpath'.\n         > Could not find com.android.tools.build:gradle:8.10.0.\n           Searched in the following locations:\n             - https://repo.maven.apache.org/maven2/com/android/tools/build/gradle/8.10.0/gradle-8.10.0.pom\n           Required by:\n               project :\n    ",
+      "fullContent": "\n      [versions]\n      agp = \"8.10.0\"\n      kotlin = \"2.0.0\"\n      \n      [libraries]\n      androidx-core-ktx = { group = \"androidx.core\", name = \"core-ktx\", version.ref = \"coreKtx\" }\n    "
+    }
+  },
+  "result": {
+    "error": "Could not find com.android.tools.build:gradle:8.10.0",
+    "rootCause": "AGP 8.10.0 is outdated and not available in a stable release.",
+    "fixGuidelines": [
+      "Update Gradle dependency to AGP 8.7.3 (stable, released Nov 2024)",
+      "Modify build.gradle.kt at line X to reflect the new version"
+    ],
+    "confidence": 0.9,
+    "iterations": 1,
+    "toolsUsed": [
+      "version_lookup"
+    ],
+    "codeFix": {
+      "filePath": "gradle/libs.versions.toml",
+      "line": 2,
+      "originalCode": "     1 | [versions]\r\n→    2 | agp = \"8.10.0\"\r\n     3 | kotlin = \"2.0.0\"\r\n     4 | coreKtx = \"1.13.1\"\r\n     5 | appcompat = \"1.7.0\"\r\n     6 | material = \"1.12.0\"\r\n     7 | \r\n     8 | [libraries]\r\n     9 | androidx-core-ktx = { group = \"androidx.core\", name = \"core-ktx\", version.ref = \"coreKtx\" }\r\n    10 | androidx-appcompat = { group = \"androidx.appcompat\", name = \"appcompat\", version.ref = \"appcompat\" }\r\n    11 | material = { group = \"com.google.android.material\", name = \"material\", version.ref = \"material\" }\r\n    12 | \r",
+      "fixedCode": "gradle\n     1 | [versions]\n→    2 | agp = \"7.3.2\"\n     3 | kotlin = \"2.0.0\"\n     4 | coreKtx = \"1.13.1\"\n     5 | appcompat = \"1.7.0\"\n     6 | material = \"1.12.0\"",
+      "diff": "**File:** `gradle/libs.versions.toml`\n\n**Before:**\n```toml\n     1 | [versions]\r\n→    2 | agp = \"8.10.0\"\r\n     3 | kotlin = \"2.0.0\"\r\n     4 | coreKtx = \"1.13.1\"\r\n     5 | appcompat = \"1.7.0\"\r\n     6 | material = \"1.12.0\"\r\n     7 | \r\n     8 | [libraries]\r\n     9 | androidx-core-ktx = { group = \"androidx.core\", name = \"core-ktx\", version.ref = \"coreKtx\" }\r\n    10 | androidx-appcompat = { group = \"androidx.appcompat\", name = \"appcompat\", version.ref = \"appcompat\" }\r\n    11 | material = { group = \"com.google.android.material\", name = \"material\", version.ref = \"material\" }\r\n    12 | \r\n```\n\n**After:**\n```toml\ngradle\n     1 | [versions]\n→    2 | agp = \"7.3.2\"\n     3 | kotlin = \"2.0.0\"\n     4 | coreKtx = \"1.13.1\"\n     5 | appcompat = \"1.7.0\"\n     6 | material = \"1.12.0\"\n```",
+      "explanation": "Fixed the error by addressing: AGP 8.10.0 is outdated and not available in a stable release.",
+      "confidence": 90,
+      "syntaxValid": true
+    }
+  },
+  "metrics": {
+    "overallUsability": 94,
+    "diagnosisAccuracy": 100,
+    "solutionSpecificity": 80,
+    "fileIdentification": 100,
+    "codeExamples": 100,
+    "versionSuggestions": 100,
+    "confidence": 0.9,
+    "latencyMs": 18875
+  },
+  "timestamp": "2025-12-27T20:11:06.371Z"
+}
