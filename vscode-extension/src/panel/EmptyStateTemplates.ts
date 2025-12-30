@@ -138,7 +138,7 @@ export class EmptyStateTemplates {
         '4. Click "Check Connection" to verify',
         '',
         'Alternative recommended models:',
-        '• deepseek-r1:7b (fast, accurate)',
+        '• hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest (fast, accurate)',
         '• codellama:7b (optimized for code)',
         '• qwen-coder:7b (strong reasoning)'
       ]

@@ -3,36 +3,49 @@
  * 
  * Loads and retrieves relevant few-shot learning examples for RCA agent.
  * Uses semantic similarity to find most relevant examples for given error.
+ * ENHANCED (Chunk 9): Supports category-based example selection
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
 import { ParsedError } from '../types';
+import { ErrorCategory } from '../agent/ErrorClassifier'; // Chunk 9
 
 export interface FewShotExample {
   id: string;
-  title: string;
+  title?: string;
   errorType: string;
-  errorMessage: string;
-  filePath: string | null;
-  lineNumber: number | null;
-  context: Record<string, any>;
-  analysis: {
+  error?: string; // Chunk 9: Alias for errorMessage
+  errorMessage?: string;
+  filePath?: string | null;
+  lineNumber?: number | null;
+  context?: Record<string, any>;
+  diagnosis?: { // Chunk 9: Alias for analysis
+    problem: string;
+    rootCause: string;
+    evidence: string;
+    confidence: number;
+  };
+  analysis?: {
     problem: string;
     rootCause: string;
     evidence: string[];
   };
   solution: {
     summary: string;
-    steps: string[];
-    codeChange: {
+    specificFix?: string; // Chunk 9: Detailed fix description
+    fileIdentification?: string; // Chunk 9: Exact file path
+    codeExamples?: Array<{ before: string; after: string; }>; // Chunk 9: Code snippets
+    verificationSteps?: string[]; // Chunk 9: How to verify the fix
+    steps?: string[]; // Optional: Step-by-step instructions
+    codeChange?: { // Optional: Code change details
       file: string | null;
       lineNumber: number | null;
       before: string | null;
       after: string | null;
       explanation: string;
     } | null;
-    verification: string[];
+    verification?: string[]; // Optional: Verification steps
     alternatives?: Array<{
       version?: string;
       approach?: string;
@@ -43,8 +56,8 @@ export interface FewShotExample {
       note?: string;
     }>;
   };
-  confidence: number;
-  tags: string[];
+  confidence?: number; // Optional
+  tags?: string[]; // Optional
 }
 
 export interface FewShotCategory {
@@ -62,29 +75,109 @@ export interface FewShotDatabase {
 export class FewShotExampleService {
   private database: FewShotDatabase | null = null;
   private examplesPath: string;
+  private compiledExamplesPath: string; // Chunk 9: Compiled TypeScript examples
+  private allExamples: FewShotExample[] = []; // Chunk 9: Combined examples
 
   constructor() {
     this.examplesPath = path.join(__dirname, '../knowledge/few-shot-examples.json');
+    this.compiledExamplesPath = path.join(__dirname, '../knowledge/few-shot-examples-compiled.json');
   }
 
   /**
-   * Load few-shot examples database from JSON file
+   * Load few-shot examples database from JSON file AND compiled TypeScript examples
+   * Chunk 9: Enhanced to load both JSON (39 version examples) + Compiled TypeScript (35 new examples)
    */
   public async loadDatabase(): Promise<void> {
     try {
+      // 1. Load existing JSON database (39 version/dependency examples)
       const content = await fs.promises.readFile(this.examplesPath, 'utf-8');
       this.database = JSON.parse(content);
-      console.log(`Loaded ${this.getTotalExampleCount()} few-shot examples (v${this.database?.version})`);
+      
+      const jsonExampleCount = this.getTotalExampleCount(); // From JSON database
+      
+      // 2. Load compiled TypeScript examples (35 new examples from Chunk 9)
+      let tsExampleCount = 0;
+      let tsExamples: FewShotExample[] = [];
+      
+      try {
+        // Check if compiled examples file exists
+        if (fs.existsSync(this.compiledExamplesPath)) {
+          const compiledContent = await fs.promises.readFile(this.compiledExamplesPath, 'utf-8');
+          const compiledData = JSON.parse(compiledContent);
+          
+          tsExamples = compiledData.allExamples || [];
+          tsExampleCount = tsExamples.length;
+          
+          if (!this.database) {
+            throw new Error('Database structure invalid');
+          }
+          
+          // Create categories for new examples if they don't exist
+          const categoryMap: Record<string, string> = {
+            'manifest_permission': 'manifest',
+            'MANIFEST_PERMISSION': 'manifest',
+            'build_cache': 'cache',
+            'BUILD_CACHE': 'cache',
+            'proguard_minification': 'proguard',
+            'PROGUARD_MINIFICATION': 'proguard',
+            'navigation_routing': 'navigation',
+            'NAVIGATION_ROUTING': 'navigation',
+            'network_connectivity': 'network',
+            'NETWORK_CONNECTIVITY': 'network',
+          };
+          
+          for (const example of tsExamples) {
+            const dbCategory = categoryMap[example.errorType] || example.errorType.toLowerCase();
+            
+            if (!this.database.categories[dbCategory]) {
+              this.database.categories[dbCategory] = {
+                description: `${dbCategory} error examples`,
+                examples: []
+              };
+            }
+            
+            this.database.categories[dbCategory].examples.push(example);
+          }
+          
+          // Store combined examples
+          this.allExamples = [
+            ...this.getAllExamplesFromDatabase(),
+            ...tsExamples
+          ];
+        } else {
+          console.warn('⚠️  Compiled TypeScript examples not found, run: npm run build:examples');
+          this.allExamples = this.getAllExamplesFromDatabase();
+        }
+      } catch (tsError) {
+        console.warn('⚠️  Could not load TypeScript examples:', tsError);
+        this.allExamples = this.getAllExamplesFromDatabase();
+      }
+      
+      const totalCount = jsonExampleCount + tsExampleCount;
+      console.log(`✅ Loaded ${totalCount} few-shot examples (${jsonExampleCount} JSON + ${tsExampleCount} TypeScript) v${this.database?.version}`);
+      
     } catch (error) {
       console.error('Failed to load few-shot examples database:', error);
       throw new Error('Few-shot examples database not available');
     }
   }
+  
+  /**
+   * Get all examples from database (helper method)
+   */
+  private getAllExamplesFromDatabase(): FewShotExample[] {
+    if (!this.database) return [];
+    return Object.values(this.database.categories).flatMap(cat => cat.examples);
+  }
 
   /**
    * Get total number of examples across all categories
+   * Chunk 9: Returns combined count (JSON + TypeScript)
    */
   public getTotalExampleCount(): number {
+    if (this.allExamples.length > 0) {
+      return this.allExamples.length; // Return combined count if available
+    }
     if (!this.database) return 0;
     return Object.values(this.database.categories).reduce(
       (sum, category) => sum + category.examples.length,
@@ -136,6 +229,45 @@ export class FewShotExampleService {
   }
 
   /**
+   * Find examples by error category (Chunk 9 - NEW METHOD)
+   * 
+   * @param category - Error category from ErrorClassifier
+   * @param maxExamples - Maximum number of examples to return (default: 3)
+   * @returns Array of examples for the category
+   */
+  public findExamplesByCategory(
+    category: ErrorCategory,
+    maxExamples: number = 3
+  ): FewShotExample[] {
+    if (!this.database) {
+      console.warn('Database not loaded, cannot find examples by category');
+      return [];
+    }
+    
+    // Map category to database category key
+    const categoryMap: Record<string, string> = {
+      'manifest_permission': 'manifest',
+      'build_cache': 'cache',
+      'proguard_minification': 'proguard',
+      'navigation_routing': 'navigation',
+      'network_connectivity': 'network',
+      'version_dependency': 'version_dependency',
+      'unknown': 'gradle', // Fallback to generic Gradle examples
+    };
+    
+    const dbCategory = categoryMap[category] || 'gradle';
+    const examples = this.database.categories[dbCategory]?.examples || [];
+    
+    if (examples.length === 0) {
+      console.warn(`No few-shot examples for category: ${category} (mapped to ${dbCategory})`);
+      return [];
+    }
+    
+    // Return up to maxExamples, selecting diverse examples if possible
+    return examples.slice(0, maxExamples);
+  }
+
+  /**
    * Get category name from error type
    * Maps error types to few-shot example categories
    */
@@ -182,42 +314,79 @@ export class FewShotExampleService {
   /**
    * Calculate relevance score between error and example
    * 
-   * Scoring factors:
-   * - Exact error type match: +50 points
-   * - Error message similarity: +30 points
-   * - File path similarity: +10 points
-   * - Tag overlap: +10 points
+   * Scoring factors (Phase 1 Enhanced):
+   * - Exact error type match: +40 points (30%)
+   * - Error message similarity (keywords): +35 points (25%)
+   * - File path similarity: +20 points (15%)
+   * - Historical success rate: +25 points (20%)
+   * - Example recency: +10 points (10%)
+   * - Tag overlap: +10 bonus points
    * 
-   * @returns Score from 0-100
+   * @returns Score from 0-140 (100 base + 10 bonus + 30 quality metrics)
    */
   private calculateRelevanceScore(error: ParsedError, example: FewShotExample): number {
     let score = 0;
 
-    // 1. Error type match (most important)
+    // 1. Error type match (30% weight - most important)
     if (error.type === example.errorType) {
-      score += 50;
+      score += 40;
+    } else if (this.areRelatedErrorTypes(error.type, example.errorType)) {
+      score += 20; // Partial match for related types
     }
 
-    // 2. Error message similarity (keyword matching)
-    if (error.message && example.errorMessage) {
+    // 2. Error message similarity (25% weight - keyword matching)
+    if (error.message && (example.errorMessage || example.error)) {
+      const exampleMsg = example.errorMessage || example.error || '';
       const errorKeywords = this.extractKeywords(error.message);
-      const exampleKeywords = this.extractKeywords(example.errorMessage);
+      const exampleKeywords = this.extractKeywords(exampleMsg);
       const commonKeywords = errorKeywords.filter(k => exampleKeywords.includes(k));
-      score += Math.min(30, commonKeywords.length * 5);
+      
+      // More keywords = higher score, up to 35 points
+      const keywordScore = Math.min(35, commonKeywords.length * 5);
+      score += keywordScore;
     }
 
-    // 3. File path similarity
+    // 3. File path similarity (15% weight)
     if (error.filePath && example.filePath) {
       const errorFileName = path.basename(error.filePath);
       const exampleFileName = path.basename(example.filePath);
-      if (errorFileName.includes(exampleFileName) || exampleFileName.includes(errorFileName)) {
+      
+      // Exact file match
+      if (errorFileName === exampleFileName) {
+        score += 20;
+      } 
+      // Partial match (e.g., build.gradle vs app/build.gradle)
+      else if (errorFileName.includes(exampleFileName) || exampleFileName.includes(errorFileName)) {
         score += 10;
+      }
+      // Same file type (e.g., both .kt files)
+      else if (path.extname(errorFileName) === path.extname(exampleFileName)) {
+        score += 5;
       }
     }
 
-    // 4. Tag overlap (context matching)
+    // 4. Historical success rate (20% weight - Phase 1 new)
+    // Higher confidence examples are more likely to be helpful
+    const confidenceScore = (example.confidence || 0.5) * 25; // 0-25 points
+    score += confidenceScore;
+
+    // 5. Example recency (10% weight - Phase 1 new)
+    // Prefer more recent examples (newer patterns, versions)
+    const recencyScore = this.calculateRecencyScore(example);
+    score += recencyScore;
+
+    // 6. Tag overlap (bonus points)
+    if (example.tags && example.tags.length > 0) {
+      const errorContext = this.extractContextKeywords(error);
+      const tagMatches = example.tags.filter(tag => 
+        errorContext.some(ctx => ctx.toLowerCase().includes(tag.toLowerCase()))
+      );
+      score += Math.min(10, tagMatches.length * 3);
+    }
+
+    return score;
     const errorTags = this.extractErrorTags(error);
-    const commonTags = errorTags.filter(t => example.tags.includes(t));
+    const commonTags = errorTags.filter(t => example.tags?.includes(t));
     score += Math.min(10, commonTags.length * 2);
 
     return Math.min(100, score);
@@ -276,15 +445,15 @@ export class FewShotExampleService {
         `**Error Message:** ${example.errorMessage}`,
         '',
         '**Analysis:**',
-        `- Problem: ${example.analysis.problem}`,
-        `- Root Cause: ${example.analysis.rootCause}`,
-        `- Evidence: ${example.analysis.evidence.map(e => `\n  - ${e}`).join('')}`,
+        `- Problem: ${example.analysis?.problem || example.diagnosis?.problem || 'N/A'}`,
+        `- Root Cause: ${example.analysis?.rootCause || example.diagnosis?.rootCause || 'N/A'}`,
+        `- Evidence: ${(example.analysis?.evidence || [example.diagnosis?.evidence || 'N/A']).map((e: any) => `\n  - ${e}`).join('')}`,
         '',
         '**Solution:**',
         `Summary: ${example.solution.summary}`,
         '',
         'Steps:',
-        ...example.solution.steps.map((step, i) => `${i + 1}. ${step}`),
+        ...(example.solution.steps?.map((step, i) => `${i + 1}. ${step}`) || []),
       ];
 
       // Add code change if available
@@ -312,7 +481,7 @@ export class FewShotExampleService {
       parts.push(
         '',
         '**Verification:**',
-        ...example.solution.verification.map((step, i) => `${i + 1}. ${step}`)
+        ...(example.solution.verification?.map((step, i) => `${i + 1}. ${step}`) || [])
       );
 
       // Add confidence
@@ -328,6 +497,88 @@ export class FewShotExampleService {
       '',
       ...formatted
     ].join('\n');
+  }
+
+  /**
+   * Check if two error types are related (Phase 1 - NEW)
+   * Helps with partial matching when exact type isn't available
+   */
+  private areRelatedErrorTypes(type1: string, type2: string): boolean {
+    const relatedGroups = [
+      ['GRADLE_DEPENDENCY', 'GRADLE_COMPATIBILITY', 'GRADLE_CATALOG'],
+      ['KOTLIN_NPE', 'KOTLIN_LATEINIT', 'KOTLIN_TYPE_MISMATCH'],
+      ['COMPOSE_API_BREAKAGE', 'COMPOSE_RECOMPOSITION', 'COMPOSE_STATE'],
+      ['XML_INFLATION', 'XML_ATTRIBUTE'],
+      ['MANIFEST_PERMISSION', 'MANIFEST_COMPONENT', 'MANIFEST_MERGE'],
+    ];
+
+    return relatedGroups.some(group => 
+      group.includes(type1) && group.includes(type2)
+    );
+  }
+
+  /**
+   * Calculate recency score for example (Phase 1 - NEW)
+   * Newer examples get higher scores (patterns evolve, versions update)
+   */
+  private calculateRecencyScore(example: FewShotExample): number {
+    // If example has no date info, give neutral score
+    if (!example.context?.createdAt && !example.context?.updatedAt) {
+      return 5; // Neutral score
+    }
+
+    const dateStr = example.context?.updatedAt || example.context?.createdAt;
+    if (!dateStr) return 5;
+
+    try {
+      const exampleDate = new Date(dateStr);
+      const now = new Date();
+      const ageInDays = (now.getTime() - exampleDate.getTime()) / (1000 * 60 * 60 * 24);
+
+      // Scoring: newer = better, up to 10 points
+      // < 30 days: 10 points
+      // < 90 days: 8 points
+      // < 180 days: 6 points
+      // < 365 days: 4 points
+      // > 365 days: 2 points
+      if (ageInDays < 30) return 10;
+      if (ageInDays < 90) return 8;
+      if (ageInDays < 180) return 6;
+      if (ageInDays < 365) return 4;
+      return 2;
+    } catch {
+      return 5; // Neutral score if date parsing fails
+    }
+  }
+
+  /**
+   * Extract context keywords from error (Phase 1 - NEW)
+   * Used for tag matching
+   */
+  private extractContextKeywords(error: ParsedError): string[] {
+    const keywords: string[] = [];
+
+    // From error message
+    if (error.message) {
+      keywords.push(...this.extractKeywords(error.message));
+    }
+
+    // From file path
+    if (error.filePath) {
+      const fileName = path.basename(error.filePath);
+      keywords.push(fileName);
+      
+      // Add file extension
+      const ext = path.extname(fileName).replace('.', '');
+      if (ext) keywords.push(ext);
+    }
+
+    // From error type
+    if (error.type) {
+      keywords.push(...error.type.toLowerCase().split('_'));
+    }
+
+    return keywords;
   }
 
   /**
@@ -379,7 +630,7 @@ export class FewShotExampleService {
     for (const [category, data] of Object.entries(this.database.categories)) {
       byCategory[category] = data.examples.length;
       totalExamples += data.examples.length;
-      totalConfidence += data.examples.reduce((sum, ex) => sum + ex.confidence, 0);
+      totalConfidence += data.examples.reduce((sum, ex) => sum + (ex.confidence || 0), 0);
     }
 
     return {

@@ -29,6 +29,9 @@ import { PromptEngine } from './PromptEngine';
 import { AgentStateStream } from './AgentStateStream';
 import { PerformanceTracker } from '../monitoring/PerformanceTracker';
 import { FixGenerator } from './FixGenerator'; // Chunk 5: Fix Generator
+import { ErrorClassifier } from './ErrorClassifier'; // Chunk 9: Error Classification
+import { buildEnhancedSystemPrompt } from './prompts/CategoryPrompts'; // Chunk 9: Category prompts
+import { OutputValidator } from './OutputValidator'; // Phase 1: Output validation
 import { z } from 'zod';
 import {
   ParsedError,
@@ -48,6 +51,7 @@ export interface AgentConfig {
   usePromptEngine?: boolean;
   useToolRegistry?: boolean;
   generateFix?: boolean; // Chunk 5: Enable fix generation
+  projectRoot?: string; // Chunk 7: Project root for FileResolver integration
 }
 
 export class MinimalReactAgent {
@@ -62,6 +66,9 @@ export class MinimalReactAgent {
   private readonly stream: AgentStateStream;
   private readonly performanceTracker: PerformanceTracker;
   private readonly fixGenerator: FixGenerator; // Chunk 5: Fix Generator
+  private readonly errorClassifier: ErrorClassifier; // Chunk 9: Error Classifier
+  private readonly outputValidator: OutputValidator; // Phase 1: Output Validator
+  private readonly maxRegenerations = 2; // Phase 1: Max regeneration attempts
 
   constructor(
     protected llm: OllamaClient,
@@ -80,7 +87,16 @@ export class MinimalReactAgent {
     this.promptEngine = new PromptEngine();
     this.stream = new AgentStateStream();
     this.performanceTracker = new PerformanceTracker();
-    this.fixGenerator = new FixGenerator(this.llm, this.readFileTool); // Chunk 5
+    // Chunk 7: Pass projectRoot to FixGenerator for FileResolver integration
+    this.fixGenerator = new FixGenerator(
+      this.llm,
+      this.readFileTool,
+      config?.projectRoot || process.cwd()
+    );
+    // Chunk 9: Initialize error classifier
+    this.errorClassifier = new ErrorClassifier();
+    // Phase 1: Initialize output validator
+    this.outputValidator = new OutputValidator();
 
     // Register tools if using ToolRegistry
     if (this.useToolRegistry) {
@@ -204,11 +220,22 @@ export class MinimalReactAgent {
     };
 
     try {
+      // Chunk 9: Classify error first
+      const classification = this.errorClassifier.classify(error);
+      this.stream.emit('classification', {
+        category: classification.category,
+        confidence: classification.confidence,
+        reasoning: classification.reasoning
+      });
+      
       // Get system prompt and few-shot examples if using PromptEngine
       const stopPromptGen = this.performanceTracker.startTimer('prompt_generation');
-      const systemPrompt = this.usePromptEngine
-        ? this.promptEngine.getSystemPrompt()
-        : null;
+      let systemPrompt: string | null = null;
+      if (this.usePromptEngine) {
+        const basePrompt = this.promptEngine.getSystemPrompt();
+        // Enhance with category-specific prompt
+        systemPrompt = buildEnhancedSystemPrompt(basePrompt, classification.category);
+      }
       const examples = this.usePromptEngine
         ? this.promptEngine.getFewShotExamples(error.type)
         : [];
@@ -240,11 +267,25 @@ export class MinimalReactAgent {
           stopPromptBuild();
 
           const stopLLM = this.performanceTracker.startTimer('llm_inference');
-          const llmResponse = await this.llm.generate(prompt, {
-            temperature: 0.7,
+          // DEBUG: Log prompt if empty response likely
+          if (i === 0) {
+            console.log(`\n🔍 PROMPT SENT TO LLM (first 1000 chars):\n${prompt.substring(0, 1000)}\n...\n(last 500 chars):\n${prompt.substring(Math.max(0, prompt.length - 500))}\n`);
+          }
+          
+          // Iteration 6 Phase 2: Use generateWithRetry for better reliability
+          const llmResponse = await this.llm.generateWithRetry(prompt, {
+            temperature: 0.0, // Starting temp (will progress to 0.3, 0.5, 0.7 if needed)
             maxTokens: 1500,
-          });
+          }, {
+            maxAttempts: 4, // P0 FIX: Re-enabled with 4 attempts
+            qualityThreshold: 0.5, // P2 FIX: Lowered from 0.6 to accept "good enough" responses
+          }, error.message + ' ' + (error.stackTrace?.map(f => f.file).join(' ') || '')); // P3: Pass error context for accuracy check
           stopLLM();
+          
+          // DEBUG: Log raw LLM response
+          if (i === 0) {
+            console.log(`\n🔍 RAW LLM RESPONSE (full):\n${llmResponse.text}\n`);
+          }
 
           response = this.promptEngine.parseResponse(llmResponse.text);
         } else {
@@ -321,6 +362,98 @@ export class MinimalReactAgent {
         if (response.rootCause && response.fixGuidelines) {
           console.log(`✓ Agent concluded after ${i + 1} iterations`);
           
+          // Phase 1: Validate output quality before accepting
+          const preliminaryResult: RCAResult = {
+            error: error.message,
+            rootCause: response.rootCause,
+            fixGuidelines: response.fixGuidelines,
+            confidence: response.confidence || 0.5,
+            iterations: i + 1,
+            toolsUsed: state.actions.map((a) => a.tool),
+          };
+          
+          const validation = this.outputValidator.validate(preliminaryResult, error);
+          console.log(`📊 Quality score: ${(validation.score * 100).toFixed(1)}% (threshold: 60%)`);
+          console.log(`   Breakdown: fileSpec=${(validation.dimensions.filePathSpecificity * 100).toFixed(0)}% versionSpec=${(validation.dimensions.versionSpecificity * 100).toFixed(0)}% codeExamples=${(validation.dimensions.codeExamples * 100).toFixed(0)}%`);
+          
+          // If quality is too low, try to regenerate (max 2 attempts)
+          let regenerationCount = 0;
+          let finalResult = preliminaryResult;
+          let finalValidation = validation;
+          let bestScore = validation.score;
+          let bestResult = preliminaryResult;
+          
+          while (!finalValidation.passes && regenerationCount < this.maxRegenerations) {
+            regenerationCount++;
+            console.log(`⚠️ Quality below threshold. Regenerating (attempt ${regenerationCount}/${this.maxRegenerations})...`);
+            console.log(`   Issues: ${finalValidation.issues.slice(0, 3).join('; ')}`);
+            
+            // Build regeneration prompt with SPECIFIC feedback
+            const stopRegen = this.performanceTracker.startTimer('output_regeneration');
+            const regenPrompt = this.promptEngine.buildRegenerationPrompt({
+              error,
+              previousResponse: finalResult,
+              feedback: finalValidation.getFeedback(),
+              specificIssues: finalValidation.issues,
+              dimensionScores: finalValidation.dimensions,
+              iteration: i + 1,
+            });
+            
+            // Iteration 6 Phase 2: Use generateWithRetry for regeneration
+            // This replaces the manual temperature progression with quality-based retry
+            const regenResponse = await this.llm.generateWithRetry(regenPrompt, {
+              temperature: 0.3, // Starting temp (will progress to 0.5, 0.7 if needed)
+              maxTokens: 2500,
+              seed: 42 + regenerationCount, // Different seed per attempt
+            }, {
+              maxAttempts: 3, // P0 FIX: Re-enabled with conservative 3 attempts for regeneration
+              qualityThreshold: 0.55, // P2 FIX: Lowered from 0.65 (regeneration gets domain-specific examples from P1)
+            }, error.message + ' ' + (error.stackTrace?.map(f => f.file).join(' ') || '')); // P3: Pass error context for accuracy check
+            stopRegen();
+            
+            const parsedRegen = this.promptEngine.parseResponse(regenResponse.text);
+            
+            if (parsedRegen.rootCause && parsedRegen.fixGuidelines) {
+              finalResult = {
+                error: error.message,
+                rootCause: parsedRegen.rootCause,
+                fixGuidelines: parsedRegen.fixGuidelines,
+                confidence: parsedRegen.confidence || 0.5,
+                iterations: i + 1,
+                toolsUsed: state.actions.map((a) => a.tool),
+              };
+              
+              finalValidation = this.outputValidator.validate(finalResult, error);
+              console.log(`📊 Regeneration ${regenerationCount} score: ${(finalValidation.score * 100).toFixed(1)}%`);
+              console.log(`   Breakdown: fileSpec=${(finalValidation.dimensions.filePathSpecificity * 100).toFixed(0)}% versionSpec=${(finalValidation.dimensions.versionSpecificity * 100).toFixed(0)}% codeExamples=${(finalValidation.dimensions.codeExamples * 100).toFixed(0)}%`);
+              
+              // Track best result across regenerations
+              if (finalValidation.score > bestScore) {
+                bestScore = finalValidation.score;
+                bestResult = finalResult;
+                console.log(`   ✓ New best score: ${(bestScore * 100).toFixed(1)}%`);
+              }
+            } else {
+              console.log(`⚠️ Regeneration ${regenerationCount} failed to parse, keeping previous version`);
+              break;
+            }
+          }
+          
+          // Use best result found (not necessarily last)
+          finalResult = bestResult;
+          finalValidation = this.outputValidator.validate(finalResult, error);
+          
+          // Fix #3: Fallback to original if ALL regenerations were worse
+          if (finalValidation.score < validation.score) {
+            console.log(`⚠️ Regenerations worse than original (${(finalValidation.score * 100).toFixed(1)}% < ${(validation.score * 100).toFixed(1)}%), reverting`);
+            finalResult = preliminaryResult;
+            finalValidation = validation;
+          }
+          
+          if (!finalValidation.passes) {
+            console.log(`⚠️ Quality still below threshold after ${regenerationCount} attempts. Proceeding with best result.`);
+          }
+          
           stopTotal();
           
           // Chunk 5: Generate code fix if enabled
@@ -331,7 +464,7 @@ export class MinimalReactAgent {
             try {
               codeFix = await this.fixGenerator.generateFix(
                 error,
-                response.rootCause,
+                finalResult.rootCause,
                 state.thoughts.join('\n')
               );
               
@@ -347,12 +480,7 @@ export class MinimalReactAgent {
           }
           
           const result: RCAResult = {
-            error: error.message,
-            rootCause: response.rootCause,
-            fixGuidelines: response.fixGuidelines,
-            confidence: response.confidence || 0.5,
-            iterations: i + 1,
-            toolsUsed: state.actions.map((a) => a.tool),
+            ...finalResult,
             codeFix: codeFix || undefined, // Chunk 5: Include generated fix
           };
 
@@ -376,10 +504,14 @@ export class MinimalReactAgent {
       stopFinalPrompt();
 
       const stopFinalLLM = this.performanceTracker.startTimer('final_llm_inference');
-      const finalResponse = await this.llm.generate(finalPrompt, {
+      // Iteration 6 Phase 2: Use generateWithRetry for final forced conclusion
+      const finalResponse = await this.llm.generateWithRetry(finalPrompt, {
         temperature: 0.5,
         maxTokens: 1500,
-      });
+      }, {
+        maxAttempts: 3, // P0 FIX: Re-enabled with conservative 3 attempts
+        qualityThreshold: 0.45, // P2 FIX: Even lower bar for forced conclusion (max iterations reached)
+      }, error.message + ' ' + (error.stackTrace?.map(f => f.file).join(' ') || '')); // P3: Pass error context for accuracy check
       stopFinalLLM();
 
       stopTotal();
@@ -562,12 +694,21 @@ ${thoughts.map((t, i) => `Iteration ${i + 1}: ${t}`).join('\n\n')}`;
 {
   "rootCause": "Clear explanation of what went wrong and why, referencing specific code when available",
   "fixGuidelines": [
-    "Step 1: Specific action to fix the issue (reference line numbers if applicable)",
-    "Step 2: Another specific action",
-    "Step 3: Best practice to prevent recurrence"
+    "Step 1: Specific action with exact file path and line number (e.g., 'Edit MainActivity.kt line 42')",
+    "Step 2: Code example showing fix - MANDATORY format: 'Before:\\n\`\`\`kotlin\\nold code\\n\`\`\`\\nAfter:\\n\`\`\`kotlin\\nnew code\\n\`\`\`'",
+    "Step 3: Verification step (e.g., 'Run ./gradlew build to verify fix')",
+    "Step 4: Best practice to prevent recurrence"
   ],
   "confidence": 0.85
 }
+
+CRITICAL: fixGuidelines array MUST include:
+- At least ONE entry with exact file path + line number
+- At least ONE entry with Before/After code blocks (use markdown \`\`\` fences)
+- Actual code syntax with =, quotes, braces (not generic instructions)
+
+EXAMPLE GOOD fixGuideline with code:
+"Edit build.gradle.kts line 15: Before:\\n\`\`\`kotlin\\ncompileSdkVersion = 33\\n\`\`\`\\nAfter:\\n\`\`\`kotlin\\ncompileSdkVersion = 34  // Update for latest APIs\\n\`\`\`"
 
 IMPORTANT: Respond ONLY with valid JSON, no other text.`;
 

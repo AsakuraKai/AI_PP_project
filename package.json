@@ -5,11 +5,17 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
+    "build:examples": "ts-node scripts/build-examples.ts",
+    "build:all": "npm run build:examples && npm run build",
     "watch": "tsc --watch",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:accuracy": "ts-node scripts/run-accuracy-tests.ts",
     "test:golden": "RUN_GOLDEN_TESTS=true jest tests/golden",
+    "test:phase1": "ts-node scripts/phase1-validation.ts",
+    "test:phase1-quick": "ts-node scripts/test-phase1-quick.ts",
+    "test:phase2": "ts-node scripts/test-phase2-validation.ts",
+    "populate:chromadb": "ts-node scripts/populate-chromadb.ts",
     "perf-test": "ts-node scripts/run-performance-tests.ts",
     "perf-test:quick": "ts-node scripts/run-performance-tests.ts -- --complexity simple",
     "perf-compare": "ts-node scripts/performance-comparison.ts",
@@ -40,6 +46,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@chroma-core/default-embed": "^0.1.9",
     "@types/uuid": "^10.0.0",
     "chromadb": "^3.1.8",
     "node-fetch": "^3.3.0",

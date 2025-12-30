@@ -15,6 +15,13 @@ out/
 coverage/
 .nyc_output/
 
+# Test result artifacts
+tests/results/
+
+# Test fixtures - exclude gradle build cache (causes path length issues)
+tests/fixtures/**/.gradle/
+tests/fixtures/**/build/
+
 # TypeScript
 *.tsbuildinfo
 
@@ -50,5 +57,3 @@ temp/
 chroma_data/
 
 # Other
-
-/MVP/

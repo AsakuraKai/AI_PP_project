@@ -198,7 +198,7 @@ export interface ToolCall {
  * LLM generation options
  */
 export interface GenerateOptions {
-  /** Temperature for randomness (0-1) */
+  /** Temperature for randomness (0-1, default: 0.0 for determinism) */
   temperature?: number;
   
   /** Maximum tokens to generate */
@@ -212,6 +212,26 @@ export interface GenerateOptions {
   
   /** Top-k sampling */
   topK?: number;
+  
+  /** Random seed for reproducibility (default: 42) */
+  seed?: number;
+}
+
+/**
+ * Retry configuration for LLM generation (Iteration 6 Phase 2)
+ */
+export interface RetryConfig {
+  /** Maximum retry attempts (default: 4) */
+  maxAttempts?: number;
+  
+  /** Quality threshold score 0-1 (default: 0.6) */
+  qualityThreshold?: number;
+  
+  /** Enable consensus voting across attempts (Phase 4 - optional) */
+  enableConsensus?: boolean;
+  
+  /** Enable progressive prompting (Phase 3 - optional) */
+  enableProgressivePrompting?: boolean;
 }
 
 /**
