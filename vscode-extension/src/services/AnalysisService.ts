@@ -10,12 +10,24 @@
  */
 
 import * as vscode from 'vscode';
-import { ErrorItem, RCAResult, AnalysisProgress } from '../panel/types';
+import { ErrorItem, AnalysisProgress } from '../panel/types';
+import { RCAResult as ExtensionRCAResult } from '../panel/types';
+import { RCAResult as BackendRCAResult } from '../../../src/types';
+import { MultiPassAgent } from '../../../src/agent/MultiPassAgent';
+import { AgentStateStream } from '../../../src/agent/AgentStateStream';
+import { OllamaClient } from '../../../src/llm/OllamaClient';
+import { ErrorParser } from '../../../src/utils/ErrorParser';
+import { ChromaDBClient } from '../../../src/db/ChromaDBClient';
 
 /**
  * Progress callback for analysis updates
  */
 export type ProgressCallback = (progress: AnalysisProgress) => void;
+
+/**
+ * Type alias for RCA results (using extension's type)
+ */
+type RCAResult = ExtensionRCAResult;
 
 /**
  * Analysis service for RCA operations
@@ -28,10 +40,12 @@ export class AnalysisService {
     cancelToken: vscode.CancellationTokenSource;
   };
   
-  // Backend components (will be initialized when backend is wired)
-  private _agent?: any; // MinimalReactAgent
-  private _parser?: any; // ErrorParser
-  private _client?: any; // OllamaClient
+  // Backend components
+  private _agent?: MultiPassAgent;
+  private _parser?: ErrorParser;
+  private _client?: OllamaClient;
+  private _chromaDB?: ChromaDBClient;
+  private _stateStream?: AgentStateStream;
   
   private constructor() {
     // Singleton
@@ -52,19 +66,38 @@ export class AnalysisService {
       const config = vscode.workspace.getConfiguration('rcaAgent');
       const ollamaUrl = config.get<string>('ollamaUrl', 'http://localhost:11434');
       const model = config.get<string>('model', 'deepseek-r1');
+      const chromaPath = config.get<string>('chromaDbPath', './chroma');
       
-      console.log('[AnalysisService] Initializing with:', { ollamaUrl, model });
+      console.log('[AnalysisService] Initializing with:', { ollamaUrl, model, chromaPath });
       
-      // TODO: Wire up Kai's backend components
-      // const { OllamaClient } = await import('../../../src/llm/OllamaClient');
-      // const { MinimalReactAgent } = await import('../../../src/agent/MinimalReactAgent');
-      // const { ErrorParser } = await import('../../../src/utils/ErrorParser');
+      // Initialize Ollama client
+      this._client = new OllamaClient({ baseUrl: ollamaUrl, model });
       
-      // this._client = new OllamaClient(ollamaUrl, model);
-      // this._agent = new MinimalReactAgent(this._client);
-      // this._parser = ErrorParser.getInstance();
+      // Initialize ErrorParser
+      this._parser = ErrorParser.getInstance();
       
-      console.log('[AnalysisService] Initialized successfully (mock mode)');
+      // Initialize ChromaDB client (optional - gracefully handles failure)
+      try {
+        this._chromaDB = await ChromaDBClient.create({ url: chromaPath });
+        console.log('[AnalysisService] ChromaDB initialized successfully');
+      } catch (error) {
+        const err = error as Error;
+        console.warn('[AnalysisService] ChromaDB initialization failed (continuing without cache):', err.message);
+        this._chromaDB = undefined;
+        // Extension will work without ChromaDB cache - this is expected if ChromaDB isn't set up
+      }
+      
+      // Initialize MultiPassAgent with config
+      this._agent = new MultiPassAgent(this._client, {
+        maxIterations: config.get<number>('maxIterations', 5),
+        numHypotheses: config.get<number>('numHypotheses', 3),
+        enableConsensus: config.get<boolean>('enableConsensus', false)
+      });
+      
+      // Get state stream for real-time updates
+      this._stateStream = this._agent.getStream();
+      
+      console.log('[AnalysisService] Initialized successfully');
     } catch (error) {
       console.error('[AnalysisService] Initialization failed:', error);
       throw error;
@@ -76,15 +109,12 @@ export class AnalysisService {
    */
   async checkOllamaConnection(): Promise<{ available: boolean; error?: string }> {
     try {
-      const config = vscode.workspace.getConfiguration('rcaAgent');
-      const ollamaUrl = config.get<string>('ollamaUrl', 'http://localhost:11434');
+      if (!this._client) {
+        await this.initialize();
+      }
       
-      // TODO: Actually check Ollama connection
-      // const response = await fetch(`${ollamaUrl}/api/tags`);
-      // return { available: response.ok };
-      
-      // Mock: return success for now
-      return { available: true };
+      const isHealthy = await this._client!.isHealthy();
+      return { available: isHealthy };
     } catch (error) {
       const err = error as Error;
       return { 
@@ -99,15 +129,12 @@ export class AnalysisService {
    */
   async checkModelAvailable(modelName: string): Promise<boolean> {
     try {
-      // TODO: Check if model exists in Ollama
-      // const config = vscode.workspace.getConfiguration('rcaAgent');
-      // const ollamaUrl = config.get<string>('ollamaUrl', 'http://localhost:11434');
-      // const response = await fetch(`${ollamaUrl}/api/tags`);
-      // const data = await response.json();
-      // return data.models?.some((m: any) => m.name === modelName);
+      if (!this._client) {
+        await this.initialize();
+      }
       
-      // Mock: return true for now
-      return true;
+      // Client will verify model availability during health check
+      return await this._client!.isHealthy();
     } catch (error) {
       console.error('[AnalysisService] Model check failed:', error);
       return false;
@@ -123,6 +150,11 @@ export class AnalysisService {
     cancellationToken?: vscode.CancellationToken
   ): Promise<RCAResult> {
     console.log('[AnalysisService] Starting analysis for:', error.id);
+    
+    // Ensure backend is initialized
+    if (!this._agent || !this._parser || !this._client) {
+      await this.initialize();
+    }
     
     // Create cancellation token if not provided
     const cancelTokenSource = new vscode.CancellationTokenSource();
@@ -142,63 +174,80 @@ export class AnalysisService {
         throw new Error(`Ollama server unavailable: ${connection.error}`);
       }
       
-      // Parse error text (if parser is available)
-      // const parsed = this._parser ? this._parser.parseError(error.message) : null;
+      // Parse error text
+      const parsed = this._parser!.parse(error.message, error.filePath);
       
-      // Mock: Simulate analysis with progress updates
-      const maxIterations = 3;
-      for (let i = 1; i <= maxIterations; i++) {
-        if (token.isCancellationRequested) {
-          throw new Error('Analysis cancelled');
-        }
-        
-        // Update progress
-        onProgress({
-          iteration: i,
-          maxIterations,
-          progress: (i / maxIterations) * 100,
-          currentThought: this._getThoughtForIteration(i),
-          toolsUsed: this._getToolsForIteration(i),
-          elapsed: Date.now() - this._currentAnalysis.startTime
-        });
-        
-        // Simulate work
-        await this._delay(2000);
+      if (!parsed) {
+        throw new Error('Failed to parse error message');
       }
       
-      // TODO: Actually run analysis with Kai's agent
-      // const result = await this._agent.analyze(parsed);
+      // Set up AgentStateStream event listeners for real-time progress
+      let currentIteration = 0;
+      const maxIterations = this._agent!['maxIterations'] || 5;
       
-      // Mock result
-      const result: RCAResult = {
-        error: error.message,
-        errorType: error.severity,
-        filePath: error.filePath,
-        line: error.line,
-        rootCause: 'This is a mock root cause analysis. The actual analysis will be performed by Kai\'s MinimalReactAgent.',
-        fixGuidelines: [
-          '1. Use safe call operator\n   println(user?.name)',
-          '2. Use Elvis operator with default\n   val name = user?.name ?: "Unknown"\n   println(name)',
-          '3. Check for null explicitly\n   if (user != null) {\n     println(user.name)\n   }'
-        ],
-        confidence: 85,
-        codeSnippet: `40: fun displayUser(id: Int) {\n41:   val user = getUserById(id)\n42: → println(user.name) // 🔥 CRASH HERE\n43:   println(user.email)\n44: }`,
-        toolsUsed: ['ReadFileTool', 'KotlinParser', 'ChromaDBTool'],
-        iterations: maxIterations,
-        language: 'kotlin',
-        qualityScore: 0.85,
-        latency: Date.now() - this._currentAnalysis.startTime,
-        modelName: 'deepseek-r1',
-        fromCache: false
+      this._stateStream!.on('iteration', (event) => {
+        currentIteration = event.iteration;
+        onProgress({
+          iteration: event.iteration,
+          maxIterations: event.maxIterations,
+          progress: event.progress * 100,
+          currentThought: ''
+        });
+      });
+      
+      this._stateStream!.on('thought', (event) => {
+        onProgress({
+          iteration: currentIteration,
+          maxIterations,
+          progress: (currentIteration / maxIterations) * 100,
+          currentThought: event.thought
+        });
+      });
+      
+      this._stateStream!.on('action', (event) => {
+        onProgress({
+          iteration: currentIteration,
+          maxIterations,
+          progress: (currentIteration / maxIterations) * 100,
+          currentThought: `Executing tool: ${event.action.tool}`
+        });
+      });
+      
+      this._stateStream!.on('observation', (event) => {
+        onProgress({
+          iteration: currentIteration,
+          maxIterations,
+          progress: (currentIteration / maxIterations) * 100,
+          currentThought: `Received: ${event.observation.substring(0, 50)}...`
+        });
+      });
+      
+      // Handle cancellation
+      const cancelHandler = () => {
+        if (token.isCancellationRequested) {
+          this.stopAnalysis();
+          throw new Error('Analysis cancelled');
+        }
       };
+      token.onCancellationRequested(cancelHandler);
       
+      // Run MultiPassAgent analysis
+      const result = await this._agent!.analyze(parsed);
+      
+      // Search for similar errors in ChromaDB
+      const similarErrors = await this._searchSimilarErrors(parsed);
+      
+      // Return backend result directly (types are compatible)
       console.log('[AnalysisService] Analysis complete:', result);
-      return result;
+      return result as any as ExtensionRCAResult;
       
     } catch (error) {
       console.error('[AnalysisService] Analysis failed:', error);
       throw error;
     } finally {
+      // Clean up event listeners
+      this._stateStream!.removeAllListeners();
+      
       // Clear current analysis
       this._currentAnalysis = undefined;
       cancelTokenSource.dispose();
@@ -238,33 +287,42 @@ export class AnalysisService {
   }
   
   /**
-   * Mock: Get thought for iteration
+   * Get AgentStateStream for subscribing to events
    */
-  private _getThoughtForIteration(iteration: number): string {
-    const thoughts = [
-      'Analyzing error pattern...',
-      'Searching knowledge base...',
-      'Generating fix guidelines...'
-    ];
-    return thoughts[iteration - 1] || 'Processing...';
+  getStateStream(): AgentStateStream | undefined {
+    return this._stateStream;
   }
   
   /**
-   * Mock: Get tools for iteration
+   * Search for similar errors in ChromaDB
    */
-  private _getToolsForIteration(iteration: number): string[] {
-    const tools = [
-      ['ReadFileTool'],
-      ['ReadFileTool', 'KotlinParser'],
-      ['ReadFileTool', 'KotlinParser', 'ChromaDBTool']
-    ];
-    return tools[iteration - 1] || [];
+  private async _searchSimilarErrors(error: any): Promise<any[] | undefined> {
+    try {
+      if (!this._chromaDB) {
+        return undefined;
+      }
+      
+      const query = `${error.type} ${error.message}`;
+      const results = await this._chromaDB.searchSimilar(query, 3);
+      
+      return results;
+    } catch (error) {
+      console.error('[AnalysisService] Similar error search failed:', error);
+      return undefined;
+    }
   }
   
   /**
-   * Utility: Delay
+   * Detect programming language from file path
    */
-  private _delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+  private _detectLanguage(filePath: string): 'kotlin' | 'java' | 'xml' | 'gradle' {
+    const ext = filePath.split('.').pop()?.toLowerCase();
+    
+    if (ext === 'kt') return 'kotlin';
+    if (ext === 'java') return 'java';
+    if (ext === 'xml') return 'xml';
+    if (ext === 'gradle' || filePath.includes('build.gradle')) return 'gradle';
+    
+    return 'kotlin'; // default
   }
 }

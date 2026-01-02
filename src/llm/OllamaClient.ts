@@ -45,7 +45,8 @@ export class OllamaClient {
 
   constructor(config: OllamaConfig = {}) {
     this.baseUrl = config.baseUrl || 'http://localhost:11434';
-    this.model = config.model || 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest';
+    const envModel = process.env.AI_PP_OLLAMA_MODEL || process.env.OLLAMA_MODEL;
+    this.model = config.model || envModel || 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest';
     this.timeout = config.timeout || 90000; // 90 seconds
     this.maxRetries = config.maxRetries || 3;
     this.initialRetryDelay = config.initialRetryDelay || 1000;

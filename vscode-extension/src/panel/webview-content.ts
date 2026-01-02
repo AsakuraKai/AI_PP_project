@@ -674,13 +674,13 @@ export class WebviewContentGenerator {
         <h1>RCA Agent</h1>
         <div class="header-actions">
           <button class="icon-button" id="refresh-btn" title="Refresh" aria-label="Refresh">
-            🔄
+            
           </button>
           <button class="icon-button" id="settings-btn" title="Settings" aria-label="Settings">
-            ⚙️
+            
           </button>
           <button class="icon-button" id="help-btn" title="Help" aria-label="Help">
-            ❓
+            ?
           </button>
         </div>
       </div>
@@ -722,13 +722,13 @@ export class WebviewContentGenerator {
   private static getEmptyStateHTML(): string {
     return `
       <div class="empty-state">
-        <div class="empty-state-icon">🤖</div>
+        <div class="empty-state-icon">■</div>
         <h2>No errors detected</h2>
         <p>
           Select error text in your editor and click "Analyze Selected Error" or use the keyboard shortcut to analyze errors.
         </p>
         <button class="button button-large" id="analyze-btn">
-          ▶ Analyze Selected Error
+          > Analyze Selected Error
         </button>
         
         <div class="empty-state-tips">
@@ -752,7 +752,7 @@ export class WebviewContentGenerator {
     if (state.errorType === 'ollama-unavailable') {
       return `
         <div class="error-state">
-          <div class="error-state-icon">⚠️</div>
+          <div class="error-state-icon">!</div>
           <h2>Ollama Server Not Available</h2>
           <div class="error-state-message">
             <p>The Ollama server is not responding.</p>
@@ -768,10 +768,10 @@ export class WebviewContentGenerator {
           <p>Current URL: ${state.ollamaUrl || 'http://localhost:11434'}</p>
           <div class="mt-16">
             <button class="button" id="check-connection-btn">
-              🔄 Check Connection
+              Check Connection
             </button>
             <button class="button button-secondary" id="view-logs-btn">
-              📋 View Logs
+              View Logs
             </button>
           </div>
         </div>
@@ -781,7 +781,7 @@ export class WebviewContentGenerator {
     if (state.errorType === 'model-not-found') {
       return `
         <div class="error-state">
-          <div class="error-state-icon">⚠️</div>
+          <div class="error-state-icon">!</div>
           <h2>Model Not Found</h2>
           <div class="error-state-message">
             <p>The model '${state.modelName || 'deepseek-r1'}' is not installed.</p>
@@ -796,7 +796,7 @@ export class WebviewContentGenerator {
           </div>
           <div class="mt-16">
             <button class="button" id="install-model-btn">
-              ⬇️ Install Model
+              Install Model
             </button>
           </div>
         </div>
@@ -805,17 +805,17 @@ export class WebviewContentGenerator {
     
     return `
       <div class="error-state">
-        <div class="error-state-icon">❌</div>
+        <div class="error-state-icon"></div>
         <h2>Analysis Error</h2>
         <div class="error-state-message">
           <p>${state.errorMessage || 'An unexpected error occurred during analysis.'}</p>
         </div>
         <div class="mt-16">
           <button class="button" id="retry-btn">
-            🔄 Retry
+             Retry
           </button>
           <button class="button button-secondary" id="view-logs-btn">
-            📋 View Logs
+            [MANIFEST] View Logs
           </button>
         </div>
       </div>
@@ -834,9 +834,9 @@ export class WebviewContentGenerator {
     return `
       <div class="analysis-section">
         <div class="analysis-header">
-          <div class="analysis-title">📊 CURRENT ANALYSIS</div>
+          <div class="analysis-title">CURRENT ANALYSIS</div>
           <div class="analysis-actions">
-            <button class="icon-button" id="stop-btn" title="Stop Analysis">⏸</button>
+            <button class="icon-button" id="stop-btn" title="Stop Analysis">||</button>
           </div>
         </div>
         
@@ -853,7 +853,7 @@ export class WebviewContentGenerator {
           </div>
           <div class="progress-text">
             <span class="spinner"></span>
-            <span>💭 ${thought}</span>
+            <span>${thought}</span>
           </div>
           <div class="iteration-info">
             Iteration ${iteration} of ${maxIterations}
@@ -883,7 +883,7 @@ export class WebviewContentGenerator {
     return `
       <div class="result-section">
         <div class="section-header">
-          <div class="section-title">✅ ANALYSIS COMPLETE</div>
+          <div class="section-title">ANALYSIS COMPLETE</div>
         </div>
         
         <div class="result-content mb-16">
@@ -892,7 +892,7 @@ export class WebviewContentGenerator {
         
         <!-- Root Cause -->
         <div class="result-box">
-          <div class="result-label">🎯 ROOT CAUSE</div>
+          <div class="result-label">ROOT CAUSE</div>
           <div class="result-content">
             ${result.rootCause}
           </div>
@@ -901,7 +901,7 @@ export class WebviewContentGenerator {
         <!-- Code Context -->
         ${result.codeSnippet ? `
         <div class="result-box">
-          <div class="result-label">📝 CODE CONTEXT</div>
+          <div class="result-label">CODE CONTEXT</div>
           <div class="code-block">
             <pre>${this.escapeHtml(result.codeSnippet)}</pre>
           </div>
@@ -910,13 +910,13 @@ export class WebviewContentGenerator {
         
         <!-- Fix Guidelines -->
         <div class="result-box">
-          <div class="result-label">🛠️ FIX GUIDELINES</div>
+          <div class="result-label">FIX GUIDELINES</div>
           <ul class="fix-list">
             ${result.fixGuidelines.map((fix, index) => `
               <li class="fix-item">
                 <div class="fix-item-header">
                   <span class="fix-number">${index + 1}. ${fix.split('\n')[0]}</span>
-                  <button class="copy-button" data-fix="${index}">📋 Copy</button>
+                  <button class="copy-button" data-fix="${index}">Copy</button>
                 </div>
                 ${fix.includes('\n') ? `<div class="code-block"><pre>${this.escapeHtml(fix.substring(fix.indexOf('\n') + 1))}</pre></div>` : ''}
               </li>
@@ -926,7 +926,7 @@ export class WebviewContentGenerator {
         
         <!-- Confidence -->
         <div class="confidence-container">
-          <div class="result-label">📊 CONFIDENCE</div>
+          <div class="result-label">CONFIDENCE</div>
           <div class="confidence-bar">
             <div class="confidence-fill ${this.getConfidenceClass(result.confidence)}" 
                  style="width: ${result.confidence}%"></div>
@@ -936,9 +936,9 @@ export class WebviewContentGenerator {
         
         <!-- Feedback -->
         <div class="feedback-section">
-          <button class="button" id="helpful-btn">👍 Helpful</button>
-          <button class="button button-secondary" id="not-helpful-btn">👎 Not Helpful</button>
-          <button class="button button-secondary" id="feedback-btn">💬 Feedback</button>
+          <button class="button" id="helpful-btn">Helpful</button>
+          <button class="button button-secondary" id="not-helpful-btn">Not Helpful</button>
+          <button class="button button-secondary" id="feedback-btn">[COMMENT] Feedback</button>
         </div>
       </div>
       

@@ -222,9 +222,9 @@ export class ErrorTreeItem extends vscode.TreeItem {
   private _formatStatus(status: string): string {
     const statusMap: { [key: string]: string } = {
       'pending': '⏳ Pending Analysis',
-      'analyzing': '🔄 Analyzing...',
-      'complete': '✅ Analysis Complete',
-      'failed': '❌ Analysis Failed'
+      'analyzing': ' Analyzing...',
+      'complete': ' Analysis Complete',
+      'failed': ' Analysis Failed'
     };
     return statusMap[status] || status;
   }

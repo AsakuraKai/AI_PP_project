@@ -1,0 +1,1084 @@
+"use strict";
+/**
+ * PromptEngine - Advanced prompt generation with few-shot examples
+ *
+ * Provides structured prompts with:
+ * - System instructions for agent behavior
+ * - Few-shot examples for each error type
+ * - Chain-of-thought prompting templates
+ * - Structured output formatting
+ *
+ * Design Decisions:
+ * - Separate system prompt from user prompts
+ * - Error-type specific examples for better accuracy
+ * - JSON output templates for consistent parsing
+ * - Modular prompt construction for flexibility
+ *
+ * @example
+ * const engine = new PromptEngine();
+ * const prompt = engine.buildAnalysisPrompt(parsedError, fileContent, iteration);
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.PromptEngine = void 0;
+const FewShotExampleService_1 = require("../knowledge/FewShotExampleService");
+/**
+ * Prompt templates for different analysis stages
+ */
+class PromptEngine {
+    constructor() {
+        this.fewShotService = (0, FewShotExampleService_1.getFewShotService)();
+        this.fewShotLoaded = false;
+        // Load few-shot examples asynchronously
+        this.loadFewShotExamples();
+    }
+    /**
+     * Load few-shot examples database
+     */
+    async loadFewShotExamples() {
+        try {
+            await this.fewShotService.loadDatabase();
+            this.fewShotLoaded = true;
+            const stats = this.fewShotService.getStatistics();
+            if (stats) {
+                console.log(`✅ Loaded ${stats.totalExamples} few-shot examples (v${stats.version})`);
+            }
+        }
+        catch (error) {
+            console.error('⚠️  Failed to load few-shot examples:', error);
+            this.fewShotLoaded = false;
+        }
+    }
+    /**
+     * Get system prompt with agent instructions
+     */
+    getSystemPrompt() {
+        return `You are an expert Kotlin/Android debugging assistant specializing in root cause analysis.
+
+**YOUR ROLE:**
+You help developers understand WHY errors occur and HOW to fix them properly.
+
+**ANALYSIS WORKFLOW:**
+1. **THOUGHT**: Form a specific hypothesis about the error cause
+2. **ACTION**: Use available tools to gather evidence (read_file, find_callers, etc.)
+3. **OBSERVATION**: Analyze the evidence collected
+4. **ITERATE**: Refine hypothesis based on observations
+5. **CONCLUDE**: Provide clear root cause and actionable fix steps
+
+**CRITICAL SPECIFICITY RULES (MUST FOLLOW):**
+
+1. **File Paths - MUST ALWAYS include exact line numbers:**
+   ❌ BAD: "Update build.gradle"
+   ❌ BAD: "Fix the version in the configuration file"
+   ❌ BAD: "Check build.gradle"
+   ✅ GOOD: "Update gradle/libs.versions.toml at line 5"
+   ✅ GOOD: "Modify app/build.gradle.kts at line 42"
+   ✅ GOOD: "Add permission to AndroidManifest.xml at line 8"
+   
+   **MANDATORY: Every file reference MUST have ":line X" or "at line X"**
+   
+2. **Version Numbers - MUST be specific and validated:**
+   ❌ BAD: "Update to latest AGP"
+   ❌ BAD: "Use a newer version"
+   ✅ GOOD: "Update to AGP 8.7.3 (stable, released Nov 2024)"
+   ✅ GOOD: "Upgrade Kotlin to 2.0.0 (compatible with AGP 8.7.3+)"
+   → ALWAYS use VersionLookupTool to validate versions before suggesting!
+   
+3. **Code Examples - MANDATORY (MUST include in fixGuidelines!):**
+   ❌ BAD: "Change the version"
+   ❌ BAD: "Initialize the variable"
+   ❌ BAD: "Update agp to 8.7.3" (no code shown)
+   ✅ GOOD:
+   Before:
+   \`\`\`gradle
+   agp = "8.10.0"  // Invalid version
+   \`\`\`
+   After:
+   \`\`\`gradle
+   agp = "8.7.3"  // Stable, compatible with Kotlin 1.9.0+
+   \`\`\`
+   
+   **REQUIRED FORMAT (AT LEAST ONE fixGuideline MUST INCLUDE THIS):**
+   - Start with "Before:" followed by code block
+   - Then "After:" followed by fixed code block
+   - Use proper markdown: \`\`\`language\\ncode\\n\`\`\`
+   - Show actual syntax (=, quotes, braces, etc.)
+   - Include comments explaining why
+   - Minimum 3 lines of code context
+   - THIS IS MANDATORY - DO NOT SKIP CODE EXAMPLES!
+   
+4. **Variable/Function Names - MUST reference actual code:**
+   ❌ BAD: "The variable is not initialized"
+   ❌ BAD: "Fix the null pointer"
+   ✅ GOOD: "Variable 'viewModel' (declared at line 15) is not initialized before use at line 45"
+   ✅ GOOD: "Function 'loadData()' (called at UserActivity.kt:67) receives null from 'getUserId()'"
+   
+5. **Verification Steps - MUST explain how to test fix:**
+   ❌ BAD: "This should fix it"
+   ❌ BAD: "The error will be resolved"
+   ✅ GOOD: "After applying fix, run './gradlew clean build' to verify compilation succeeds"
+   ✅ GOOD: "Test fix by running the app and navigating to ProfileScreen to ensure no crash"
+   
+6. **Dependencies/Compatibility - MUST validate relationships:**
+   ❌ BAD: "Ensure dependencies are compatible"
+   ❌ BAD: "Update related libraries"
+   ✅ GOOD: "AGP 8.7.3 requires Gradle 8.9+ (current: 8.2) - update gradle/wrapper/gradle-wrapper.properties"
+   ✅ GOOD: "Kotlin 2.0.0 requires kotlin-compose-compiler 2.0.0 (currently using 1.9.0) - update in build.gradle.kts"
+
+**QUALITY STANDARDS:**
+- Be specific - reference actual variable names, line numbers, function names
+- Explain WHY, not just WHAT - teach the developer
+- Provide actionable fixes - concrete steps, not vague advice
+- Use code examples when helpful
+- Cite evidence from code you've examined
+- Admit uncertainty when appropriate - don't guess
+
+**OUTPUT FORMAT:**
+Always respond with valid JSON:
+{
+  "thought": "Your reasoning about what's happening",
+  "action": { "tool": "tool_name", "parameters": {...} } OR null if ready to conclude,
+  "rootCause": "Clear explanation of what went wrong" (only when concluding),
+  "fixGuidelines": ["Step 1", "Step 2", "Step 3"] (only when concluding),
+  "confidence": 0.0-1.0 (only when concluding)
+}
+
+**TOOLS AVAILABLE:**
+- read_file: Read code at specific location
+- find_callers: Find where a function is called
+- find_definition: Find where a symbol is defined
+- get_symbol_info: Get information about a symbol
+- **version_lookup**: Query valid AGP/Kotlin/Gradle versions and compatibility
+
+**TOOL USAGE GUIDELINES:**
+
+1. **For Version Errors - ALWAYS use version_lookup first:**
+   - Check if version exists: { "tool": "version_lookup", "parameters": { "queryType": "exists", "toolType": "agp", "version": "8.10.0" } }
+   - Get latest stable: { "tool": "version_lookup", "parameters": { "queryType": "latest-stable", "toolType": "agp" } }
+   - Get suggestions: { "tool": "version_lookup", "parameters": { "queryType": "suggest", "toolType": "agp", "currentVersion": "8.10.0" } }
+   - Check compatibility: { "tool": "version_lookup", "parameters": { "queryType": "compatible", "toolType": "agp", "version": "8.7.3", "kotlinVersion": "2.0.0" } }
+
+2. **For Code Errors - Use code inspection tools:**
+   - read_file: To see actual code at error location
+   - find_callers: To understand how functions are called
+   - find_definition: To locate declarations
+
+3. **Chain Tools When Needed:**
+   - First get version info → Then read files to see current configuration
+   - First find definition → Then find callers to understand usage
+
+**REMEMBER:**
+- Real code context beats assumptions
+- Multiple iterations are OK - be thorough
+- Teaching moment: explain concepts when relevant
+- Prevention: suggest how to avoid similar issues
+- ALWAYS validate versions with version_lookup before suggesting changes
+- NEVER suggest versions without checking they exist and are compatible`;
+    }
+    /**
+     * Get few-shot examples for specific error type
+     */
+    getFewShotExamples(errorType) {
+        const examples = {
+            'lateinit': [
+                {
+                    error: 'kotlin.UninitializedPropertyAccessException: lateinit property user has not been initialized at UserActivity.kt:45',
+                    thought: 'This is a lateinit property access before initialization. I need to check where "user" is declared and where it should be initialized.',
+                    action: 'read_file at UserActivity.kt:45 to see the access point and property declaration',
+                    observation: 'Found: "val name = user.name" at line 45. Property "lateinit var user: User" declared at line 12. No initialization in onCreate() or init block.',
+                    conclusion: {
+                        rootCause: 'The lateinit property "user" is declared but never initialized before being accessed. Lateinit properties require explicit initialization before first use, but onCreate() does not initialize it.',
+                        fixGuidelines: [
+                            'Initialize "user" in onCreate() before accessing: user = User()',
+                            'Or make it nullable instead: var user: User? = null',
+                            'Or check initialization before use: if (::user.isInitialized) { ... }',
+                        ],
+                        confidence: 0.95,
+                    },
+                },
+            ],
+            'npe': [
+                {
+                    error: 'NullPointerException at line 67 in MainActivity.kt: textView.text = data',
+                    thought: 'NullPointerException suggests textView is null. Need to check how it\'s initialized.',
+                    action: 'read_file at MainActivity.kt:67 to see textView declaration and initialization',
+                    observation: 'Found: "private var textView: TextView? = null" at line 15. Line 67: "textView?.text = data" - wait, the error says non-null access. Let me check again... Actually "textView.text" not "textView?.text".',
+                    conclusion: {
+                        rootCause: 'textView is declared as nullable (TextView?) but accessed with non-null assertion (textView.text instead of textView?.text). It\'s null at line 67 because findViewById() returned null - likely wrong ID or view not inflated yet.',
+                        fixGuidelines: [
+                            'Use safe call: textView?.text = data',
+                            'Or check for null: if (textView != null) { textView.text = data }',
+                            'Verify the view ID in findViewById() matches the layout XML',
+                            'Ensure setContentView() is called before accessing views',
+                        ],
+                        confidence: 0.9,
+                    },
+                },
+            ],
+            'unresolved_reference': [
+                {
+                    error: 'Unresolved reference: AppDatabase at DatabaseHelper.kt:23',
+                    thought: 'Unresolved reference usually means missing import or the class doesn\'t exist. Let me check the imports and see if AppDatabase is defined.',
+                    action: 'read_file at DatabaseHelper.kt:23 to see imports and usage',
+                    observation: 'No import for AppDatabase. Found reference to "val db = AppDatabase.getInstance()". Searching workspace... AppDatabase.kt exists but in different package.',
+                    conclusion: {
+                        rootCause: 'AppDatabase class exists in the codebase but is not imported. The file DatabaseHelper.kt is missing the import statement for AppDatabase.',
+                        fixGuidelines: [
+                            'Add import statement: import com.example.app.database.AppDatabase',
+                            'Or use auto-import in IDE (Alt+Enter in IntelliJ/Android Studio)',
+                            'Verify AppDatabase is in the correct package and compiled',
+                        ],
+                        confidence: 0.85,
+                    },
+                },
+            ],
+            'type_mismatch': [
+                {
+                    error: 'Type mismatch: inferred type is String but Int was expected at line 34 in Calculator.kt',
+                    thought: 'Type mismatch between String and Int. Need to see what\'s being assigned.',
+                    action: 'read_file at Calculator.kt:34',
+                    observation: 'Found: "val result: Int = userInput" where userInput is String from EditText.getText().toString()',
+                    conclusion: {
+                        rootCause: 'Attempting to assign a String value directly to an Int variable without conversion. Kotlin requires explicit type conversion.',
+                        fixGuidelines: [
+                            'Convert String to Int: val result: Int = userInput.toIntOrNull() ?: 0',
+                            'Handle invalid input: val result = userInput.toIntOrNull() ?: run { showError(); return }',
+                            'Use try-catch for conversion: try { userInput.toInt() } catch(e: NumberFormatException) { 0 }',
+                        ],
+                        confidence: 0.92,
+                    },
+                },
+            ],
+            // Jetpack Compose-specific examples (added in Chunk 4.1)
+            'compose_remember': [
+                {
+                    error: 'Creating a state object during composition without using remember at HomeScreen.kt:45',
+                    thought: 'This Compose error indicates state is being created without remember. This means the state will be recreated on every recomposition, losing its value.',
+                    action: 'read_file at HomeScreen.kt:45 to see the state creation',
+                    observation: 'Found: "var counter = mutableStateOf(0)" at line 45 without remember wrapper.',
+                    conclusion: {
+                        rootCause: 'State is created with mutableStateOf() but not wrapped in remember { }. In Compose, state created during composition without remember is recreated on every recomposition, losing its value.',
+                        fixGuidelines: [
+                            'Wrap in remember: val counter = remember { mutableStateOf(0) }',
+                            'Or use the by delegate: var counter by remember { mutableStateOf(0) }',
+                            'For state that survives config changes: rememberSaveable { mutableStateOf(0) }',
+                        ],
+                        confidence: 0.95,
+                    },
+                },
+            ],
+            'compose_recomposition': [
+                {
+                    error: 'Performance warning: Recomposing 150 times in ItemCard composable at ItemCard.kt:23',
+                    thought: 'Excessive recomposition indicates a performance issue. The composable is being recomposed too often, likely due to unstable parameters or state reading.',
+                    action: 'read_file at ItemCard.kt:23 to check composable parameters and state usage',
+                    observation: 'Found: "@Composable fun ItemCard(onClick: () -> Unit)" - lambda parameter is unstable. Parent passes new lambda instance on each recomposition.',
+                    conclusion: {
+                        rootCause: 'The ItemCard composable receives an unstable lambda parameter (onClick: () -> Unit) which causes recomposition on every parent update. Lambda instances are not stable by default in Compose.',
+                        fixGuidelines: [
+                            'Wrap callback in remember: remember { { onItemClick(item.id) } }',
+                            'Move lambda to companion or top-level for stability',
+                            'Use key() to scope recomposition: key(item.id) { ItemCard(...) }',
+                            'Consider using Immutable/Stable annotations on data classes',
+                        ],
+                        confidence: 0.88,
+                    },
+                },
+            ],
+            'compose_launched_effect': [
+                {
+                    error: 'LaunchedEffect must have at least one key parameter at DataLoader.kt:34',
+                    thought: 'LaunchedEffect requires keys to control when the effect re-runs. Missing keys means the effect might not restart when needed.',
+                    action: 'read_file at DataLoader.kt:34 to see LaunchedEffect usage',
+                    observation: 'Found: "LaunchedEffect { loadData() }" without any key parameter.',
+                    conclusion: {
+                        rootCause: 'LaunchedEffect is called without a key parameter. The key determines when the effect restarts. Without keys, the effect only runs once and never restarts even if dependencies change.',
+                        fixGuidelines: [
+                            'Add appropriate key: LaunchedEffect(userId) { loadData(userId) }',
+                            'Use Unit for one-time effects: LaunchedEffect(Unit) { initializeOnce() }',
+                            'Multiple keys: LaunchedEffect(key1, key2) { ... }',
+                            'Never use mutable objects as keys - use their IDs instead',
+                        ],
+                        confidence: 0.92,
+                    },
+                },
+            ],
+            'compose_composition_local': [
+                {
+                    error: 'CompositionLocal LocalTheme not provided at ThemedButton.kt:12',
+                    thought: 'CompositionLocal requires a provider higher in the composition tree. The composable is trying to access a local value that wasn\'t provided.',
+                    action: 'read_file at ThemedButton.kt:12 to see how LocalTheme is accessed',
+                    observation: 'Found: "val theme = LocalTheme.current" but no CompositionLocalProvider wrapping this composable tree.',
+                    conclusion: {
+                        rootCause: 'ThemedButton accesses LocalTheme.current but no ancestor composable provides a value via CompositionLocalProvider. CompositionLocals must be provided before they can be consumed.',
+                        fixGuidelines: [
+                            'Wrap the composable tree with provider: CompositionLocalProvider(LocalTheme provides myTheme) { ThemedButton() }',
+                            'Provide at app root level for global access',
+                            'Or define default value: staticCompositionLocalOf { DefaultTheme }',
+                            'Check that provider is above consumer in composition tree',
+                        ],
+                        confidence: 0.9,
+                    },
+                },
+            ],
+            'compose_derived_state': [
+                {
+                    error: 'derivedStateOf should be used with remember at SearchScreen.kt:56',
+                    thought: 'derivedStateOf without remember means the derivation is recalculated on every recomposition instead of only when source state changes.',
+                    action: 'read_file at SearchScreen.kt:56 to see derivedStateOf usage',
+                    observation: 'Found: "val filteredItems = derivedStateOf { items.filter { it.matches(query) } }" outside of remember.',
+                    conclusion: {
+                        rootCause: 'derivedStateOf is used without remember, causing the derivation to be recreated on every recomposition. This defeats the purpose of derivedStateOf which is to cache derived values.',
+                        fixGuidelines: [
+                            'Wrap in remember: val filteredItems = remember { derivedStateOf { items.filter { it.matches(query) } } }',
+                            'The outer remember caches the derivedStateOf, inner derivedStateOf caches the computation',
+                            'Only re-derives when source state (items, query) actually changes',
+                        ],
+                        confidence: 0.93,
+                    },
+                },
+            ],
+            // XML Layout-specific examples (added in Chunk 4.2)
+            'xml_inflation': [
+                {
+                    error: 'android.view.InflateException: Binary XML file line #42: Error inflating class com.example.CustomView in activity_main.xml',
+                    thought: 'XML inflation error indicates the view class cannot be instantiated. Could be a missing constructor, wrong class name, or initialization issue in the custom view.',
+                    action: 'read_file at CustomView.kt to check the view class definition',
+                    observation: 'Found CustomView class but constructor is private: "private constructor(context: Context) : View(context)". Views must have public constructor with Context and AttributeSet.',
+                    conclusion: {
+                        rootCause: 'The CustomView has a private constructor instead of the required public constructor. Android Views inflated from XML must have a public constructor taking Context and AttributeSet parameters.',
+                        fixGuidelines: [
+                            'Change constructor to public: constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)',
+                            'Or add the required constructor if missing: constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)',
+                            'Ensure the view class is not abstract',
+                            'Verify the class is in the correct package and accessible',
+                        ],
+                        confidence: 0.92,
+                    },
+                },
+            ],
+            'xml_missing_id': [
+                {
+                    error: 'java.lang.NullPointerException: findViewById(R.id.text_title) returned null at MainActivity.kt:23',
+                    thought: 'findViewById returning null means the view ID does not exist in the inflated layout. Need to check if the ID is defined in the XML and if the correct layout is inflated.',
+                    action: 'read_file at MainActivity.kt:23 to see which layout is set and how findViewById is called',
+                    observation: 'setContentView(R.layout.activity_main) at line 20. findViewById(R.id.text_title) at line 23. Checked activity_main.xml - no view with id "text_title", found "textTitle" (camelCase) instead.',
+                    conclusion: {
+                        rootCause: 'The view ID "text_title" does not exist in activity_main.xml. The layout has "textTitle" (camelCase) but the code looks for "text_title" (snake_case). ID mismatch between XML and code.',
+                        fixGuidelines: [
+                            'Change Kotlin code to match XML: findViewById(R.id.textTitle)',
+                            'Or change XML to match code: android:id="@+id/text_title"',
+                            'Use View Binding to avoid ID mismatches: ActivityMainBinding.inflate(layoutInflater)',
+                            'Verify setContentView() is called before findViewById()',
+                            'Ensure you are looking in the correct layout file',
+                        ],
+                        confidence: 0.95,
+                    },
+                },
+            ],
+            'xml_attribute_error': [
+                {
+                    error: 'Error parsing XML: attribute layout_width not specified in activity_main.xml at line 15',
+                    thought: 'Missing required attribute. Android views in XML must have layout_width and layout_height specified. This is a common oversight.',
+                    action: 'read_file at activity_main.xml:15 to see the view definition',
+                    observation: 'Found TextView at line 15 with android:text but no layout_width or layout_height attributes.',
+                    conclusion: {
+                        rootCause: 'TextView is missing the required layout_width and layout_height attributes. All Android views must specify their size constraints when used in layouts.',
+                        fixGuidelines: [
+                            'Add required attributes: android:layout_width="wrap_content" android:layout_height="wrap_content"',
+                            'Common values: wrap_content (size to content), match_parent (fill parent), or specific dp value like "48dp"',
+                            'Use IDE autocomplete to avoid missing required attributes',
+                            'Enable XML validation warnings in IDE settings',
+                        ],
+                        confidence: 0.98,
+                    },
+                },
+            ],
+            'xml_resource_not_found': [
+                {
+                    error: 'android.content.res.Resources$NotFoundException: String resource @string/app_name not found in activity_main.xml',
+                    thought: 'Resource reference error means the string resource is not defined or misspelled. Need to check strings.xml.',
+                    action: 'Search workspace for strings.xml and check if app_name is defined',
+                    observation: 'Found strings.xml in res/values/ but "app_name" is not defined. Only "application_name" exists.',
+                    conclusion: {
+                        rootCause: 'The string resource @string/app_name is referenced but not defined in strings.xml. The actual resource is named "application_name". Resource name mismatch.',
+                        fixGuidelines: [
+                            'Define the missing string in res/values/strings.xml: <string name="app_name">My App</string>',
+                            'Or change XML reference to existing resource: @string/application_name',
+                            'Use IDE "Extract String Resource" to avoid typos',
+                            'Check for typos in resource names (app_name vs application_name)',
+                        ],
+                        confidence: 0.93,
+                    },
+                },
+            ],
+            'xml_duplicate_id': [
+                {
+                    error: 'Error: Duplicate id @+id/button_submit, already defined earlier in this layout in activity_main.xml at line 45',
+                    thought: 'Duplicate ID in the same layout file. Each view must have a unique ID within a layout. This usually happens when copy-pasting views.',
+                    action: 'read_file at activity_main.xml:45 and search for other instances of button_submit',
+                    observation: 'Found button_submit defined at line 28 (inside a LinearLayout) and again at line 45 (inside a RelativeLayout). Both are Button views.',
+                    conclusion: {
+                        rootCause: 'The ID "button_submit" is used for two different buttons in the same layout. IDs must be unique within a layout file. This likely occurred from copy-pasting without renaming the ID.',
+                        fixGuidelines: [
+                            'Rename one of the buttons: android:id="@+id/button_confirm" or android:id="@+id/button_submit_secondary"',
+                            'Use descriptive IDs based on location/purpose: button_submit_top, button_submit_bottom',
+                            'After renaming, update Kotlin code that references the old ID',
+                            'Use IDE refactoring (Shift+F6) to rename IDs safely',
+                        ],
+                        confidence: 0.96,
+                    },
+                },
+            ],
+            'xml_invalid_attribute_value': [
+                {
+                    error: 'Error: "wrap_contentt" is not a valid value for attribute layout_width in activity_main.xml at line 12',
+                    thought: 'Typo in attribute value. "wrap_contentt" has an extra "t" at the end. Should be "wrap_content".',
+                    action: 'read_file at activity_main.xml:12 to confirm the typo',
+                    observation: 'Found: android:layout_width="wrap_contentt" - confirmed typo.',
+                    conclusion: {
+                        rootCause: 'Typo in layout_width value: "wrap_contentt" instead of "wrap_content". Extra "t" at the end causes XML parser to reject the attribute value.',
+                        fixGuidelines: [
+                            'Fix typo: android:layout_width="wrap_content"',
+                            'Valid values are: wrap_content, match_parent, or specific dimensions like "48dp"',
+                            'Enable XML validation in IDE to catch typos at edit time',
+                            'Use IDE autocomplete for attributes to avoid typos',
+                        ],
+                        confidence: 0.99,
+                    },
+                },
+            ],
+        };
+        return examples[errorType] || [];
+    }
+    /**
+     * Build regeneration prompt with specific feedback (P1: Enhanced to preserve diagnoses)
+     */
+    buildRegenerationPrompt(params) {
+        const { error, previousResponse, specificIssues } = params;
+        // Extract core diagnosis to preserve
+        const coreDiagnosis = previousResponse.rootCause ||
+            previousResponse.thought ||
+            'analysis incomplete';
+        // Identify error domain for domain-specific examples
+        const errorDomain = this.classifyErrorDomain(error);
+        return `You're improving a previous analysis. **CRITICAL: Keep the core diagnosis intact.**
+
+**YOUR PREVIOUS DIAGNOSIS (PRESERVE THIS):**
+"${coreDiagnosis.substring(0, 200)}..."
+
+**WHAT TO KEEP:**
+- ✅ The fundamental cause you identified
+- ✅ The error category (${errorDomain})
+- ✅ The general solution approach
+
+**WHAT TO ADD (without changing core diagnosis):**
+${specificIssues.slice(0, 3).map((issue, i) => `${i + 1}. ${issue}`).join('\n')}
+
+**EXAMPLE OF ENHANCING (not replacing) for ${errorDomain} errors:**
+
+ORIGINAL (correct but vague):
+{
+  "rootCause": "${this.getVagueExample(errorDomain)}",
+  "fixGuidelines": ["${this.getVagueFix(errorDomain)}"]
+}
+
+ENHANCED (same diagnosis + detail):
+{
+  "rootCause": "${this.getDetailedExample(errorDomain)}",
+  "fixGuidelines": [
+    "${this.getDetailedFix(errorDomain, 1)}",
+    "${this.getDetailedFix(errorDomain, 2)}",
+    "${this.getDetailedFix(errorDomain, 3)}"
+  ]
+}
+
+**FORBIDDEN:**
+- ❌ Changing from ${errorDomain} error to different category
+- ❌ Abandoning your previous reasoning completely
+- ❌ Introducing new error types not in original diagnosis
+
+**NOW ENHANCE (don't replace) YOUR DIAGNOSIS - OUTPUT ONLY VALID JSON:**
+
+{
+  "thought": "Brief explanation of what you're enhancing",
+  "action": null,
+  "rootCause": "Enhanced version with file paths and line numbers",
+  "fixGuidelines": ["Step 1 with BEFORE/AFTER code", "Step 2 with specifics", "Step 3 with verification"],
+  "confidence": 0.6-0.95
+}`;
+    }
+    /**
+     * Classify error domain for domain-specific examples (P1)
+     */
+    classifyErrorDomain(error) {
+        const msg = error.message.toLowerCase();
+        const stack = error.stackTrace?.map(f => f.file).join(' ').toLowerCase() || '';
+        const combined = msg + ' ' + stack;
+        if (combined.includes('permission') || combined.includes('securityexception')) {
+            return 'permission';
+        }
+        if (combined.includes('cache') || combined.includes('corrupted')) {
+            return 'cache';
+        }
+        if (combined.includes('network') || combined.includes('maven') || combined.includes('download')) {
+            return 'network';
+        }
+        if (combined.includes('proguard') || combined.includes('r8') || combined.includes('nosuchmethod')) {
+            return 'proguard';
+        }
+        if (combined.includes('navigation') || combined.includes('argument')) {
+            return 'navigation';
+        }
+        if (combined.includes('null') || combined.includes('npe')) {
+            return 'null-pointer';
+        }
+        return 'general';
+    }
+    /**
+     * Get vague example for error domain (P1)
+     */
+    getVagueExample(domain) {
+        const examples = {
+            'permission': 'Permission is missing in manifest',
+            'cache': 'Build cache is corrupted',
+            'network': 'Network connection failed',
+            'proguard': 'ProGuard removed the method',
+            'navigation': 'Navigation argument is missing',
+            'null-pointer': 'Variable is null',
+            'general': 'Error in the code'
+        };
+        return examples[domain] || examples['general'];
+    }
+    /**
+     * Get vague fix for error domain (P1)
+     */
+    getVagueFix(domain) {
+        const fixes = {
+            'permission': 'Add the permission to manifest',
+            'cache': 'Clean the build cache',
+            'network': 'Check your internet connection',
+            'proguard': 'Update ProGuard rules',
+            'navigation': 'Pass the required argument',
+            'null-pointer': 'Initialize the variable',
+            'general': 'Fix the error'
+        };
+        return fixes[domain] || fixes['general'];
+    }
+    /**
+     * Get detailed example for error domain (P1)
+     */
+    getDetailedExample(domain) {
+        const examples = {
+            'permission': 'App requires CAMERA permission (android.permission.CAMERA) at MainActivity.kt line 15, but AndroidManifest.xml is missing the declaration at line 8. This causes SecurityException at runtime when camera access is attempted.',
+            'cache': 'Gradle build cache at ~/.gradle/caches/ contains corrupted metadata for dependency com.example:library:1.0.0, causing build.gradle.kts at line 42 to fail resolution with "Could not resolve" error.',
+            'network': 'Maven repository download fails at build.gradle.kts line 12 due to network timeout connecting to https://repo1.maven.org. Error occurs during dependency resolution for androidx.core:core-ktx:1.12.0.',
+            'proguard': 'ProGuard in build.gradle.kts line 28 (minifyEnabled=true) removes method getUserName() from User class at User.kt line 45, causing NoSuchMethodError at runtime in MainActivity.kt line 102.',
+            'navigation': 'NavHost in MainActivity.kt line 67 expects required argument "userId" (type: String) defined in navigation.xml line 23, but calling code at HomeFragment.kt line 89 passes no arguments.',
+            'null-pointer': 'Variable userProfile at MainActivity.kt line 56 is accessed before initialization (lateinit not initialized), causing NullPointerException when accessed at line 78 in getUserData() method.',
+            'general': 'Error occurs at specific location with detailed context about the cause and impact.'
+        };
+        return examples[domain] || examples['general'];
+    }
+    /**
+     * Get detailed fix for error domain (P1)
+     */
+    getDetailedFix(domain, step) {
+        const fixes = {
+            'permission': [
+                '1. Edit AndroidManifest.xml line 8: Add <uses-permission android:name="android.permission.CAMERA" /> before <application> tag | BEFORE: <manifest>\\n  <application...> | AFTER: <manifest>\\n  <uses-permission android:name="android.permission.CAMERA" />\\n  <application...>',
+                '2. For Android 6.0+ (API 23+), add runtime permission check in MainActivity.kt onCreate() at line 15: if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) { ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 100) }',
+                '3. Verify: Run "./gradlew build" to confirm build succeeds, then test camera feature - should show permission dialog on first use'
+            ],
+            'cache': [
+                '1. Clean Gradle build cache: Run "./gradlew clean --no-build-cache" to delete corrupted cache at ~/.gradle/caches/',
+                '2. Delete specific corrupted dependency cache: rm -rf ~/.gradle/caches/modules-2/files-2.1/com.example/library/1.0.0/',
+                '3. Rebuild project: Run "./gradlew build --refresh-dependencies" to re-download fresh dependency metadata and verify build.gradle.kts line 42 resolves correctly'
+            ],
+            'network': [
+                '1. Add alternative Maven repository in build.gradle.kts at line 10 before mavenCentral(): maven { url = uri("https://maven.aliyun.com/repository/central") } // China mirror',
+                '2. Increase network timeout in gradle.properties: org.gradle.daemon.idletimeout=60000 and systemProp.http.connectionTimeout=60000',
+                '3. Verify connectivity: curl -I https://repo1.maven.org/maven2/ should return 200 OK, then run "./gradlew build --refresh-dependencies"'
+            ],
+            'proguard': [
+                '1. Edit proguard-rules.pro at line 15: Add -keep class com.example.User { public java.lang.String getUserName(); } to preserve method',
+                '2. Disable minification for debug builds in build.gradle.kts line 28: buildTypes { debug { isMinifyEnabled = false } release { isMinifyEnabled = true } }',
+                '3. Verify: Run "./gradlew assembleRelease" and check build/outputs/mapping/release/usage.txt to confirm getUserName() is not removed, test at MainActivity.kt line 102'
+            ],
+            'navigation': [
+                '1. Add argument to navigation call in HomeFragment.kt at line 89: findNavController().navigate(R.id.action_home_to_profile, bundleOf("userId" to currentUserId))',
+                '2. Verify navigation.xml line 23 defines required argument: <argument android:name="userId" app:argType="string" />',
+                '3. Test navigation flow: Run app, navigate from HomeFragment to ProfileFragment - should pass userId correctly, verify in ProfileFragment onCreate() with arguments?.getString("userId")'
+            ],
+            'null-pointer': [
+                '1. Initialize lateinit variable in MainActivity.kt line 56: lateinit var userProfile: UserProfile, then initialize in onCreate() at line 60: userProfile = UserProfile(userId)',
+                '2. Alternative: Use nullable type with safe call: var userProfile: UserProfile? = null, then access with userProfile?.getUserData() at line 78',
+                '3. Add null check before access at line 78: if (::userProfile.isInitialized) { userProfile.getUserData() } else { Log.e("MainActivity", "userProfile not initialized") }'
+            ],
+            'general': [
+                '1. Identify exact file and line number where error occurs, add specific code change with BEFORE/AFTER example',
+                '2. Provide concrete implementation with actual syntax, not just description of what to do',
+                '3. Include verification steps: commands to run and expected output to confirm fix works'
+            ]
+        };
+        const domainFixes = fixes[domain] || fixes['general'];
+        return domainFixes[step - 1] || domainFixes[0];
+    }
+    /**
+     * Build tool usage prompt
+     */
+    buildToolPrompt(availableTools) {
+        return `\n\n**AVAILABLE TOOLS:**
+${availableTools.map(tool => `- ${tool}`).join('\n')}
+
+To use a tool, include in your JSON:
+"action": { "tool": "tool_name", "parameters": { "param1": "value1" } }
+
+To conclude without using a tool:
+"action": null`;
+    }
+    /**
+     * Format few-shot examples
+     */
+    formatExamples(examples) {
+        return examples.map((example, i) => {
+            return `
+Example ${i + 1}:
+Error: ${example.error}
+Thought: "${example.thought}"
+Action: ${example.action}
+Observation: ${example.observation}
+Conclusion:
+  Root Cause: ${example.conclusion.rootCause}
+  Fix Guidelines:
+${example.conclusion.fixGuidelines.map(step => `    - ${step}`).join('\n')}
+  Confidence: ${example.conclusion.confidence}`;
+        }).join('\n---\n');
+    }
+    /**
+     * Extract JSON from LLM response (handles extra text)
+     * Multi-strategy parsing with fallbacks and repair logic
+     * ENHANCED - Iteration 5: Never throws, always returns something
+     */
+    extractJSON(response) {
+        // Pre-processing: Remove <think> tags that DeepSeek-R1 adds
+        let cleaned = response.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+        cleaned = cleaned.replace(/`<think>[\s\S]*$/gi, '').trim(); // Handle unclosed think tags
+        // Strategy 1: Try direct parsing
+        try {
+            return JSON.parse(cleaned);
+        }
+        catch { }
+        // Strategy 2: Extract from markdown code blocks (improved regex)
+        const codeBlockMatch = cleaned.match(/```(?:json)?\s*([{[][\s\S]*?[}\]])\s*```/);
+        if (codeBlockMatch) {
+            try {
+                return JSON.parse(codeBlockMatch[1]);
+            }
+            catch { }
+        }
+        // Strategy 3: Find the FIRST complete JSON object (balanced braces)
+        const jsonMatches = this.extractBalancedJSON(cleaned);
+        for (const jsonStr of jsonMatches) {
+            try {
+                return JSON.parse(jsonStr);
+            }
+            catch (e) {
+                // Strategy 4: Try to fix common JSON issues
+                try {
+                    const fixed = jsonStr
+                        .replace(/,(\s*[}\]])/g, '$1') // Remove trailing commas
+                        .replace(/\\'/g, "'") // Fix escaped quotes
+                        .replace(/\n/g, ' ') // Remove newlines in strings
+                        .replace(/\r/g, '') // Remove carriage returns
+                        .replace(/\t/g, ' ') // Replace tabs
+                        .replace(/""([^"]+)""/g, '"$1"'); // Fix double-quoted strings
+                    return JSON.parse(fixed);
+                }
+                catch { }
+            }
+        }
+        // Strategy 5: Try to extract partial JSON and fill missing fields
+        const partialJSON = this.extractPartialJSON(cleaned);
+        if (partialJSON) {
+            return partialJSON;
+        }
+        // Strategy 6 (NEW): NEVER FAIL - Return minimal valid JSON
+        console.warn('\u26a0\ufe0f All JSON extraction strategies failed, creating minimal fallback');
+        return {
+            thought: 'JSON parsing failed - response was: ' + response.substring(0, 150),
+            action: null,
+            rootCause: 'Analysis incomplete - LLM response could not be parsed',
+            fixGuidelines: ['Review the raw LLM output', 'Try running analysis again'],
+            confidence: 0.1
+        };
+    }
+    /**
+     * Extract balanced JSON objects from text (handles nested braces)
+     * Phase 1.1 Enhancement
+     */
+    extractBalancedJSON(text) {
+        const results = [];
+        let depth = 0;
+        let start = -1;
+        for (let i = 0; i < text.length; i++) {
+            if (text[i] === '{') {
+                if (depth === 0)
+                    start = i;
+                depth++;
+            }
+            else if (text[i] === '}') {
+                depth--;
+                if (depth === 0 && start !== -1) {
+                    results.push(text.substring(start, i + 1));
+                    start = -1;
+                }
+            }
+        }
+        return results;
+    }
+    /**
+     * Extract partial JSON and fill required fields with defaults
+     * Phase 1.1 Enhancement + Iteration 5: More lenient extraction
+     */
+    extractPartialJSON(text) {
+        try {
+            // Try to find thought, action, rootCause fields even if JSON is incomplete
+            const thoughtMatch = text.match(/["']thought["']\s*:\s*["']([^"']+)["']/);
+            const actionMatch = text.match(/["']action["']\s*:\s*(null|\{[^}]*\})/);
+            const rootCauseMatch = text.match(/["']rootCause["']\s*:\s*["']([^"']*)["']/);
+            const fixMatch = text.match(/["']fixGuidelines["']\s*:\s*\[([^\]]*)\]/);
+            if (thoughtMatch) {
+                const partial = {
+                    thought: thoughtMatch[1],
+                    action: actionMatch ? (actionMatch[1] === 'null' ? null : JSON.parse(actionMatch[1])) : null,
+                };
+                // If concluding, add required fields
+                if (partial.action === null) {
+                    partial.rootCause = rootCauseMatch ? rootCauseMatch[1] : 'Analysis incomplete - see thought';
+                    partial.fixGuidelines = fixMatch ? JSON.parse(`[${fixMatch[1]}]`) : ['Review error context'];
+                    partial.confidence = 0.3; // Low confidence for partial extraction
+                }
+                return partial;
+            }
+            // Iteration 5: Even more lenient - try to salvage ANYTHING
+            // Look for rootCause or any analysis-like content
+            if (rootCauseMatch || text.includes('rootCause') || text.includes('error')) {
+                console.warn('\u26a0\ufe0f Using ultra-lenient extraction - creating minimal valid response');
+                return {
+                    thought: rootCauseMatch ? `Analysis: ${rootCauseMatch[1].substring(0, 100)}` : 'See analysis below',
+                    action: null,
+                    rootCause: rootCauseMatch ? rootCauseMatch[1] : 'Analysis incomplete - JSON parsing failed',
+                    fixGuidelines: fixMatch ? JSON.parse(`[${fixMatch[1]}]`) : ['Review error and context', 'Check system logs for more details'],
+                    confidence: 0.2
+                };
+            }
+        }
+        catch (e) {
+            // Extraction failed
+        }
+        return null;
+    }
+    /**
+     * Build iteration prompt with comprehensive context (NEW - for Chunk 2.4)
+     * NOW ENHANCED: Includes relevant few-shot examples from knowledge base
+     */
+    async buildIterationPrompt(params) {
+        const { systemPrompt, examples, error, previousThoughts, previousActions, previousObservations, iteration, maxIterations } = params;
+        let prompt = `${systemPrompt}\n\n`;
+        // Add legacy examples (from old system) only on first iteration
+        if (iteration === 1 && examples.length > 0) {
+            prompt += `**EXAMPLES OF SIMILAR ANALYSIS:**\n${this.formatExamples(examples)}\n\n`;
+        }
+        // Add few-shot examples from knowledge base (on first iteration only)
+        if (iteration === 1 && this.fewShotLoaded) {
+            try {
+                const relevantExamples = await this.fewShotService.findRelevantExamples(error, 3);
+                if (relevantExamples.length > 0) {
+                    const formattedExamples = this.fewShotService.formatExamplesForPrompt(relevantExamples);
+                    prompt += `${formattedExamples}\n\n`;
+                    console.log(`📚 Added ${relevantExamples.length} relevant examples to prompt`);
+                }
+            }
+            catch (error) {
+                console.warn('Failed to retrieve few-shot examples:', error);
+            }
+        }
+        prompt += `**ERROR TO ANALYZE:**
+Type: ${error.type}
+Message: ${error.message}
+Location: ${error.filePath}:${error.line}
+Language: ${error.language}
+${error.metadata ? `Metadata: ${JSON.stringify(error.metadata, null, 2)}` : ''}
+
+**PROGRESS:** Iteration ${iteration}/${maxIterations}\n`;
+        // Add history if exists
+        if (previousThoughts.length > 0) {
+            prompt += `\n**ANALYSIS HISTORY:**\n`;
+            previousThoughts.forEach((thought, i) => {
+                prompt += `\nIteration ${i + 1}:\n`;
+                prompt += `  Thought: ${thought}\n`;
+                if (previousActions[i]) {
+                    prompt += `  Action: ${JSON.stringify(previousActions[i])}\n`;
+                }
+                if (previousObservations[i]) {
+                    prompt += `  Observation: ${previousObservations[i]}\n`;
+                }
+            });
+        }
+        prompt += `\n**YOUR TASK:**\n`;
+        if (iteration === 1) {
+            prompt += `This is your first analysis. Form an initial hypothesis about what caused this error.
+Consider using the read_file tool to examine the code at the error location.\n`;
+        }
+        else {
+            prompt += `Continue your analysis based on what you've learned.
+- If you have sufficient information, provide your final conclusion (set action to null)
+- If you need more information, specify the next tool to use\n`;
+        }
+        prompt += `\nRespond ONLY with valid JSON (no other text):\n`;
+        prompt += `{
+  "thought": "Your current reasoning",
+  "action": { "tool": "tool_name", "parameters": {...} } OR null if concluding,
+  "rootCause": "Explanation with file:line references" (only when action is null),
+  "fixGuidelines": [
+    "1. First step with exact file path and line number",
+    "2. Code example (MANDATORY - MUST INCLUDE):\\nBefore:\\n\`\`\`kotlin\\nold code here\\n\`\`\`\\nAfter:\\n\`\`\`kotlin\\nfixed code here\\n\`\`\`",
+    "3. Verification step explaining how to test the fix"
+  ] (only when action is null - NOTE: fixGuidelines is an array of STRINGS, not objects!),
+  "confidence": 0.0-1.0 (only when action is null)
+}
+
+⚠️ CRITICAL RULES:
+1. fixGuidelines MUST be an array of STRINGS (not objects!)
+2. At least ONE string MUST contain a code example with Before/After blocks
+3. Use \\n for newlines within strings, not actual line breaks`;
+        return prompt;
+    }
+    /**
+     * Build a progressive, one-shot analysis prompt.
+     *
+     * Phase 3 (optional): start with lightweight prompting, then add
+     * RAG examples / full system prompt only if needed.
+     *
+     * IMPORTANT: This prompt is designed to produce a final conclusion in one response
+     * (action MUST be null) and should be validated by OutputValidator.
+     */
+    async buildProgressiveAnalysisPrompt(params) {
+        const { error, level, systemPrompt } = params;
+        // Keep Level 1 intentionally lightweight: no giant system prompt, no history.
+        // Levels 2-3 add few-shot/RAG examples to improve specificity.
+        const includeSystemPrompt = level >= 3 && systemPrompt;
+        const includeExamples = level >= 2;
+        const exampleCount = level >= 3 ? 10 : 3;
+        let prompt = '';
+        if (includeSystemPrompt) {
+            prompt += `${systemPrompt}\n\n`;
+        }
+        else {
+            prompt += `You are an expert Kotlin/Android debugging assistant. Output ONLY valid JSON.\n\n`;
+            prompt += `CRITICAL RULES:\n`;
+            prompt += `1) Never output empty JSON {}\n`;
+            prompt += `2) Always include: thought (100+ chars), rootCause (100+ chars), fixGuidelines (array of strings)\n`;
+            prompt += `3) Include exact file path + line number when possible (e.g., \'MainActivity.kt:42\')\n`;
+            prompt += `4) At least ONE fixGuideline must include a Before/After code example\n\n`;
+        }
+        if (includeExamples && this.fewShotLoaded) {
+            try {
+                const relevantExamples = await this.fewShotService.findRelevantExamples(error, exampleCount);
+                if (relevantExamples.length > 0) {
+                    prompt += this.fewShotService.formatExamplesForPrompt(relevantExamples);
+                    prompt += `\n\n`;
+                }
+            }
+            catch (e) {
+                // Best-effort: progressive prompting should never fail the whole analysis path.
+            }
+        }
+        prompt += `Analyze this error and provide a final conclusion.\n\n`;
+        prompt += `ERROR:\n${error.message}\n`;
+        prompt += `TYPE: ${error.type}\n`;
+        prompt += `FILE: ${error.filePath}:${error.line}\n`;
+        prompt += `LANGUAGE: ${error.language}\n`;
+        if (error.metadata) {
+            prompt += `METADATA: ${JSON.stringify(error.metadata)}\n`;
+        }
+        prompt += `\nOUTPUT JSON ONLY (action MUST be null):\n`;
+        prompt += `{
+  "thought": "Detailed reasoning (100+ chars)",
+  "action": null,
+  "rootCause": "Specific cause with file:line references (100+ chars)",
+  "fixGuidelines": [
+    "1. Step with exact file path and line number",
+    "2. Step with BEFORE/AFTER code example:\\nBefore:\\n\`\`\`kotlin\\n...\\n\`\`\`\\nAfter:\\n\`\`\`kotlin\\n...\\n\`\`\`",
+    "3. Verification step (how to test the fix)"
+  ],
+  "confidence": 0.7
+}`;
+        return prompt;
+    }
+    /**
+     * Build final prompt with all state (NEW - for Chunk 2.4)
+     */
+    buildFinalPrompt(state) {
+        const { error, thoughts, actions, observations } = state;
+        let prompt = `**FINAL ANALYSIS REQUIRED**
+
+You have reached the maximum number of iterations. Provide your final conclusion now.
+
+**ERROR:**
+Type: ${error.type}
+Message: ${error.message}
+Location: ${error.filePath}:${error.line}
+
+**COMPLETE ANALYSIS HISTORY:**\n`;
+        thoughts.forEach((thought, i) => {
+            prompt += `\nIteration ${i + 1}:\n`;
+            prompt += `  Thought: ${thought}\n`;
+            if (actions[i]) {
+                prompt += `  Action: ${JSON.stringify(actions[i])}\n`;
+            }
+            if (observations[i]) {
+                prompt += `  Observation: ${observations[i]}\n`;
+            }
+        });
+        prompt += `\n**YOUR TASK:**
+Synthesize all information gathered and provide your final analysis.
+
+Respond ONLY with valid JSON (no other text):
+{
+  "thought": "Your final reasoning",
+  "action": null,
+  "rootCause": "Clear explanation of what went wrong and why with file:line references",
+  "fixGuidelines": [
+    "1. First step with exact file path and line number",
+    "2. Code example (MANDATORY):\\nBefore:\\n\`\`\`kotlin\\nold code here\\n\`\`\`\\nAfter:\\n\`\`\`kotlin\\nfixed code here\\n\`\`\`",
+    "3. Verification step explaining how to test the fix"
+  ],
+  "confidence": 0.0-1.0
+}
+
+⚠️ CRITICAL: fixGuidelines is an array of STRINGS (not objects!) and MUST include code examples!`;
+        return prompt;
+    }
+    /**
+     * Parse LLM response into structured format (ENHANCED - Phase 1.1 Fix)
+     */
+    parseResponse(response) {
+        try {
+            const json = this.extractJSON(response);
+            const validation = this.validateResponse(json);
+            if (!validation.valid) {
+                console.warn(`Response validation failed: ${validation.error}`);
+                // Try to salvage what we can from the JSON
+                if (json.thought && typeof json.thought === 'string') {
+                    // Has thought, so partially valid
+                    if (json.action === null || json.action === undefined) {
+                        // Concluding but missing required fields
+                        return {
+                            thought: json.thought,
+                            action: null,
+                            rootCause: json.rootCause || 'Analysis incomplete - see thought field for details',
+                            fixGuidelines: Array.isArray(json.fixGuidelines) && json.fixGuidelines.length > 0
+                                ? json.fixGuidelines
+                                : ['Review the thought process above', 'Examine error context and code'],
+                            confidence: typeof json.confidence === 'number' ? json.confidence : 0.3,
+                        };
+                    }
+                    else {
+                        // Has action, return as tool call
+                        return {
+                            thought: json.thought,
+                            action: json.action,
+                        };
+                    }
+                }
+                // Cannot salvage - return minimal response
+                return {
+                    thought: JSON.stringify(json).substring(0, 200) || response.substring(0, 200),
+                    action: null,
+                    rootCause: 'Analysis incomplete - validation failed',
+                    fixGuidelines: ['Review error and context', 'Check system logs for more details'],
+                    confidence: 0.2,
+                };
+            }
+            return {
+                thought: json.thought,
+                action: json.action,
+                rootCause: json.rootCause,
+                fixGuidelines: json.fixGuidelines,
+                confidence: json.confidence,
+            };
+        }
+        catch (error) {
+            console.error('Failed to parse LLM response:', error);
+            // Fallback - extract as much meaning as possible
+            const textExtract = response.substring(0, 500);
+            return {
+                thought: textExtract,
+                action: null,
+                rootCause: 'Analysis incomplete - JSON parsing failed',
+                fixGuidelines: [
+                    'Manual review required - LLM response was not valid JSON',
+                    'Check the thought field above for any insights',
+                    'Review error message and code context manually'
+                ],
+                confidence: 0.15,
+            };
+        }
+    }
+    /**
+     * Validate agent response structure (ENHANCED - Phase 1.1 Fix)
+     * Now more lenient to handle LLM variability while still ensuring minimum quality
+     */
+    validateResponse(response) {
+        const warnings = [];
+        if (!response || typeof response !== 'object') {
+            return { valid: false, error: 'Response must be an object' };
+        }
+        if (!response.thought || typeof response.thought !== 'string' || response.thought.trim().length === 0) {
+            return { valid: false, error: 'Missing or invalid "thought" field (required, non-empty string)' };
+        }
+        // If action is present, validate it
+        if (response.action !== null && response.action !== undefined) {
+            if (typeof response.action !== 'object') {
+                return { valid: false, error: 'Action must be an object or null' };
+            }
+            if (!response.action.tool || typeof response.action.tool !== 'string') {
+                return { valid: false, error: 'Action must have a "tool" field' };
+            }
+            // Valid tool call response
+            return { valid: true };
+        }
+        // If concluding (action is null or undefined), validate conclusion fields
+        // BE MORE LENIENT - allow missing fields but warn
+        if (response.action === null || response.action === undefined) {
+            if (!response.rootCause || typeof response.rootCause !== 'string' || response.rootCause.trim().length === 0) {
+                warnings.push('Missing or empty "rootCause" - using fallback');
+                response.rootCause = 'See thought field for analysis'; // Auto-fix
+            }
+            if (!Array.isArray(response.fixGuidelines)) {
+                warnings.push('Missing "fixGuidelines" array - using defaults');
+                response.fixGuidelines = ['Review thought field above', 'Manually investigate error'];
+            }
+            else if (response.fixGuidelines.length === 0) {
+                warnings.push('Empty "fixGuidelines" - adding default');
+                response.fixGuidelines.push('Review error context and apply fixes as needed');
+            }
+            if (typeof response.confidence !== 'number') {
+                warnings.push('Missing "confidence" - using default 0.5');
+                response.confidence = 0.5;
+            }
+            else if (response.confidence < 0 || response.confidence > 1) {
+                warnings.push(`Invalid confidence ${response.confidence} - clamping to 0.0-1.0`);
+                response.confidence = Math.max(0, Math.min(1, response.confidence));
+            }
+            // Log warnings if any
+            if (warnings.length > 0) {
+                console.warn(`⚠️ Response validation warnings (auto-fixed): ${warnings.join(', ')}`);
+            }
+        }
+        return { valid: true, warnings: warnings.length > 0 ? warnings : undefined };
+    }
+}
+exports.PromptEngine = PromptEngine;
+//# sourceMappingURL=PromptEngine.js.map

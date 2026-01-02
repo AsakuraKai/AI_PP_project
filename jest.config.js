@@ -3,6 +3,10 @@ module.exports = {
   testEnvironment: 'node',
   roots: ['<rootDir>/src', '<rootDir>/tests'],
   testMatch: ['**/__tests__/**/*.ts', '**/?(*.)+(spec|test).ts'],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/vscode-extension/'  // VS Code extension tests use Mocha, not Jest
+  ],
   collectCoverageFrom: [
     'src/**/*.ts',
     '!src/**/*.d.ts',
@@ -15,5 +19,8 @@ module.exports = {
       lines: 80,
       statements: 80
     }
-  }
+  },
+  // Suppress console warnings during tests
+  silent: false,
+  verbose: false
 };

@@ -69,7 +69,7 @@ Error: Unresolved reference: getString
 ## Expected Output
 
 You should see:
-- 🔴/🟠/🔵 Error badge
+- [ERROR]/[XML]/[INFO] Error badge
 - File and line number
 - Root cause analysis
 - Fix guidelines (numbered list)
@@ -77,7 +77,7 @@ You should see:
 
 ## Current Limitations
 
-⚠️ **Note:** This is a placeholder version. It will show mock results until integrated with the backend (requires desktop access with Ollama).
+! **Note:** This is a placeholder version. It will show mock results until integrated with the backend (requires desktop access with Ollama).
 
 The real AI-powered analysis requires:
 1. Ollama server running

@@ -1,0 +1,809 @@
+"use strict";
+/**
+ * MinimalReactAgent - Enhanced ReAct loop with ToolRegistry and PromptEngine
+ *
+ * Implements a dynamic reasoning loop with tool execution (Chunk 2.4).
+ * Uses the ReAct (Reasoning + Acting) paradigm:
+ * - Thought: Generate hypothesis about error (using PromptEngine)
+ * - Action: Execute tools dynamically (via ToolRegistry)
+ * - Observation: Tool results and code context
+ *
+ * Design Decisions:
+ * - Dynamic iterations (up to 10, agent decides when to conclude)
+ * - Integrates ToolRegistry for flexible tool execution
+ * - Uses PromptEngine for improved prompts with few-shot examples
+ * - Graceful tool failure handling
+ * - Timeout handling (90s default)
+ *
+ * @example
+ * const agent = new MinimalReactAgent(ollamaClient);
+ * const result = await agent.analyze(parsedError);
+ * console.log(result.rootCause);
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.MinimalReactAgent = void 0;
+const ReadFileTool_1 = require("../tools/ReadFileTool");
+const LSPTool_1 = require("../tools/LSPTool");
+const VersionLookupTool_1 = require("../tools/VersionLookupTool");
+const ToolRegistry_1 = require("../tools/ToolRegistry");
+const PromptEngine_1 = require("./PromptEngine");
+const AgentStateStream_1 = require("./AgentStateStream");
+const PerformanceTracker_1 = require("../monitoring/PerformanceTracker");
+const FixGenerator_1 = require("./FixGenerator"); // Chunk 5: Fix Generator
+const ErrorClassifier_1 = require("./ErrorClassifier"); // Chunk 9: Error Classification
+const CategoryPrompts_1 = require("./prompts/CategoryPrompts"); // Chunk 9: Category prompts
+const OutputValidator_1 = require("./OutputValidator"); // Phase 1: Output validation
+const zod_1 = require("zod");
+const types_1 = require("../types");
+class MinimalReactAgent {
+    constructor(llm, config) {
+        this.llm = llm;
+        this.maxRegenerations = 2; // Phase 1: Max regeneration attempts
+        // Configuration with defaults
+        this.maxIterations = config?.maxIterations ?? 10;
+        this.timeout = config?.timeout ?? 90000;
+        this.usePromptEngine = config?.usePromptEngine ?? true;
+        this.useToolRegistry = config?.useToolRegistry ?? true;
+        this.generateFix = config?.generateFix ?? true; // Chunk 5: Default enabled
+        this.enableProgressivePrompting = config?.enableProgressivePrompting ?? false;
+        // Initialize tools
+        this.readFileTool = new ReadFileTool_1.ReadFileTool();
+        this.toolRegistry = ToolRegistry_1.ToolRegistry.getInstance();
+        this.promptEngine = new PromptEngine_1.PromptEngine();
+        this.stream = new AgentStateStream_1.AgentStateStream();
+        this.performanceTracker = new PerformanceTracker_1.PerformanceTracker();
+        // Chunk 7: Pass projectRoot to FixGenerator for FileResolver integration
+        this.fixGenerator = new FixGenerator_1.FixGenerator(this.llm, this.readFileTool, config?.projectRoot || process.cwd());
+        // Chunk 9: Initialize error classifier
+        this.errorClassifier = new ErrorClassifier_1.ErrorClassifier();
+        // Phase 1: Initialize output validator
+        this.outputValidator = new OutputValidator_1.OutputValidator();
+        // Register tools if using ToolRegistry
+        if (this.useToolRegistry) {
+            this.registerTools();
+        }
+    }
+    /**
+     * Register available tools with ToolRegistry
+     */
+    registerTools() {
+        try {
+            // Register ReadFileTool
+            if (!this.toolRegistry.has('read_file')) {
+                const readFileSchema = zod_1.z.object({
+                    filePath: zod_1.z.string(),
+                    line: zod_1.z.number(),
+                    contextLines: zod_1.z.number().optional(),
+                });
+                this.toolRegistry.register('read_file', this.readFileTool, readFileSchema, {
+                    examples: [
+                        {
+                            parameters: { filePath: 'MainActivity.kt', line: 45, contextLines: 25 },
+                            outcome: 'Returns code around line 45',
+                        },
+                    ],
+                });
+            }
+            // Register LSPTool (placeholder implementation)
+            if (!this.toolRegistry.has('find_callers')) {
+                const lspTool = new LSPTool_1.LSPTool();
+                const lspSchema = zod_1.z.object({
+                    functionName: zod_1.z.string(),
+                    filePath: zod_1.z.string(),
+                });
+                this.toolRegistry.register('find_callers', lspTool, lspSchema, {
+                    examples: [
+                        {
+                            parameters: { functionName: 'onCreate', filePath: 'MainActivity.kt' },
+                            outcome: 'Returns list of callers',
+                        },
+                    ],
+                });
+            }
+            // Register VersionLookupTool (Phase 3, Chunk 2)
+            if (!this.toolRegistry.has('version_lookup')) {
+                const versionLookupTool = new VersionLookupTool_1.VersionLookupTool();
+                const versionLookupSchema = zod_1.z.object({
+                    tool: zod_1.z.enum(['agp', 'kotlin', 'gradle']),
+                    queryType: zod_1.z.enum(['exists', 'latest-stable', 'latest-any', 'compatible', 'suggest']),
+                    version: zod_1.z.string().optional(),
+                    referenceVersion: zod_1.z.string().optional(),
+                    referenceTool: zod_1.z.enum(['agp', 'kotlin', 'gradle']).optional(),
+                    statusFilter: zod_1.z.array(zod_1.z.string()).optional(),
+                });
+                this.toolRegistry.register('version_lookup', versionLookupTool, versionLookupSchema, {
+                    examples: [
+                        {
+                            parameters: { tool: 'agp', queryType: 'exists', version: '8.7.3' },
+                            outcome: 'Check if AGP 8.7.3 exists in Maven',
+                        },
+                        {
+                            parameters: { tool: 'agp', queryType: 'latest-stable' },
+                            outcome: 'Get latest stable AGP version',
+                        },
+                        {
+                            parameters: { tool: 'agp', queryType: 'suggest', version: '8.10.0' },
+                            outcome: 'Suggest valid alternatives for non-existent version',
+                        },
+                        {
+                            parameters: { tool: 'agp', queryType: 'compatible', version: '8.7.3', referenceTool: 'kotlin', referenceVersion: '1.9.0' },
+                            outcome: 'Check AGP-Kotlin compatibility',
+                        },
+                    ],
+                });
+            }
+        }
+        catch (error) {
+            // Tools already registered - this is fine
+            if (!(error instanceof Error) || !error.message.includes('already registered')) {
+                console.warn('Error registering tools:', error);
+            }
+        }
+    }
+    /**
+     * Analyze error and generate Root Cause Analysis
+     *
+     * @param error - Parsed error information
+     * @returns RCA result with root cause and fix guidelines
+     * @throws AnalysisTimeoutError if analysis exceeds timeout
+     * @throws LLMError if LLM communication fails
+     */
+    async analyze(error) {
+        const startTime = Date.now();
+        const stopTotal = this.performanceTracker.startTimer('total_analysis');
+        // Initialize agent state
+        const state = {
+            iteration: 0,
+            maxIterations: this.maxIterations,
+            startTime,
+            timeout: this.timeout,
+            mode: 'standard',
+            thoughts: [],
+            actions: [],
+            observations: [],
+            hypothesis: null,
+            rootCause: null,
+            converged: false,
+            error,
+        };
+        try {
+            // Chunk 9: Classify error first
+            const classification = this.errorClassifier.classify(error);
+            this.stream.emit('classification', {
+                category: classification.category,
+                confidence: classification.confidence,
+                reasoning: classification.reasoning
+            });
+            // Get system prompt and few-shot examples if using PromptEngine
+            const stopPromptGen = this.performanceTracker.startTimer('prompt_generation');
+            let systemPrompt = null;
+            if (this.usePromptEngine) {
+                const basePrompt = this.promptEngine.getSystemPrompt();
+                // Enhance with category-specific prompt
+                systemPrompt = (0, CategoryPrompts_1.buildEnhancedSystemPrompt)(basePrompt, classification.category);
+            }
+            const examples = this.usePromptEngine
+                ? this.promptEngine.getFewShotExamples(error.type)
+                : [];
+            stopPromptGen();
+            // Phase 3 (optional): progressive one-shot prompting fast-path.
+            // This can short-circuit the full ReAct loop for simple errors.
+            if (this.enableProgressivePrompting && this.usePromptEngine) {
+                const errorContext = error.message + ' ' + (error.stackTrace?.map(f => f.file).join(' ') || '');
+                // Level 1: Lightweight
+                {
+                    console.log('🔍 Progressive Prompting L1: Lightweight analysis...');
+                    const l1Prompt = await this.promptEngine.buildProgressiveAnalysisPrompt({
+                        error,
+                        level: 1,
+                        systemPrompt: systemPrompt || undefined,
+                    });
+                    const l1Response = await this.llm.generateWithRetry(l1Prompt, { temperature: 0.0, maxTokens: 1500 }, { maxAttempts: 2, qualityThreshold: 0.75 }, errorContext);
+                    const parsedL1 = this.promptEngine.parseResponse(l1Response.text);
+                    if (parsedL1.rootCause && parsedL1.fixGuidelines && parsedL1.action === null) {
+                        const candidate = {
+                            error: error.message,
+                            rootCause: parsedL1.rootCause,
+                            fixGuidelines: parsedL1.fixGuidelines,
+                            confidence: parsedL1.confidence ?? 0.7,
+                            iterations: 1,
+                            toolsUsed: [],
+                        };
+                        const validation = this.outputValidator.validate(candidate, error);
+                        console.log(`📊 Progressive L1 score: ${(validation.score * 100).toFixed(1)}%`);
+                        if (validation.score >= 0.75) {
+                            console.log('✅ Progressive L1 sufficient, skipping ReAct loop');
+                            stopTotal();
+                            // Chunk 5: Generate code fix if enabled
+                            let codeFix = undefined;
+                            if (this.generateFix) {
+                                try {
+                                    codeFix = await this.fixGenerator.generateFix(error, candidate.rootCause, parsedL1.thought || '');
+                                }
+                                catch (fixError) {
+                                    console.warn('⚠ Fix generation failed (progressive):', fixError);
+                                }
+                            }
+                            const result = { ...candidate, codeFix: codeFix || undefined };
+                            this.stream.emitComplete(result, 1);
+                            this.performanceTracker.printMetrics();
+                            return result;
+                        }
+                    }
+                }
+                // Level 2: Add RAG examples (still one-shot)
+                {
+                    console.log('🔍 Progressive Prompting L2: Adding relevant examples...');
+                    const l2Prompt = await this.promptEngine.buildProgressiveAnalysisPrompt({
+                        error,
+                        level: 2,
+                        systemPrompt: systemPrompt || undefined,
+                    });
+                    const l2Response = await this.llm.generateWithRetry(l2Prompt, { temperature: 0.2, maxTokens: 2500 }, { maxAttempts: 3, qualityThreshold: 0.65 }, errorContext);
+                    const parsedL2 = this.promptEngine.parseResponse(l2Response.text);
+                    if (parsedL2.rootCause && parsedL2.fixGuidelines && parsedL2.action === null) {
+                        const candidate = {
+                            error: error.message,
+                            rootCause: parsedL2.rootCause,
+                            fixGuidelines: parsedL2.fixGuidelines,
+                            confidence: parsedL2.confidence ?? 0.7,
+                            iterations: 1,
+                            toolsUsed: [],
+                        };
+                        const validation = this.outputValidator.validate(candidate, error);
+                        console.log(`📊 Progressive L2 score: ${(validation.score * 100).toFixed(1)}%`);
+                        if (validation.score >= 0.65) {
+                            console.log('✅ Progressive L2 sufficient, skipping ReAct loop');
+                            stopTotal();
+                            // Chunk 5: Generate code fix if enabled
+                            let codeFix = undefined;
+                            if (this.generateFix) {
+                                try {
+                                    codeFix = await this.fixGenerator.generateFix(error, candidate.rootCause, parsedL2.thought || '');
+                                }
+                                catch (fixError) {
+                                    console.warn('⚠ Fix generation failed (progressive):', fixError);
+                                }
+                            }
+                            const result = { ...candidate, codeFix: codeFix || undefined };
+                            this.stream.emitComplete(result, 1);
+                            this.performanceTracker.printMetrics();
+                            return result;
+                        }
+                    }
+                }
+                console.log('↩️ Progressive prompting insufficient; proceeding with full ReAct loop');
+            }
+            // Dynamic iteration loop
+            for (let i = 0; i < this.maxIterations; i++) {
+                state.iteration = i + 1;
+                this.checkTimeout(state);
+                // Emit iteration start event
+                this.stream.emitIteration(state.iteration, this.maxIterations);
+                // Generate thought/action using PromptEngine or fallback
+                let response;
+                if (this.usePromptEngine) {
+                    const stopPromptBuild = this.performanceTracker.startTimer('prompt_build');
+                    const prompt = await this.promptEngine.buildIterationPrompt({
+                        systemPrompt: systemPrompt || '',
+                        examples: i === 0 ? examples : [], // Only first iteration
+                        error,
+                        previousThoughts: state.thoughts,
+                        previousActions: state.actions,
+                        previousObservations: state.observations,
+                        iteration: i + 1,
+                        maxIterations: this.maxIterations,
+                    });
+                    stopPromptBuild();
+                    const stopLLM = this.performanceTracker.startTimer('llm_inference');
+                    // DEBUG: Log prompt if empty response likely
+                    if (i === 0) {
+                        console.log(`\n🔍 PROMPT SENT TO LLM (first 1000 chars):\n${prompt.substring(0, 1000)}\n...\n(last 500 chars):\n${prompt.substring(Math.max(0, prompt.length - 500))}\n`);
+                    }
+                    // Iteration 6 Phase 2: Use generateWithRetry for better reliability
+                    const llmResponse = await this.llm.generateWithRetry(prompt, {
+                        temperature: 0.0, // Starting temp (will progress to 0.3, 0.5, 0.7 if needed)
+                        maxTokens: 1500,
+                    }, {
+                        maxAttempts: 4, // P0 FIX: Re-enabled with 4 attempts
+                        qualityThreshold: 0.5, // P2 FIX: Lowered from 0.6 to accept "good enough" responses
+                    }, error.message + ' ' + (error.stackTrace?.map(f => f.file).join(' ') || '')); // P3: Pass error context for accuracy check
+                    stopLLM();
+                    // DEBUG: Log raw LLM response
+                    if (i === 0) {
+                        console.log(`\n🔍 RAW LLM RESPONSE (full):\n${llmResponse.text}\n`);
+                    }
+                    response = this.promptEngine.parseResponse(llmResponse.text);
+                }
+                else {
+                    // Fallback to old behavior (for A/B testing)
+                    response = await this.generateThoughtLegacy(state);
+                }
+                // Store thought
+                state.thoughts.push(response.thought);
+                if (i === 0) {
+                    state.hypothesis = response.thought;
+                }
+                // Emit thought event
+                this.stream.emitThought(response.thought, state.iteration);
+                // Execute action if specified
+                if (response.action && response.action.tool && this.useToolRegistry) {
+                    // Emit action event
+                    this.stream.emitAction(response.action, state.iteration);
+                    try {
+                        const stopTool = this.performanceTracker.startTimer('tool_execution');
+                        const toolResult = await this.toolRegistry.execute(response.action.tool, response.action.parameters);
+                        stopTool();
+                        const observation = toolResult.success ? toolResult.data : toolResult.error || 'Tool execution failed';
+                        state.actions.push(response.action);
+                        state.observations.push(observation);
+                        // Emit observation event
+                        this.stream.emitObservation(observation, state.iteration, toolResult.success);
+                        console.log(`✓ Tool ${response.action.tool} executed successfully`);
+                    }
+                    catch (toolError) {
+                        const errorMsg = `Tool ${response.action.tool} failed: ${toolError instanceof Error ? toolError.message : 'Unknown error'}`;
+                        state.observations.push(errorMsg);
+                        // Emit observation event (failure)
+                        this.stream.emitObservation(errorMsg, state.iteration, false);
+                        console.warn(`✗ ${errorMsg}`);
+                    }
+                }
+                else if (response.action && response.action.tool === 'read_file' && !this.useToolRegistry) {
+                    // Fallback: Execute read_file directly (backward compatibility)
+                    this.stream.emitAction(response.action, state.iteration);
+                    try {
+                        const stopReadFile = this.performanceTracker.startTimer('read_file_fallback');
+                        const params = response.action.parameters;
+                        const fileContent = await this.readFileTool.execute(params.filePath, params.line);
+                        stopReadFile();
+                        state.actions.push(response.action);
+                        state.observations.push(fileContent || 'No file content available');
+                        // Emit observation event
+                        this.stream.emitObservation(fileContent || 'No file content available', state.iteration, true);
+                    }
+                    catch (e) {
+                        const errorMsg = `Failed to read file: ${e instanceof Error ? e.message : 'Unknown error'}`;
+                        state.observations.push(errorMsg);
+                        // Emit observation event (failure)
+                        this.stream.emitObservation(errorMsg, state.iteration, false);
+                        console.warn(errorMsg);
+                    }
+                }
+                // Check if agent decided to conclude
+                if (response.rootCause && response.fixGuidelines) {
+                    console.log(`✓ Agent concluded after ${i + 1} iterations`);
+                    // Legacy mode: preserve original behavior (no regeneration loop).
+                    // Unit tests and backward compatibility expect the agent to return
+                    // immediately once a final JSON conclusion is produced.
+                    if (!this.usePromptEngine) {
+                        stopTotal();
+                        const result = {
+                            error: error.message,
+                            rootCause: response.rootCause,
+                            fixGuidelines: response.fixGuidelines,
+                            confidence: response.confidence || 0.5,
+                            iterations: i + 1,
+                            toolsUsed: state.actions.map((a) => a.tool),
+                        };
+                        // Emit completion event
+                        this.stream.emitComplete(result, i + 1);
+                        // Print performance metrics
+                        this.performanceTracker.printMetrics();
+                        return result;
+                    }
+                    // Phase 1: Validate output quality before accepting
+                    const preliminaryResult = {
+                        error: error.message,
+                        rootCause: response.rootCause,
+                        fixGuidelines: response.fixGuidelines,
+                        confidence: response.confidence || 0.5,
+                        iterations: i + 1,
+                        toolsUsed: state.actions.map((a) => a.tool),
+                    };
+                    const validation = this.outputValidator.validate(preliminaryResult, error);
+                    console.log(`📊 Quality score: ${(validation.score * 100).toFixed(1)}% (threshold: 60%)`);
+                    console.log(`   Breakdown: fileSpec=${(validation.dimensions.filePathSpecificity * 100).toFixed(0)}% versionSpec=${(validation.dimensions.versionSpecificity * 100).toFixed(0)}% codeExamples=${(validation.dimensions.codeExamples * 100).toFixed(0)}%`);
+                    // If quality is too low, try to regenerate (max 2 attempts)
+                    let regenerationCount = 0;
+                    let finalResult = preliminaryResult;
+                    let finalValidation = validation;
+                    let bestScore = validation.score;
+                    let bestResult = preliminaryResult;
+                    while (!finalValidation.passes && regenerationCount < this.maxRegenerations) {
+                        regenerationCount++;
+                        console.log(`⚠️ Quality below threshold. Regenerating (attempt ${regenerationCount}/${this.maxRegenerations})...`);
+                        console.log(`   Issues: ${finalValidation.issues.slice(0, 3).join('; ')}`);
+                        // Build regeneration prompt with SPECIFIC feedback
+                        const stopRegen = this.performanceTracker.startTimer('output_regeneration');
+                        const regenPrompt = this.promptEngine.buildRegenerationPrompt({
+                            error,
+                            previousResponse: finalResult,
+                            feedback: finalValidation.getFeedback(),
+                            specificIssues: finalValidation.issues,
+                            dimensionScores: finalValidation.dimensions,
+                            iteration: i + 1,
+                        });
+                        // Iteration 6 Phase 2: Use generateWithRetry for regeneration
+                        // This replaces the manual temperature progression with quality-based retry
+                        const regenResponse = await this.llm.generateWithRetry(regenPrompt, {
+                            temperature: 0.3, // Starting temp (will progress to 0.5, 0.7 if needed)
+                            maxTokens: 2500,
+                            seed: 42 + regenerationCount, // Different seed per attempt
+                        }, {
+                            maxAttempts: 3, // P0 FIX: Re-enabled with conservative 3 attempts for regeneration
+                            qualityThreshold: 0.55, // P2 FIX: Lowered from 0.65 (regeneration gets domain-specific examples from P1)
+                        }, error.message + ' ' + (error.stackTrace?.map(f => f.file).join(' ') || '')); // P3: Pass error context for accuracy check
+                        stopRegen();
+                        const parsedRegen = this.promptEngine.parseResponse(regenResponse.text);
+                        if (parsedRegen.rootCause && parsedRegen.fixGuidelines) {
+                            finalResult = {
+                                error: error.message,
+                                rootCause: parsedRegen.rootCause,
+                                fixGuidelines: parsedRegen.fixGuidelines,
+                                confidence: parsedRegen.confidence || 0.5,
+                                iterations: i + 1,
+                                toolsUsed: state.actions.map((a) => a.tool),
+                            };
+                            finalValidation = this.outputValidator.validate(finalResult, error);
+                            console.log(`📊 Regeneration ${regenerationCount} score: ${(finalValidation.score * 100).toFixed(1)}%`);
+                            console.log(`   Breakdown: fileSpec=${(finalValidation.dimensions.filePathSpecificity * 100).toFixed(0)}% versionSpec=${(finalValidation.dimensions.versionSpecificity * 100).toFixed(0)}% codeExamples=${(finalValidation.dimensions.codeExamples * 100).toFixed(0)}%`);
+                            // Track best result across regenerations
+                            if (finalValidation.score > bestScore) {
+                                bestScore = finalValidation.score;
+                                bestResult = finalResult;
+                                console.log(`   ✓ New best score: ${(bestScore * 100).toFixed(1)}%`);
+                            }
+                        }
+                        else {
+                            console.log(`⚠️ Regeneration ${regenerationCount} failed to parse, keeping previous version`);
+                            break;
+                        }
+                    }
+                    // Use best result found (not necessarily last)
+                    finalResult = bestResult;
+                    finalValidation = this.outputValidator.validate(finalResult, error);
+                    // Fix #3: Fallback to original if ALL regenerations were worse
+                    if (finalValidation.score < validation.score) {
+                        console.log(`⚠️ Regenerations worse than original (${(finalValidation.score * 100).toFixed(1)}% < ${(validation.score * 100).toFixed(1)}%), reverting`);
+                        finalResult = preliminaryResult;
+                        finalValidation = validation;
+                    }
+                    if (!finalValidation.passes) {
+                        console.log(`⚠️ Quality still below threshold after ${regenerationCount} attempts. Proceeding with best result.`);
+                    }
+                    stopTotal();
+                    // Chunk 5: Generate code fix if enabled
+                    let codeFix = undefined;
+                    if (this.generateFix) {
+                        console.log('🔧 Generating code fix...');
+                        const stopFixGen = this.performanceTracker.startTimer('fix_generation');
+                        try {
+                            codeFix = await this.fixGenerator.generateFix(error, finalResult.rootCause, state.thoughts.join('\n'));
+                            if (codeFix) {
+                                console.log(`✓ Code fix generated (confidence: ${codeFix.confidence}%)`);
+                            }
+                            else {
+                                console.log('⚠ Could not generate code fix');
+                            }
+                        }
+                        catch (fixError) {
+                            console.warn('⚠ Fix generation failed:', fixError);
+                        }
+                        stopFixGen();
+                    }
+                    const result = {
+                        ...finalResult,
+                        codeFix: codeFix || undefined, // Chunk 5: Include generated fix
+                    };
+                    // Emit completion event
+                    this.stream.emitComplete(result, i + 1);
+                    // Print performance metrics
+                    this.performanceTracker.printMetrics();
+                    return result;
+                }
+            }
+            // Reached max iterations - force conclusion
+            console.warn(`⚠ Reached max iterations (${this.maxIterations}), forcing conclusion`);
+            const stopFinalPrompt = this.performanceTracker.startTimer('final_prompt_generation');
+            const finalPrompt = this.usePromptEngine
+                ? this.promptEngine.buildFinalPrompt(state)
+                : this.buildFinalPromptLegacy(state);
+            stopFinalPrompt();
+            const stopFinalLLM = this.performanceTracker.startTimer('final_llm_inference');
+            // Iteration 6 Phase 2: Use generateWithRetry for final forced conclusion
+            // (fall back to plain generate in legacy mode or in tests where the mock
+            // doesn't implement generateWithRetry).
+            const finalResponse = this.usePromptEngine && typeof this.llm.generateWithRetry === 'function'
+                ? await this.llm.generateWithRetry(finalPrompt, {
+                    temperature: 0.5,
+                    maxTokens: 1500,
+                }, {
+                    maxAttempts: 3,
+                    qualityThreshold: 0.45,
+                }, error.message + ' ' + (error.stackTrace?.map((f) => f.file).join(' ') || ''))
+                : await this.llm.generate(finalPrompt, {
+                    temperature: 0.5,
+                    maxTokens: 1500,
+                });
+            stopFinalLLM();
+            stopTotal();
+            if (this.usePromptEngine) {
+                const parsed = this.promptEngine.parseResponse(finalResponse.text);
+                // Chunk 5: Generate code fix if enabled (for max iterations case)
+                let codeFix = undefined;
+                if (this.generateFix && parsed.rootCause) {
+                    console.log('🔧 Generating code fix (max iterations)...');
+                    const stopFixGen = this.performanceTracker.startTimer('fix_generation');
+                    try {
+                        codeFix = await this.fixGenerator.generateFix(error, parsed.rootCause, state.thoughts.join('\n'));
+                    }
+                    catch (fixError) {
+                        console.warn('⚠ Fix generation failed:', fixError);
+                    }
+                    stopFixGen();
+                }
+                const result = {
+                    error: error.message,
+                    rootCause: parsed.rootCause || 'Analysis incomplete - reached max iterations',
+                    fixGuidelines: parsed.fixGuidelines || ['Review error and code context'],
+                    confidence: parsed.confidence || 0.3,
+                    iterations: this.maxIterations,
+                    toolsUsed: state.actions.map((a) => a.tool),
+                    codeFix: codeFix || undefined, // Chunk 5: Include generated fix
+                };
+                // Emit completion event
+                this.stream.emitComplete(result, this.maxIterations);
+                // Print performance metrics
+                this.performanceTracker.printMetrics();
+                return result;
+            }
+            else {
+                const result = this.parseOutputLegacy(finalResponse.text, error, state);
+                // Emit completion event
+                this.stream.emitComplete(result, this.maxIterations);
+                // Print performance metrics
+                this.performanceTracker.printMetrics();
+                return result;
+            }
+        }
+        catch (error) {
+            stopTotal();
+            // Emit error event (best effort, don't let it break error handling)
+            try {
+                this.stream.emitError(error, state?.iteration || 0, 'synthesis');
+            }
+            catch (streamError) {
+                console.warn('Failed to emit error event:', streamError);
+            }
+            // Print performance metrics even on error
+            this.performanceTracker.printMetrics();
+            if (error instanceof types_1.AnalysisTimeoutError || error instanceof types_1.LLMError) {
+                throw error;
+            }
+            // Wrap unexpected errors
+            throw new types_1.LLMError(`Analysis failed: ${error instanceof Error ? error.message : 'Unknown error'}`, undefined, false);
+        }
+    }
+    /**
+     * Legacy method: Generate thought for current iteration (for A/B testing)
+     */
+    async generateThoughtLegacy(state) {
+        // Read file if first iteration and not already done
+        if (state.iteration === 1 && state.observations.length === 0) {
+            try {
+                const fileContent = await this.readFileTool.execute(state.error.filePath, state.error.line);
+                state.observations.push(fileContent || 'No file content available');
+                state.actions.push({
+                    tool: 'read_file',
+                    parameters: { filePath: state.error.filePath, line: state.error.line },
+                    timestamp: Date.now(),
+                });
+            }
+            catch (e) {
+                console.warn('Failed to read file:', e);
+            }
+        }
+        const prompt = this.buildThoughtPromptLegacy(state);
+        const response = await this.llm.generate(prompt, {
+            temperature: 0.7,
+            maxTokens: 1000,
+        });
+        // For final iteration, try to extract JSON
+        if (state.iteration === this.maxIterations) {
+            return this.parseResponseLegacy(response.text);
+        }
+        return {
+            thought: response.text.trim(),
+            action: null,
+        };
+    }
+    /**
+     * Legacy method: Build prompt for thought generation
+     */
+    buildThoughtPromptLegacy(state) {
+        const { error, iteration, observations } = state;
+        let prompt = `You are a debugging expert analyzing a Kotlin error. This is iteration ${iteration}/${this.maxIterations}.
+
+ERROR INFORMATION:
+Type: ${error.type}
+Message: ${error.message}
+File: ${error.filePath}
+Line: ${error.line}
+${error.metadata ? `Additional Info: ${JSON.stringify(error.metadata, null, 2)}` : ''}`;
+        // Include code context if available
+        if (observations.length > 0 && iteration >= 2) {
+            prompt += `\n\nCODE CONTEXT:\n${observations[0]}\n`;
+        }
+        if (state.thoughts.length > 0) {
+            prompt += `\nPREVIOUS ANALYSIS:\n${state.thoughts.join('\n\n')}\n\n`;
+        }
+        prompt += `\nTASK:
+${iteration === 1 ? 'Generate your initial hypothesis about what caused this error. Focus on Kotlin-specific issues.' : ''}
+${iteration === 2 ? 'Deepen your analysis using the code context. What are the likely causes? Look at the actual code and identify specific issues.' : ''}
+${iteration === this.maxIterations ? 'Provide your final conclusion with root cause and fix guidelines in JSON format.' : ''}
+
+Be specific and reference the actual code when available. Think step-by-step.
+
+YOUR ANALYSIS:`;
+        return prompt;
+    }
+    /**
+     * Legacy method: Build prompt for final analysis
+     */
+    buildFinalPromptLegacy(state) {
+        const { error, thoughts, observations } = state;
+        let prompt = `Based on your analysis, provide the final root cause and fix guidelines.
+
+ERROR: ${error.message}
+
+YOUR REASONING:
+${thoughts.map((t, i) => `Iteration ${i + 1}: ${t}`).join('\n\n')}`;
+        // Include code context in final analysis
+        if (observations.length > 0) {
+            prompt += `\n\nCODE CONTEXT:\n${observations[0]}\n`;
+        }
+        prompt += `\nRespond in this EXACT JSON format (no other text):
+{
+  "rootCause": "Clear explanation of what went wrong and why, referencing specific code when available",
+  "fixGuidelines": [
+    "Step 1: Specific action with exact file path and line number (e.g., 'Edit MainActivity.kt line 42')",
+    "Step 2: Code example showing fix - MANDATORY format: 'Before:\\n\`\`\`kotlin\\nold code\\n\`\`\`\\nAfter:\\n\`\`\`kotlin\\nnew code\\n\`\`\`'",
+    "Step 3: Verification step (e.g., 'Run ./gradlew build to verify fix')",
+    "Step 4: Best practice to prevent recurrence"
+  ],
+  "confidence": 0.85
+}
+
+CRITICAL: fixGuidelines array MUST include:
+- At least ONE entry with exact file path + line number
+- At least ONE entry with Before/After code blocks (use markdown \`\`\` fences)
+- Actual code syntax with =, quotes, braces (not generic instructions)
+
+EXAMPLE GOOD fixGuideline with code:
+"Edit build.gradle.kts line 15: Before:\\n\`\`\`kotlin\\ncompileSdkVersion = 33\\n\`\`\`\\nAfter:\\n\`\`\`kotlin\\ncompileSdkVersion = 34  // Update for latest APIs\\n\`\`\`"
+
+IMPORTANT: Respond ONLY with valid JSON, no other text.`;
+        return prompt;
+    }
+    /**
+     * Legacy method: Parse response for final conclusion
+     */
+    parseResponseLegacy(output) {
+        try {
+            const jsonMatch = output.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                const parsed = JSON.parse(jsonMatch[0]);
+                if (parsed.rootCause && Array.isArray(parsed.fixGuidelines)) {
+                    return {
+                        thought: output,
+                        action: null,
+                        rootCause: parsed.rootCause,
+                        fixGuidelines: parsed.fixGuidelines,
+                        confidence: parsed.confidence || 0.5,
+                    };
+                }
+            }
+        }
+        catch (e) {
+            // Fall through to default
+        }
+        return {
+            thought: output.trim(),
+            action: null,
+        };
+    }
+    /**
+     * Legacy method: Parse LLM output into structured result
+     */
+    parseOutputLegacy(output, error, state) {
+        try {
+            // Try to extract JSON from output (LLM might add extra text)
+            const jsonMatch = output.match(/\{[\s\S]*\}/);
+            if (!jsonMatch) {
+                throw new Error('No JSON found in output');
+            }
+            const parsed = JSON.parse(jsonMatch[0]);
+            // Validate required fields
+            if (!parsed.rootCause || !Array.isArray(parsed.fixGuidelines)) {
+                throw new Error('Invalid JSON structure');
+            }
+            return {
+                error: error.message,
+                rootCause: parsed.rootCause,
+                fixGuidelines: parsed.fixGuidelines,
+                confidence: parsed.confidence || 0.5,
+                iterations: state.iteration,
+                toolsUsed: state.actions.map((a) => a.tool),
+            };
+        }
+        catch (e) {
+            // Fallback: Use output as-is
+            console.warn('Failed to parse JSON output, using fallback:', e);
+            return {
+                error: error.message,
+                rootCause: output,
+                fixGuidelines: [
+                    'Review the error message and stack trace',
+                    'Check variable initialization',
+                    'Verify null safety in Kotlin code',
+                ],
+                confidence: 0.3, // Low confidence for fallback
+                iterations: state.iteration,
+                toolsUsed: state.actions.map((a) => a.tool),
+            };
+        }
+    }
+    /**
+     * Check if analysis has exceeded timeout
+     */
+    checkTimeout(state) {
+        const elapsed = Date.now() - state.startTime;
+        if (elapsed > state.timeout) {
+            throw new types_1.AnalysisTimeoutError(`Analysis timed out after ${elapsed}ms`, state.iteration, state.maxIterations);
+        }
+    }
+    /**
+     * Get agent configuration
+     */
+    getConfig() {
+        return {
+            maxIterations: this.maxIterations,
+            timeout: this.timeout,
+            usePromptEngine: this.usePromptEngine,
+            useToolRegistry: this.useToolRegistry,
+        };
+    }
+    /**
+     * Get performance tracker for metrics inspection
+     */
+    getPerformanceTracker() {
+        return this.performanceTracker;
+    }
+    /**
+     * Get tool registry (for testing and inspection)
+     */
+    getToolRegistry() {
+        return this.toolRegistry;
+    }
+    /**
+     * Get prompt engine (for testing and inspection)
+     */
+    getPromptEngine() {
+        return this.promptEngine;
+    }
+    /**
+     * Get agent state stream for real-time updates
+     */
+    getStream() {
+        return this.stream;
+    }
+    /**
+     * Dispose of agent resources
+     */
+    dispose() {
+        this.stream.dispose();
+    }
+}
+exports.MinimalReactAgent = MinimalReactAgent;
+//# sourceMappingURL=MinimalReactAgent.js.map

@@ -42,17 +42,17 @@ The RCA Agent panel consists of three main sections:
 
 ```
 ┌─────────────────────────────────────────┐
-│ RCA AGENT                    [⚙️] [📖] │ ← Header
+│ RCA AGENT                    [] [[FILE]] │ ← Header
 ├─────────────────────────────────────────┤
-│ ERROR QUEUE                 [▶ Analyze] │ ← Error Queue
-│  🔴 NullPointerException        Line 42 │
-│  🟡 Unresolved reference       Line 15  │
+│ ERROR QUEUE                 [> Analyze] │ ← Error Queue
+│  [ERROR] NullPointerException        Line 42 │
+│  [BUILD] Unresolved reference       Line 15  │
 ├─────────────────────────────────────────┤
-│ 📊 CURRENT ANALYSIS           [⏸ Stop] │ ← Analysis View
+│ [METRICS] CURRENT ANALYSIS           [|| Stop] │ ← Analysis View
 │  Progress: ███████░░░░ 65%             │
 ├─────────────────────────────────────────┤
-│ 📜 HISTORY                         [⏷] │ ← History
-│  • NPE at file.kt:42    5 mins ago [↻] │
+│  HISTORY                         [⏷] │ ← History
+│  • NPE at file.kt:42    5 mins ago [] │
 └─────────────────────────────────────────┘
 ```
 
@@ -60,10 +60,10 @@ The RCA Agent panel consists of three main sections:
 
 Look for the RCA Agent status in your VS Code status bar:
 
-- `🤖 RCA: Ready` - Ready to analyze
-- `🔄 RCA: Analyzing (2/3) 67%` - Analysis in progress
-- `🤖 (3) RCA: 3 errors detected` - Errors detected
-- `⚠️ RCA: Analysis failed` - Error occurred
+- `[AI] RCA: Ready` - Ready to analyze
+- ` RCA: Analyzing (2/3) 67%` - Analysis in progress
+- `[AI] (3) RCA: 3 errors detected` - Errors detected
+- `! RCA: Analysis failed` - Error occurred
 
 Click the status bar item to toggle the panel!
 
@@ -82,8 +82,8 @@ Click the status bar item to toggle the panel!
 ### Method 2: From Editor (Lightbulb)
 
 1. Place cursor on an error (red squiggle)
-2. Click the lightbulb icon (💡) or press `Ctrl+.`
-3. Select "🤖 Analyze with RCA Agent"
+2. Click the lightbulb icon (TIP:) or press `Ctrl+.`
+3. Select "[AI] Analyze with RCA Agent"
 4. The panel opens with analysis
 
 ### Method 3: Keyboard Shortcuts
@@ -111,9 +111,9 @@ Enable auto-detection in settings to automatically populate the error queue:
 ### Priority Sorting
 
 Errors are automatically sorted by severity:
-- 🔴 **Critical** - NullPointerExceptions, crashes
-- 🟡 **High** - Compilation errors, unresolved references
-- 🟢 **Medium** - Warnings, deprecations
+- [ERROR] **Critical** - NullPointerExceptions, crashes
+- [BUILD] **High** - Compilation errors, unresolved references
+- [MANIFEST] **Medium** - Warnings, deprecations
 
 ### Batch Analysis
 
@@ -127,11 +127,11 @@ Analyze multiple errors at once:
 ### Context Menu Actions
 
 Right-click on any error to:
-- 📌 Pin error (keeps it at top)
-- 🗑️ Remove from queue
-- 📁 Open file location
-- 🔄 Reanalyze
-- 📋 Copy error details
+-  Pin error (keeps it at top)
+-  Remove from queue
+-  Open file location
+-  Reanalyze
+- [MANIFEST] Copy error details
 
 ---
 
@@ -256,7 +256,7 @@ Latest Metrics:
 - Analysis Start: 20ms (target: <50ms)
 - Memory Usage: 30MB
 
-Status: ✅ ACCEPTABLE
+Status:  ACCEPTABLE
 ```
 
 ---
@@ -381,25 +381,25 @@ Have an idea? We'd love to hear it!
 ## What's New in 2.0
 
 ### New Features
-- ✨ Panel-based UI with activity bar integration
-- 🎯 Error queue with auto-detection
-- 📊 Real-time analysis progress
-- 💡 Lightbulb quick actions
+- * Panel-based UI with activity bar integration
+- [TARGET] Error queue with auto-detection
+- [METRICS] Real-time analysis progress
+- TIP: Lightbulb quick actions
 - ⌨️ Complete keyboard navigation
-- 🎨 Theme support (dark/light/high-contrast)
-- ♿ Full accessibility (WCAG 2.1 AA)
-- 📈 Performance monitoring
-- 🚩 Feature flags for gradual rollout
+- [COMPOSE] Theme support (dark/light/high-contrast)
+-  Full accessibility (WCAG 2.1 AA)
+- ^ Performance monitoring
+-  Feature flags for gradual rollout
 
 ### Improved
-- 🚀 3x faster panel load times
-- 💾 50% less memory usage
-- 🎯 Better error detection
-- 📚 Enhanced educational mode
-- 🔧 More reliable error recovery
+- [START] 3x faster panel load times
+- [SAVE] 50% less memory usage
+- [TARGET] Better error detection
+- [DB] Enhanced educational mode
+- [TOOL] More reliable error recovery
 
 ---
 
-**Happy Debugging! 🐛→✅**
+**Happy Debugging! [BUG]→**
 
 *If you find RCA Agent helpful, please leave a review!*

@@ -26,6 +26,7 @@ describe('FixGenerator', () => {
     // Mock LLM
     mockLLM = {
       generate: jest.fn(),
+      generateWithRetry: jest.fn(),
     } as any;
 
     // Mock ReadFileTool

@@ -69,7 +69,10 @@ export class PromptEngine {
         console.log(`✅ Loaded ${stats.totalExamples} few-shot examples (v${stats.version})`);
       }
     } catch (error) {
-      console.error('⚠️  Failed to load few-shot examples:', error);
+      // Suppress console errors in test environment
+      if (!process.env.JEST_WORKER_ID) {
+        console.error('⚠️  Failed to load few-shot examples:', error);
+      }
       this.fewShotLoaded = false;
     }
   }
@@ -753,7 +756,10 @@ ${example.conclusion.fixGuidelines.map(step => `    - ${step}`).join('\n')}
     }
 
     // Strategy 6 (NEW): NEVER FAIL - Return minimal valid JSON
-    console.warn('\u26a0\ufe0f All JSON extraction strategies failed, creating minimal fallback');
+    // Suppress warning in test environment
+    if (!process.env.JEST_WORKER_ID) {
+      console.warn('\u26a0\ufe0f All JSON extraction strategies failed, creating minimal fallback');
+    }
     return {
       thought: 'JSON parsing failed - response was: ' + response.substring(0, 150),
       action: null,
@@ -923,6 +929,78 @@ Consider using the read_file tool to examine the code at the error location.\n`;
 1. fixGuidelines MUST be an array of STRINGS (not objects!)
 2. At least ONE string MUST contain a code example with Before/After blocks
 3. Use \\n for newlines within strings, not actual line breaks`;
+
+    return prompt;
+  }
+
+  /**
+   * Build a progressive, one-shot analysis prompt.
+   *
+   * Phase 3 (optional): start with lightweight prompting, then add
+   * RAG examples / full system prompt only if needed.
+   *
+   * IMPORTANT: This prompt is designed to produce a final conclusion in one response
+   * (action MUST be null) and should be validated by OutputValidator.
+   */
+  async buildProgressiveAnalysisPrompt(params: {
+    error: ParsedError;
+    level: 1 | 2 | 3;
+    systemPrompt?: string;
+  }): Promise<string> {
+    const { error, level, systemPrompt } = params;
+
+    // Keep Level 1 intentionally lightweight: no giant system prompt, no history.
+    // Levels 2-3 add few-shot/RAG examples to improve specificity.
+    const includeSystemPrompt = level >= 3 && systemPrompt;
+    const includeExamples = level >= 2;
+    const exampleCount = level >= 3 ? 10 : 3;
+
+    let prompt = '';
+
+    if (includeSystemPrompt) {
+      prompt += `${systemPrompt}\n\n`;
+    } else {
+      prompt += `You are an expert Kotlin/Android debugging assistant. Output ONLY valid JSON.\n\n`;
+      prompt += `CRITICAL RULES:\n`;
+      prompt += `1) Never output empty JSON {}\n`;
+      prompt += `2) Always include: thought (100+ chars), rootCause (100+ chars), fixGuidelines (array of strings)\n`;
+      prompt += `3) Include exact file path + line number when possible (e.g., \'MainActivity.kt:42\')\n`;
+      prompt += `4) At least ONE fixGuideline must include a Before/After code example\n\n`;
+    }
+
+    if (includeExamples && this.fewShotLoaded) {
+      try {
+        const relevantExamples = await this.fewShotService.findRelevantExamples(error, exampleCount);
+        if (relevantExamples.length > 0) {
+          prompt += this.fewShotService.formatExamplesForPrompt(relevantExamples);
+          prompt += `\n\n`;
+        }
+      } catch (e) {
+        // Best-effort: progressive prompting should never fail the whole analysis path.
+      }
+    }
+
+    prompt += `Analyze this error and provide a final conclusion.\n\n`;
+    prompt += `ERROR:\n${error.message}\n`;
+    prompt += `TYPE: ${error.type}\n`;
+    prompt += `FILE: ${error.filePath}:${error.line}\n`;
+    prompt += `LANGUAGE: ${error.language}\n`;
+    if (error.metadata) {
+      prompt += `METADATA: ${JSON.stringify(error.metadata)}\n`;
+    }
+
+    prompt += `\nOUTPUT JSON ONLY (action MUST be null):\n`;
+    prompt += `{
+  "thought": "Detailed reasoning (100+ chars)",
+  "action": null,
+  "rootCause": "Specific cause with file:line references (100+ chars)",
+  "fixGuidelines": [
+    "1. Step with exact file path and line number",
+    "2. Step with BEFORE/AFTER code example:\\nBefore:\\n\`\`\`kotlin\\n...\\n\`\`\`\\nAfter:\\n\`\`\`kotlin\\n...\\n\`\`\`",
+    "3. Verification step (how to test the fix)"
+  ],
+  "confidence": 0.7
+}`;
 
     return prompt;
   }
@@ -1102,8 +1180,8 @@ Respond ONLY with valid JSON (no other text):
         response.confidence = Math.max(0, Math.min(1, response.confidence));
       }
       
-      // Log warnings if any
-      if (warnings.length > 0) {
+      // Log warnings if any (suppress in tests)
+      if (warnings.length > 0 && !process.env.JEST_WORKER_ID) {
         console.warn(`⚠️ Response validation warnings (auto-fixed): ${warnings.join(', ')}`);
       }
     }

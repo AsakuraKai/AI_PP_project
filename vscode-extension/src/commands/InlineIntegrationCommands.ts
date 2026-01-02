@@ -44,6 +44,39 @@ export class InlineIntegrationCommands {
       vscode.commands.registerCommand(
         'rca-agent.togglePanel',
         this.togglePanel.bind(this)
+      ),
+      // Phase 4: New commands for enhanced code actions
+      vscode.commands.registerCommand(
+        'rca-agent.explainError',
+        this.explainError.bind(this)
+      ),
+      vscode.commands.registerCommand(
+        'rca-agent.viewPreviousAnalysis',
+        this.viewPreviousAnalysis.bind(this)
+      ),
+      vscode.commands.registerCommand(
+        'rca-agent.searchImports',
+        this.searchImports.bind(this)
+      ),
+      vscode.commands.registerCommand(
+        'rca-agent.checkInitialization',
+        this.checkInitialization.bind(this)
+      ),
+      vscode.commands.registerCommand(
+        'rca-agent.suggestTypeConversion',
+        this.suggestTypeConversion.bind(this)
+      ),
+      vscode.commands.registerCommand(
+        'rca-agent.searchDependency',
+        this.searchDependency.bind(this)
+      ),
+      vscode.commands.registerCommand(
+        'rca-agent.checkVersionCompatibility',
+        this.checkVersionCompatibility.bind(this)
+      ),
+      vscode.commands.registerCommand(
+        'rca-agent.addPermission',
+        this.addPermission.bind(this)
       )
     );
   }
@@ -260,5 +293,164 @@ export class InlineIntegrationCommands {
       default:
         return 'medium';
     }
+  }
+
+  /**
+   * PHASE 4: New command implementations
+   */
+
+  /**
+   * Explain error in detail
+   */
+  private async explainError(message: string, filePath?: string, line?: number): Promise<void> {
+    const panel = vscode.window.createWebviewPanel(
+      'rcaErrorExplanation',
+      'Error Explanation',
+      vscode.ViewColumn.Beside,
+      { enableScripts: true }
+    );
+
+    panel.webview.html = this.getExplanationHtml(message, filePath, line);
+  }
+
+  /**
+   * View previous analysis for error
+   */
+  private async viewPreviousAnalysis(error: ErrorItem): Promise<void> {
+    if (!error.analysisResult) {
+      vscode.window.showWarningMessage('No previous analysis found for this error');
+      return;
+    }
+
+    // Focus panel and navigate to this error
+    await vscode.commands.executeCommand('rca-agent.mainPanel.focus');
+    // Panel will show the analysis result
+  }
+
+  /**
+   * Search for missing imports (Kotlin)
+   */
+  private async searchImports(document: vscode.TextDocument, diagnostic: vscode.Diagnostic): Promise<void> {
+    vscode.window.showInformationMessage(
+      'Searching for imports... (This feature will use RCA Agent to suggest imports)',
+      'Analyze with RCA'
+    ).then(selection => {
+      if (selection === 'Analyze with RCA') {
+        this.analyzeFromDiagnostic(document, diagnostic);
+      }
+    });
+  }
+
+  /**
+   * Check lateinit initialization flow
+   */
+  private async checkInitialization(document: vscode.TextDocument, diagnostic: vscode.Diagnostic): Promise<void> {
+    vscode.window.showInformationMessage(
+      'Checking initialization flow... (RCA Agent will analyze the error)',
+      'Analyze'
+    ).then(selection => {
+      if (selection === 'Analyze') {
+        this.analyzeFromDiagnostic(document, diagnostic);
+      }
+    });
+  }
+
+  /**
+   * Suggest type conversion
+   */
+  private async suggestTypeConversion(document: vscode.TextDocument, diagnostic: vscode.Diagnostic): Promise<void> {
+    vscode.window.showInformationMessage(
+      'Suggesting type conversions... (RCA Agent will analyze)',
+      'Analyze'
+    ).then(selection => {
+      if (selection === 'Analyze') {
+        this.analyzeFromDiagnostic(document, diagnostic);
+      }
+    });
+  }
+
+  /**
+   * Search for dependency in Maven Central
+   */
+  private async searchDependency(document: vscode.TextDocument, diagnostic: vscode.Diagnostic): Promise<void> {
+    vscode.window.showInformationMessage(
+      'Searching Maven Central... (RCA Agent will find the dependency)',
+      'Analyze'
+    ).then(selection => {
+      if (selection === 'Analyze') {
+        this.analyzeFromDiagnostic(document, diagnostic);
+      }
+    });
+  }
+
+  /**
+   * Check version compatibility
+   */
+  private async checkVersionCompatibility(document: vscode.TextDocument, diagnostic: vscode.Diagnostic): Promise<void> {
+    vscode.window.showInformationMessage(
+      'Checking version compatibility... (RCA Agent will analyze)',
+      'Analyze'
+    ).then(selection => {
+      if (selection === 'Analyze') {
+        this.analyzeFromDiagnostic(document, diagnostic);
+      }
+    });
+  }
+
+  /**
+   * Add missing permission to AndroidManifest.xml
+   */
+  private async addPermission(document: vscode.TextDocument, diagnostic: vscode.Diagnostic): Promise<void> {
+    vscode.window.showInformationMessage(
+      'RCA Agent will suggest the permission to add',
+      'Analyze'
+    ).then(selection => {
+      if (selection === 'Analyze') {
+        this.analyzeFromDiagnostic(document, diagnostic);
+      }
+    });
+  }
+
+  /**
+   * Generate HTML for error explanation
+   */
+  private getExplanationHtml(message: string, filePath?: string, line?: number): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body {
+            font-family: var(--vscode-font-family);
+            padding: 20px;
+            color: var(--vscode-foreground);
+            background-color: var(--vscode-editor-background);
+          }
+          h1 {
+            color: var(--vscode-errorForeground);
+          }
+          .error-info {
+            background: var(--vscode-textBlockQuote-background);
+            padding: 15px;
+            border-left: 3px solid var(--vscode-errorForeground);
+            margin: 20px 0;
+          }
+          .location {
+            color: var(--vscode-descriptionForeground);
+            font-size: 0.9em;
+            margin-top: 10px;
+          }
+        </style>
+      </head>
+      <body>
+        <h1>Error Explanation</h1>
+        <div class="error-info">
+          <strong>Message:</strong> ${message}
+          ${filePath ? `<div class="location">File: ${filePath}${line !== undefined ? `:${line + 1}` : ''}</div>` : ''}
+        </div>
+        <p>Use "Analyze with RCA Agent" for detailed root cause analysis and fix suggestions.</p>
+      </body>
+      </html>
+    `;
   }
 }

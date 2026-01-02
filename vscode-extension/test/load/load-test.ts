@@ -85,7 +85,7 @@ describe('RCA Agent - Load Testing', () => {
     assert.strictEqual(errorQueue.getErrorCount(), 100, 'Should have 100 errors');
     assert.ok(addTime < 1000, `Adding 100 errors should take <1s (took ${addTime}ms)`);
     
-    console.log(`✅ Added 100 errors in ${addTime}ms`);
+    console.log(` Added 100 errors in ${addTime}ms`);
   });
 
   /**
@@ -107,7 +107,7 @@ describe('RCA Agent - Load Testing', () => {
     assert.strictEqual(errorQueue.getErrorCount(), 500);
     assert.ok(addTime < 5000, `Adding 500 errors should take <5s (took ${addTime}ms)`);
     
-    console.log(`✅ Added 500 errors in ${addTime}ms`);
+    console.log(` Added 500 errors in ${addTime}ms`);
   });
 
   /**
@@ -129,7 +129,7 @@ describe('RCA Agent - Load Testing', () => {
     assert.ok(visibleItems.length < 100, 'Should render <100 items with virtual scroll');
     assert.ok(initTime < 100, `Virtual scroll init should take <100ms (took ${initTime}ms)`);
     
-    console.log(`✅ Virtual scroll rendered ${visibleItems.length} of 1000 items in ${initTime}ms`);
+    console.log(` Virtual scroll rendered ${visibleItems.length} of 1000 items in ${initTime}ms`);
   });
 
   /**
@@ -151,7 +151,7 @@ describe('RCA Agent - Load Testing', () => {
     // Memory increase should be reasonable (<10MB for 100 errors)
     assert.ok(memoryIncrease < 10, `Memory increase should be <10MB (was ${memoryIncrease.toFixed(2)}MB)`);
     
-    console.log(`✅ Memory increase: ${memoryIncrease.toFixed(2)}MB for 100 errors`);
+    console.log(` Memory increase: ${memoryIncrease.toFixed(2)}MB for 100 errors`);
   });
 
   /**
@@ -186,7 +186,7 @@ describe('RCA Agent - Load Testing', () => {
     assert.strictEqual(processed, 50);
     assert.ok(batchTime < 60000, `Batch analysis should complete <60s (took ${batchTime}ms)`);
     
-    console.log(`✅ Batch analyzed 50 errors in ${batchTime}ms`);
+    console.log(` Batch analyzed 50 errors in ${batchTime}ms`);
   });
 
   /**
@@ -220,7 +220,7 @@ describe('RCA Agent - Load Testing', () => {
     assert.ok(sortTime < 100, `Sorting should take <100ms (took ${sortTime}ms)`);
     assert.ok(criticalCount > 0, 'Should have critical errors');
     
-    console.log(`✅ Sorted 100 errors in ${sortTime}ms (${criticalCount} critical, ${highCount} high, ${mediumCount} medium)`);
+    console.log(` Sorted 100 errors in ${sortTime}ms (${criticalCount} critical, ${highCount} high, ${mediumCount} medium)`);
   });
 
   /**
@@ -258,7 +258,7 @@ describe('RCA Agent - Load Testing', () => {
     assert.ok(finalCount === 90, `Should have 90 errors (has ${finalCount})`);
     assert.ok(opTime < 5000, `Concurrent ops should complete <5s (took ${opTime}ms)`);
     
-    console.log(`✅ Concurrent operations completed in ${opTime}ms`);
+    console.log(` Concurrent operations completed in ${opTime}ms`);
   });
 
   /**
@@ -290,7 +290,7 @@ describe('RCA Agent - Load Testing', () => {
     assert.ok(html.length > 0);
     assert.ok(renderTime < 200, `Panel render should take <200ms (took ${renderTime}ms)`);
     
-    console.log(`✅ Rendered panel with 100 errors in ${renderTime}ms`);
+    console.log(` Rendered panel with 100 errors in ${renderTime}ms`);
   });
 
   /**
@@ -318,7 +318,7 @@ describe('RCA Agent - Load Testing', () => {
     assert.ok(filtered.length > 0);
     assert.ok(filterTime < 50, `Filter should take <50ms (took ${filterTime}ms)`);
     
-    console.log(`✅ Filtered 100 errors in ${filterTime}ms (found ${filtered.length} matches)`);
+    console.log(` Filtered 100 errors in ${filterTime}ms (found ${filtered.length} matches)`);
   });
 
   /**
@@ -343,7 +343,7 @@ describe('RCA Agent - Load Testing', () => {
     assert.ok(report.includes('Performance Report'));
     assert.ok(reportTime < 100, `Report generation should take <100ms (took ${reportTime}ms)`);
     
-    console.log(`✅ Generated performance report in ${reportTime}ms`);
+    console.log(` Generated performance report in ${reportTime}ms`);
   });
 
   /**
@@ -352,7 +352,7 @@ describe('RCA Agent - Load Testing', () => {
   it('SUMMARY: Complete load test with 100 errors', async function() {
     this.timeout(30000);
     
-    console.log('\n📊 Running comprehensive load test...\n');
+    console.log('\n[METRICS] Running comprehensive load test...\n');
     
     const errors = generateMockErrors(100);
     
@@ -385,7 +385,7 @@ describe('RCA Agent - Load Testing', () => {
     const report = perfMonitor.generateReport();
     
     console.log('\n' + report);
-    console.log('\n✅ Load test complete!\n');
+    console.log('\n Load test complete!\n');
     
     // Final assertions
     const metrics = perfMonitor.getMetrics();

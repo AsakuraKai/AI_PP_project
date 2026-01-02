@@ -7,48 +7,48 @@
 
 AI-powered debugging assistant that analyzes your Kotlin/Android errors and suggests actionable fixes. **New in 2.0:** Redesigned panel-based UI with always-visible error queue, batch analysis, and full keyboard navigation!
 
-## ✨ What's New in 2.0
+## * What's New in 2.0
 
-- **🎯 Always-Visible Panel** - Docked to activity bar, no more hidden commands
-- **📋 Error Queue** - Auto-detected errors with priority sorting
-- **⚡ Batch Analysis** - Analyze multiple errors at once
-- **💡 Lightbulb Integration** - Quick actions directly on error lines
+- **[TARGET] Always-Visible Panel** - Docked to activity bar, no more hidden commands
+- **[MANIFEST] Error Queue** - Auto-detected errors with priority sorting
+- ** Batch Analysis** - Analyze multiple errors at once
+- **TIP: Lightbulb Integration** - Quick actions directly on error lines
 - **⌨️ Full Keyboard Navigation** - WCAG 2.1 AA compliant accessibility
-- **🎨 Theme-Aware UI** - Beautiful dark/light/high-contrast support
-- **📊 Real-time Progress** - Live analysis progress with iteration tracking
-- **🚩 Feature Flags** - Safe opt-in/opt-out for new features
+- **[COMPOSE] Theme-Aware UI** - Beautiful dark/light/high-contrast support
+- **[METRICS] Real-time Progress** - Live analysis progress with iteration tracking
+- ** Feature Flags** - Safe opt-in/opt-out for new features
 
-## 🚀 Features
+## [START] Features
 
 ### Core Analysis
-- **🔍 Intelligent Error Detection**: Auto-detects errors in your workspace with priority sorting (Critical → High → Medium)
-- **💡 Root Cause Identification**: AI-powered analysis identifies underlying issues, not just symptoms
-- **🛠️ Actionable Fix Guidelines**: Step-by-step instructions with code examples you can copy
-- **🎓 Educational Mode**: Beginner-friendly explanations with "What/Why/How" learning notes
-- **📚 Learns from Your Errors**: Stores past analyses to provide faster, smarter solutions over time
+- **[SEARCH] Intelligent Error Detection**: Auto-detects errors in your workspace with priority sorting (Critical → High → Medium)
+- **TIP: Root Cause Identification**: AI-powered analysis identifies underlying issues, not just symptoms
+- ** Actionable Fix Guidelines**: Step-by-step instructions with code examples you can copy
+- **[LEARN] Educational Mode**: Beginner-friendly explanations with "What/Why/How" learning notes
+- **[DB] Learns from Your Errors**: Stores past analyses to provide faster, smarter solutions over time
 
 ### UI & Interaction
-- **🎯 Panel Interface**: Always-visible panel in activity bar for quick access
-- **📋 Error Queue TreeView**: Visual list of detected errors with status indicators
-- **⚡ Batch Processing**: Analyze all errors in queue with one click
-- **💡 Inline Quick Actions**: Click lightbulb on errors for instant analysis
-- **📊 Real-time Progress**: Live iteration tracking with thought process display
-- **📜 History Tracking**: Full history of past analyses with reanalyze option
+- **[TARGET] Panel Interface**: Always-visible panel in activity bar for quick access
+- **[MANIFEST] Error Queue TreeView**: Visual list of detected errors with status indicators
+- ** Batch Processing**: Analyze all errors in queue with one click
+- **TIP: Inline Quick Actions**: Click lightbulb on errors for instant analysis
+- **[METRICS] Real-time Progress**: Live iteration tracking with thought process display
+- ** History Tracking**: Full history of past analyses with reanalyze option
 
 ### Specialized Support
-- **🎨 Jetpack Compose**: Specialized handling for Compose recomposition and state errors
-- **📄 XML Layouts**: Smart parsing of Android layout inflation errors
-- **🔧 Gradle Conflicts**: Visual dependency conflict detection with version recommendations
-- **📋 Manifest Issues**: Permission and component configuration suggestions
+- **[COMPOSE] Jetpack Compose**: Specialized handling for Compose recomposition and state errors
+- **[XML] XML Layouts**: Smart parsing of Android layout inflation errors
+- **[TOOL] Gradle Conflicts**: Visual dependency conflict detection with version recommendations
+- **[MANIFEST] Manifest Issues**: Permission and component configuration suggestions
 
 ### Accessibility & Performance
-- **♿ WCAG 2.1 AA Compliant**: Full keyboard navigation, screen reader support, ARIA labels
-- **🎨 Theme Support**: Adapts to dark/light/high-contrast themes automatically
-- **⚡ Performance Optimized**: Virtual scrolling for 1000+ errors, <100ms panel load time
-- **🔄 Virtual Scrolling**: Handles massive error queues efficiently
-- **📈 Performance Metrics**: Optional display of analysis latency, cache hit rates, and token usage
+- ** WCAG 2.1 AA Compliant**: Full keyboard navigation, screen reader support, ARIA labels
+- **[COMPOSE] Theme Support**: Adapts to dark/light/high-contrast themes automatically
+- ** Performance Optimized**: Virtual scrolling for 1000+ errors, <100ms panel load time
+- ** Virtual Scrolling**: Handles massive error queues efficiently
+- **^ Performance Metrics**: Optional display of analysis latency, cache hit rates, and token usage
 
-## 📸 Screenshots
+##  Screenshots
 
 ### Main Panel Interface
 <!-- Screenshot placeholder -->
@@ -66,7 +66,7 @@ Click the lightbulb on any error line to analyze with RCA Agent instantly.
 <!-- Screenshot placeholder -->
 Comprehensive root cause analysis with code context and actionable fix guidelines.
 
-## 📦 Installation
+## [PACKAGE] Installation
 
 ### Prerequisites
 
@@ -106,7 +106,7 @@ Comprehensive root cause analysis with code context and actionable fix guideline
 2. Search for "RCA Agent"
 3. Click Install
 
-## 🎯 Usage
+## [TARGET] Usage
 
 ### Quick Start (New 2.0 UI)
 
@@ -119,8 +119,8 @@ Comprehensive root cause analysis with code context and actionable fix guideline
 
 #### Lightbulb Quick Action (NEW!)
 1. Hover over any error in your code
-2. Click the 💡 lightbulb that appears
-3. Select "🤖 Analyze with RCA Agent"
+2. Click the TIP: lightbulb that appears
+3. Select "[AI] Analyze with RCA Agent"
 4. Results appear instantly in the panel
 
 #### Manual Selection (Classic)
@@ -158,7 +158,7 @@ For complete keyboard shortcuts guide, see [KEYBOARD_SHORTCUTS.md](KEYBOARD_SHOR
 Enable educational mode for beginner-friendly explanations:
 
 ```
-Command Palette → "RCA Agent: Toggle Educational Mode 🎓"
+Command Palette → "RCA Agent: Toggle Educational Mode [LEARN]"
 ```
 
 Educational mode provides:
@@ -171,7 +171,7 @@ Educational mode provides:
 View detailed performance insights:
 
 ```
-Command Palette → "RCA Agent: Toggle Performance Metrics ⚡"
+Command Palette → "RCA Agent: Toggle Performance Metrics "
 ```
 
 Metrics include:
@@ -181,7 +181,7 @@ Metrics include:
 - Cache hit rate
 - Token usage (prompt/completion)
 
-## ⚙️ Configuration
+##  Configuration
 
 Access settings: `File > Preferences > Settings > RCA Agent`
 
@@ -233,7 +233,7 @@ Access settings: `File > Preferences > Settings > RCA Agent`
 | `qwen-coder:7b` | 4.2GB | Strong reasoning, slightly slower |
 | `deepseek-coder:6.7b` | 3.6GB | Compact, good for low-memory systems |
 
-## 🐛 Troubleshooting
+## [BUG] Troubleshooting
 
 ### "Could not connect to Ollama"
 
@@ -257,11 +257,11 @@ Access settings: `File > Preferences > Settings > RCA Agent`
 2. Check supported error types (NPE, lateinit, build errors, etc.)
 3. View debug logs in output channel
 
-## 🎓 Educational Mode Guide
+## [LEARN] Educational Mode Guide
 
 See [EDUCATIONAL_MODE.md](EDUCATIONAL_MODE.md) for detailed guide.
 
-## 📚 Supported Error Types
+## [DB] Supported Error Types
 
 - Kotlin: NPE, lateinit, unresolved reference, type mismatch (38+ types)
 - Jetpack Compose: remember, recomposition, LaunchedEffect
@@ -269,24 +269,24 @@ See [EDUCATIONAL_MODE.md](EDUCATIONAL_MODE.md) for detailed guide.
 - Gradle: Dependency conflicts, build errors
 - Manifest: Permissions, components
 
-## 🤝 Feedback
+##  Feedback
 
 After each analysis, click:
-- **👍 Helpful** - Analysis was accurate
-- **👎 Not Helpful** - Analysis needs improvement
+- **[HELPFUL] Helpful** - Analysis was accurate
+- **[NOT_HELPFUL] Not Helpful** - Analysis needs improvement
 
-## 📄 License
+## [XML] License
 
 MIT License
 
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 - Built with [Ollama](https://ollama.ai)
 - Uses [ChromaDB](https://www.trychroma.com)
 
 ---
 
-**Made with ❤️ for the Kotlin/Android community**
+**Made with  for the Kotlin/Android community**
 
 - [x] Extension bootstrap and activation
 - [x] User input handling (selection or input box)

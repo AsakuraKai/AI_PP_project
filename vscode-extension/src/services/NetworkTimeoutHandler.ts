@@ -257,14 +257,16 @@ export class NetworkTimeoutHandler {
              `• Increasing timeout in settings`;
     }
     
-    if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND') {
+    const errorCode = (error as any).code;
+    
+    if (errorCode === 'ECONNREFUSED' || errorCode === 'ENOTFOUND') {
       return `Cannot connect to Ollama server. Please ensure:\n` +
              `• Ollama is running (ollama serve)\n` +
              `• Server URL is correct in settings\n` +
              `• No firewall blocking the connection`;
     }
     
-    if (error.code === 'ECONNRESET' || error.code === 'EPIPE') {
+    if (errorCode === 'ECONNRESET' || errorCode === 'EPIPE') {
       return `Connection to Ollama was interrupted. This can happen when:\n` +
              `• Ollama server restarted\n` +
              `• Network connection dropped\n` +

@@ -2,7 +2,7 @@ import { describe, it, expect } from '@jest/globals';
 import * as fs from 'fs';
 import * as path from 'path';
 import Ajv from 'ajv';
-import addFormats from 'ajv-formats';
+const addFormats = require('ajv-formats').default || require('ajv-formats');
 
 describe('Kotlin Version Database', () => {
   const kotlinVersionsPath = path.join(__dirname, '../../../src/knowledge/kotlin-versions.json');

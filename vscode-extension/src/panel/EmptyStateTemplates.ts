@@ -27,7 +27,7 @@ export class EmptyStateTemplates {
    */
   static getNoErrorsState(): EmptyStateConfig {
     return {
-      icon: '✨',
+      icon: '',
       title: 'No Errors Detected',
       description: 'Your workspace is looking great! No errors found.',
       actions: [
@@ -35,17 +35,17 @@ export class EmptyStateTemplates {
           label: 'Analyze Selected Text',
           command: 'rca-agent.analyzeError',
           primary: true,
-          icon: '🔍'
+          icon: '>'
         },
         {
           label: 'Refresh Error Detection',
           command: 'rca-agent.refreshErrors',
-          icon: '🔄'
+          icon: ''
         },
         {
           label: 'View Documentation',
           command: 'rca-agent.openDocs',
-          icon: '📖'
+          icon: '[FILE]'
         }
       ],
       tips: [
@@ -66,7 +66,7 @@ export class EmptyStateTemplates {
    */
   static getOllamaDownState(ollamaUrl: string): EmptyStateConfig {
     return {
-      icon: '⚠️',
+      icon: '!',
       title: 'Ollama Server Not Available',
       description: `Cannot connect to Ollama at ${ollamaUrl}`,
       actions: [
@@ -74,22 +74,22 @@ export class EmptyStateTemplates {
           label: 'Check Connection',
           command: 'rca-agent.checkOllama',
           primary: true,
-          icon: '🔄'
+          icon: ''
         },
         {
           label: 'Change Server URL',
           command: 'rca-agent.changeOllamaUrl',
-          icon: '🔧'
+          icon: ''
         },
         {
           label: 'View Logs',
           command: 'rca-agent.showLogs',
-          icon: '📋'
+          icon: '[MANIFEST]'
         },
         {
           label: 'Installation Guide',
           command: 'rca-agent.openOllamaGuide',
-          icon: '📖'
+          icon: 'i'
         }
       ],
       tips: [
@@ -110,7 +110,7 @@ export class EmptyStateTemplates {
    */
   static getModelMissingState(modelName: string): EmptyStateConfig {
     return {
-      icon: '📦',
+      icon: '□',
       title: 'Model Not Found',
       description: `The model "${modelName}" is not installed on your system.`,
       actions: [
@@ -118,17 +118,17 @@ export class EmptyStateTemplates {
           label: 'Install Model',
           command: 'rca-agent.installModel',
           primary: true,
-          icon: '⬇️'
+          icon: '↓'
         },
         {
           label: 'Choose Different Model',
           command: 'rca-agent.selectModel',
-          icon: '🔄'
+          icon: ''
         },
         {
           label: 'View Available Models',
           command: 'rca-agent.listModels',
-          icon: '📋'
+          icon: '≡'
         }
       ],
       tips: [
@@ -151,7 +151,7 @@ export class EmptyStateTemplates {
   static getAnalyzingState(errorCount: number, currentIndex: number): EmptyStateConfig {
     const progress = Math.round((currentIndex / errorCount) * 100);
     return {
-      icon: '🔄',
+      icon: '',
       title: 'Analysis in Progress',
       description: `Analyzing error ${currentIndex} of ${errorCount} (${progress}%)`,
       actions: [
@@ -159,12 +159,12 @@ export class EmptyStateTemplates {
           label: 'Stop Analysis',
           command: 'rca-agent.stopAnalysis',
           primary: true,
-          icon: '⏸'
+          icon: '||'
         },
         {
           label: 'View Progress Details',
           command: 'rca-agent.showProgress',
-          icon: '📊'
+          icon: '▤'
         }
       ],
       tips: [
@@ -184,7 +184,7 @@ export class EmptyStateTemplates {
    */
   static getAllAnalyzedState(): EmptyStateConfig {
     return {
-      icon: '✅',
+      icon: '',
       title: 'All Errors Analyzed',
       description: 'Great job! All errors in the queue have been analyzed.',
       actions: [
@@ -192,17 +192,17 @@ export class EmptyStateTemplates {
           label: 'View History',
           command: 'rca-agent.showHistory',
           primary: true,
-          icon: '📜'
+          icon: '▤'
         },
         {
           label: 'Refresh Error Detection',
           command: 'rca-agent.refreshErrors',
-          icon: '🔄'
+          icon: ''
         },
         {
           label: 'Clear Queue',
           command: 'rca-agent.clearQueue',
-          icon: '🗑️'
+          icon: ''
         }
       ],
       tips: [
@@ -218,7 +218,7 @@ export class EmptyStateTemplates {
    */
   static getAnalysisFailedState(errorMessage: string): EmptyStateConfig {
     return {
-      icon: '❌',
+      icon: '',
       title: 'Analysis Failed',
       description: errorMessage || 'An error occurred during analysis',
       actions: [
@@ -226,22 +226,22 @@ export class EmptyStateTemplates {
           label: 'Try Again',
           command: 'rca-agent.retryAnalysis',
           primary: true,
-          icon: '🔄'
+          icon: ''
         },
         {
           label: 'View Logs',
           command: 'rca-agent.showLogs',
-          icon: '📋'
+          icon: '≡'
         },
         {
           label: 'Report Issue',
           command: 'rca-agent.reportIssue',
-          icon: '🐛'
+          icon: '!'
         },
         {
           label: 'Get Help',
           command: 'rca-agent.getHelp',
-          icon: '❓'
+          icon: '?'
         }
       ],
       tips: [
@@ -261,7 +261,7 @@ export class EmptyStateTemplates {
    */
   static getWelcomeState(): EmptyStateConfig {
     return {
-      icon: '👋',
+      icon: '',
       title: 'Welcome to RCA Agent!',
       description: 'AI-powered root cause analysis for your Kotlin/Android errors.',
       actions: [
@@ -269,22 +269,22 @@ export class EmptyStateTemplates {
           label: 'Quick Start Guide',
           command: 'rca-agent.quickStart',
           primary: true,
-          icon: '🚀'
+          icon: '>'
         },
         {
           label: 'Analyze Demo Error',
           command: 'rca-agent.demoAnalysis',
-          icon: '🎓'
+          icon: '▤'
         },
         {
           label: 'Configure Settings',
           command: 'rca-agent.openSettings',
-          icon: '⚙️'
+          icon: ''
         },
         {
           label: 'View Documentation',
           command: 'rca-agent.openDocs',
-          icon: '📖'
+          icon: 'i'
         }
       ],
       tips: [
@@ -295,11 +295,11 @@ export class EmptyStateTemplates {
         '4. Press Ctrl+Shift+R to analyze',
         '',
         'Features:',
-        '✨ Auto-detect errors in workspace',
-        '🔄 Batch analysis for multiple errors',
-        '🎓 Educational mode for learning',
-        '⚡ Performance metrics & caching',
-        '♿ Full keyboard navigation (WCAG 2.1 AA)'
+        '* Auto-detect errors in workspace',
+        '* Batch analysis for multiple errors',
+        '* Educational mode for learning',
+        '* Performance metrics & caching',
+        '* Full keyboard navigation (WCAG 2.1 AA)'
       ],
       keyboardHints: [
         'Ctrl+Shift+R - Analyze error',
@@ -316,7 +316,7 @@ export class EmptyStateTemplates {
    */
   static getNoHistoryState(): EmptyStateConfig {
     return {
-      icon: '📜',
+      icon: '▤',
       title: 'No Analysis History',
       description: 'Analyzed errors will appear here for quick reference.',
       actions: [
@@ -324,12 +324,12 @@ export class EmptyStateTemplates {
           label: 'Analyze an Error',
           command: 'rca-agent.analyzeError',
           primary: true,
-          icon: '🔍'
+          icon: '>'
         },
         {
           label: 'Import History',
           command: 'rca-agent.importHistory',
-          icon: '📥'
+          icon: '↓'
         }
       ],
       tips: [
@@ -346,7 +346,7 @@ export class EmptyStateTemplates {
    */
   static getLargeWorkspaceState(fileCount: number): EmptyStateConfig {
     return {
-      icon: '📦',
+      icon: '□',
       title: 'Large Workspace Detected',
       description: `Found ${fileCount} files in workspace. Auto-detection may take longer.`,
       actions: [
@@ -354,17 +354,17 @@ export class EmptyStateTemplates {
           label: 'Enable Auto-Detect',
           command: 'rca-agent.enableAutoDetect',
           primary: true,
-          icon: '✅'
+          icon: ''
         },
         {
           label: 'Manual Detection Only',
           command: 'rca-agent.disableAutoDetect',
-          icon: '⏸'
+          icon: '||'
         },
         {
           label: 'Configure Exclusions',
           command: 'rca-agent.configureExclusions',
-          icon: '⚙️'
+          icon: ''
         }
       ],
       tips: [
@@ -407,7 +407,7 @@ export class EmptyStateTemplates {
         
         ${config.tips && config.tips.length > 0 ? `
           <div class="empty-state-tips" role="complementary" aria-label="Helpful tips">
-            <h3>💡 Tips</h3>
+            <h3>Tips</h3>
             <ul>
               ${config.tips.map(tip => `<li>${tip}</li>`).join('')}
             </ul>
@@ -416,7 +416,7 @@ export class EmptyStateTemplates {
         
         ${config.keyboardHints && config.keyboardHints.length > 0 ? `
           <div class="empty-state-keyboard" role="complementary" aria-label="Keyboard shortcuts">
-            <h3>⌨️ Keyboard Shortcuts</h3>
+            <h3>Keyboard Shortcuts</h3>
             <ul>
               ${config.keyboardHints.map(hint => `<li><code>${hint}</code></li>`).join('')}
             </ul>

@@ -21,6 +21,7 @@ export class ErrorQueueManager {
   
   private _onQueueChange = new vscode.EventEmitter<ErrorItem[]>();
   readonly onQueueChange = this._onQueueChange.event;
+  readonly onErrorQueueChange = this._onQueueChange.event; // Alias for backward compatibility
   
   private _autoDetectEnabled = true;
   private _diagnosticListener?: vscode.Disposable;
@@ -194,6 +195,13 @@ export class ErrorQueueManager {
    */
   getQueue(): ErrorItem[] {
     return [...this._queue];
+  }
+
+  /**
+   * Get all errors (alias for getQueue for backward compatibility)
+   */
+  getAllErrors(): ErrorItem[] {
+    return this.getQueue();
   }
 
   /**
