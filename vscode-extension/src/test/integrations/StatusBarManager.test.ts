@@ -11,10 +11,18 @@ import { ErrorQueueManager } from '../../panel/ErrorQueueManager';
 suite('StatusBarManager Tests', () => {
   let manager: StatusBarManager;
   let errorQueueManager: ErrorQueueManager;
+  let mockContext: vscode.ExtensionContext;
 
-  setup(() => {
-    errorQueueManager = ErrorQueueManager.getInstance();
-    errorQueueManager.clearAll();
+  setup(async () => {
+    mockContext = {
+      globalState: {
+        get: () => [],
+        update: async () => {}
+      }
+    } as any;
+    
+    errorQueueManager = ErrorQueueManager.getInstance(mockContext);
+    await errorQueueManager.clearQueue();
     manager = new StatusBarManager(errorQueueManager);
   });
 

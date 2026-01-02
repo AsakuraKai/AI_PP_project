@@ -27,6 +27,7 @@ describe('MinimalReactAgent', () => {
   beforeEach(() => {
     mockLLM = {
       generate: jest.fn(),
+      generateWithRetry: jest.fn(),
       connect: jest.fn(),
       isHealthy: jest.fn(),
       listModels: jest.fn(),

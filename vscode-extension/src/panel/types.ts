@@ -65,6 +65,15 @@ export interface HistoryItem {
   
   /** Optional user feedback */
   feedback?: string;
+  
+  /** Confidence score (for metrics) */
+  confidence?: number;
+  
+  /** Latency in milliseconds (for metrics) */
+  latency?: number;
+  
+  /** Error type (for metrics) */
+  errorType?: string;
 }
 
 /**
@@ -98,6 +107,24 @@ export interface RCAResult {
     llmCalls: number;
     toolCalls: number;
   };
+  
+  /** Latency in milliseconds */
+  latency?: number;
+  
+  /** Documentation search results */
+  docResults?: any[];
+  
+  /** Error information (for webview display) */
+  error?: string;
+  
+  /** File path where error occurred */
+  filePath?: string;
+  
+  /** Line number where error occurred */
+  line?: number;
+  
+  /** Code snippet with error */
+  codeSnippet?: string;
 }
 
 /**
@@ -121,6 +148,12 @@ export interface AnalysisProgress {
   
   /** Elapsed time in seconds */
   elapsedTime?: number;
+  
+  /** Tools used so far (for progress display) */
+  toolsUsed?: string[];
+  
+  /** Elapsed time in milliseconds (for progress display) */
+  elapsed?: number;
 }
 
 /**
@@ -128,7 +161,7 @@ export interface AnalysisProgress {
  */
 export interface PanelState {
   /** Current view state */
-  view: 'empty' | 'active' | 'complete' | 'error';
+  view: 'empty' | 'active' | 'complete' | 'error' | 'analyzing';
   
   /** Currently analyzing error (if any) */
   currentError?: ErrorItem;
@@ -147,6 +180,36 @@ export interface PanelState {
   
   /** Recent history items */
   history: HistoryItem[];
+  
+  /** Result (for backward compatibility) */
+  result?: RCAResult;
+  
+  /** Progress (for backward compatibility) */
+  progress?: number;
+  
+  /** Current thought (for progress display) */
+  currentThought?: string;
+  
+  /** Current iteration (for progress display) */
+  currentIteration?: number;
+  
+  /** Max iterations (for progress display) */
+  maxIterations?: number;
+  
+  /** Error type (for error states) */
+  errorType?: string;
+  
+  /** Ollama URL (for configuration) */
+  ollamaUrl?: string;
+  
+  /** Model name (for configuration) */
+  modelName?: string;
+  
+  /** Tools used (for progress display) */
+  toolsUsed?: string[];
+  
+  /** Elapsed time (for progress display) */
+  elapsed?: number;
 }
 
 /**
@@ -197,17 +260,26 @@ export interface PanelSettings {
  * Message types for webview communication
  */
 export type WebviewMessage =
-  | { type: 'analyze'; errorId: string }
+  | { type: 'analyze'; errorId?: string }
+  | { type: 'analyzeNew' }
   | { type: 'analyzeAll' }
   | { type: 'stop' }
   | { type: 'refresh' }
   | { type: 'removeError'; errorId: string }
   | { type: 'reanalyze'; historyId: string }
-  | { type: 'feedback'; historyId: string; helpful: boolean; feedback?: string }
+  | { type: 'feedback'; value?: any; historyId?: string; helpful?: boolean; feedback?: string }
+  | { type: 'copy'; fixIndex: string }
   | { type: 'copyFix'; fixText: string }
   | { type: 'applyFix'; fixText: string; filePath: string; line: number }
   | { type: 'viewFile'; filePath: string; line: number }
   | { type: 'updateSettings'; settings: Partial<PanelSettings> }
+  | { type: 'clearCache' }
+  | { type: 'checkConnection' }
+  | { type: 'installModel' }
+  | { type: 'viewLogs' }
+  | { type: 'openDocs' }
+  | { type: 'toggleEducational' }
+  | { type: 'togglePerf' }
   | { type: 'requestState' };
 
 /**

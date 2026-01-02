@@ -2,7 +2,7 @@
 
 Complete keyboard shortcuts guide for RCA Agent 2.0. All shortcuts are fully accessible and follow VS Code conventions.
 
-## 📋 Table of Contents
+## [MANIFEST] Table of Contents
 
 - [Primary Actions](#primary-actions)
 - [Panel Control](#panel-control)

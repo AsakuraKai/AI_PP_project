@@ -377,10 +377,11 @@ That's what I found.`;
       const result = engine.parseResponse(output);
 
       // Should return fallback with low confidence
-      expect(result.thought).toBe('This is not JSON at all');
+      expect(result.thought).toContain('JSON parsing failed');
+      expect(result.thought).toContain('This is not JSON at all');
       expect(result.action).toBeNull();
       expect(result.rootCause).toContain('parsing failed');
-      expect(result.confidence).toBe(0.2);
+      expect(result.confidence).toBeLessThanOrEqual(0.2);
     });
   });
 

@@ -142,10 +142,9 @@ export class BatchAnalysisCommands {
             // Analyze error
             const startTime = Date.now();
             const result = await this.analysisService.analyzeError(
-              error.message,
-              error.filePath,
-              error.line,
-              () => {} // Progress callback (not used for batch)
+              error,
+              (progress) => {}, // Progress callback (not used for batch)
+              undefined // Cancellation token
             );
 
             const duration = Date.now() - startTime;

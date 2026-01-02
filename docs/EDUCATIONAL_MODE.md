@@ -1,8 +1,8 @@
-# 🎓 Educational Mode Guide
+# [LEARN] Educational Mode Guide
 
 Educational Mode transforms RCA Agent into a learning companion that not only fixes your errors but teaches you **why** they happened and **how** to prevent them.
 
-## 📚 What is Educational Mode?
+## [DB] What is Educational Mode?
 
 Educational Mode adds beginner-friendly explanations to every analysis using a "What/Why/How" structure:
 
@@ -11,12 +11,12 @@ Educational Mode adds beginner-friendly explanations to every analysis using a "
 - **How**: Practical prevention strategies with code examples
 
 Perfect for:
-- 🎓 Students learning Kotlin/Android
-- 🔄 Developers switching from Java to Kotlin
-- 👨‍🏫 Code reviewers explaining issues to juniors
-- 📖 Anyone who wants to understand errors deeply
+- [LEARN] Students learning Kotlin/Android
+-  Developers switching from Java to Kotlin
+- ‍ Code reviewers explaining issues to juniors
+- [FILE] Anyone who wants to understand errors deeply
 
-## 🚀 Quick Start
+## [START] Quick Start
 
 ### Enable Educational Mode
 
@@ -24,7 +24,7 @@ Perfect for:
 ```
 1. Press Ctrl+Shift+P (Cmd+Shift+P on Mac)
 2. Type "Toggle Educational Mode"
-3. Select "RCA Agent: Toggle Educational Mode 🎓"
+3. Select "RCA Agent: Toggle Educational Mode [LEARN]"
 ```
 
 **Method 2: Keyboard Shortcut**
@@ -33,23 +33,23 @@ Press Ctrl+Shift+E (Cmd+Shift+E on Mac)
 ```
 
 **Status**:
-- ✅ Enabled: "Educational Mode enabled 🎓" notification
-- ⏹️ Disabled: "Educational Mode disabled 🎓" notification
+-  Enabled: "Educational Mode enabled [LEARN]" notification
+- ⏹️ Disabled: "Educational Mode disabled [LEARN]" notification
 
 ### Using Educational Mode
 
 1. Enable Educational Mode (see above)
 2. Analyze any error normally (`Ctrl+Shift+R`)
 3. View results in webview
-4. Scroll down to see **"🎓 Learning Notes"** section
+4. Scroll down to see **"[LEARN] Learning Notes"** section
 
-## 📋 Supported Error Types (38+)
+## [MANIFEST] Supported Error Types (38+)
 
 ### Kotlin Core Errors
 
 #### NullPointerException (NPE)
 ```
-🎓 Learning Notes
+[LEARN] Learning Notes
 
 **What is a NullPointerException?**
 A NullPointerException occurs when you try to use an object 
@@ -71,7 +71,7 @@ The variable was null when you tried to access it. Common causes:
 
 #### Lateinit Property Not Initialized
 ```
-🎓 Learning Notes
+[LEARN] Learning Notes
 
 **What is lateinit?**
 lateinit allows you to declare non-null properties that will be 
@@ -95,7 +95,7 @@ Common scenarios:
 
 #### Remember State Errors
 ```
-🎓 Learning Notes
+[LEARN] Learning Notes
 
 **What is remember in Compose?**
 remember stores values across recompositions. Without it, 
@@ -104,10 +104,10 @@ your state resets every time the UI redraws.
 **Why did this error happen?**
 You created mutable state without remember, so the value 
 was lost on recomposition. Example:
-var count = mutableStateOf(0) // ❌ Resets every time!
+var count = mutableStateOf(0) //  Resets every time!
 
 **How to fix this:**
-val count = remember { mutableStateOf(0) } // ✅ Survives recomposition
+val count = remember { mutableStateOf(0) } //  Survives recomposition
 
 When to use remember:
 - Storing UI state (counters, toggles)
@@ -117,7 +117,7 @@ When to use remember:
 
 #### Recomposition Issues
 ```
-🎓 Learning Notes
+[LEARN] Learning Notes
 
 **What is recomposition?**
 Compose automatically redraws UI when state changes. 
@@ -141,7 +141,7 @@ to redraw more than needed. Common causes:
 
 #### Dependency Conflicts
 ```
-🎓 Learning Notes
+[LEARN] Learning Notes
 
 **What is a dependency conflict?**
 Two libraries require different versions of the same dependency. 
@@ -170,7 +170,7 @@ dependencies. Example:
 
 #### Layout Inflation Failures
 ```
-🎓 Learning Notes
+[LEARN] Learning Notes
 
 **What is layout inflation?**
 Converting XML layout files into View objects at runtime.
@@ -194,7 +194,7 @@ XML has syntax errors or references missing resources. Common causes:
 
 #### Missing Permissions
 ```
-🎓 Learning Notes
+[LEARN] Learning Notes
 
 **What are manifest permissions?**
 Android requires apps to declare what system features they'll use 
@@ -221,18 +221,18 @@ Common permissions:
 - READ_EXTERNAL_STORAGE: Read files
 ```
 
-## 🎯 Best Practices
+## [TARGET] Best Practices
 
 ### When to Use Educational Mode
 
-**✅ Use Educational Mode When:**
+** Use Educational Mode When:**
 - Learning new Kotlin concepts
 - Onboarding new team members
 - Reviewing code with juniors
 - Encountering unfamiliar errors
 - Teaching or mentoring
 
-**⏸️ Disable Educational Mode When:**
+**||️ Disable Educational Mode When:**
 - Quickly fixing known errors
 - Working under tight deadlines
 - Output is too verbose for your needs
@@ -265,7 +265,7 @@ Common permissions:
 4. Contribute to documentation
 ```
 
-## 📊 Coverage
+## [METRICS] Coverage
 
 Educational Mode currently provides explanations for:
 
@@ -279,7 +279,7 @@ Educational Mode currently provides explanations for:
 
 More error types and deeper content coming in future updates!
 
-## 💡 Tips & Tricks
+## TIP: Tips & Tricks
 
 ### Tip 1: Copy Learning Notes
 ```
@@ -314,7 +314,7 @@ Learning notes provide context, then:
 3. Try examples in playground
 ```
 
-## 🔄 Example Workflow
+##  Example Workflow
 
 ### Scenario: First-time Compose Developer
 
@@ -322,7 +322,7 @@ Learning notes provide context, then:
 // Your code:
 @Composable
 fun Counter() {
-    var count = mutableStateOf(0) // ❌ Bug!
+    var count = mutableStateOf(0) //  Bug!
     
     Button(onClick = { count.value++ }) {
         Text("Count: ${count.value}")
@@ -339,7 +339,7 @@ Symptom: Button doesn't increment counter
 
 **Step 2**: Enable Educational Mode
 ```
-Ctrl+Shift+E → Educational Mode enabled 🎓
+Ctrl+Shift+E → Educational Mode enabled [LEARN]
 ```
 
 **Step 3**: Analyze Error
@@ -349,7 +349,7 @@ Ctrl+Shift+R → Select error message
 
 **Step 4**: Read Learning Notes
 ```
-🎓 Learning Notes
+[LEARN] Learning Notes
 
 **What is remember in Compose?**
 remember stores values across recompositions...
@@ -365,7 +365,7 @@ val count = remember { mutableStateOf(0) }
 ```kotlin
 @Composable
 fun Counter() {
-    var count = remember { mutableStateOf(0) } // ✅ Fixed!
+    var count = remember { mutableStateOf(0) } //  Fixed!
     
     Button(onClick = { count.value++ }) {
         Text("Count: ${count.value}")
@@ -375,12 +375,12 @@ fun Counter() {
 
 **Step 6**: Internalize Pattern
 ```
-✓ Always wrap mutable state in remember
-✓ Understand recomposition lifecycle
-✓ Apply to all future composables
+ Always wrap mutable state in remember
+ Understand recomposition lifecycle
+ Apply to all future composables
 ```
 
-## 🤔 FAQ
+##  FAQ
 
 ### Q: Does Educational Mode slow down analysis?
 **A**: No! Educational content is generated instantly alongside the analysis. No performance impact.
@@ -413,22 +413,22 @@ fun Counter() {
 
 Updates are released quarterly.
 
-## 📞 Feedback
+##  Feedback
 
 Educational Mode is designed for learners. Help us improve!
 
-**👍 What's working well:**
+**[HELPFUL] What's working well:**
 - Which explanations helped you most?
 - Which error types need better coverage?
 
-**👎 What needs improvement:**
+**[NOT_HELPFUL] What needs improvement:**
 - Explanations too verbose or too terse?
 - Missing error types?
 - Suggestions for better examples?
 
 Submit feedback: [GitHub Issues](https://github.com/your-repo/rca-agent/issues) with label `educational-mode`
 
-## 🎯 Next Steps
+## [TARGET] Next Steps
 
 1. **Enable Educational Mode**: `Ctrl+Shift+E`
 2. **Analyze some errors**: `Ctrl+Shift+R`
@@ -438,6 +438,6 @@ Submit feedback: [GitHub Issues](https://github.com/your-repo/rca-agent/issues) 
 
 ---
 
-**Happy Learning! 🎓**
+**Happy Learning! [LEARN]**
 
 *Remember: The best way to learn is by understanding your mistakes.*

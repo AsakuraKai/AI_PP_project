@@ -218,7 +218,7 @@ export class ErrorBoundary {
   private getOllamaErrorUI(): string {
     return `
       <div class="error-state" role="alert">
-        <h2>⚠️ Ollama Server Not Available</h2>
+        <h2>! Ollama Server Not Available</h2>
         <p>The Ollama server is not responding.</p>
         <div class="steps">
           <h3>To fix this:</h3>
@@ -229,8 +229,8 @@ export class ErrorBoundary {
             <li>Click "Check Connection" below</li>
           </ol>
         </div>
-        <button onclick="checkOllamaConnection()">🔄 Check Connection</button>
-        <button onclick="openSettings()">🔧 Change URL</button>
+        <button onclick="checkOllamaConnection()"> Check Connection</button>
+        <button onclick="openSettings()">[TOOL] Change URL</button>
       </div>
     `;
   }
@@ -241,7 +241,7 @@ export class ErrorBoundary {
   private getModelErrorUI(): string {
     return `
       <div class="error-state" role="alert">
-        <h2>⚠️ Model Not Found</h2>
+        <h2>! Model Not Found</h2>
         <p>The required model is not installed.</p>
         <div class="steps">
           <h3>To install:</h3>
@@ -252,8 +252,8 @@ export class ErrorBoundary {
             <li>Click "Check Model" below</li>
           </ol>
         </div>
-        <button onclick="checkModel()">🔄 Check Model</button>
-        <button onclick="chooseModel()">🔽 Choose Different Model</button>
+        <button onclick="checkModel()"> Check Model</button>
+        <button onclick="chooseModel()"> Choose Different Model</button>
       </div>
     `;
   }
@@ -264,11 +264,11 @@ export class ErrorBoundary {
   private getGenericErrorUI(): string {
     return `
       <div class="error-state" role="alert">
-        <h2>⚠️ Error Occurred</h2>
+        <h2>! Error Occurred</h2>
         <p>An unexpected error occurred. Please try again.</p>
-        <button onclick="retryAction()">🔄 Try Again</button>
-        <button onclick="viewLogs()">📋 View Logs</button>
-        <button onclick="reportIssue()">🐛 Report Issue</button>
+        <button onclick="retryAction()"> Try Again</button>
+        <button onclick="viewLogs()">[MANIFEST] View Logs</button>
+        <button onclick="reportIssue()">[BUG] Report Issue</button>
       </div>
     `;
   }

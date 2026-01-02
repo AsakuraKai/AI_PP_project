@@ -622,7 +622,7 @@ export class RCAWebview {
 </head>
 <body>
   <div class="header" role="banner">
-    <h1 id="main-title">🔍 Root Cause Analysis</h1>
+    <h1 id="main-title">[SEARCH] Root Cause Analysis</h1>
     <p id="status" role="status" aria-live="polite">Initializing...</p>
   </div>
   
@@ -689,7 +689,7 @@ export class RCAWebview {
       
       let metricsHtml = \`
         <div class="performance-metrics">
-          <h3>⚡ Performance Metrics</h3>
+          <h3> Performance Metrics</h3>
           <ul>
             <li>
               <span class="metrics-label">Total Time:</span>
@@ -781,7 +781,7 @@ export class RCAWebview {
       const badge = getErrorBadge(rca.errorType);
       resultHtml += \`
         <div class="result-section">
-          <h2>🐛 Error \${badge}</h2>
+          <h2>[BUG] Error \${badge}</h2>
           <p><strong>\${escapeHtml(rca.error)}</strong></p>
           <p><small>File: \${escapeHtml(rca.filePath)}:\${rca.line}</small></p>
         </div>
@@ -791,11 +791,11 @@ export class RCAWebview {
       if (rca.codeSnippet) {
         resultHtml += \`
           <div class="result-section">
-            <h2>📝 Code Context</h2>
+            <h2>[CODE] Code Context</h2>
             <div class="code-snippet">
               <pre>\${escapeHtml(rca.codeSnippet)}</pre>
             </div>
-            <button onclick="copyCode(\\\`\${escapeHtml(rca.codeSnippet)}\\\`)">📋 Copy Code</button>
+            <button onclick="copyCode(\\\`\${escapeHtml(rca.codeSnippet)}\\\`)">[MANIFEST] Copy Code</button>
           </div>
         \`;
       }
@@ -803,7 +803,7 @@ export class RCAWebview {
       // Root cause
       resultHtml += \`
         <div class="result-section">
-          <h2>💡 Root Cause</h2>
+          <h2>TIP: Root Cause</h2>
           <p>\${escapeHtml(rca.rootCause)}</p>
         </div>
       \`;
@@ -811,7 +811,7 @@ export class RCAWebview {
       // Fix guidelines
       resultHtml += \`
         <div class="result-section">
-          <h2>🛠️ Fix Guidelines</h2>
+          <h2> Fix Guidelines</h2>
           \${rca.fixGuidelines.map((guideline, index) => \`
             <div class="fix-guideline">
               <strong>\${index + 1}.</strong> \${escapeHtml(guideline)}
@@ -824,7 +824,7 @@ export class RCAWebview {
       if (educationalMode && rca.learningNotes && rca.learningNotes.length > 0) {
         resultHtml += \`
           <div class="result-section">
-            <h2>🎓 Learning Notes</h2>
+            <h2>[LEARN] Learning Notes</h2>
             \${rca.learningNotes.map(note => \`
               <div class="learning-note">
                 \${escapeHtml(note)}
@@ -845,7 +845,7 @@ export class RCAWebview {
       
       resultHtml += \`
         <div class="result-section">
-          <h2>✅ Confidence</h2>
+          <h2> Confidence</h2>
           <div class="confidence-bar-container">
             <div class="confidence-bar">
               <div class="confidence-fill \${confidenceClass}" style="width: \${confidencePercent}%;"></div>
@@ -859,12 +859,12 @@ export class RCAWebview {
       if (rca.toolsUsed || rca.iterations || rca.latency) {
         resultHtml += \`
           <div class="result-section">
-            <h2>📊 Analysis Details</h2>
+            <h2>[METRICS] Analysis Details</h2>
             <div class="metadata-grid">
               \${rca.iterations ? \`<div class="metadata-item"><span class="metadata-label">Iterations:</span>\${rca.iterations}</div>\` : ''}
               \${rca.latency ? \`<div class="metadata-item"><span class="metadata-label">Latency:</span>\${rca.latency}ms</div>\` : ''}
               \${rca.modelName ? \`<div class="metadata-item"><span class="metadata-label">Model:</span>\${rca.modelName}</div>\` : ''}
-              \${rca.fromCache ? \`<div class="metadata-item"><span class="metadata-label">Source:</span>⚡ Cached</div>\` : ''}
+              \${rca.fromCache ? \`<div class="metadata-item"><span class="metadata-label">Source:</span> Cached</div>\` : ''}
             </div>
             \${rca.toolsUsed ? \`
               <p><strong>Tools Used:</strong></p>
@@ -880,7 +880,7 @@ export class RCAWebview {
       if (rca.docResults && rca.docResults.length > 0) {
         resultHtml += \`
           <div class="result-section">
-            <h2>📚 Relevant Documentation</h2>
+            <h2>[DB] Relevant Documentation</h2>
             \${rca.docResults.map((doc, index) => \`
               <div style="margin: 10px 0;">
                 <strong>\${index + 1}. \${escapeHtml(doc.title)}</strong><br>
@@ -907,12 +907,12 @@ export class RCAWebview {
       
       resultDisplay.innerHTML = \`
         <div class="error-message" role="alert" aria-live="assertive">
-          <h2>❌ Error</h2>
+          <h2> Error</h2>
           <p>\${escapeHtml(message.message)}</p>
           \${message.details ? \`<p><small>\${escapeHtml(message.details)}</small></p>\` : ''}
           \${isRetryable ? \`
             <button class="retry-button" onclick="vscode.postMessage({ type: 'retry' })" aria-label="Retry analysis">
-              🔄 Retry Analysis
+               Retry Analysis
             </button>
           \` : ''}
         </div>
@@ -943,25 +943,25 @@ export class RCAWebview {
     
     function getErrorBadge(errorType) {
       const badges = {
-        'npe': '<span class="badge badge-red">🔴 NPE</span>',
-        'lateinit': '<span class="badge badge-orange">🟠 Lateinit</span>',
-        'unresolved_reference': '<span class="badge badge-blue">🔵 Unresolved</span>',
-        'type_mismatch': '<span class="badge badge-purple">🟣 Type Mismatch</span>',
-        'gradle_build': '<span class="badge badge-yellow">🟡 Build Error</span>',
-        'gradle_dependency': '<span class="badge badge-yellow">🟡 Dependency</span>',
-        'compose_remember': '<span class="badge badge-purple">🎨 Compose</span>',
-        'compose_recomposition': '<span class="badge badge-purple">🎨 Compose</span>',
-        'xml_inflation': '<span class="badge badge-orange">📄 XML</span>',
-        'manifest_permission': '<span class="badge badge-green">📋 Manifest</span>',
+        'npe': '<span class="badge badge-red">[ERROR] NPE</span>',
+        'lateinit': '<span class="badge badge-orange">[XML] Lateinit</span>',
+        'unresolved_reference': '<span class="badge badge-blue">[INFO] Unresolved</span>',
+        'type_mismatch': '<span class="badge badge-purple">[COMPOSE] Type Mismatch</span>',
+        'gradle_build': '<span class="badge badge-yellow">[BUILD] Build Error</span>',
+        'gradle_dependency': '<span class="badge badge-yellow">[BUILD] Dependency</span>',
+        'compose_remember': '<span class="badge badge-purple">[COMPOSE] Compose</span>',
+        'compose_recomposition': '<span class="badge badge-purple">[COMPOSE] Compose</span>',
+        'xml_inflation': '<span class="badge badge-orange">[XML] XML</span>',
+        'manifest_permission': '<span class="badge badge-green">[MANIFEST] Manifest</span>',
       };
       
       // Check for prefixes
-      if (errorType.startsWith('compose_')) return '<span class="badge badge-purple">🎨 Compose</span>';
-      if (errorType.startsWith('xml_')) return '<span class="badge badge-orange">📄 XML</span>';
-      if (errorType.startsWith('gradle_')) return '<span class="badge badge-yellow">🟡 Gradle</span>';
-      if (errorType.startsWith('manifest_')) return '<span class="badge badge-green">📋 Manifest</span>';
+      if (errorType.startsWith('compose_')) return '<span class="badge badge-purple">[COMPOSE] Compose</span>';
+      if (errorType.startsWith('xml_')) return '<span class="badge badge-orange">[XML] XML</span>';
+      if (errorType.startsWith('gradle_')) return '<span class="badge badge-yellow">[BUILD] Gradle</span>';
+      if (errorType.startsWith('manifest_')) return '<span class="badge badge-green">[MANIFEST] Manifest</span>';
       
-      return badges[errorType] || '<span class="badge">⚪ Unknown</span>';
+      return badges[errorType] || '<span class="badge">[UNKNOWN] Unknown</span>';
     }
     
     function escapeHtml(text) {

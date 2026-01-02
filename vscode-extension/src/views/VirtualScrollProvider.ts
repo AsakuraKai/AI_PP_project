@@ -23,7 +23,7 @@ export interface VirtualScrollState {
 export class VirtualScrollProvider {
   private config: VirtualScrollConfig;
   private state: VirtualScrollState;
-  private scrollContainer: HTMLElement | null = null;
+  private scrollContainer: any | null = null; // Using 'any' for webview element compatibility
   private onScrollEmitter = new vscode.EventEmitter<VirtualScrollState>();
   public readonly onScroll = this.onScrollEmitter.event;
 
@@ -229,7 +229,7 @@ export function createDebouncedScrollHandler(
   let lastScrollTop = 0;
 
   return (event: Event) => {
-    const target = event.target as HTMLElement;
+    const target = event.target as any; // Webview element compatibility
     const scrollTop = target.scrollTop;
 
     // Skip if scroll position hasn't changed

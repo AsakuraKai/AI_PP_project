@@ -363,7 +363,7 @@ export class XMLParser {
       // Better stack trace parsing - find user code (not Android framework)
       // Look for stack frames with package names that look like app code
       const stackFrames = errorText.matchAll(/at\s+([a-zA-Z0-9_.]+)\(([a-zA-Z0-9_]+\.(kt|java)):(\d+)\)/g);
-      let bestMatch = null;
+      let bestMatch: { fileName: string; lineNum: string } | null = null;
       
       for (const match of stackFrames) {
         const packageName = match[1];

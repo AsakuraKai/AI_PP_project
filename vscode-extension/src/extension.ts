@@ -4,6 +4,14 @@ import { RCAWebview } from './ui/RCAWebview';
 import { RCAPanelProvider } from './panel/RCAPanelProvider';
 import { StateManager } from './panel/StateManager';
 
+// CHUNK 3: TreeView imports
+import { ErrorTreeProvider } from './views/ErrorTreeProvider';
+import { HistoryTreeProvider } from './views/HistoryTreeProvider';
+
+// CHUNK 3: Command imports
+import { BatchAnalysisCommands } from './commands/BatchAnalysisCommands';
+import { TreeViewCommands } from './commands/TreeViewCommands';
+
 // CHUNK 4: Inline editor integration imports
 import { RCACodeActionProvider } from './integrations/RCACodeActionProvider';
 import { RCADiagnosticProvider } from './integrations/RCADiagnosticProvider';
@@ -11,12 +19,26 @@ import { StatusBarManager } from './integrations/StatusBarManager';
 import { InlineIntegrationCommands } from './commands/InlineIntegrationCommands';
 import { ErrorQueueManager } from './panel/ErrorQueueManager';
 
+// PHASE 4: Real-time features imports
+import { RCAHoverProvider } from './integrations/RCAHoverProvider';
+import { RealtimeErrorDetector } from './integrations/RealtimeErrorDetector';
+
 // CHUNK 5: Polish & Production Ready imports
 import { AccessibilityService } from './services/AccessibilityService';
 import { ThemeManager } from './services/ThemeManager';
 import { PerformanceMonitor } from './services/PerformanceMonitor';
 import { FeatureFlagManager } from './services/FeatureFlagManager';
 import { ErrorBoundary } from './panel/ErrorBoundary';
+
+// PHASE 6.1: Backend integration imports
+import { AnalysisService } from './services/AnalysisService';
+import { AgentStateViewer } from './views/AgentStateViewer';
+
+// PHASE 2-3: Chat Participant imports
+import { registerChatParticipant } from './chat/RCAChatParticipant';
+import { initializeTools } from './tools';
+import { ConversationalAgent } from './chat/ConversationalAgent';
+import { GuidedDebuggingWorkflow } from './chat/GuidedDebuggingWorkflow';
 
 // Import Kai's backend components (will be wired from ../src)
 // These will be implemented by Kai - we just call them
@@ -84,6 +106,12 @@ let extensionContext: vscode.ExtensionContext;
 let rcaPanelProvider: RCAPanelProvider | undefined;
 let stateManager: StateManager | undefined;
 
+// CHUNK 3: TreeView state
+let errorTreeProvider: ErrorTreeProvider | undefined;
+let historyTreeProvider: HistoryTreeProvider | undefined;
+let batchAnalysisCommands: BatchAnalysisCommands | undefined;
+let treeViewCommands: TreeViewCommands | undefined;
+
 // CHUNK 4: Inline integration state
 let errorQueueManager: ErrorQueueManager | undefined;
 let diagnosticProvider: RCADiagnosticProvider | undefined;
@@ -97,22 +125,33 @@ let performanceMonitor: PerformanceMonitor | undefined;
 let featureFlagManager: FeatureFlagManager | undefined;
 let errorBoundary: ErrorBoundary | undefined;
 
+// PHASE 6.1: Backend service instances
+let analysisService: AnalysisService | undefined;
+let agentStateViewer: AgentStateViewer | undefined;
+
+// PHASE 4: Week 3-4 - Interactive debugging instances
+let conversationalAgent: ConversationalAgent | undefined;
+let guidedWorkflow: GuidedDebuggingWorkflow | undefined;
+
 /**
  * CHUNK 1.1: Extension Bootstrap
  * Entry point - Called when extension is activated
  */
-export function activate(context: vscode.ExtensionContext): void {
+export async function activate(context: vscode.ExtensionContext): Promise<void> {
   extensionContext = context;
   
-  // Initia5: Initialize core services
-  initializeChunk5Services(context);
-  
-  // CHUNK lize output channels
+  // Initialize output channels
   outputChannel = vscode.window.createOutputChannel('RCA Agent');
   debugChannel = vscode.window.createOutputChannel('RCA Agent Debug');
   context.subscriptions.push(outputChannel, debugChannel);
   
   log('info', 'RCA Agent extension activated');
+  
+  // CHUNK 5: Initialize core services
+  await initializeChunk5Services(context);
+  
+  // PHASE 6.1: Initialize backend services
+  await initializeBackendServices(context);
   
   // CHUNK 1: Initialize new panel-based UI
   const useNewUI = vscode.workspace.getConfiguration('rcaAgent').get<boolean>('experimental.newUI', true);
@@ -120,7 +159,12 @@ export function activate(context: vscode.ExtensionContext): void {
   if (useNewUI) {
     log('info', 'Initializing new panel-based UI (Chunk 1)');
     
-    // Initialize state manager
+    // PHASE 6: Initialize state manager AFTER backend services
+    // Ensure context and globalState are ready
+    if (!context || !context.globalState) {
+      log('error', 'Extension context or globalState not available');
+      throw new Error('Extension context not properly initialized');
+    }
     stateManager = StateManager.getInstance(context);
     
     // Register panel provider
@@ -136,7 +180,54 @@ export function activate(context: vscode.ExtensionContext): void {
     );
     
     // CHUNK 3: Initialize error queue manager
-    errorQueueManager = ErrorQueueManager.getInstance();
+    errorQueueManager = ErrorQueueManager.getInstance(context);
+    
+    // CHUNK 3: Register TreeView providers
+    log('info', 'Initializing TreeView providers (Chunk 3)');
+    
+    // Register Error Queue TreeView
+    errorTreeProvider = new ErrorTreeProvider(context, errorQueueManager);
+    context.subscriptions.push(
+      vscode.window.registerTreeDataProvider(
+        'rca-agent.errorQueue',
+        errorTreeProvider
+      )
+    );
+    
+    // Register History TreeView
+    historyTreeProvider = new HistoryTreeProvider(context, stateManager);
+    context.subscriptions.push(
+      vscode.window.registerTreeDataProvider(
+        'rca-agent.history',
+        historyTreeProvider
+      )
+    );
+    
+    // CHUNK 3: Register command managers
+    log('info', 'Registering command managers (Chunk 3)');
+    
+    // Register batch analysis commands
+    if (analysisService) {
+      batchAnalysisCommands = new BatchAnalysisCommands(
+        context,
+        errorQueueManager,
+        analysisService,
+        stateManager
+      );
+      const batchDisposables = batchAnalysisCommands.registerCommands();
+      context.subscriptions.push(...batchDisposables);
+    }
+    
+    // Register tree view commands
+    treeViewCommands = new TreeViewCommands(
+      context,
+      errorQueueManager,
+      stateManager
+    );
+    const treeViewDisposables = treeViewCommands.registerCommands();
+    context.subscriptions.push(...treeViewDisposables);
+    
+    log('info', 'TreeView providers and commands initialized successfully');
     
     // CHUNK 4: Initialize inline editor integrations
     log('info', 'Initializing inline editor integrations (Chunk 4)');
@@ -149,8 +240,8 @@ export function activate(context: vscode.ExtensionContext): void {
     statusBarManager = new StatusBarManager(errorQueueManager);
     context.subscriptions.push(statusBarManager);
     
-    // Register code action provider (lightbulb)
-    const codeActionProvider = new RCACodeActionProvider();
+    // Register code action provider (lightbulb) - Enhanced with ErrorQueueManager
+    const codeActionProvider = new RCACodeActionProvider(errorQueueManager);
     context.subscriptions.push(
       vscode.languages.registerCodeActionsProvider(
         { scheme: 'file', pattern: '**/*' },
@@ -160,6 +251,45 @@ export function activate(context: vscode.ExtensionContext): void {
         }
       )
     );
+    
+    // PHASE 4: Initialize real-time features
+    log('info', 'Initializing Phase 4 real-time features');
+    
+    // Initialize hover provider for inline error explanations
+    const hoverProvider = new RCAHoverProvider(errorQueueManager, analysisService);
+    context.subscriptions.push(
+      vscode.languages.registerHoverProvider(
+        { scheme: 'file', pattern: '**/*.{kt,java,gradle,xml}' },
+        hoverProvider
+      )
+    );
+    log('info', 'Hover provider registered for inline error explanations');
+    
+    // Initialize real-time error detector
+    const realtimeDetector = new RealtimeErrorDetector(errorQueueManager);
+    context.subscriptions.push(realtimeDetector);
+    log('info', 'Real-time error detection enabled');
+    
+    // Register command to toggle real-time detection
+    context.subscriptions.push(
+      vscode.commands.registerCommand('rca-agent.toggleRealtimeDetection', () => {
+        const currentState = realtimeDetector.isEnabled();
+        realtimeDetector.setEnabled(!currentState);
+        vscode.window.showInformationMessage(
+          `RCA Agent: Real-time detection ${!currentState ? 'enabled' : 'disabled'}`
+        );
+      })
+    );
+    
+    // Register command to manually trigger detection
+    context.subscriptions.push(
+      vscode.commands.registerCommand('rca-agent.detectErrors', async () => {
+        await realtimeDetector.detectInActiveDocument();
+        vscode.window.showInformationMessage('RCA Agent: Manual error detection completed');
+      })
+    );
+    
+    log('info', 'Phase 4 real-time features initialized successfully');
     
     // Register inline integration commands
     inlineCommands = new InlineIntegrationCommands(errorQueueManager, rcaPanelProvider);
@@ -213,7 +343,7 @@ export function activate(context: vscode.ExtensionContext): void {
     () => {
       educationalMode = !educationalMode;
       const status = educationalMode ? 'enabled' : 'disabled';
-      vscode.window.showInformationMessage(`Educational Mode ${status} 🎓`);
+      vscode.window.showInformationMessage(`Educational Mode ${status}`);
       log('info', `Educational mode ${status}`);
       
       // Update webview if active
@@ -234,7 +364,7 @@ export function activate(context: vscode.ExtensionContext): void {
       config.update('showPerformanceMetrics', newValue, vscode.ConfigurationTarget.Global);
       
       const status = newValue ? 'enabled' : 'disabled';
-      vscode.window.showInformationMessage(`Performance Metrics ${status} ⚡`);
+      vscode.window.showInformationMessage(`Performance Metrics ${status} `);
       log('info', `Performance metrics ${status}`);
       
       // Update webview if active
@@ -465,18 +595,18 @@ async function analyzeWithProgress(parsedError: ParsedError): Promise<void> {
   }, async (progress: vscode.Progress<{ message?: string; increment?: number }>) => {
     try {
       // CHUNK 3.2: Search for similar past solutions BEFORE analysis
-      progress.report({ message: '🔍 Searching past solutions...', increment: 5 });
+      progress.report({ message: 'Searching past solutions...', increment: 5 });
       await searchAndDisplaySimilarSolutions(parsedError);
       
       // CHUNK 2.2: Tool execution feedback - File reading
-      progress.report({ message: '📖 Reading source file...', increment: 15 });
+      progress.report({ message: 'Reading source file...', increment: 15 });
       log('info', 'Tool execution: ReadFileTool', { filePath: parsedError.filePath, line: parsedError.line });
       
       // Simulate file reading delay
       await new Promise(resolve => setTimeout(resolve, 500));
       
       // CHUNK 2.2: Tool execution feedback - LLM initialization
-      progress.report({ message: '🤖 Initializing LLM...', increment: 25 });
+      progress.report({ message: 'Initializing LLM...', increment: 25 });
       
       // Check if we can connect to Ollama (placeholder)
       const config = vscode.workspace.getConfiguration('rcaAgent');
@@ -486,13 +616,13 @@ async function analyzeWithProgress(parsedError: ParsedError): Promise<void> {
       log('info', 'Configuration', { ollamaUrl, model });
       
       // CHUNK 2.2: Tool execution feedback - Finding context
-      progress.report({ message: '🔍 Finding code context...', increment: 35 });
+      progress.report({ message: 'Finding code context...', increment: 35 });
       log('info', 'Tool execution: LSPTool (simulated)', { operation: 'find_callers' });
       
       await new Promise(resolve => setTimeout(resolve, 500));
       
       // CHUNK 2.2: Tool execution feedback - Analyzing pattern
-      progress.report({ message: '🧠 Analyzing error pattern...', increment: 60 });
+      progress.report({ message: 'Analyzing error pattern...', increment: 60 });
       
       // Simulate analysis
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -500,24 +630,24 @@ async function analyzeWithProgress(parsedError: ParsedError): Promise<void> {
       // Generate mock result (will be replaced with Kai's agent)
       const result = generateMockResult(parsedError);
       
-      progress.report({ message: '✅ Analysis complete!', increment: 85 });
+      progress.report({ message: ' Analysis complete!', increment: 85 });
       
       // Display result in output channel
       showResult(result);
       
       // CHUNK 3.1: Store result in database (after analysis)
-      progress.report({ message: '💾 Storing result...', increment: 90 });
+      progress.report({ message: 'Storing result...', increment: 90 });
       await storeResultInDatabase(result, parsedError);
       
       // CHUNK 3.3: Store in cache for future use
-      progress.report({ message: '💾 Caching result...', increment: 95 });
+      progress.report({ message: 'Caching result...', increment: 95 });
       await storeInCache(result, parsedError);
       
-      progress.report({ message: '🎉 Done!', increment: 100 });
+      progress.report({ message: 'Done!', increment: 100 });
       
       // CHUNK 1.5: Improved success message
       vscode.window.showInformationMessage(
-        '✅ Analysis complete! Check the RCA Agent output.',
+        ' Analysis complete! Check the RCA Agent output.',
         'View Output'
       ).then((selection: string | undefined) => {
         if (selection === 'View Output') {
@@ -777,7 +907,7 @@ function showResult(result: RCAResult): void {
   }
   
   // Use emoji and formatting for better UX (Chunk 1.5)
-  outputChannel.appendLine('🔍 === ROOT CAUSE ANALYSIS ===\n');
+  outputChannel.appendLine('=== ROOT CAUSE ANALYSIS ===\n');
   
   // CHUNK 3.3: Show cache indicator if from cache
   if (result.fromCache && result.cacheTimestamp) {
@@ -788,31 +918,31 @@ function showResult(result: RCAResult): void {
       ? `${diffMinutes} minute${diffMinutes !== 1 ? 's' : ''} ago`
       : `${Math.floor(diffMinutes / 60)} hour${Math.floor(diffMinutes / 60) !== 1 ? 's' : ''} ago`;
     
-    outputChannel.appendLine(`⚡ CACHE HIT: Result retrieved from cache (analyzed ${timeAgo})`);
-    outputChannel.appendLine(`💾 No LLM inference needed - instant result!\n`);
+    outputChannel.appendLine(` CACHE HIT: Result retrieved from cache (analyzed ${timeAgo})`);
+    outputChannel.appendLine(`No LLM inference needed - instant result!\n`);
   }
   
   // Error badge with color-coding (Chunk 2.1 preview)
   const badge = getErrorBadge(result.errorType);
   outputChannel.appendLine(`${badge}\n`);
   
-  outputChannel.appendLine(`🐛 ERROR: ${result.error}`);
-  outputChannel.appendLine(`📁 FILE: ${result.filePath}:${result.line}\n`);
+  outputChannel.appendLine(`ERROR: ${result.error}`);
+  outputChannel.appendLine(`FILE: ${result.filePath}:${result.line}\n`);
   
   // CHUNK 1.4: Display file reading status and code snippet
   if (result.codeSnippet && result.codeSnippet.length > 0 && result.codeSnippet !== '// Code snippet will be provided by agent') {
-    outputChannel.appendLine('📝 CODE CONTEXT (from source file):');
+    outputChannel.appendLine('CODE CONTEXT (from source file):');
     outputChannel.appendLine('```kotlin');
     outputChannel.appendLine(result.codeSnippet);
     outputChannel.appendLine('```\n');
     log('info', 'Code snippet displayed', { snippetLength: result.codeSnippet.length });
   } else {
-    outputChannel.appendLine('⚠️  CODE CONTEXT: File could not be read (using error message only)\n');
+    outputChannel.appendLine('!  CODE CONTEXT: File could not be read (using error message only)\n');
     log('warn', 'No code snippet available');
   }
   
   // Root cause section
-  outputChannel.appendLine(`💡 ROOT CAUSE:\n${result.rootCause}\n`);
+  outputChannel.appendLine(`ROOT CAUSE:\n${result.rootCause}\n`);
   
   // CHUNK 4.1: Display Compose-specific hints
   if (isComposeError(result.errorType)) {
@@ -835,20 +965,20 @@ function showResult(result: RCAResult): void {
   }
   
   // CHUNK 1.5: Enhanced fix guidelines formatting
-  outputChannel.appendLine(`🛠️  FIX GUIDELINES:`);
+  outputChannel.appendLine(`FIX GUIDELINES:`);
   result.fixGuidelines.forEach((guideline, index) => {
     outputChannel.appendLine(`  ${index + 1}. ${guideline}`);
   });
   
   // CHUNK 1.5: Confidence bar visualization
   const confidenceBar = createConfidenceBar(result.confidence);
-  outputChannel.appendLine(`\n✅ CONFIDENCE: ${(result.confidence * 100).toFixed(0)}%`);
+  outputChannel.appendLine(`\n CONFIDENCE: ${(result.confidence * 100).toFixed(0)}%`);
   outputChannel.appendLine(`   ${confidenceBar}`);
   outputChannel.appendLine(`   ${getConfidenceInterpretation(result.confidence)}`);
   
   // CHUNK 2.2: Display tool execution summary (if available)
   if (result.toolsUsed && result.toolsUsed.length > 0) {
-    outputChannel.appendLine(`\n🔧 TOOLS USED:`);
+    outputChannel.appendLine(`\nTOOLS USED:`);
     result.toolsUsed.forEach((tool, index) => {
       const toolIcon = getToolIcon(tool);
       outputChannel.appendLine(`  ${index + 1}. ${toolIcon} ${tool}`);
@@ -857,12 +987,12 @@ function showResult(result: RCAResult): void {
   
   // CHUNK 2.2: Display iteration count (if available)
   if (result.iterations !== undefined) {
-    outputChannel.appendLine(`\n🔄 ITERATIONS: ${result.iterations} reasoning steps`);
+    outputChannel.appendLine(`\nITERATIONS: ${result.iterations} reasoning steps`);
   }
   
   // CHUNK 2.3: Accuracy metrics display (optional section)
   if (result.qualityScore !== undefined || result.latency !== undefined || result.modelName) {
-    outputChannel.appendLine('\n📊 METRICS:');
+    outputChannel.appendLine('\nMETRICS:');
     
     if (result.qualityScore !== undefined) {
       const qualityPercent = (result.qualityScore * 100).toFixed(0);
@@ -882,9 +1012,9 @@ function showResult(result: RCAResult): void {
   
   // CHUNK 1.5: Helpful footer with improved tips
   outputChannel.appendLine('\n' + '─'.repeat(60));
-  outputChannel.appendLine('💡 TIP: This is a placeholder result. Connect to Ollama for real AI-powered analysis.');
-  outputChannel.appendLine('📖 Configure: File > Preferences > Settings > RCA Agent');
-  outputChannel.appendLine('❓ Need help? Check the documentation or report issues on GitHub.');
+  outputChannel.appendLine('TIP: This is a placeholder result. Connect to Ollama for real AI-powered analysis.');
+  outputChannel.appendLine('Configure: File > Preferences > Settings > RCA Agent');
+  outputChannel.appendLine('? Need help? Check the documentation or report issues on GitHub.');
   
   // Show output channel
   outputChannel.show(true);
@@ -899,56 +1029,56 @@ function showResult(result: RCAResult): void {
 function getErrorBadge(errorType: string): string {
   const badges: Record<string, string> = {
     // Kotlin Errors (6 types) - Red variants
-    'npe': '🔴 NullPointerException',
-    'lateinit': '🔴 Lateinit Property Error',
-    'unresolved_reference': '🔴 Unresolved Reference',
-    'type_mismatch': '🔴 Type Mismatch',
-    'cast_exception': '🔴 Class Cast Exception',
-    'index_out_of_bounds': '🔴 Index Out of Bounds',
+    'npe': '[ERROR] NullPointerException',
+    'lateinit': '[ERROR] Lateinit Property Error',
+    'unresolved_reference': '[ERROR] Unresolved Reference',
+    'type_mismatch': '[ERROR] Type Mismatch',
+    'cast_exception': '[ERROR] Class Cast Exception',
+    'index_out_of_bounds': '[ERROR] Index Out of Bounds',
     
     // Gradle Build Errors (5 types) - Yellow variants
-    'gradle_dependency': '🟡 Gradle Dependency Conflict',
-    'gradle_version': '🟡 Gradle Version Mismatch',
-    'gradle_build': '🟡 Gradle Build Failure',
-    'gradle_task': '🟡 Gradle Task Error',
-    'gradle_plugin': '🟡 Gradle Plugin Issue',
+    'gradle_dependency': '[BUILD] Gradle Dependency Conflict',
+    'gradle_version': '[BUILD] Gradle Version Mismatch',
+    'gradle_build': '[BUILD] Gradle Build Failure',
+    'gradle_task': '[BUILD] Gradle Task Error',
+    'gradle_plugin': '[BUILD] Gradle Plugin Issue',
     
     // Jetpack Compose Errors (10 types) - Purple variants
-    'compose_remember': '🟣 Compose: Remember Error',
-    'compose_derived_state': '🟣 Compose: DerivedStateOf Error',
-    'compose_recomposition': '🟣 Compose: Recomposition Issue',
-    'compose_launched_effect': '🟣 Compose: LaunchedEffect Error',
-    'compose_disposable_effect': '🟣 Compose: DisposableEffect Error',
-    'compose_composition_local': '🟣 Compose: CompositionLocal Error',
-    'compose_modifier': '🟣 Compose: Modifier Error',
-    'compose_side_effect': '🟣 Compose: Side Effect Error',
-    'compose_state_read': '🟣 Compose: State Read Error',
-    'compose_snapshot': '🟣 Compose: Snapshot Error',
+    'compose_remember': '[COMPOSE] Remember Error',
+    'compose_derived_state': '[COMPOSE] DerivedStateOf Error',
+    'compose_recomposition': '[COMPOSE] Recomposition Issue',
+    'compose_launched_effect': '[COMPOSE] LaunchedEffect Error',
+    'compose_disposable_effect': '[COMPOSE] DisposableEffect Error',
+    'compose_composition_local': '[COMPOSE] CompositionLocal Error',
+    'compose_modifier': '[COMPOSE] Modifier Error',
+    'compose_side_effect': '[COMPOSE] Side Effect Error',
+    'compose_state_read': '[COMPOSE] State Read Error',
+    'compose_snapshot': '[COMPOSE] Snapshot Error',
     
     // XML/Android Layout Errors (8 types) - Orange variants
-    'xml_inflation': '🟠 XML: Layout Inflation Error',
-    'xml_missing_id': '🟠 XML: Missing View ID',
-    'xml_attribute': '🟠 XML: Missing Required Attribute',
-    'xml_namespace': '🟠 XML: Missing Namespace',
-    'xml_tag_mismatch': '🟠 XML: Tag Mismatch',
-    'xml_resource_not_found': '🟠 XML: Resource Not Found',
-    'xml_duplicate_id': '🟠 XML: Duplicate ID',
-    'xml_invalid_attribute': '🟠 XML: Invalid Attribute Value',
+    'xml_inflation': '[XML] Layout Inflation Error',
+    'xml_missing_id': '[XML] Missing View ID',
+    'xml_attribute': '[XML] Missing Required Attribute',
+    'xml_namespace': '[XML] Missing Namespace',
+    'xml_tag_mismatch': '[XML] Tag Mismatch',
+    'xml_resource_not_found': '[XML] Resource Not Found',
+    'xml_duplicate_id': '[XML] Duplicate ID',
+    'xml_invalid_attribute': '[XML] Invalid Attribute Value',
     
     // Android Manifest Errors (5 types) - Green variants - CHUNK 4.4
-    'manifest_permission': '🟢 Manifest: Missing Permission',
-    'manifest_activity': '🟢 Manifest: Activity Not Declared',
-    'manifest_service': '🟢 Manifest: Service Not Declared',
-    'manifest_receiver': '🟢 Manifest: Receiver Not Declared',
-    'manifest_version': '🟢 Manifest: Version Conflict',
+    'manifest_permission': '[MANIFEST] Missing Permission',
+    'manifest_activity': '[MANIFEST] Activity Not Declared',
+    'manifest_service': '[MANIFEST] Service Not Declared',
+    'manifest_receiver': '[MANIFEST] Receiver Not Declared',
+    'manifest_version': '[MANIFEST] Version Conflict',
     
     // General/Other Errors - Blue variants
-    'unknown': '🔵 Unknown Error',
-    'timeout': '⏱️ Timeout',
-    'network': '🌐 Network Error',
+    'unknown': '[UNKNOWN] Unknown Error',
+    'timeout': '[TIMEOUT] Timeout',
+    'network': '[NETWORK] Network Error',
   };
   
-  return badges[errorType] || '⚪ Unrecognized Error';
+  return badges[errorType] || '[UNRECOGNIZED] Unrecognized Error';
 }
 
 /**
@@ -979,19 +1109,19 @@ function getConfidenceInterpretation(confidence: number): string {
  */
 function getToolIcon(toolName: string): string {
   const icons: Record<string, string> = {
-    'read_file': '📖',
-    'ReadFileTool': '📖',
-    'find_callers_of_function': '🔍',
-    'LSPTool': '🔍',
-    'vector_search_db': '📚',
-    'VectorSearchTool': '📚',
-    'web_search_wiki': '🌐',
-    'WebSearchTool': '🌐',
-    'get_code_context': '📝',
-    'get_user_error_context': '❓',
+    'read_file': '[FILE]',
+    'ReadFileTool': '[FILE]',
+    'find_callers_of_function': '[SEARCH]',
+    'LSPTool': '[SEARCH]',
+    'vector_search_db': '[DB]',
+    'VectorSearchTool': '[DB]',
+    'web_search_wiki': '[WEB]',
+    'WebSearchTool': '[WEB]',
+    'get_code_context': '[CODE]',
+    'get_user_error_context': '[USER]',
   };
   
-  return icons[toolName] || '🔧';
+  return icons[toolName] || '[TOOL]';
 }
 
 /**
@@ -1004,7 +1134,7 @@ function handleAnalysisError(error: Error): void {
   if (error.message.includes('ECONNREFUSED') || error.message.includes('Ollama')) {
     // Ollama connection error
     vscode.window.showErrorMessage(
-      '❌ Could not connect to Ollama. Is it running?',
+      ' Could not connect to Ollama. Is it running?',
       'Start Ollama',
       'Installation Guide',
       'Check Logs'
@@ -1018,8 +1148,8 @@ function handleAnalysisError(error: Error): void {
       }
     });
     
-    outputChannel.appendLine('\n❌ ERROR: Could not connect to Ollama');
-    outputChannel.appendLine('\n🔧 TROUBLESHOOTING STEPS:');
+    outputChannel.appendLine('\n ERROR: Could not connect to Ollama');
+    outputChannel.appendLine('\n[TOOL] TROUBLESHOOTING STEPS:');
     outputChannel.appendLine('1. Install Ollama: https://ollama.ai/');
     outputChannel.appendLine('2. Start Ollama: Run "ollama serve" in terminal');
     outputChannel.appendLine('3. Pull model: Run "ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest"');
@@ -1040,7 +1170,7 @@ function handleAnalysisError(error: Error): void {
     });
     
     outputChannel.appendLine('\n⏱️ ERROR: Analysis timed out');
-    outputChannel.appendLine('\n💡 SUGGESTIONS:');
+    outputChannel.appendLine('\nTIP: SUGGESTIONS:');
     outputChannel.appendLine('• Increase timeout in settings');
     outputChannel.appendLine('• Use a faster/smaller model (e.g., hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest)');
     outputChannel.appendLine('• Check your network connection');
@@ -1048,7 +1178,7 @@ function handleAnalysisError(error: Error): void {
   } else if (error.message.includes('parse') || error.message.includes('Could not parse')) {
     // Parse error
     vscode.window.showErrorMessage(
-      '⚠️ Could not parse error. Is this a Kotlin/Android error?',
+      '! Could not parse error. Is this a Kotlin/Android error?',
       'View Debug Logs',
       'Report Issue'
     ).then((selection: string | undefined) => {
@@ -1059,8 +1189,8 @@ function handleAnalysisError(error: Error): void {
       }
     });
     
-    outputChannel.appendLine('\n⚠️ ERROR: Could not parse error message');
-    outputChannel.appendLine('\n💡 TIPS:');
+    outputChannel.appendLine('\n! ERROR: Could not parse error message');
+    outputChannel.appendLine('\nTIP: TIPS:');
     outputChannel.appendLine('• Ensure error is from Kotlin/Android code');
     outputChannel.appendLine('• Include full stack trace if possible');
     outputChannel.appendLine('• Check debug logs for more details');
@@ -1068,7 +1198,7 @@ function handleAnalysisError(error: Error): void {
   } else {
     // Generic error
     vscode.window.showErrorMessage(
-      `❌ Analysis failed: ${error.message}`,
+      ` Analysis failed: ${error.message}`,
       'View Logs',
       'Retry'
     ).then((selection: string | undefined) => {
@@ -1079,8 +1209,8 @@ function handleAnalysisError(error: Error): void {
       }
     });
     
-    outputChannel.appendLine(`\n❌ ERROR: ${error.message}`);
-    outputChannel.appendLine('\n📋 Stack Trace:');
+    outputChannel.appendLine(`\n ERROR: ${error.message}`);
+    outputChannel.appendLine('\n[MANIFEST] Stack Trace:');
     outputChannel.appendLine(error.stack || 'No stack trace available');
   }
   
@@ -1123,31 +1253,31 @@ async function searchAndDisplaySimilarSolutions(parsedError: ParsedError): Promi
       
       // Display similar solutions in output channel BEFORE showing new analysis
       outputChannel.clear();
-      outputChannel.appendLine('🔍 === SEARCHING KNOWLEDGE BASE ===\n');
+      outputChannel.appendLine('[SEARCH] === SEARCHING KNOWLEDGE BASE ===\n');
       outputChannel.appendLine(`Found ${similarRCAs.length} similar past solution(s):\n`);
-      outputChannel.appendLine('📚 SIMILAR PAST SOLUTIONS:\n');
+      outputChannel.appendLine('[DB] SIMILAR PAST SOLUTIONS:\n');
       
       similarRCAs.forEach((rca, index) => {
         outputChannel.appendLine(`${index + 1}. ${rca.errorType.toUpperCase()}: ${rca.error}`);
-        outputChannel.appendLine(`   📁 File: ${rca.filePath}:${rca.line}`);
-        outputChannel.appendLine(`   💡 Root Cause: ${rca.rootCause}`);
-        outputChannel.appendLine(`   ✅ Confidence: ${(rca.confidence * 100).toFixed(0)}%`);
+        outputChannel.appendLine(`    File: ${rca.filePath}:${rca.line}`);
+        outputChannel.appendLine(`   TIP: Root Cause: ${rca.rootCause}`);
+        outputChannel.appendLine(`    Confidence: ${(rca.confidence * 100).toFixed(0)}%`);
         
         // Show distance/similarity score if available
         if (rca.distance !== undefined) {
           const similarity = ((1 - rca.distance) * 100).toFixed(0);
-          outputChannel.appendLine(`   🎯 Similarity: ${similarity}%`);
+          outputChannel.appendLine(`   [TARGET] Similarity: ${similarity}%`);
         }
         
         outputChannel.appendLine('');
       });
       
       outputChannel.appendLine('─'.repeat(60));
-      outputChannel.appendLine('💡 TIP: Review similar solutions above before checking new analysis below.\n');
+      outputChannel.appendLine('TIP: TIP: Review similar solutions above before checking new analysis below.\n');
       
       // Show notification
       const action = await vscode.window.showInformationMessage(
-        `📚 Found ${similarRCAs.length} similar solution(s) from past analyses`,
+        `[DB] Found ${similarRCAs.length} similar solution(s) from past analyses`,
         'View Now',
         'Continue to New Analysis'
       );
@@ -1158,15 +1288,15 @@ async function searchAndDisplaySimilarSolutions(parsedError: ParsedError): Promi
     } else {
       log('info', 'No similar solutions found in database');
       outputChannel.clear();
-      outputChannel.appendLine('🔍 === SEARCHING KNOWLEDGE BASE ===\n');
-      outputChannel.appendLine('📚 No similar past solutions found.');
+      outputChannel.appendLine('[SEARCH] === SEARCHING KNOWLEDGE BASE ===\n');
+      outputChannel.appendLine('[DB] No similar past solutions found.');
       outputChannel.appendLine('This appears to be a new error pattern.\n');
       outputChannel.appendLine('─'.repeat(60) + '\n');
     }
   } catch (error) {
     log('error', 'Failed to search similar solutions', error);
     // Don't block analysis on database search failure
-    outputChannel.appendLine('⚠️  Could not search past solutions (database unavailable)\n');
+    outputChannel.appendLine('!  Could not search past solutions (database unavailable)\n');
   }
 }
 
@@ -1241,7 +1371,7 @@ async function storeResultInDatabase(result: RCAResult, parsedError: ParsedError
     });
     
     // Show notification that we're storing
-    vscode.window.showInformationMessage('💾 Storing result in database...');
+    vscode.window.showInformationMessage('[SAVE] Storing result in database...');
     
     // TODO: Wire to Kai's ChromaDBClient.addRCA()
     // For now, simulate storage with placeholder
@@ -1254,19 +1384,19 @@ async function storeResultInDatabase(result: RCAResult, parsedError: ParsedError
     
     // Show success notification with ID
     const action = await vscode.window.showInformationMessage(
-      `✅ Result saved! ID: ${rcaId.substring(0, 8)}...`,
+      ` Result saved! ID: ${rcaId.substring(0, 8)}...`,
       'View Details'
     );
     
     if (action === 'View Details') {
       // Add storage confirmation to output
-      outputChannel.appendLine('\n💾 === STORAGE CONFIRMATION ===');
-      outputChannel.appendLine(`✅ Result stored in knowledge base`);
-      outputChannel.appendLine(`📋 RCA ID: ${rcaId}`);
-      outputChannel.appendLine(`📅 Stored: ${new Date().toISOString()}`);
-      outputChannel.appendLine(`🏷️  Error Type: ${result.errorType}`);
-      outputChannel.appendLine(`✅ Confidence: ${(result.confidence * 100).toFixed(0)}%`);
-      outputChannel.appendLine('\n💡 This solution will help improve future analyses of similar errors.');
+      outputChannel.appendLine('\n[SAVE] === STORAGE CONFIRMATION ===');
+      outputChannel.appendLine(` Result stored in knowledge base`);
+      outputChannel.appendLine(`[MANIFEST] RCA ID: ${rcaId}`);
+      outputChannel.appendLine(` Stored: ${new Date().toISOString()}`);
+      outputChannel.appendLine(`  Error Type: ${result.errorType}`);
+      outputChannel.appendLine(` Confidence: ${(result.confidence * 100).toFixed(0)}%`);
+      outputChannel.appendLine('\nTIP: This solution will help improve future analyses of similar errors.');
       outputChannel.show(true);
     }
     
@@ -1288,15 +1418,15 @@ async function storeResultInDatabase(result: RCAResult, parsedError: ParsedError
     
     // Show warning but don't fail the analysis
     const action = await vscode.window.showWarningMessage(
-      '⚠️  Could not store result in database. Analysis is still valid.',
+      '!  Could not store result in database. Analysis is still valid.',
       'View Error',
       'Retry'
     );
     
     if (action === 'View Error') {
-      outputChannel.appendLine('\n❌ === STORAGE ERROR ===');
+      outputChannel.appendLine('\n === STORAGE ERROR ===');
       outputChannel.appendLine(`Could not store result: ${(error as Error).message}`);
-      outputChannel.appendLine('\n🔧 TROUBLESHOOTING:');
+      outputChannel.appendLine('\n[TOOL] TROUBLESHOOTING:');
       outputChannel.appendLine('1. Check if ChromaDB is running (docker run -p 8000:8000 chromadb/chroma)');
       outputChannel.appendLine('2. Verify database URL in settings (default: http://localhost:8000)');
       outputChannel.appendLine('3. Check debug logs for more details');
@@ -1346,13 +1476,13 @@ async function checkCache(parsedError: ParsedError): Promise<RCAResult | null> {
       log('info', 'Cache hit!', { errorHash, cacheTimestamp: cached.cacheTimestamp });
       
       // Show cache hit notification
-      vscode.window.showInformationMessage('⚡ Found in cache! (instant result)');
+      vscode.window.showInformationMessage(' Found in cache! (instant result)');
       
       // Add cache indicator to output
       outputChannel.clear();
-      outputChannel.appendLine('⚡ === CACHED RESULT (analyzed previously) ===\n');
-      outputChannel.appendLine(`📅 Cached: ${cached.cacheTimestamp}`);
-      outputChannel.appendLine(`⚡ Retrieved instantly (no LLM inference needed)\n`);
+      outputChannel.appendLine(' === CACHED RESULT (analyzed previously) ===\n');
+      outputChannel.appendLine(` Cached: ${cached.cacheTimestamp}`);
+      outputChannel.appendLine(` Retrieved instantly (no LLM inference needed)\n`);
       outputChannel.appendLine('─'.repeat(60) + '\n');
       
       return cached;
@@ -1443,15 +1573,15 @@ async function showFeedbackPrompt(result: RCAResult): Promise<void> {
     
     // Add feedback section to output
     outputChannel.appendLine('\n' + '─'.repeat(60));
-    outputChannel.appendLine('💬 FEEDBACK');
+    outputChannel.appendLine('[COMMENT] FEEDBACK');
     outputChannel.appendLine('Was this analysis helpful? Your feedback helps improve future analyses.');
     outputChannel.show(true);
     
     // Show feedback buttons
     const selection = await vscode.window.showInformationMessage(
       'Was this RCA helpful?',
-      '👍 Yes, helpful!',
-      '👎 Not helpful',
+      '[HELPFUL] Yes, helpful!',
+      '[NOT_HELPFUL] Not helpful',
       'Skip'
     );
     
@@ -1469,9 +1599,9 @@ async function showFeedbackPrompt(result: RCAResult): Promise<void> {
       language: 'kotlin'
     });
     
-    if (selection === '👍 Yes, helpful!') {
+    if (selection === '[HELPFUL] Yes, helpful!') {
       await handlePositiveFeedback(rcaId, errorHash);
-    } else if (selection === '👎 Not helpful') {
+    } else if (selection === '[NOT_HELPFUL] Not helpful') {
       await handleNegativeFeedback(rcaId, errorHash);
     }
   } catch (error) {
@@ -1500,15 +1630,15 @@ async function handlePositiveFeedback(rcaId: string, errorHash: string): Promise
     
     // Show thank you message
     vscode.window.showInformationMessage(
-      '✅ Thank you! This will improve future analyses.',
+      ' Thank you! This will improve future analyses.',
       'View Stats'
     ).then((action: string | undefined) => {
       if (action === 'View Stats') {
-        outputChannel.appendLine('\n📊 === FEEDBACK STATS ===');
-        outputChannel.appendLine('✅ Positive feedback recorded');
-        outputChannel.appendLine(`📋 RCA ID: ${rcaId}`);
-        outputChannel.appendLine(`🔑 Error Hash: ${errorHash}`);
-        outputChannel.appendLine('\n💡 Effects:');
+        outputChannel.appendLine('\n[METRICS] === FEEDBACK STATS ===');
+        outputChannel.appendLine(' Positive feedback recorded');
+        outputChannel.appendLine(`[MANIFEST] RCA ID: ${rcaId}`);
+        outputChannel.appendLine(` Error Hash: ${errorHash}`);
+        outputChannel.appendLine('\nTIP: Effects:');
         outputChannel.appendLine('  • Confidence score increased by 20%');
         outputChannel.appendLine('  • Solution prioritized in similar searches');
         outputChannel.appendLine('  • Quality score updated in knowledge base');
@@ -1517,7 +1647,7 @@ async function handlePositiveFeedback(rcaId: string, errorHash: string): Promise
     });
     
     // Add feedback confirmation to output
-    outputChannel.appendLine('\n✅ Positive feedback recorded!');
+    outputChannel.appendLine('\n Positive feedback recorded!');
     outputChannel.appendLine('This analysis will be prioritized for similar errors in the future.');
     
     // Note: In real implementation, this would:
@@ -1561,18 +1691,18 @@ async function handleNegativeFeedback(rcaId: string, errorHash: string): Promise
     
     // Show thank you message
     vscode.window.showInformationMessage(
-      '📝 Feedback noted. We\'ll try to improve!',
+      '[CODE] Feedback noted. We\'ll try to improve!',
       'View Details'
     ).then((action: string | undefined) => {
       if (action === 'View Details') {
-        outputChannel.appendLine('\n📊 === FEEDBACK STATS ===');
-        outputChannel.appendLine('👎 Negative feedback recorded');
-        outputChannel.appendLine(`📋 RCA ID: ${rcaId}`);
-        outputChannel.appendLine(`🔑 Error Hash: ${errorHash}`);
+        outputChannel.appendLine('\n[METRICS] === FEEDBACK STATS ===');
+        outputChannel.appendLine('[NOT_HELPFUL] Negative feedback recorded');
+        outputChannel.appendLine(`[MANIFEST] RCA ID: ${rcaId}`);
+        outputChannel.appendLine(` Error Hash: ${errorHash}`);
         if (comment) {
-          outputChannel.appendLine(`💬 Comment: "${comment}"`);
+          outputChannel.appendLine(`[COMMENT] Comment: "${comment}"`);
         }
-        outputChannel.appendLine('\n💡 Effects:');
+        outputChannel.appendLine('\nTIP: Effects:');
         outputChannel.appendLine('  • Confidence score decreased by 50%');
         outputChannel.appendLine('  • Cache invalidated (will re-analyze next time)');
         outputChannel.appendLine('  • Quality score reduced in knowledge base');
@@ -1582,9 +1712,9 @@ async function handleNegativeFeedback(rcaId: string, errorHash: string): Promise
     });
     
     // Add feedback confirmation to output
-    outputChannel.appendLine('\n👎 Negative feedback recorded!');
+    outputChannel.appendLine('\n[NOT_HELPFUL] Negative feedback recorded!');
     if (comment) {
-      outputChannel.appendLine(`💬 Your comment: "${comment}"`);
+      outputChannel.appendLine(`[COMMENT] Your comment: "${comment}"`);
     }
     outputChannel.appendLine('This analysis will be improved and cache invalidated.');
     
@@ -1616,7 +1746,7 @@ async function showComposeTips(parsedError: ParsedError): Promise<void> {
   
   // Show brief notification
   vscode.window.showInformationMessage(
-    '🎨 Jetpack Compose error detected - specialized analysis will be provided'
+    '[COMPOSE] Jetpack Compose error detected - specialized analysis will be provided'
   );
 }
 
@@ -1624,26 +1754,26 @@ async function showComposeTips(parsedError: ParsedError): Promise<void> {
  * CHUNK 4.1: Display Compose-specific hints in output
  */
 function displayComposeHints(result: RCAResult): void {
-  outputChannel.appendLine('\n🎨 COMPOSE TIP:');
+  outputChannel.appendLine('\n[COMPOSE] COMPOSE TIP:');
   
   const composeTips: Record<string, string> = {
-    'compose_remember': '   💡 Use remember { mutableStateOf() } to preserve state across recompositions',
-    'compose_derived_state': '   💡 Use derivedStateOf to compute values that depend on other state',
-    'compose_recomposition': '   💡 Check for unstable parameters causing excessive recomposition - use @Stable or @Immutable',
-    'compose_launched_effect': '   💡 LaunchedEffect restarts when keys change - ensure keys are correct',
-    'compose_disposable_effect': '   💡 Always return an onDispose callback to clean up resources',
-    'compose_composition_local': '   💡 Provide CompositionLocal values at parent level before accessing',
-    'compose_modifier': '   💡 Modifier order matters: size modifiers before padding, padding before background',
-    'compose_side_effect': '   💡 Move side effects into LaunchedEffect, DisposableEffect, or SideEffect blocks',
-    'compose_state_read': '   💡 Reading state during composition can cause infinite recomposition - use LaunchedEffect',
-    'compose_snapshot': '   💡 Snapshot errors indicate concurrent state modification - use synchronized access'
+    'compose_remember': '   TIP: Use remember { mutableStateOf() } to preserve state across recompositions',
+    'compose_derived_state': '   TIP: Use derivedStateOf to compute values that depend on other state',
+    'compose_recomposition': '   TIP: Check for unstable parameters causing excessive recomposition - use @Stable or @Immutable',
+    'compose_launched_effect': '   TIP: LaunchedEffect restarts when keys change - ensure keys are correct',
+    'compose_disposable_effect': '   TIP: Always return an onDispose callback to clean up resources',
+    'compose_composition_local': '   TIP: Provide CompositionLocal values at parent level before accessing',
+    'compose_modifier': '   TIP: Modifier order matters: size modifiers before padding, padding before background',
+    'compose_side_effect': '   TIP: Move side effects into LaunchedEffect, DisposableEffect, or SideEffect blocks',
+    'compose_state_read': '   TIP: Reading state during composition can cause infinite recomposition - use LaunchedEffect',
+    'compose_snapshot': '   TIP: Snapshot errors indicate concurrent state modification - use synchronized access'
   };
   
-  const tip = composeTips[result.errorType] || '   💡 Follow Jetpack Compose best practices for state management';
+  const tip = composeTips[result.errorType] || '   TIP: Follow Jetpack Compose best practices for state management';
   outputChannel.appendLine(tip);
   
   // Add documentation link
-  outputChannel.appendLine('\n   📚 Compose Docs: https://developer.android.com/jetpack/compose');
+  outputChannel.appendLine('\n   [DB] Compose Docs: https://developer.android.com/jetpack/compose');
   
   log('info', 'Compose tips displayed', { errorType: result.errorType });
 }
@@ -1663,7 +1793,7 @@ async function showXMLTips(parsedError: ParsedError): Promise<void> {
   
   // Show brief notification
   vscode.window.showInformationMessage(
-    '📄 XML layout error detected - layout-specific guidance will be provided'
+    '[XML] XML layout error detected - layout-specific guidance will be provided'
   );
 }
 
@@ -1671,39 +1801,39 @@ async function showXMLTips(parsedError: ParsedError): Promise<void> {
  * CHUNK 4.2: Display XML-specific hints in output
  */
 function displayXMLHints(result: RCAResult): void {
-  outputChannel.appendLine('\n📄 XML LAYOUT TIP:');
+  outputChannel.appendLine('\n[XML] XML LAYOUT TIP:');
   
   const xmlTips: Record<string, string> = {
-    'xml_inflation': '   💡 Check XML syntax, view imports, and custom view constructors',
-    'xml_missing_id': '   💡 Add android:id="@+id/viewName" to the view in your layout file',
-    'xml_attribute_error': '   💡 Some attributes are required (e.g., layout_width, layout_height)',
-    'xml_namespace_error': '   💡 Add xmlns:android="http://schemas.android.com/apk/res/android" to root element',
-    'xml_tag_mismatch': '   💡 Ensure all tags are properly opened and closed with matching names',
-    'xml_resource_not_found': '   💡 Check that resource exists in res/ folder and matches reference format',
-    'xml_duplicate_id': '   💡 Each android:id must be unique within the layout file',
-    'xml_invalid_attribute_value': '   💡 Check attribute value format (e.g., dimensions need units: dp, sp, px)'
+    'xml_inflation': '   TIP: Check XML syntax, view imports, and custom view constructors',
+    'xml_missing_id': '   TIP: Add android:id="@+id/viewName" to the view in your layout file',
+    'xml_attribute_error': '   TIP: Some attributes are required (e.g., layout_width, layout_height)',
+    'xml_namespace_error': '   TIP: Add xmlns:android="http://schemas.android.com/apk/res/android" to root element',
+    'xml_tag_mismatch': '   TIP: Ensure all tags are properly opened and closed with matching names',
+    'xml_resource_not_found': '   TIP: Check that resource exists in res/ folder and matches reference format',
+    'xml_duplicate_id': '   TIP: Each android:id must be unique within the layout file',
+    'xml_invalid_attribute_value': '   TIP: Check attribute value format (e.g., dimensions need units: dp, sp, px)'
   };
   
-  const tip = xmlTips[result.errorType] || '   💡 Review XML layout syntax and Android view requirements';
+  const tip = xmlTips[result.errorType] || '   TIP: Review XML layout syntax and Android view requirements';
   outputChannel.appendLine(tip);
   
   // CHUNK 4.2: Display XML-specific code snippet format if available
   if (result.language === 'xml' && result.codeSnippet) {
-    outputChannel.appendLine('\n📝 XML CODE CONTEXT:');
+    outputChannel.appendLine('\n[CODE] XML CODE CONTEXT:');
     outputChannel.appendLine(`   File: ${result.filePath}`);
     outputChannel.appendLine(`   Line: ${result.line}`);
   }
   
   // CHUNK 4.2: Suggest attribute fixes for common XML errors
   if (result.errorType === 'xml_attribute_error') {
-    outputChannel.appendLine('\n✏️  COMMON REQUIRED ATTRIBUTES:');
+    outputChannel.appendLine('\n  COMMON REQUIRED ATTRIBUTES:');
     outputChannel.appendLine('   • android:layout_width="wrap_content|match_parent|{size}dp"');
     outputChannel.appendLine('   • android:layout_height="wrap_content|match_parent|{size}dp"');
     outputChannel.appendLine('   • android:id="@+id/{viewName}" (for findViewById)');
   }
   
   if (result.errorType === 'xml_namespace_error') {
-    outputChannel.appendLine('\n✏️  ADD TO ROOT ELEMENT:');
+    outputChannel.appendLine('\n  ADD TO ROOT ELEMENT:');
     outputChannel.appendLine('   <{RootView}');
     outputChannel.appendLine('       xmlns:android="http://schemas.android.com/apk/res/android"');
     outputChannel.appendLine('       xmlns:app="http://schemas.android.com/apk/res-auto"');
@@ -1711,7 +1841,7 @@ function displayXMLHints(result: RCAResult): void {
   }
   
   // Add documentation link
-  outputChannel.appendLine('\n   📚 Layout Docs: https://developer.android.com/guide/topics/ui/declaring-layout');
+  outputChannel.appendLine('\n   [DB] Layout Docs: https://developer.android.com/guide/topics/ui/declaring-layout');
   
   log('info', 'XML tips displayed', { errorType: result.errorType });
 }
@@ -1731,7 +1861,7 @@ async function showGradleTips(parsedError: ParsedError): Promise<void> {
   
   // Show brief notification
   vscode.window.showInformationMessage(
-    '📦 Gradle build error detected - dependency conflict analysis will be provided'
+    '[PACKAGE] Gradle build error detected - dependency conflict analysis will be provided'
   );
 }
 
@@ -1739,7 +1869,7 @@ async function showGradleTips(parsedError: ParsedError): Promise<void> {
  * CHUNK 4.3: Display Gradle-specific conflict visualization
  */
 function displayGradleConflicts(result: RCAResult): void {
-  outputChannel.appendLine('\n📦 GRADLE BUILD INFO:');
+  outputChannel.appendLine('\n[PACKAGE] GRADLE BUILD INFO:');
   
   // Display module info if available
   if (result.metadata?.module) {
@@ -1748,7 +1878,7 @@ function displayGradleConflicts(result: RCAResult): void {
   
   // Display conflicting versions if available
   if (result.metadata?.conflictingVersions && result.metadata.conflictingVersions.length > 0) {
-    outputChannel.appendLine(`\n   🔀 CONFLICTING VERSIONS:`);
+    outputChannel.appendLine(`\n    CONFLICTING VERSIONS:`);
     result.metadata.conflictingVersions.forEach((version: string) => {
       outputChannel.appendLine(`      • ${version}`);
     });
@@ -1756,13 +1886,13 @@ function displayGradleConflicts(result: RCAResult): void {
   
   // Display recommended version
   if (result.metadata?.recommendedVersion) {
-    outputChannel.appendLine(`\n   ✅ RECOMMENDED VERSION:`);
+    outputChannel.appendLine(`\n    RECOMMENDED VERSION:`);
     outputChannel.appendLine(`      ${result.metadata.recommendedVersion}`);
   }
   
   // Display affected dependencies
   if (result.metadata?.affectedDependencies && result.metadata.affectedDependencies.length > 0) {
-    outputChannel.appendLine(`\n   📋 AFFECTED DEPENDENCIES:`);
+    outputChannel.appendLine(`\n   [MANIFEST] AFFECTED DEPENDENCIES:`);
     result.metadata.affectedDependencies.forEach((dep: string) => {
       outputChannel.appendLine(`      • ${dep}`);
     });
@@ -1770,13 +1900,13 @@ function displayGradleConflicts(result: RCAResult): void {
   
   // Display recommended fix command
   if (result.recommendedFix) {
-    outputChannel.appendLine(`\n🔧 RECOMMENDED FIX:`);
+    outputChannel.appendLine(`\n[TOOL] RECOMMENDED FIX:`);
     outputChannel.appendLine(`   ${result.recommendedFix}`);
-    outputChannel.appendLine(`\n   💡 Run this in your terminal to resolve the conflict`);
+    outputChannel.appendLine(`\n   TIP: Run this in your terminal to resolve the conflict`);
   }
   
   // Add Gradle documentation link
-  outputChannel.appendLine(`\n   📚 Gradle Docs: https://docs.gradle.org/current/userguide/dependency_management.html`);
+  outputChannel.appendLine(`\n   [DB] Gradle Docs: https://docs.gradle.org/current/userguide/dependency_management.html`);
   
   log('info', 'Gradle conflict visualization displayed', { errorType: result.errorType });
 }
@@ -1796,7 +1926,7 @@ async function showManifestTips(parsedError: ParsedError): Promise<void> {
   
   // Show brief notification
   vscode.window.showInformationMessage(
-    '📋 Android Manifest error detected - permission and component analysis will be provided'
+    '[MANIFEST] Android Manifest error detected - permission and component analysis will be provided'
   );
 }
 
@@ -1804,24 +1934,24 @@ async function showManifestTips(parsedError: ParsedError): Promise<void> {
  * CHUNK 4.4: Display Manifest-specific suggestions
  */
 function displayManifestHints(result: RCAResult): void {
-  outputChannel.appendLine('\n📋 ANDROID MANIFEST INFO:');
+  outputChannel.appendLine('\n[MANIFEST] ANDROID MANIFEST INFO:');
   
   // Display manifest-specific tips based on error type
   const manifestTips: Record<string, string> = {
-    'manifest_permission': '   💡 Add missing permission to AndroidManifest.xml in <manifest> root element',
-    'manifest_activity': '   💡 Declare activity in AndroidManifest.xml inside <application> tag',
-    'manifest_service': '   💡 Declare service in AndroidManifest.xml with required intent filters',
-    'manifest_receiver': '   💡 Declare broadcast receiver in AndroidManifest.xml or register dynamically',
-    'manifest_version': '   💡 Check targetSdkVersion and minSdkVersion for API compatibility'
+    'manifest_permission': '   TIP: Add missing permission to AndroidManifest.xml in <manifest> root element',
+    'manifest_activity': '   TIP: Declare activity in AndroidManifest.xml inside <application> tag',
+    'manifest_service': '   TIP: Declare service in AndroidManifest.xml with required intent filters',
+    'manifest_receiver': '   TIP: Declare broadcast receiver in AndroidManifest.xml or register dynamically',
+    'manifest_version': '   TIP: Check targetSdkVersion and minSdkVersion for API compatibility'
   };
   
-  const tip = manifestTips[result.errorType] || '   💡 Review AndroidManifest.xml for missing declarations';
+  const tip = manifestTips[result.errorType] || '   TIP: Review AndroidManifest.xml for missing declarations';
   outputChannel.appendLine(tip);
   
   // Display required permission if available
   if (result.metadata?.requiredPermission) {
-    outputChannel.appendLine(`\n   ⚠️  MISSING PERMISSION: ${result.metadata.requiredPermission}`);
-    outputChannel.appendLine(`\n✏️  ADD TO AndroidManifest.xml:`);
+    outputChannel.appendLine(`\n   !  MISSING PERMISSION: ${result.metadata.requiredPermission}`);
+    outputChannel.appendLine(`\n  ADD TO AndroidManifest.xml:`);
     outputChannel.appendLine(`   <manifest xmlns:android="http://schemas.android.com/apk/res/android">`);
     outputChannel.appendLine(`       <uses-permission android:name="${result.metadata.requiredPermission}" />`);
     outputChannel.appendLine(`       ...`);
@@ -1833,29 +1963,184 @@ function displayManifestHints(result: RCAResult): void {
     const permission = result.metadata.requiredPermission;
     
     if (permission.includes('INTERNET')) {
-      outputChannel.appendLine(`\n   ℹ️  Note: INTERNET permission doesn't require runtime permission request`);
+      outputChannel.appendLine(`\n   i  Note: INTERNET permission doesn't require runtime permission request`);
     } else if (permission.includes('CAMERA') || permission.includes('LOCATION') || permission.includes('STORAGE')) {
-      outputChannel.appendLine(`\n   ⚠️  Note: This is a dangerous permission - requires runtime permission request on Android 6.0+`);
-      outputChannel.appendLine(`   📖 See: https://developer.android.com/training/permissions/requesting`);
+      outputChannel.appendLine(`\n   !  Note: This is a dangerous permission - requires runtime permission request on Android 6.0+`);
+      outputChannel.appendLine(`   [FILE] See: https://developer.android.com/training/permissions/requesting`);
     }
   }
   
   // Documentation results (if available from Kai's backend)
   if (result.docResults && result.docResults.length > 0) {
-    outputChannel.appendLine(`\n📚 RELEVANT DOCUMENTATION:`);
+    outputChannel.appendLine(`\n[DB] RELEVANT DOCUMENTATION:`);
     result.docResults.forEach((doc, index) => {
       outputChannel.appendLine(`\n   ${index + 1}. ${doc.title}`);
       outputChannel.appendLine(`      ${doc.summary}`);
       if (doc.url) {
-        outputChannel.appendLine(`      🔗 ${doc.url}`);
+        outputChannel.appendLine(`       ${doc.url}`);
       }
     });
   }
   
   // Add Android Manifest documentation link
-  outputChannel.appendLine(`\n   📚 Manifest Guide: https://developer.android.com/guide/topics/manifest/manifest-intro`);
+  outputChannel.appendLine(`\n   [DB] Manifest Guide: https://developer.android.com/guide/topics/manifest/manifest-intro`);
   
   log('info', 'Manifest hints displayed', { errorType: result.errorType });
+}
+
+/**
+ * PHASE 4: Week 3-4 - Register Interactive Debugging Commands
+ * Adds commands for conversational debugging and guided workflows
+ */
+function registerInteractiveDebuggingCommands(context: vscode.ExtensionContext): void {
+  // Command: Start conversational debugging
+  context.subscriptions.push(
+    vscode.commands.registerCommand('rcaAgent.startConversation', async () => {
+      if (!conversationalAgent) {
+        vscode.window.showErrorMessage('Conversational agent not initialized');
+        return;
+      }
+      
+      // Get current error from active editor
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        vscode.window.showInformationMessage('Open a file with an error to start debugging');
+        return;
+      }
+      
+      // Create a new conversation session
+      const sessionId = conversationalAgent.createSession({
+        error: 'User initiated conversation',
+        filePath: editor.document.uri.fsPath,
+        line: editor.selection.active.line,
+        rootCause: '',
+        fixGuidelines: [],
+        confidence: 0
+      });
+      
+      vscode.window.showInformationMessage(
+        `Started conversation session: ${sessionId}. Type @rca-agent in chat to continue.`
+      );
+      
+      log('info', 'Started conversation session', { sessionId });
+    })
+  );
+  
+  // Command: Start guided debugging workflow
+  context.subscriptions.push(
+    vscode.commands.registerCommand('rcaAgent.startGuidedDebugging', async () => {
+      if (!guidedWorkflow) {
+        vscode.window.showErrorMessage('Guided debugging workflow not initialized');
+        return;
+      }
+      
+      // Get current error from active editor
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        vscode.window.showInformationMessage('Open a file with an error to start guided debugging');
+        return;
+      }
+      
+      // Get diagnostics for current file
+      const diagnostics = vscode.languages.getDiagnostics(editor.document.uri);
+      const errors = diagnostics.filter(d => d.severity === vscode.DiagnosticSeverity.Error);
+      
+      if (errors.length === 0) {
+        vscode.window.showInformationMessage('No errors found in current file');
+        return;
+      }
+      
+      // Use first error
+      const error = errors[0];
+      const errorText = editor.document.getText(error.range);
+      
+      // Create mock chat stream for workflow
+      const responses: string[] = [];
+      const mockStream = {
+        markdown: (text: string) => responses.push(text),
+        button: () => {},
+        progress: () => {}
+      };
+      
+      // Start workflow
+      await guidedWorkflow.startWorkflow(
+        {
+          error: errorText || error.message,
+          errorType: error.source || 'unknown',
+          filePath: editor.document.uri.fsPath,
+          line: error.range.start.line,
+          rootCause: '',
+          fixGuidelines: [],
+          confidence: 0
+        },
+        mockStream as any
+      );
+      
+      // Show results in output channel
+      outputChannel.clear();
+      outputChannel.appendLine('=== GUIDED DEBUGGING WORKFLOW ===\n');
+      responses.forEach(response => outputChannel.appendLine(response));
+      outputChannel.show();
+      
+      log('info', 'Started guided debugging workflow', {
+        error: errorText || error.message,
+        file: editor.document.uri.fsPath
+      });
+    })
+  );
+  
+  // Command: Export current conversation
+  context.subscriptions.push(
+    vscode.commands.registerCommand('rcaAgent.exportConversation', async () => {
+      if (!conversationalAgent) {
+        vscode.window.showErrorMessage('Conversational agent not initialized');
+        return;
+      }
+      
+      const sessionId = conversationalAgent.getCurrentSessionId();
+      if (!sessionId) {
+        vscode.window.showInformationMessage('No active conversation session');
+        return;
+      }
+      
+      const markdown = conversationalAgent.exportToMarkdown(sessionId);
+      
+      // Create untitled document with markdown
+      const doc = await vscode.workspace.openTextDocument({
+        content: markdown,
+        language: 'markdown'
+      });
+      
+      await vscode.window.showTextDocument(doc);
+      
+      log('info', 'Exported conversation', { sessionId });
+    })
+  );
+  
+  // Command: Clear all conversation sessions
+  context.subscriptions.push(
+    vscode.commands.registerCommand('rcaAgent.clearConversations', async () => {
+      if (!conversationalAgent) {
+        vscode.window.showErrorMessage('Conversational agent not initialized');
+        return;
+      }
+      
+      const result = await vscode.window.showWarningMessage(
+        'Are you sure you want to clear all conversation history?',
+        { modal: true },
+        'Yes',
+        'No'
+      );
+      
+      if (result === 'Yes') {
+        conversationalAgent.clearAllSessions();
+        vscode.window.showInformationMessage('All conversations cleared');
+        log('info', 'Cleared all conversation sessions');
+      }
+    })
+  );
+  
+  log('info', 'Interactive debugging commands registered');
 }
 
 /**
@@ -1863,6 +2148,17 @@ function displayManifestHints(result: RCAResult): void {
  */
 export function deactivate(): void {
   log('info', 'RCA Agent extension deactivated');
+  
+  // Save conversation sessions before cleanup
+  if (conversationalAgent && extensionContext) {
+    try {
+      const sessions = conversationalAgent.getSessions();
+      extensionContext.globalState.update('conversationSessions', sessions);
+      log('info', 'Saved conversation sessions', { count: sessions.length });
+    } catch (error) {
+      log('error', 'Failed to save conversation sessions', error as Error);
+    }
+  }
   
   // Clean up webview
   if (currentWebview) {
@@ -2157,7 +2453,7 @@ function generateLearningNotes(result: RCAResult): string[] {
  * CHUNK 5: Initialize core services
  * Sets up accessibility, theme management, performance monitoring, and feature flags
  */
-function initializeChunk5Services(context: vscode.ExtensionContext): void {
+async function initializeChunk5Services(context: vscode.ExtensionContext): Promise<void> {
   try {
     // Start performance monitoring
     performanceMonitor = PerformanceMonitor.getInstance();
@@ -2171,6 +2467,29 @@ function initializeChunk5Services(context: vscode.ExtensionContext): void {
     
     log('info', 'Chunk 5 services initialized successfully');
     
+    // PHASE 2-3: Register Chat Participant (@rca-agent)
+    log('info', 'Initializing tools for chat participant');
+    try {
+      // Initialize all tools first
+      initializeTools(context);
+      outputChannel.appendLine('✅ Tools initialized');
+      log('info', 'Tools initialized successfully');
+    } catch (error: any) {
+      log('error', `Failed to initialize tools: ${error.message}`);
+      outputChannel.appendLine(`❌ Failed to initialize tools: ${error.message}`);
+    }
+
+    log('info', 'Registering chat participant: @rca-agent');
+    try {
+      registerChatParticipant(context);
+      outputChannel.appendLine('✅ Chat participant registered: @rca-agent');
+      outputChannel.appendLine('📱 Use @rca-agent in VS Code chat to analyze errors conversationally');
+      log('info', 'Chat participant registered successfully');
+    } catch (error: any) {
+      log('error', `Failed to register chat participant: ${error.message}`);
+      outputChannel.appendLine(`❌ Failed to register chat participant: ${error.message}`);
+    }
+    
     // Register theme change listener
     themeManager.onThemeChange((theme) => {
       log('info', `Theme changed to: ${theme}`);
@@ -2181,12 +2500,12 @@ function initializeChunk5Services(context: vscode.ExtensionContext): void {
     });
     
     // Register feature flag change listener
-    featureFlagManager.onFlagChange((change) => {
+    featureFlagManager?.onFlagChange((change) => {
       log('info', `Feature flag '${change.flag}' changed to: ${change.value}`);
       
       // Handle new UI flag change
       if (change.flag === 'newUI') {
-        featureFlagManager.promptReloadIfNeeded('newUI');
+        featureFlagManager?.promptReloadIfNeeded('newUI');
       }
     });
     
@@ -2196,21 +2515,25 @@ function initializeChunk5Services(context: vscode.ExtensionContext): void {
       
       // Update status bar to show error
       if (statusBarManager) {
-        statusBarManager.showError();
+        statusBarManager.setError(errorContext.error.message);
       }
     });
     
     // Check if new UI should be used
-    const useNewUI = featureFlagManager.shouldUseNewUI();
+    const useNewUI = featureFlagManager?.shouldUseNewUI() ?? false;
     log('info', `Using ${useNewUI ? 'NEW' : 'OLD'} UI based on feature flag`);
     
     // Record activation time
-    const activationTime = performanceMonitor.endTimer('extension-activation');
+    const activationTime = performanceMonitor?.endTimer('extension-activation') ?? 0;
     log('info', `Extension activation took ${activationTime}ms`);
     
     // Register command to view performance metrics
     context.subscriptions.push(
       vscode.commands.registerCommand('rca-agent.showPerformanceMetrics', async () => {
+        if (!performanceMonitor) {
+          vscode.window.showErrorMessage('Performance monitor is not initialized');
+          return;
+        }
         const report = performanceMonitor.generateReport();
         const document = await vscode.workspace.openTextDocument({
           content: report,
@@ -2223,7 +2546,7 @@ function initializeChunk5Services(context: vscode.ExtensionContext): void {
     // Register command to toggle feature flags
     context.subscriptions.push(
       vscode.commands.registerCommand('rca-agent.toggleFeatureFlag', async () => {
-        await featureFlagManager.showFeatureFlagPicker();
+        await featureFlagManager?.showFeatureFlagPicker();
       })
     );
     
@@ -2238,4 +2561,220 @@ function initializeChunk5Services(context: vscode.ExtensionContext): void {
     log('error', `Failed to initialize Chunk 5 services: ${error}`);
     // Continue activation even if services fail
   }
+}
+
+/**
+ * PHASE 6.1: Initialize backend services
+ * Sets up MultiPassAgent, AgentStateStream, ChromaDB, and AnalysisService
+ */
+async function initializeBackendServices(context: vscode.ExtensionContext): Promise<void> {
+  try {
+    log('info', 'Initializing backend services (Phase 6.1)...');
+    
+    // Initialize AnalysisService (this will set up OllamaClient, MultiPassAgent, ChromaDB)
+    analysisService = AnalysisService.getInstance();
+    await analysisService.initialize();
+    
+    // Initialize AgentStateViewer
+    agentStateViewer = new AgentStateViewer();
+    
+    // Connect AgentStateViewer to AgentStateStream (will be reconnected per analysis)
+    const stateStream = analysisService.getStateStream();
+    if (stateStream) {
+      agentStateViewer.connectStream(stateStream);
+    }
+    
+    // Register command to show agent state
+    context.subscriptions.push(
+      vscode.commands.registerCommand('rcaAgent.showAgentState', () => {
+        if (agentStateViewer) {
+          const panel = vscode.window.createWebviewPanel(
+            'rcaAgentState',
+            'Agent State',
+            vscode.ViewColumn.Beside,
+            {}
+          );
+          
+          const updateWebview = () => {
+            panel.webview.html = `
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                  body { 
+                    font-family: var(--vscode-font-family); 
+                    padding: 20px;
+                    color: var(--vscode-foreground);
+                    background-color: var(--vscode-editor-background);
+                  }
+                  .agent-state { margin: 20px 0; }
+                  .progress-section { margin-bottom: 24px; }
+                  .progress-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+                  .progress-bar {
+                    width: 100%;
+                    height: 20px;
+                    background: var(--vscode-progressBar-background);
+                    border-radius: 4px;
+                    overflow: hidden;
+                  }
+                  .progress-fill {
+                    height: 100%;
+                    background: var(--vscode-button-background);
+                    transition: width 0.3s ease;
+                  }
+                  .progress-info { display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.9em; }
+                  .status-badge { padding: 4px 12px; border-radius: 4px; font-size: 0.85em; }
+                  .status-badge.running { background: var(--vscode-button-background); color: var(--vscode-button-foreground); }
+                  .status-badge.complete { background: var(--vscode-testing-iconPassed); color: white; }
+                  code { background: var(--vscode-textCodeBlock-background); padding: 2px 6px; border-radius: 3px; }
+                  blockquote { border-left: 4px solid var(--vscode-textBlockQuote-border); padding-left: 16px; margin: 16px 0; }
+                  h3 { margin-top: 24px; margin-bottom: 12px; }
+                  ul { list-style: none; padding: 0; }
+                  li { padding: 4px 0; }
+                </style>
+              </head>
+              <body>
+                ${agentStateViewer?.renderHTML() ?? '<p>Agent state viewer not available</p>'}
+              </body>
+              </html>
+            `;
+          };
+          
+          updateWebview();
+          
+          const disposable = agentStateViewer?.onStateChange(updateWebview);
+          panel.onDidDispose(() => disposable.dispose());
+        }
+      })
+    );
+    
+    // Register command to show learning metrics
+    context.subscriptions.push(
+      vscode.commands.registerCommand('rcaAgent.showLearningMetrics', () => {
+        if (stateManager) {
+          const metrics = stateManager.getLearningMetrics();
+          const markdown = renderLearningMetricsHTML(metrics);
+          
+          const panel = vscode.window.createWebviewPanel(
+            'rcaLearningMetrics',
+            'Learning Metrics',
+            vscode.ViewColumn.Beside,
+            {}
+          );
+          
+          panel.webview.html = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <style>
+                body { font-family: var(--vscode-font-family); padding: 20px; color: var(--vscode-foreground); background-color: var(--vscode-editor-background); }
+                .metric-card { background: var(--vscode-editor-background); border: 1px solid var(--vscode-panel-border); border-radius: 8px; padding: 16px; margin: 16px 0; }
+                .metric-value { font-size: 2em; font-weight: bold; color: var(--vscode-button-background); }
+                .metric-label { color: var(--vscode-descriptionForeground); font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px; }
+                table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+                th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--vscode-panel-border); }
+                th { font-weight: bold; color: var(--vscode-descriptionForeground); }
+              </style>
+            </head>
+            <body>
+              ${markdown}
+            </body>
+            </html>
+          `;
+        }
+      })
+    );
+    
+    // PHASE 4: Week 3-4 - Initialize interactive debugging features
+    if (analysisService) {
+      log('info', 'Initializing interactive debugging features (Phase 4 Week 3-4)...');
+      
+      // Initialize ConversationalAgent
+      conversationalAgent = new ConversationalAgent(analysisService, context);
+      
+      // Load saved sessions from storage
+      await conversationalAgent.loadSessions();
+      
+      // Initialize GuidedDebuggingWorkflow
+      guidedWorkflow = new GuidedDebuggingWorkflow(analysisService);
+      
+      // Register interactive debugging commands
+      registerInteractiveDebuggingCommands(context);
+      
+      log('info', 'Interactive debugging features initialized successfully');
+    } else {
+      log('warn', 'AnalysisService not available, skipping interactive debugging initialization');
+    }
+    
+    log('info', 'Backend services initialized successfully');
+  } catch (error) {
+    log('error', 'Failed to initialize backend services', error as Error);
+    vscode.window.showWarningMessage(
+      `RCA Agent backend initialization warning: ${(error as Error).message}. Some features may not work correctly.`
+    );
+  }
+}
+
+/**
+ * Render learning metrics as HTML
+ */
+function renderLearningMetricsHTML(metrics: any): string {
+  const successRate = metrics.totalAnalyses > 0
+    ? ((metrics.successfulAnalyses / metrics.totalAnalyses) * 100).toFixed(1)
+    : '0.0';
+  
+  const trendEmoji = metrics.improvementTrend > 0.05 ? '^' : 
+                     metrics.improvementTrend < -0.05 ? 'v' : '->';
+  
+  let html = `
+    <h1>Learning Metrics Dashboard</h1>
+    
+    <div class="metric-card">
+      <div class="metric-label">Total Analyses</div>
+      <div class="metric-value">${metrics.totalAnalyses}</div>
+    </div>
+    
+    <div class="metric-card">
+      <div class="metric-label">Success Rate</div>
+      <div class="metric-value">${successRate}%</div>
+      <p>${metrics.successfulAnalyses} of ${metrics.totalAnalyses} analyses</p>
+    </div>
+    
+    <div class="metric-card">
+      <div class="metric-label">Average Confidence</div>
+      <div class="metric-value">${(metrics.averageConfidence * 100).toFixed(1)}%</div>
+    </div>
+    
+    <div class="metric-card">
+      <div class="metric-label">Average Latency</div>
+      <div class="metric-value">${(metrics.averageLatency / 1000).toFixed(1)}s</div>
+    </div>
+    
+    <div class="metric-card">
+      <div class="metric-label">Cache Hit Rate</div>
+      <div class="metric-value">${(metrics.cacheHitRate * 100).toFixed(1)}%</div>
+    </div>
+    
+    <div class="metric-card">
+      <div class="metric-label">Improvement Trend</div>
+      <div class="metric-value">${trendEmoji} ${(metrics.improvementTrend * 100).toFixed(1)}%</div>
+    </div>
+  `;
+  
+  if (metrics.topErrorTypes && metrics.topErrorTypes.length > 0) {
+    html += `<h2>Top Error Types</h2><table><thead><tr><th>Error Type</th><th>Count</th></tr></thead><tbody>`;
+    metrics.topErrorTypes.forEach((item: any) => {
+      html += `<tr><td><code>${item.type}</code></td><td>${item.count}</td></tr>`;
+    });
+    html += `</tbody></table>`;
+  }
+  
+  const lastUpdated = new Date(metrics.lastUpdated).toLocaleString();
+  html += `<p style="color: var(--vscode-descriptionForeground); font-size: 0.85em;">Last updated: ${lastUpdated}</p>`;
+  
+  return html;
 }

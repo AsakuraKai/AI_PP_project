@@ -41,14 +41,27 @@ describe('EducationalAgent', () => {
   };
 
   beforeEach(() => {
-    // Create mock LLM
+    // Create mock LLM with all required methods
+    const mockGenerate = jest.fn();
+    const mockGenerateWithRetry = jest.fn();
+    const mockIsHealthy = jest.fn().mockResolvedValue(true);
+    const mockListModels = jest.fn().mockResolvedValue(['test-model']);
+    
     mockLLM = {
-      generate: jest.fn(),
-      isHealthy: jest.fn().mockResolvedValue(true),
-      listModels: jest.fn().mockResolvedValue(['test-model'])
+      generate: mockGenerate,
+      generateWithRetry: mockGenerateWithRetry,
+      isHealthy: mockIsHealthy,
+      listModels: mockListModels,
+      connect: jest.fn().mockResolvedValue(undefined),
+      getConfig: jest.fn().mockReturnValue({ model: 'test-model', baseUrl: 'http://localhost:11434' }),
     } as any;
 
-    agent = new EducationalAgent(mockLLM);
+    agent = new EducationalAgent(mockLLM, {
+      usePromptEngine: false, // Use legacy mode to avoid generateWithRetry
+      useToolRegistry: false,
+      generateFix: false,
+      maxIterations: 1, // Only 1 iteration for faster tests
+    });
   });
 
   afterEach(() => {
@@ -152,15 +165,16 @@ describe('EducationalAgent', () => {
     });
 
     it('should allow retrieval of pending notes', async () => {
-      // Mock educational explanations
+      // Mock base analysis FIRST, then educational explanations
       mockLLM.generate
+        .mockResolvedValueOnce(mockResponse(JSON.stringify({ rootCause: 'lateinit not initialized', fixGuidelines: ['Initialize'], confidence: 0.8 })))
         .mockResolvedValueOnce(mockResponse('Error explanation'))
         .mockResolvedValueOnce(mockResponse('Cause explanation'))
         .mockResolvedValueOnce(mockResponse('Prevention tips'));
 
       await agent.analyze(sampleError, 'async');
 
-      // Wait a bit for async generation
+      // Wait for async generation to complete
       const notes = await agent.getPendingLearningNotes(sampleError);
 
       expect(notes).not.toBeNull();
@@ -305,6 +319,7 @@ describe('EducationalAgent', () => {
   describe('Output Cleanup', () => {
     it('should remove markdown code fences', async () => {
       mockLLM.generate
+        .mockResolvedValueOnce(mockResponse(JSON.stringify({ rootCause: 'lateinit not initialized', fixGuidelines: ['Initialize'], confidence: 0.8 })))
         .mockResolvedValueOnce(mockResponse('What'))
         .mockResolvedValueOnce(mockResponse('Why'))
         .mockResolvedValueOnce(mockResponse('```kotlin\n1. Tip one\n2. Tip two\n```'));
@@ -318,6 +333,7 @@ describe('EducationalAgent', () => {
 
     it('should trim extra whitespace', async () => {
       mockLLM.generate
+        .mockResolvedValueOnce(mockResponse(JSON.stringify({ rootCause: 'lateinit not initialized', fixGuidelines: ['Initialize'], confidence: 0.8 })))
         .mockResolvedValueOnce(mockResponse('What'))
         .mockResolvedValueOnce(mockResponse('Why'))
         .mockResolvedValueOnce(mockResponse('   \n\n\n1. Tip\n\n\n\n2. Tip   \n\n\n   '));

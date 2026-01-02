@@ -36,7 +36,7 @@ suite('E2E: Complete Analysis Workflow', () => {
     } as any;
 
     stateManager = StateManager.getInstance(mockContext);
-    errorQueueManager = ErrorQueueManager.getInstance();
+    errorQueueManager = ErrorQueueManager.getInstance(mockContext);
   });
 
   test('Happy Path: Analyze single error from panel', async () => {
@@ -51,11 +51,11 @@ suite('E2E: Complete Analysis Workflow', () => {
       timestamp: Date.now()
     };
 
-    errorQueueManager.addError(error);
-    assert.strictEqual(errorQueueManager.getErrorCount(), 1);
+    await errorQueueManager.addError(error);
+    assert.strictEqual(errorQueueManager.getAllErrors().length, 1);
 
     // 2. Verify error appears in queue
-    const errors = errorQueueManager.getErrors();
+    const errors = errorQueueManager.getAllErrors();
     assert.strictEqual(errors.length, 1);
     assert.strictEqual(errors[0].id, 'test-error-1');
 
@@ -91,23 +91,23 @@ suite('E2E: Complete Analysis Workflow', () => {
       }
     ];
 
-    errors.forEach(e => errorQueueManager.addError(e));
-    assert.strictEqual(errorQueueManager.getErrorCount(), 2);
+    errors.forEach(async e => await errorQueueManager.addError(e));
+    assert.strictEqual(errorQueueManager.getAllErrors().length, 2);
 
     // 2. Analyze all
-    const pendingErrors = errorQueueManager.getErrors().filter(e => e.status === 'pending');
+    const pendingErrors = errorQueueManager.getAllErrors().filter(e => e.status === 'pending');
     assert.strictEqual(pendingErrors.length, 2);
 
     // 3. Process each
     for (const error of pendingErrors) {
-      errorQueueManager.updateErrorStatus(error.id, 'analyzing');
+      await errorQueueManager.updateErrorStatus(error.id, 'analyzing');
       // Simulate analysis
       await new Promise(resolve => setTimeout(resolve, 10));
-      errorQueueManager.updateErrorStatus(error.id, 'complete');
+      await errorQueueManager.updateErrorStatus(error.id, 'complete');
     }
 
     // 4. Verify all complete
-    const completeErrors = errorQueueManager.getErrors().filter(e => e.status === 'complete');
+    const completeErrors = errorQueueManager.getAllErrors().filter(e => e.status === 'complete');
     assert.strictEqual(completeErrors.length, 2);
   });
 
@@ -152,7 +152,7 @@ suite('E2E: Complete Analysis Workflow', () => {
     }
 
     // 2. Simulate navigation
-    const errors = errorQueueManager.getErrors();
+    const errors = errorQueueManager.getAllErrors();
     let currentIndex = 0;
 
     // Next (Arrow Down)
@@ -207,49 +207,63 @@ suite('E2E: Feature Flag Workflows', () => {
 
 suite('E2E: Large Workspace', () => {
   let errorQueueManager: ErrorQueueManager;
+  let mockContext: vscode.ExtensionContext;
 
-  setup(() => {
-    errorQueueManager = ErrorQueueManager.getInstance();
-    errorQueueManager.clearQueue();
+  setup(async () => {
+    mockContext = {
+      globalState: {
+        get: () => [],
+        update: async () => {}
+      },
+      subscriptions: [],
+      extensionPath: '/test/path',
+      globalStoragePath: '/test/storage',
+      logPath: '/test/logs'
+    } as any;
+    
+    errorQueueManager = ErrorQueueManager.getInstance(mockContext);
+    await errorQueueManager.clearQueue();
   });
 
-  test('Handle 100+ errors', () => {
+  test('Handle 100+ errors', async () => {
     // 1. Add 100 errors
     for (let i = 1; i <= 100; i++) {
-      errorQueueManager.addError({
+      const severity: 'critical' | 'high' | 'medium' = i % 3 === 0 ? 'critical' : i % 3 === 1 ? 'high' : 'medium';
+      await errorQueueManager.addError({
         id: `error-${i}`,
         message: `Error ${i}`,
         filePath: `/test/file${i % 10}.kt`,
         line: i,
-        severity: (i % 3 === 0 ? 'critical' : i % 3 === 1 ? 'high' : 'medium') as const,
-        status: 'pending' as const,
+        severity: severity,
+        status: 'pending',
         timestamp: Date.now()
       });
     }
 
-    assert.strictEqual(errorQueueManager.getErrorCount(), 100);
+    assert.strictEqual(errorQueueManager.getAllErrors().length, 100);
 
     // 2. Get by severity
     const criticalErrors = errorQueueManager.getErrorsBySeverity('critical');
     assert.ok(criticalErrors.length > 0);
 
     // 3. Clear queue
-    errorQueueManager.clearQueue();
-    assert.strictEqual(errorQueueManager.getErrorCount(), 0);
+    await errorQueueManager.clearQueue();
+    assert.strictEqual(errorQueueManager.getAllErrors().length, 0);
   });
 
-  test('Performance: Error queue operations', () => {
+  test('Performance: Error queue operations', async () => {
     const startTime = Date.now();
 
     // Add 1000 errors
     for (let i = 1; i <= 1000; i++) {
-      errorQueueManager.addError({
+      const severity: 'critical' | 'high' | 'medium' = i % 3 === 0 ? 'critical' : i % 3 === 1 ? 'high' : 'medium';
+      await errorQueueManager.addError({
         id: `perf-error-${i}`,
         message: `Error ${i}`,
         filePath: `/test/file.kt`,
         line: i,
-        severity: 'medium' as const,
-        status: 'pending' as const,
+        severity: severity,
+        status: 'pending',
         timestamp: Date.now()
       });
     }
@@ -258,7 +272,7 @@ suite('E2E: Large Workspace', () => {
 
     // Get all errors
     const getStartTime = Date.now();
-    const errors = errorQueueManager.getErrors();
+    const errors = errorQueueManager.getAllErrors();
     const getTime = Date.now() - getStartTime;
 
     // Assertions

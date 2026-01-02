@@ -28,6 +28,7 @@ import { ToolRegistry } from '../tools/ToolRegistry';
 import { PromptEngine } from './PromptEngine';
 import { AgentStateStream } from './AgentStateStream';
 import { PerformanceTracker } from '../monitoring/PerformanceTracker';
+import { CodeFix } from '../types';
 import { FixGenerator } from './FixGenerator'; // Chunk 5: Fix Generator
 import { ErrorClassifier } from './ErrorClassifier'; // Chunk 9: Error Classification
 import { buildEnhancedSystemPrompt } from './prompts/CategoryPrompts'; // Chunk 9: Category prompts
@@ -52,6 +53,7 @@ export interface AgentConfig {
   useToolRegistry?: boolean;
   generateFix?: boolean; // Chunk 5: Enable fix generation
   projectRoot?: string; // Chunk 7: Project root for FileResolver integration
+  enableProgressivePrompting?: boolean; // Phase 3 (optional): fast-path prompting
 }
 
 export class MinimalReactAgent {
@@ -60,6 +62,7 @@ export class MinimalReactAgent {
   private readonly usePromptEngine: boolean;
   private readonly useToolRegistry: boolean;
   private readonly generateFix: boolean; // Chunk 5: Fix generation flag
+  private readonly enableProgressivePrompting: boolean; // Phase 3: progressive prompting flag
   private readonly toolRegistry: ToolRegistry;
   private readonly promptEngine: PromptEngine;
   private readonly readFileTool: ReadFileTool;
@@ -80,6 +83,7 @@ export class MinimalReactAgent {
     this.usePromptEngine = config?.usePromptEngine ?? true;
     this.useToolRegistry = config?.useToolRegistry ?? true;
     this.generateFix = config?.generateFix ?? true; // Chunk 5: Default enabled
+    this.enableProgressivePrompting = config?.enableProgressivePrompting ?? false;
 
     // Initialize tools
     this.readFileTool = new ReadFileTool();
@@ -241,6 +245,124 @@ export class MinimalReactAgent {
         : [];
       stopPromptGen();
 
+      // Phase 3 (optional): progressive one-shot prompting fast-path.
+      // This can short-circuit the full ReAct loop for simple errors.
+      if (this.enableProgressivePrompting && this.usePromptEngine) {
+        const errorContext = error.message + ' ' + (error.stackTrace?.map(f => f.file).join(' ') || '');
+
+        // Level 1: Lightweight
+        {
+          console.log('🔍 Progressive Prompting L1: Lightweight analysis...');
+          const l1Prompt = await this.promptEngine.buildProgressiveAnalysisPrompt({
+            error,
+            level: 1,
+            systemPrompt: systemPrompt || undefined,
+          });
+
+          const l1Response = await this.llm.generateWithRetry(
+            l1Prompt,
+            { temperature: 0.0, maxTokens: 1500 },
+            { maxAttempts: 2, qualityThreshold: 0.75 },
+            errorContext
+          );
+
+          const parsedL1 = this.promptEngine.parseResponse(l1Response.text);
+          if (parsedL1.rootCause && parsedL1.fixGuidelines && parsedL1.action === null) {
+            const candidate: RCAResult = {
+              error: error.message,
+              rootCause: parsedL1.rootCause,
+              fixGuidelines: parsedL1.fixGuidelines,
+              confidence: parsedL1.confidence ?? 0.7,
+              iterations: 1,
+              toolsUsed: [],
+            };
+
+            const validation = this.outputValidator.validate(candidate, error);
+            console.log(`📊 Progressive L1 score: ${(validation.score * 100).toFixed(1)}%`);
+            if (validation.score >= 0.75) {
+              console.log('✅ Progressive L1 sufficient, skipping ReAct loop');
+              stopTotal();
+
+              // Chunk 5: Generate code fix if enabled
+              let codeFix: CodeFix | null = null;
+              if (this.generateFix) {
+                try {
+                  codeFix = await this.fixGenerator.generateFix(
+                    error,
+                    candidate.rootCause,
+                    parsedL1.thought || ''
+                  );
+                } catch (fixError) {
+                  console.warn('⚠ Fix generation failed (progressive):', fixError);
+                }
+              }
+
+              const result: RCAResult = { ...candidate, codeFix: codeFix ?? undefined };
+              this.stream.emitComplete(result, 1);
+              this.performanceTracker.printMetrics();
+              return result;
+            }
+          }
+        }
+
+        // Level 2: Add RAG examples (still one-shot)
+        {
+          console.log('🔍 Progressive Prompting L2: Adding relevant examples...');
+          const l2Prompt = await this.promptEngine.buildProgressiveAnalysisPrompt({
+            error,
+            level: 2,
+            systemPrompt: systemPrompt || undefined,
+          });
+
+          const l2Response = await this.llm.generateWithRetry(
+            l2Prompt,
+            { temperature: 0.2, maxTokens: 2500 },
+            { maxAttempts: 3, qualityThreshold: 0.65 },
+            errorContext
+          );
+
+          const parsedL2 = this.promptEngine.parseResponse(l2Response.text);
+          if (parsedL2.rootCause && parsedL2.fixGuidelines && parsedL2.action === null) {
+            const candidate: RCAResult = {
+              error: error.message,
+              rootCause: parsedL2.rootCause,
+              fixGuidelines: parsedL2.fixGuidelines,
+              confidence: parsedL2.confidence ?? 0.7,
+              iterations: 1,
+              toolsUsed: [],
+            };
+
+            const validation = this.outputValidator.validate(candidate, error);
+            console.log(`📊 Progressive L2 score: ${(validation.score * 100).toFixed(1)}%`);
+            if (validation.score >= 0.65) {
+              console.log('✅ Progressive L2 sufficient, skipping ReAct loop');
+              stopTotal();
+
+              // Chunk 5: Generate code fix if enabled
+              let codeFix: CodeFix | null = null;
+              if (this.generateFix) {
+                try {
+                  codeFix = await this.fixGenerator.generateFix(
+                    error,
+                    candidate.rootCause,
+                    parsedL2.thought || ''
+                  );
+                } catch (fixError) {
+                  console.warn('⚠ Fix generation failed (progressive):', fixError);
+                }
+              }
+
+              const result: RCAResult = { ...candidate, codeFix: codeFix || undefined };
+              this.stream.emitComplete(result, 1);
+              this.performanceTracker.printMetrics();
+              return result;
+            }
+          }
+        }
+
+        console.log('↩️ Progressive prompting insufficient; proceeding with full ReAct loop');
+      }
+
       // Dynamic iteration loop
       for (let i = 0; i < this.maxIterations; i++) {
         state.iteration = i + 1;
@@ -361,6 +483,30 @@ export class MinimalReactAgent {
         // Check if agent decided to conclude
         if (response.rootCause && response.fixGuidelines) {
           console.log(`✓ Agent concluded after ${i + 1} iterations`);
+
+          // Legacy mode: preserve original behavior (no regeneration loop).
+          // Unit tests and backward compatibility expect the agent to return
+          // immediately once a final JSON conclusion is produced.
+          if (!this.usePromptEngine) {
+            stopTotal();
+
+            const result: RCAResult = {
+              error: error.message,
+              rootCause: response.rootCause,
+              fixGuidelines: response.fixGuidelines,
+              confidence: response.confidence || 0.5,
+              iterations: i + 1,
+              toolsUsed: state.actions.map((a) => a.tool),
+            };
+
+            // Emit completion event
+            this.stream.emitComplete(result, i + 1);
+
+            // Print performance metrics
+            this.performanceTracker.printMetrics();
+
+            return result;
+          }
           
           // Phase 1: Validate output quality before accepting
           const preliminaryResult: RCAResult = {
@@ -457,7 +603,7 @@ export class MinimalReactAgent {
           stopTotal();
           
           // Chunk 5: Generate code fix if enabled
-          let codeFix = undefined;
+          let codeFix: CodeFix | null = null;
           if (this.generateFix) {
             console.log('🔧 Generating code fix...');
             const stopFixGen = this.performanceTracker.startTimer('fix_generation');
@@ -505,13 +651,25 @@ export class MinimalReactAgent {
 
       const stopFinalLLM = this.performanceTracker.startTimer('final_llm_inference');
       // Iteration 6 Phase 2: Use generateWithRetry for final forced conclusion
-      const finalResponse = await this.llm.generateWithRetry(finalPrompt, {
-        temperature: 0.5,
-        maxTokens: 1500,
-      }, {
-        maxAttempts: 3, // P0 FIX: Re-enabled with conservative 3 attempts
-        qualityThreshold: 0.45, // P2 FIX: Even lower bar for forced conclusion (max iterations reached)
-      }, error.message + ' ' + (error.stackTrace?.map(f => f.file).join(' ') || '')); // P3: Pass error context for accuracy check
+      // (fall back to plain generate in legacy mode or in tests where the mock
+      // doesn't implement generateWithRetry).
+      const finalResponse = this.usePromptEngine && typeof (this.llm as any).generateWithRetry === 'function'
+        ? await (this.llm as any).generateWithRetry(
+            finalPrompt,
+            {
+              temperature: 0.5,
+              maxTokens: 1500,
+            },
+            {
+              maxAttempts: 3,
+              qualityThreshold: 0.45,
+            },
+            error.message + ' ' + (error.stackTrace?.map((f) => f.file).join(' ') || '')
+          )
+        : await this.llm.generate(finalPrompt, {
+            temperature: 0.5,
+            maxTokens: 1500,
+          });
       stopFinalLLM();
 
       stopTotal();
@@ -520,7 +678,7 @@ export class MinimalReactAgent {
         const parsed = this.promptEngine.parseResponse(finalResponse.text);
         
         // Chunk 5: Generate code fix if enabled (for max iterations case)
-        let codeFix = undefined;
+        let codeFix: CodeFix | null = null;
         if (this.generateFix && parsed.rootCause) {
           console.log('🔧 Generating code fix (max iterations)...');
           const stopFixGen = this.performanceTracker.startTimer('fix_generation');

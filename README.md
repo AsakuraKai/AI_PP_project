@@ -85,6 +85,287 @@ npm run test:accuracy
 
 ---
 
+## 🧪 Personal Testing Guide
+
+### A. Testing During Development
+
+#### Quick Development Cycle
+```bash
+# 1. Build after code changes
+npm run build
+
+# 2. Run unit tests (fast feedback)
+npm test
+
+# 3. Check coverage (if needed)
+npm run test:coverage
+```
+
+**Development Checklist:**
+- ✅ Tests pass (816/826 expected)
+- ✅ Coverage stays >95%
+- ✅ No TypeScript errors
+- ✅ Build completes (~16s)
+
+#### Testing Backend Components
+
+```bash
+# Test specific component after changes
+npm test -- tests/unit/agent/MinimalReactAgent.test.ts
+npm test -- tests/unit/parsers/
+npm test -- tests/unit/tools/
+
+# Test with Ollama integration (slower)
+npm run test:accuracy        # Real Android errors
+npm run test:golden          # Golden test suite
+npm run test:phase1-quick    # Quick integration test
+```
+
+#### Testing VS Code Extension
+
+```bash
+# 1. Build extension
+cd vscode-extension
+npm run compile
+
+# 2. Test in Extension Host
+# Press F5 in VS Code (opens new window with extension)
+
+# 3. Quick test commands:
+#    - Ctrl+Shift+R → Analyze Error
+#    - Ctrl+Shift+P → "RCA: Toggle Educational Mode"
+#    - Ctrl+Shift+P → "RCA: Open Analysis Panel"
+
+# 4. Check logs in Debug Console for errors
+```
+
+#### Performance Validation
+
+```bash
+# Quick performance check
+npm run perf-test:quick
+
+# Full benchmark (when optimizing)
+npm run bench
+npm run perf-compare
+```
+
+**Performance Targets:**
+- Avg latency: <90s
+- Parse rate: 100%
+- Cache hit rate: 30%+
+
+#### Before Committing
+
+```bash
+# Full validation before push
+npm test                     # All tests
+npm run test:accuracy        # Real-world validation
+npm run build                # Clean build
+cd vscode-extension && npm run compile  # Extension builds
+```
+
+---
+
+### B. Testing in Real Android Project
+
+#### Setup (One-Time)
+
+```bash
+# 1. Ensure Ollama is running
+ollama serve
+
+# 2. Verify model is available
+ollama list
+# Should see: hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF
+
+# 3. Install extension (if testing from source)
+cd vscode-extension
+vsce package
+# Install .vsix in VS Code: Extensions → Install from VSIX
+```
+
+#### Testing Workflow in Android Project
+
+**1. Open Your Android Project**
+```bash
+# Open project in VS Code
+code /path/to/your/android-project
+```
+
+**2. Test Common Error Types**
+
+**Kotlin lateinit Error:**
+```kotlin
+// Create test error in MainActivity.kt
+class MainActivity : AppCompatActivity() {
+    lateinit var user: User
+    
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        println(user.name)  // Error: lateinit not initialized
+    }
+}
+
+// Copy error from logcat:
+// "lateinit property user has not been initialized at MainActivity.kt:45"
+// Press Ctrl+Shift+R → Analyze
+```
+
+**Jetpack Compose Error:**
+```kotlin
+@Composable
+fun MyScreen() {
+    var count = 0  // Error: state not remembered
+    Button(onClick = { count++ }) {
+        Text("Count: $count")
+    }
+}
+
+// Copy error: "remember { ... } should be used"
+// Press Ctrl+Shift+R → Analyze
+```
+
+**Gradle Dependency Conflict:**
+```gradle
+// Add conflicting dependencies in build.gradle
+dependencies {
+    implementation("com.squareup.okhttp3:okhttp:4.9.0")
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")  // Conflict
+}
+
+// Copy build error
+// Press Ctrl+Shift+R → Analyze
+```
+
+**3. Test Features**
+
+| Feature | How to Test |
+|---------|-------------|
+| Basic Analysis | Copy error → `Ctrl+Shift+R` → Check RCA quality |
+| Educational Mode | `Ctrl+Shift+P` → Toggle Educational → Check explanations |
+| Code Context | Verify agent reads correct file/line |
+| Fix Guidelines | Check if fixes are actionable |
+| Feedback System | Click 👍/👎 → Verify stored in ChromaDB |
+| Cache | Analyze same error twice → 2nd should be instant |
+| Panel UI | `Ctrl+Shift+P` → Open Panel → Check real-time updates |
+
+**4. Test Different Error Categories**
+
+```bash
+# Create errors to test all parsers:
+✓ Kotlin NPE
+✓ lateinit property
+✓ Type mismatch
+✓ Unresolved reference
+✓ Compose remember
+✓ LaunchedEffect
+✓ XML inflation
+✓ Resource not found
+✓ Gradle dependency conflict
+✓ Manifest merge conflict
+```
+
+**5. Validate Results**
+
+**Good RCA Should Have:**
+- ✅ Correct root cause identified
+- ✅ Actionable fix guidelines (3-5 steps)
+- ✅ Relevant code context shown
+- ✅ Confidence score >0.7
+- ✅ Completes in 60-90s
+
+**Red Flags:**
+- ❌ Generic/vague root cause
+- ❌ Wrong file/line referenced
+- ❌ Fix guidelines don't apply
+- ❌ Takes >2 minutes
+- ❌ Crashes or errors
+
+#### Quick Experiment Protocol
+
+**15-Minute Test Run:**
+```bash
+1. [ ] Start Ollama (ollama serve)
+2. [ ] Open Android project in VS Code
+3. [ ] Trigger 3 different error types
+4. [ ] Analyze each with Ctrl+Shift+R
+5. [ ] Verify RCA quality (root cause + fixes)
+6. [ ] Test cache (re-analyze same error)
+7. [ ] Test educational mode
+8. [ ] Provide feedback on 1-2 analyses
+9. [ ] Check performance (timing)
+10. [ ] Document any issues/improvements
+```
+
+#### Troubleshooting During Experiments
+
+**Extension not responding:**
+```bash
+# Check Output panel
+View → Output → Select "RCA Agent"
+
+# Check Ollama is running
+curl http://localhost:11434/api/tags
+
+# Reload VS Code
+Ctrl+Shift+P → "Reload Window"
+```
+
+**Poor analysis quality:**
+```bash
+# Enable debug mode (see agent thought process)
+Ctrl+Shift+P → "RCA: Open Analysis Panel"
+
+# Check if correct file/line is being read
+# Review agent iterations and tool calls
+
+# If still bad, provide negative feedback
+Click 👎 button
+```
+
+**Performance issues:**
+```bash
+# Check Ollama GPU usage
+nvidia-smi  # Should see GPU usage
+
+# Monitor memory
+# Close other apps if low on RAM
+
+# Check ChromaDB (optional, can disable)
+docker ps  # See if ChromaDB running
+```
+
+#### Experiment Metrics to Track
+
+**Accuracy:**
+- How many errors correctly diagnosed?
+- Are fix guidelines helpful?
+- Confidence scores matching quality?
+
+**Performance:**
+- First analysis time (with model loading)
+- Subsequent analysis times
+- Cache hit ratio
+
+**Usability:**
+- Keyboard shortcuts working?
+- Panel UI responsive?
+- Educational mode helpful?
+
+#### After Experiments
+
+```bash
+# Review feedback data
+# Check ChromaDB for stored analyses
+
+# Document findings in DEVLOG
+# Note which error types work best/worst
+# Identify improvement opportunities
+```
+
+---
+
 ## 📊 Project Stats
 
 | Metric | Value |

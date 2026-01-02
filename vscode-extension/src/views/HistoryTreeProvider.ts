@@ -219,7 +219,7 @@ export class HistoryTreeItem extends vscode.TreeItem {
     }
 
     if (item.helpful !== undefined) {
-      tooltip.appendMarkdown(`**Helpful:** ${item.helpful ? '👍 Yes' : '👎 No'}\n\n`);
+      tooltip.appendMarkdown(`**Helpful:** ${item.helpful ? '[HELPFUL] Yes' : '[NOT_HELPFUL] No'}\n\n`);
     }
 
     const timeAgo = this._getTimeAgo(item.timestamp);

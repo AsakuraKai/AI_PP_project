@@ -200,6 +200,56 @@
         "icon": "$(layout-sidebar-right)"
       },
       {
+        "command": "rca-agent.toggleRealtimeDetection",
+        "title": "RCA Agent: Toggle Real-time Error Detection",
+        "icon": "$(pulse)"
+      },
+      {
+        "command": "rca-agent.detectErrors",
+        "title": "RCA Agent: Detect Errors in Current File",
+        "icon": "$(search)"
+      },
+      {
+        "command": "rca-agent.explainError",
+        "title": "RCA Agent: Explain Error",
+        "icon": "$(book)"
+      },
+      {
+        "command": "rca-agent.viewPreviousAnalysis",
+        "title": "RCA Agent: View Previous Analysis",
+        "icon": "$(history)"
+      },
+      {
+        "command": "rca-agent.searchImports",
+        "title": "RCA Agent: Search for Missing Import",
+        "icon": "$(search)"
+      },
+      {
+        "command": "rca-agent.checkInitialization",
+        "title": "RCA Agent: Check Initialization Flow",
+        "icon": "$(debug-alt)"
+      },
+      {
+        "command": "rca-agent.suggestTypeConversion",
+        "title": "RCA Agent: Suggest Type Conversion",
+        "icon": "$(symbol-type-parameter)"
+      },
+      {
+        "command": "rca-agent.searchDependency",
+        "title": "RCA Agent: Search Maven Central",
+        "icon": "$(package)"
+      },
+      {
+        "command": "rca-agent.checkVersionCompatibility",
+        "title": "RCA Agent: Check Version Compatibility",
+        "icon": "$(versions)"
+      },
+      {
+        "command": "rca-agent.addPermission",
+        "title": "RCA Agent: Add Missing Permission",
+        "icon": "$(shield)"
+      },
+      {
         "command": "rca-agent.showPerformanceMetrics",
         "title": "RCA Agent: Show Performance Metrics",
         "icon": "$(graph)"
@@ -208,6 +258,26 @@
         "command": "rca-agent.toggleFeatureFlag",
         "title": "RCA Agent: Toggle Feature Flag",
         "icon": "$(settings-gear)"
+      },
+      {
+        "command": "rcaAgent.startConversation",
+        "title": "RCA Agent: Start Conversational Debugging",
+        "icon": "$(comment-discussion)"
+      },
+      {
+        "command": "rcaAgent.startGuidedDebugging",
+        "title": "RCA Agent: Start Guided Debugging Workflow",
+        "icon": "$(debug-step-into)"
+      },
+      {
+        "command": "rcaAgent.exportConversation",
+        "title": "RCA Agent: Export Conversation to Markdown",
+        "icon": "$(export)"
+      },
+      {
+        "command": "rcaAgent.clearConversations",
+        "title": "RCA Agent: Clear All Conversations",
+        "icon": "$(clear-all)"
       }
     ],
     "keybindings": [
@@ -416,6 +486,65 @@
           "description": "Enable accessibility features (ARIA labels, keyboard navigation)"
         },
         "rcaAgent.theme.autoDetect": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically detect and apply VS Code theme to RCA Agent UI"
+        },
+        "rcaAgent.realtime.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable real-time error detection as you type (Phase 4 feature)",
+          "order": 5
+        },
+        "rcaAgent.realtime.debounceDelay": {
+          "type": "number",
+          "default": 500,
+          "minimum": 100,
+          "maximum": 2000,
+          "description": "Delay in milliseconds before triggering error detection (100-2000ms)",
+          "order": 6
+        },
+        "rcaAgent.realtime.maxErrorsPerFile": {
+          "type": "number",
+          "default": 10,
+          "minimum": 1,
+          "maximum": 50,
+          "description": "Maximum number of errors to detect per file",
+          "order": 7
+        },
+        "rcaAgent.hover.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show inline error explanations on hover (Phase 4 feature)",
+          "order": 8
+        },
+        "rcaAgent.hover.showQuickFix": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show quick fix suggestions in hover tooltips",
+          "order": 9
+        },
+        "rcaAgent.hover.cacheTimeout": {
+          "type": "number",
+          "default": 60000,
+          "minimum": 10000,
+          "maximum": 300000,
+          "description": "Cache timeout for hover analysis in milliseconds (10s-5min)",
+          "order": 10
+        },
+        "rcaAgent.codeActions.showExplain": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show 'Explain Error' in code action menu",
+          "order": 11
+        },
+        "rcaAgent.codeActions.showContextSpecific": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show context-specific quick fixes (e.g., Search Imports, Check Version)",
+          "order": 12
+        },
+        "rcaAgent.ui.adaptiveTheme": {
           "type": "boolean",
           "default": true,
           "description": "Automatically detect and adapt to VS Code theme changes"

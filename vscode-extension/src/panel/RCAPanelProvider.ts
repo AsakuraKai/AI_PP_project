@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import { StateManager } from './StateManager';
-import { WebviewMessage, ExtensionMessage, PanelState } from './types';
+import { WebviewMessage, ExtensionMessage, PanelState, HistoryItem } from './types';
 import { WebviewContentGenerator } from './webview-content';
 import { AnalysisService } from '../services/AnalysisService';
 
@@ -238,16 +238,19 @@ export class RCAPanelProvider implements vscode.WebviewViewProvider {
       
       // Update error status
       error.status = 'complete';
-      await this._stateManager.updateError(error);
+      await this._stateManager.updateError(error.id, { status: 'complete' });
       
       // Add to history
-      await this._stateManager.addHistoryItem({
+      const historyItem: HistoryItem = {
         id: `history-${Date.now()}`,
         timestamp: Date.now(),
         errorId: error.id,
         result,
         duration: result.latency || 0
-      });
+      };
+      await this._stateManager.addHistoryItem(historyItem);
+      
+      // Update state to complete
       
       // Update state to complete
       this._stateManager.setState({
@@ -358,7 +361,6 @@ export class RCAPanelProvider implements vscode.WebviewViewProvider {
     
     vscode.window.showInformationMessage(`Installing model: ${modelName}. Check terminal for progress.`);
   }
-  }
   
   /**
    * Send current state to webview (Chunk 2: regenerate HTML)
@@ -394,5 +396,19 @@ export class RCAPanelProvider implements vscode.WebviewViewProvider {
       this._extensionUri,
       state
     );
+  }
+
+  /**
+   * Update theme (called when VS Code theme changes)
+   */
+  public updateTheme(theme: string): void {
+    // Theme changes will trigger webview reload automatically
+    // We can add custom theme handling here if needed
+    console.log(`[RCAPanelProvider] Theme updated to: ${theme}`);
+    
+    // Optionally refresh the webview to apply new theme
+    if (this._view) {
+      this._sendState();
+    }
   }
 }

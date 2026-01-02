@@ -24,7 +24,7 @@ suite('RCACodeActionProvider Tests', () => {
 
     assert.ok(actions, 'Should return code actions');
     assert.strictEqual(actions!.length, 1, 'Should have one action');
-    assert.strictEqual(actions![0].title, '🤖 Analyze with RCA Agent');
+    assert.strictEqual(actions![0].title, 'Analyze with RCA Agent');
   });
 
   test('Should provide code action for warning diagnostic', () => {
@@ -104,7 +104,7 @@ suite('RCACodeActionProvider Tests', () => {
       fileName: '/test/file.kt',
       getText: () => 'val x = null',
       lineAt: () => ({ text: 'val x = null' } as any)
-    } as vscode.TextDocument;
+    } as unknown as vscode.TextDocument;
   }
 
   function createMockDiagnostic(severity: vscode.DiagnosticSeverity): vscode.Diagnostic {
