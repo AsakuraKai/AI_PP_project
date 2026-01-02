@@ -7,7 +7,6 @@ import { getToolRegistry } from './ToolRegistry';
 import { ReadFileTool, WriteFileTool, EditFileTool, DeleteFileTool } from './FileOperationTool';
 import { FindFilesTool, SearchInFilesTool, GetWorkspaceInfoTool, DetectGradleFilesTool } from './WorkspaceSearchTool';
 import { TerminalTool } from './TerminalTool';
-import { ExecuteCommandTool } from './ExecuteCommandTool';
 import { GradleCommandHelper } from './GradleCommandHelper';
 
 /**
@@ -32,11 +31,9 @@ export function initializeTools(context: vscode.ExtensionContext): void {
   const terminalTool = new TerminalTool();
   terminalTool.initializeWatcher(); // Start watching terminal output
   registry.register(terminalTool);
-  
-  registry.register(new ExecuteCommandTool(terminalTool));
 
-  // Gradle tools
-  registry.register(new GradleCommandHelper(new ExecuteCommandTool(terminalTool)));
+  // Gradle tools (uses TerminalTool directly)
+  registry.register(new GradleCommandHelper(terminalTool));
 
   // Cleanup on extension deactivation
   context.subscriptions.push({

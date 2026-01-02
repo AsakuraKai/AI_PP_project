@@ -12,21 +12,14 @@
  */
 
 import * as vscode from 'vscode';
-import { AgentStateStream, IterationEvent, ThoughtEvent, ActionEvent, ObservationEvent } from '../../../src/agent/AgentStateStream';
-
-/**
- * Agent state for display
- */
-export interface AgentState {
-  iteration: number;
-  maxIterations: number;
-  progress: number; // 0-100
-  currentThought: string;
-  recentActions: Array<{ tool: string; timestamp: number }>;
-  recentObservations: Array<{ text: string; success: boolean; timestamp: number }>;
-  elapsed: number; // milliseconds
-  isActive: boolean;
-}
+import { AgentStateStream } from '../../../src/agent/AgentStateStream';
+import {
+  AgentState,
+  IterationEvent,
+  ThoughtEvent,
+  ActionEvent,
+  ObservationEvent
+} from '../../../src/agent/types';  // Use shared types (Chunk 6 Consolidation)
 
 /**
  * Agent State Viewer component

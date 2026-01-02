@@ -1,6 +1,7 @@
 /**
  * Real-Time Error Detector for RCA Agent
  * Monitors file changes and detects errors as user types
+ * CHUNK 9-10 Consolidation: Uses BaseProvider
  * 
  * Features:
  * - Debounced file change detection (500ms)
@@ -11,12 +12,10 @@
  */
 
 import * as vscode from 'vscode';
+import { BaseProvider } from './BaseProvider';
 import { ErrorQueueManager } from '../panel/ErrorQueueManager';
-import { ErrorItem } from '../panel/types';
 
-export class RealtimeErrorDetector {
-  private disposables: vscode.Disposable[] = [];
-  private errorQueueManager: ErrorQueueManager;
+export class RealtimeErrorDetector extends BaseProvider {
   private detectionEnabled: boolean = true;
   private debounceTimers: Map<string, NodeJS.Timeout> = new Map();
   private readonly DEBOUNCE_DELAY = 500; // 500ms
@@ -24,7 +23,7 @@ export class RealtimeErrorDetector {
   private processedErrors: Set<string> = new Set();
 
   constructor(errorQueueManager: ErrorQueueManager) {
-    this.errorQueueManager = errorQueueManager;
+    super({ errorQueueManager });
     this.setupFileWatchers();
   }
 
@@ -60,21 +59,7 @@ export class RealtimeErrorDetector {
     );
   }
 
-  /**
-   * Check if document is relevant for RCA analysis
-   */
-  private isRelevantDocument(document: vscode.TextDocument): boolean {
-    // Only monitor Kotlin, Java, Gradle, and XML files
-    const relevantLanguages = ['kotlin', 'java', 'groovy', 'xml', 'gradle'];
-    const relevantExtensions = ['.kt', '.java', '.gradle', '.gradle.kts', '.xml'];
-    
-    const hasRelevantLanguage = relevantLanguages.includes(document.languageId);
-    const hasRelevantExtension = relevantExtensions.some(ext => 
-      document.uri.fsPath.endsWith(ext)
-    );
-
-    return (hasRelevantLanguage || hasRelevantExtension) && !document.isUntitled;
-  }
+  // isRelevantDocument is now provided by BaseProvider
 
   /**
    * Handle document changes with debouncing

@@ -33,6 +33,12 @@ export interface OllamaConfig {
   
   /** Initial retry delay in milliseconds (default: 1000) */
   initialRetryDelay?: number;
+  
+  /** Temperature for generation (default: 0.7) */
+  temperature?: number;
+  
+  /** Maximum number of tokens to predict */
+  numPredict?: number;
 }
 
 export class OllamaClient {
@@ -409,6 +415,17 @@ export class OllamaClient {
       return response.ok;
     } catch {
       return false;
+    }
+  }
+
+  /**
+   * Alias for isHealthy() - throws error if unhealthy
+   * @throws {LLMError} if server is not accessible
+   */
+  async health(): Promise<void> {
+    const healthy = await this.isHealthy();
+    if (!healthy) {
+      throw new LLMError('Ollama server is not accessible', 503, false);
     }
   }
 

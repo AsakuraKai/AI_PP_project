@@ -22,6 +22,7 @@
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { PathUtils } from './PathUtils';
 
 /**
  * File resolution result
@@ -121,7 +122,7 @@ export class FileResolver {
   private readonly CACHE_TTL = 30000; // 30 seconds
 
   constructor(projectRoot: string) {
-    this.projectRoot = path.resolve(projectRoot);
+    this.projectRoot = PathUtils.resolve(projectRoot);
   }
 
   /**
@@ -192,14 +193,14 @@ export class FileResolver {
         
         candidates.push({
           path: catalogPath,
-          relativePath: this.normalizePath(path.relative(structure.root, catalogPath)),
+          relativePath: PathUtils.relative(structure.root, catalogPath),
           confidence: 0.95,
           reason: 'Version catalog is the primary location for version declarations in modern Gradle projects'
         });
 
         return {
           path: catalogPath,
-          relativePath: this.normalizePath(path.relative(structure.root, catalogPath)),
+          relativePath: PathUtils.relative(structure.root, catalogPath),
           confidence: 0.95,
           reason: 'Version catalog (gradle/libs.versions.toml) is used for centralized version management',
           exists: true,
@@ -218,14 +219,14 @@ export class FileResolver {
         
         candidates.push({
           path: structure.rootBuildGradle,
-          relativePath: this.normalizePath(path.relative(structure.root, structure.rootBuildGradle)),
+          relativePath: PathUtils.relative(structure.root, structure.rootBuildGradle),
           confidence: 0.80,
           reason: 'Root build.gradle typically contains plugin versions'
         });
 
         return {
           path: structure.rootBuildGradle,
-          relativePath: this.normalizePath(path.relative(structure.root, structure.rootBuildGradle)),
+          relativePath: PathUtils.relative(structure.root, structure.rootBuildGradle),
           confidence: 0.80,
           reason: 'Root build.gradle contains plugin version declarations',
           exists: true,
@@ -276,7 +277,7 @@ export class FileResolver {
         
         return {
           path: moduleBuildGradle,
-          relativePath: this.normalizePath(path.relative(structure.root, moduleBuildGradle)),
+          relativePath: PathUtils.relative(structure.root, moduleBuildGradle),
           confidence: 0.90, // Higher confidence when module is explicitly specified
           reason: `Dependencies for ${context.module} module`,
           exists: true,
@@ -296,7 +297,7 @@ export class FileResolver {
         
         return {
           path: catalogPath,
-          relativePath: this.normalizePath(path.relative(structure.root, catalogPath)),
+          relativePath: PathUtils.relative(structure.root, catalogPath),
           confidence: 0.85,
           reason: 'Version catalog manages dependencies centrally',
           exists: true,
@@ -333,7 +334,7 @@ export class FileResolver {
         
         return {
           path: structure.rootBuildGradle,
-          relativePath: this.normalizePath(path.relative(structure.root, structure.rootBuildGradle)),
+          relativePath: PathUtils.relative(structure.root, structure.rootBuildGradle),
           confidence: 0.65,
           reason: 'Root build.gradle may contain shared dependencies',
           exists: true,
@@ -370,7 +371,7 @@ export class FileResolver {
       
       return {
         path: structure.rootBuildGradle,
-        relativePath: this.normalizePath(path.relative(structure.root, structure.rootBuildGradle)),
+        relativePath: PathUtils.relative(structure.root, structure.rootBuildGradle),
         confidence: 0.70,
         reason: 'Root build.gradle is the primary build configuration',
         exists,
@@ -408,7 +409,7 @@ export class FileResolver {
         
         return {
           path: manifestPath,
-          relativePath: this.normalizePath(path.relative(structure.root, manifestPath)),
+          relativePath: PathUtils.relative(structure.root, manifestPath),
           confidence: 0.95,
           reason: 'AndroidManifest.xml found at standard location',
           exists: true,
@@ -446,7 +447,7 @@ export class FileResolver {
       if (exists) {
         return {
           path: proguardPath,
-          relativePath: this.normalizePath(path.relative(structure.root, proguardPath)),
+          relativePath: PathUtils.relative(structure.root, proguardPath),
           confidence: 0.95,
           reason: 'ProGuard rules file found at standard location',
           exists: true
@@ -498,14 +499,14 @@ export class FileResolver {
 
       return {
         path: targetFile,
-        relativePath: this.normalizePath(path.relative(structure.root, targetFile)),
+        relativePath: PathUtils.relative(structure.root, targetFile),
         confidence: 0.90,
         reason: composeNav ? 'Compose Navigation file' : 'Navigation graph file',
         exists: true,
         line,
         alternatives: navigationFiles.slice(1).map(alt => ({
           path: alt,
-          relativePath: this.normalizePath(path.relative(structure.root, alt)),
+          relativePath: PathUtils.relative(structure.root, alt),
           confidence: 0.75,
           reason: 'Alternative navigation file'
         }))
@@ -531,7 +532,7 @@ export class FileResolver {
       
       return {
         path: found,
-        relativePath: this.normalizePath(path.relative(structure.root, found)),
+        relativePath: PathUtils.relative(structure.root, found),
         confidence: 0.90,
         reason: `Found ${genericPath} in project`,
         exists: true,
@@ -566,7 +567,7 @@ export class FileResolver {
     
     return {
       path: absolutePath,
-      relativePath: this.normalizePath(path.relative(this.projectRoot, absolutePath)),
+      relativePath: PathUtils.relative(this.projectRoot, absolutePath),
       confidence: exists ? 0.95 : 0.30,
       reason: exists ? 'File found at specified path' : 'File path provided but not found',
       exists,
@@ -969,11 +970,5 @@ export class FileResolver {
     this.cacheTimestamp = 0;
   }
 
-  /**
-   * Normalize path separators to forward slashes (cross-platform)
-   */
-  private normalizePath(filePath: string): string {
-    return filePath.replace(/\\/g, '/');
-  }
 }
 

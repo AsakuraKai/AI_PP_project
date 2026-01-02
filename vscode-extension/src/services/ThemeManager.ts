@@ -1,9 +1,11 @@
 /**
  * Theme Manager
  * Handles VS Code theme detection and provides theme-aware UI elements
+ * CHUNK 9-10 Consolidation: Uses BaseService
  */
 
 import * as vscode from 'vscode';
+import { BaseService, SingletonService } from './BaseService';
 
 export type ThemeKind = 'light' | 'dark' | 'high-contrast-light' | 'high-contrast-dark';
 
@@ -19,22 +21,17 @@ export interface ThemeColors {
   active: string;
 }
 
-export class ThemeManager {
-  private static instance: ThemeManager;
+@SingletonService
+export class ThemeManager extends BaseService {
   private currentTheme: ThemeKind = 'dark';
   private onThemeChangeEmitter = new vscode.EventEmitter<ThemeKind>();
   public readonly onThemeChange = this.onThemeChangeEmitter.event;
 
-  private constructor() {
+  constructor() {
+    super({ configurationPrefix: 'rcaAgent' });
+    this.disposables.push(this.onThemeChangeEmitter);
     this.detectTheme();
     this.registerThemeChangeListener();
-  }
-
-  static getInstance(): ThemeManager {
-    if (!ThemeManager.instance) {
-      ThemeManager.instance = new ThemeManager();
-    }
-    return ThemeManager.instance;
   }
 
   /**

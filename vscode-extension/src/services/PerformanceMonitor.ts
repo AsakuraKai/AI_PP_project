@@ -1,9 +1,11 @@
 /**
  * Performance Monitor
  * Tracks load times, memory usage, and performance metrics
+ * CHUNK 9-10 Consolidation: Uses BaseService
  */
 
 import * as vscode from 'vscode';
+import { BaseService, SingletonService } from './BaseService';
 
 export interface PerformanceMetrics {
   panelLoadTime: number;
@@ -20,8 +22,8 @@ export interface PerformanceThreshold {
   errorQueueRender: number; // Target: <200ms
 }
 
-export class PerformanceMonitor {
-  private static instance: PerformanceMonitor;
+@SingletonService
+export class PerformanceMonitor extends BaseService {
   private metrics: PerformanceMetrics[] = [];
   private timers: Map<string, number> = new Map();
   private thresholds: PerformanceThreshold = {
@@ -30,13 +32,8 @@ export class PerformanceMonitor {
     errorQueueRender: 200
   };
 
-  private constructor() {}
-
-  static getInstance(): PerformanceMonitor {
-    if (!PerformanceMonitor.instance) {
-      PerformanceMonitor.instance = new PerformanceMonitor();
-    }
-    return PerformanceMonitor.instance;
+  constructor() {
+    super({ configurationPrefix: 'rcaAgent.performance' });
   }
 
   /**

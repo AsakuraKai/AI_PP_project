@@ -6,6 +6,7 @@
  */
 
 import { z } from 'zod';
+import { QualityScorer } from '../QualityScorer';
 
 /**
  * RCA Document stored in ChromaDB
@@ -164,36 +165,31 @@ export function isRCAMetadata(obj: any): obj is RCAMetadata {
   }
 }
 
+// Singleton QualityScorer instance for consistent quality calculations
+const qualityScorer = new QualityScorer();
+
 /**
  * Calculate quality score for an RCA document
  * 
+ * Uses QualityScorer for consistent quality calculations across the application.
  * Quality score is based on:
- * - Confidence score (70% weight)
- * - User validation (20% boost if validated)
- * - Age penalty (50% reduction after 6 months)
+ * - Base confidence score (0-1)
+ * - User validation boost (+0.2 if validated)
+ * - Age penalty (up to -50% for documents older than 6 months)
+ * - Usage bonus (logarithmic scaling based on helpfulness count)
  * 
  * @param rca - RCA document to calculate quality for
  * @returns Quality score between 0.0 and 1.0
  */
 export function calculateQualityScore(rca: Partial<RCADocument>): number {
-  let quality = rca.confidence || 0.5;
+  const ageMs = rca.created_at ? Date.now() - rca.created_at : 0;
   
-  // Boost for user validation
-  if (rca.user_validated) {
-    quality += 0.2;
-  }
-  
-  // Age penalty (6 months = 50% reduction)
-  if (rca.created_at) {
-    const age = Date.now() - rca.created_at;
-    const sixMonths = 6 * 30 * 24 * 60 * 60 * 1000;
-    if (age > sixMonths) {
-      quality *= 0.5;
-    }
-  }
-  
-  // Clamp to 0.0-1.0
-  return Math.min(Math.max(quality, 0.0), 1.0);
+  return qualityScorer.calculateQuality({
+    baseConfidence: rca.confidence || 0.5,
+    userValidated: rca.user_validated || false,
+    ageMs,
+    usageCount: 0 // Can be enhanced later with actual usage tracking
+  });
 }
 
 /**

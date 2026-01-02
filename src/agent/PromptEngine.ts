@@ -20,6 +20,7 @@
 
 import { ParsedError, AgentState } from '../types';
 import { getFewShotService } from '../knowledge/FewShotExampleService';
+import { BasePromptEngine } from './BasePromptEngine';
 
 /**
  * Few-shot example for teaching agent (legacy format - kept for backward compatibility)
@@ -48,11 +49,12 @@ export interface FewShotExample {
 /**
  * Prompt templates for different analysis stages
  */
-export class PromptEngine {
+export class PromptEngine extends BasePromptEngine {
   private fewShotService = getFewShotService();
   private fewShotLoaded = false;
 
   constructor() {
+    super(); // Call parent constructor
     // Load few-shot examples asynchronously
     this.loadFewShotExamples();
   }
@@ -706,142 +708,6 @@ ${example.conclusion.fixGuidelines.map(step => `    - ${step}`).join('\n')}
   }
 
   /**
-   * Extract JSON from LLM response (handles extra text)
-   * Multi-strategy parsing with fallbacks and repair logic
-   * ENHANCED - Iteration 5: Never throws, always returns something
-   */
-  extractJSON(response: string): any {
-    // Pre-processing: Remove <think> tags that DeepSeek-R1 adds
-    let cleaned = response.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
-    cleaned = cleaned.replace(/`<think>[\s\S]*$/gi, '').trim(); // Handle unclosed think tags
-    
-    // Strategy 1: Try direct parsing
-    try {
-      return JSON.parse(cleaned);
-    } catch {}
-
-    // Strategy 2: Extract from markdown code blocks (improved regex)
-    const codeBlockMatch = cleaned.match(/```(?:json)?\s*([{[][\s\S]*?[}\]])\s*```/);
-    if (codeBlockMatch) {
-      try {
-        return JSON.parse(codeBlockMatch[1]);
-      } catch {}
-    }
-
-    // Strategy 3: Find the FIRST complete JSON object (balanced braces)
-    const jsonMatches = this.extractBalancedJSON(cleaned);
-    for (const jsonStr of jsonMatches) {
-      try {
-        return JSON.parse(jsonStr);
-      } catch (e) {
-        // Strategy 4: Try to fix common JSON issues
-        try {
-          const fixed = jsonStr
-            .replace(/,(\s*[}\]])/g, '$1')  // Remove trailing commas
-            .replace(/\\'/g, "'")            // Fix escaped quotes
-            .replace(/\n/g, ' ')             // Remove newlines in strings
-            .replace(/\r/g, '')              // Remove carriage returns
-            .replace(/\t/g, ' ')             // Replace tabs
-            .replace(/""([^"]+)""/g, '"$1"'); // Fix double-quoted strings
-          
-          return JSON.parse(fixed);
-        } catch {}
-      }
-    }
-
-    // Strategy 5: Try to extract partial JSON and fill missing fields
-    const partialJSON = this.extractPartialJSON(cleaned);
-    if (partialJSON) {
-      return partialJSON;
-    }
-
-    // Strategy 6 (NEW): NEVER FAIL - Return minimal valid JSON
-    // Suppress warning in test environment
-    if (!process.env.JEST_WORKER_ID) {
-      console.warn('\u26a0\ufe0f All JSON extraction strategies failed, creating minimal fallback');
-    }
-    return {
-      thought: 'JSON parsing failed - response was: ' + response.substring(0, 150),
-      action: null,
-      rootCause: 'Analysis incomplete - LLM response could not be parsed',
-      fixGuidelines: ['Review the raw LLM output', 'Try running analysis again'],
-      confidence: 0.1
-    };
-  }
-
-  /**
-   * Extract balanced JSON objects from text (handles nested braces)
-   * Phase 1.1 Enhancement
-   */
-  private extractBalancedJSON(text: string): string[] {
-    const results: string[] = [];
-    let depth = 0;
-    let start = -1;
-    
-    for (let i = 0; i < text.length; i++) {
-      if (text[i] === '{') {
-        if (depth === 0) start = i;
-        depth++;
-      } else if (text[i] === '}') {
-        depth--;
-        if (depth === 0 && start !== -1) {
-          results.push(text.substring(start, i + 1));
-          start = -1;
-        }
-      }
-    }
-    
-    return results;
-  }
-
-  /**
-   * Extract partial JSON and fill required fields with defaults
-   * Phase 1.1 Enhancement + Iteration 5: More lenient extraction
-   */
-  private extractPartialJSON(text: string): any | null {
-    try {
-      // Try to find thought, action, rootCause fields even if JSON is incomplete
-      const thoughtMatch = text.match(/["']thought["']\s*:\s*["']([^"']+)["']/);
-      const actionMatch = text.match(/["']action["']\s*:\s*(null|\{[^}]*\})/);
-      const rootCauseMatch = text.match(/["']rootCause["']\s*:\s*["']([^"']*)["']/);
-      const fixMatch = text.match(/["']fixGuidelines["']\s*:\s*\[([^\]]*)\]/);
-      
-      if (thoughtMatch) {
-        const partial: any = {
-          thought: thoughtMatch[1],
-          action: actionMatch ? (actionMatch[1] === 'null' ? null : JSON.parse(actionMatch[1])) : null,
-        };
-        
-        // If concluding, add required fields
-        if (partial.action === null) {
-          partial.rootCause = rootCauseMatch ? rootCauseMatch[1] : 'Analysis incomplete - see thought';
-          partial.fixGuidelines = fixMatch ? JSON.parse(`[${fixMatch[1]}]`) : ['Review error context'];
-          partial.confidence = 0.3; // Low confidence for partial extraction
-        }
-        
-        return partial;
-      }
-      
-      // Iteration 5: Even more lenient - try to salvage ANYTHING
-      // Look for rootCause or any analysis-like content
-      if (rootCauseMatch || text.includes('rootCause') || text.includes('error')) {
-        console.warn('\u26a0\ufe0f Using ultra-lenient extraction - creating minimal valid response');
-        return {
-          thought: rootCauseMatch ? `Analysis: ${rootCauseMatch[1].substring(0, 100)}` : 'See analysis below',
-          action: null,
-          rootCause: rootCauseMatch ? rootCauseMatch[1] : 'Analysis incomplete - JSON parsing failed',
-          fixGuidelines: fixMatch ? JSON.parse(`[${fixMatch[1]}]`) : ['Review error and context', 'Check system logs for more details'],
-          confidence: 0.2
-        };
-      }
-    } catch (e) {
-      // Extraction failed
-    }
-    
-    return null;
-  }
-
-  /**
    * Build iteration prompt with comprehensive context (NEW - for Chunk 2.4)
    * NOW ENHANCED: Includes relevant few-shot examples from knowledge base
    */
@@ -1129,63 +995,4 @@ Respond ONLY with valid JSON (no other text):
     }
   }
 
-  /**
-   * Validate agent response structure (ENHANCED - Phase 1.1 Fix)
-   * Now more lenient to handle LLM variability while still ensuring minimum quality
-   */
-  validateResponse(response: any): { valid: boolean; error?: string; warnings?: string[] } {
-    const warnings: string[] = [];
-    
-    if (!response || typeof response !== 'object') {
-      return { valid: false, error: 'Response must be an object' };
-    }
-
-    if (!response.thought || typeof response.thought !== 'string' || response.thought.trim().length === 0) {
-      return { valid: false, error: 'Missing or invalid "thought" field (required, non-empty string)' };
-    }
-
-    // If action is present, validate it
-    if (response.action !== null && response.action !== undefined) {
-      if (typeof response.action !== 'object') {
-        return { valid: false, error: 'Action must be an object or null' };
-      }
-      if (!response.action.tool || typeof response.action.tool !== 'string') {
-        return { valid: false, error: 'Action must have a "tool" field' };
-      }
-      // Valid tool call response
-      return { valid: true };
-    }
-
-    // If concluding (action is null or undefined), validate conclusion fields
-    // BE MORE LENIENT - allow missing fields but warn
-    if (response.action === null || response.action === undefined) {
-      if (!response.rootCause || typeof response.rootCause !== 'string' || response.rootCause.trim().length === 0) {
-        warnings.push('Missing or empty "rootCause" - using fallback');
-        response.rootCause = 'See thought field for analysis'; // Auto-fix
-      }
-      
-      if (!Array.isArray(response.fixGuidelines)) {
-        warnings.push('Missing "fixGuidelines" array - using defaults');
-        response.fixGuidelines = ['Review thought field above', 'Manually investigate error'];
-      } else if (response.fixGuidelines.length === 0) {
-        warnings.push('Empty "fixGuidelines" - adding default');
-        response.fixGuidelines.push('Review error context and apply fixes as needed');
-      }
-      
-      if (typeof response.confidence !== 'number') {
-        warnings.push('Missing "confidence" - using default 0.5');
-        response.confidence = 0.5;
-      } else if (response.confidence < 0 || response.confidence > 1) {
-        warnings.push(`Invalid confidence ${response.confidence} - clamping to 0.0-1.0`);
-        response.confidence = Math.max(0, Math.min(1, response.confidence));
-      }
-      
-      // Log warnings if any (suppress in tests)
-      if (warnings.length > 0 && !process.env.JEST_WORKER_ID) {
-        console.warn(`⚠️ Response validation warnings (auto-fixed): ${warnings.join(', ')}`);
-      }
-    }
-
-    return { valid: true, warnings: warnings.length > 0 ? warnings : undefined };
-  }
 }

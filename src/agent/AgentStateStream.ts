@@ -31,63 +31,18 @@
 import { EventEmitter } from 'events';
 import { RCAResult, ToolCall } from '../types';
 
-/**
- * Event data for iteration updates
- */
-export interface IterationEvent {
-  iteration: number;
-  maxIterations: number;
-  progress: number; // 0-1 (percentage as decimal)
-  timestamp: number;
-}
+// Export shared event types from centralized module (Chunk 6 Consolidation)
+export {
+  IterationEvent,
+  ThoughtEvent,
+  ActionEvent,
+  ObservationEvent,
+  CompleteEvent,
+  ErrorEvent
+} from './types';
 
-/**
- * Event data for thought updates
- */
-export interface ThoughtEvent {
-  thought: string;
-  iteration: number;
-  timestamp: number;
-}
-
-/**
- * Event data for action updates
- */
-export interface ActionEvent {
-  action: ToolCall;
-  iteration: number;
-  timestamp: number;
-}
-
-/**
- * Event data for observation updates
- */
-export interface ObservationEvent {
-  observation: string;
-  iteration: number;
-  success: boolean;
-  timestamp: number;
-}
-
-/**
- * Event data for completion
- */
-export interface CompleteEvent {
-  rca: RCAResult;
-  totalIterations: number;
-  duration: number; // milliseconds
-  timestamp: number;
-}
-
-/**
- * Event data for errors
- */
-export interface ErrorEvent {
-  error: Error;
-  iteration: number;
-  phase: 'thought' | 'action' | 'observation' | 'synthesis';
-  timestamp: number;
-}
+// Import types for use in this file
+import type { IterationEvent, ThoughtEvent, ActionEvent, ObservationEvent, CompleteEvent, ErrorEvent } from './types';
 
 /**
  * Agent state stream for real-time UI updates

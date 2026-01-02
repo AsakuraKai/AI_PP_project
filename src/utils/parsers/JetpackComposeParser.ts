@@ -12,6 +12,7 @@
  * - Side effect errors
  * 
  * Design Philosophy:
+ * - Extends BaseParser for shared utilities
  * - Compose-specific pattern matching
  * - Extract recomposition metrics for performance analysis
  * - Identify state management issues
@@ -26,6 +27,7 @@
  */
 
 import { ParsedError } from '../../types';
+import { BaseParser } from './BaseParser';
 
 /**
  * Compose-specific error types
@@ -45,7 +47,7 @@ export type ComposeErrorType =
 /**
  * Parser for Jetpack Compose framework errors
  */
-export class JetpackComposeParser {
+export class JetpackComposeParser extends BaseParser {
   /**
    * Parse Compose error text into structured format
    * Tries multiple error type parsers in order of specificity
@@ -58,8 +60,8 @@ export class JetpackComposeParser {
       return null;
     }
 
-    // Trim and limit size
-    const text = errorText.trim().slice(0, 100000);
+    // Sanitize input
+    const text = this.sanitizeInput(errorText, 100000);
 
     // Try each Compose-specific parser (order matters - most specific first)
     return (
@@ -486,7 +488,7 @@ export class JetpackComposeParser {
    * Improved to handle Compose-specific stack traces better
    * Prefers user code over framework code
    */
-  private extractFileInfo(text: string): { filePath: string; line: number } {
+  protected extractFileInfo(text: string): { filePath: string; line: number } {
     // Try to extract all stack frames
     const stackFrames: Array<{ file: string; line: number }> = [];
     

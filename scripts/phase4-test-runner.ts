@@ -14,7 +14,7 @@ import { OllamaClient } from '../src/llm/OllamaClient';
 import { ToolRegistry } from '../src/tools/ToolRegistry';
 import { ReadFileTool } from '../src/tools/ReadFileTool';
 import { VersionLookupTool } from '../src/tools/VersionLookupTool';
-import { AndroidDocsSearchTool } from '../src/tools/AndroidDocsSearchTool';
+import { z } from 'zod';
 
 async function main() {
   console.log('\n' + '='.repeat(80));
@@ -43,10 +43,22 @@ async function main() {
     
     // Initialize tools
     console.log('\n🛠️  Initializing tools...');
-    const toolRegistry = new ToolRegistry();
-    toolRegistry.registerTool(new ReadFileTool());
-    toolRegistry.registerTool(new VersionLookupTool());
-    toolRegistry.registerTool(new AndroidDocsSearchTool());
+    const toolRegistry = ToolRegistry.getInstance();
+    
+    // Register ReadFileTool
+    toolRegistry.register(
+      'read_file',
+      new ReadFileTool(),
+      z.object({ filePath: z.string(), line: z.number(), contextLines: z.number().optional() })
+    );
+    
+    // Register VersionLookupTool
+    toolRegistry.register(
+      'version_lookup',
+      new VersionLookupTool(),
+      z.object({ tool: z.enum(['agp', 'kotlin', 'gradle']), queryType: z.enum(['exists', 'latest-stable', 'latest-any', 'compatible', 'suggest']), version: z.string().optional() })
+    );
+    
     console.log('   ✅ Tools registered');
     
     // Initialize agent

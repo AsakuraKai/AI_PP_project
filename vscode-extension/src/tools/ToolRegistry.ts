@@ -1,9 +1,17 @@
 /**
  * Tool Registry - Central registry for all tools available to the chat participant
  * Manages tool registration, execution, and metadata
+ * 
+ * Note: This is the VS Code Extension version with execution history tracking.
+ * For backend tool registry, see src/tools/ToolRegistry.ts
  */
 
-export interface ToolMetadata {
+import { BaseTool, BaseToolMetadata, ToolExecutionResult, ToolCategory } from '../../../src/tools/shared-types';
+
+/**
+ * Extension-specific tool metadata (extends shared BaseToolMetadata)
+ */
+export interface ToolMetadata extends BaseToolMetadata {
   name: string;
   description: string;
   parameters: {
@@ -13,22 +21,25 @@ export interface ToolMetadata {
       required: boolean;
     };
   };
-  category: 'file' | 'terminal' | 'gradle' | 'version' | 'analysis' | 'workspace';
+  category: ToolCategory;
 }
 
-export interface Tool<TParams = any, TResult = any> {
+/**
+ * Extension-specific tool interface (extends shared BaseTool)
+ */
+export interface Tool<TParams = any, TResult = any> extends BaseTool<TParams, TResult> {
   name: string;
   description: string;
   metadata: ToolMetadata;
   execute(params: TParams): Promise<TResult>;
 }
 
-export interface ToolExecutionResult<TResult = any> {
-  success: boolean;
-  result?: TResult;
-  error?: string;
-  executionTime: number;
-}
+/**
+ * Tool execution result (uses shared ToolExecutionResult)
+ * 
+ * Note: This type is now imported from shared-types for consistency
+ */
+export type { ToolExecutionResult };
 
 /**
  * Central tool registry for the RCA Agent

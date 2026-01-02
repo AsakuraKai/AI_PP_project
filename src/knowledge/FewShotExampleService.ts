@@ -9,7 +9,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { ParsedError } from '../types';
-import { ErrorCategory } from '../agent/ErrorClassifier'; // Chunk 9
+import { ErrorCategory } from '../agent/ErrorClassifier';
+import { ALL_CATEGORY_EXAMPLES } from './few-shot-examples'; // Direct import from TS files
 
 export interface FewShotExample {
   id: string;
@@ -75,86 +76,67 @@ export interface FewShotDatabase {
 export class FewShotExampleService {
   private database: FewShotDatabase | null = null;
   private examplesPath: string;
-  private compiledExamplesPath: string; // Chunk 9: Compiled TypeScript examples
-  private allExamples: FewShotExample[] = []; // Chunk 9: Combined examples
+  private allExamples: FewShotExample[] = []; // Combined examples from JSON + TS
 
   constructor() {
     this.examplesPath = path.join(__dirname, '../knowledge/few-shot-examples.json');
-    this.compiledExamplesPath = path.join(__dirname, '../knowledge/few-shot-examples-compiled.json');
   }
 
   /**
-   * Load few-shot examples database from JSON file AND compiled TypeScript examples
-   * Chunk 9: Enhanced to load both JSON (39 version examples) + Compiled TypeScript (35 new examples)
+   * Load few-shot examples database from JSON file and TypeScript examples
+   * OPTIMIZED: Now loads directly from TS files instead of compiled JSON
    */
   public async loadDatabase(): Promise<void> {
     try {
-      // 1. Load existing JSON database (39 version/dependency examples)
+      // 1. Load JSON database (version/dependency examples)
       const content = await fs.promises.readFile(this.examplesPath, 'utf-8');
       this.database = JSON.parse(content);
       
-      const jsonExampleCount = this.getTotalExampleCount(); // From JSON database
+      const jsonExampleCount = this.getTotalExampleCount();
       
-      // 2. Load compiled TypeScript examples (35 new examples from Chunk 9)
-      let tsExampleCount = 0;
-      let tsExamples: FewShotExample[] = [];
+      // 2. Load TypeScript examples directly (no compilation needed)
+      const tsExamples = ALL_CATEGORY_EXAMPLES;
+      const tsExampleCount = tsExamples.length;
       
-      try {
-        // Check if compiled examples file exists
-        if (fs.existsSync(this.compiledExamplesPath)) {
-          const compiledContent = await fs.promises.readFile(this.compiledExamplesPath, 'utf-8');
-          const compiledData = JSON.parse(compiledContent);
-          
-          tsExamples = compiledData.allExamples || [];
-          tsExampleCount = tsExamples.length;
-          
-          if (!this.database) {
-            throw new Error('Database structure invalid');
-          }
-          
-          // Create categories for new examples if they don't exist
-          const categoryMap: Record<string, string> = {
-            'manifest_permission': 'manifest',
-            'MANIFEST_PERMISSION': 'manifest',
-            'build_cache': 'cache',
-            'BUILD_CACHE': 'cache',
-            'proguard_minification': 'proguard',
-            'PROGUARD_MINIFICATION': 'proguard',
-            'navigation_routing': 'navigation',
-            'NAVIGATION_ROUTING': 'navigation',
-            'network_connectivity': 'network',
-            'NETWORK_CONNECTIVITY': 'network',
-          };
-          
-          for (const example of tsExamples) {
-            const dbCategory = categoryMap[example.errorType] || example.errorType.toLowerCase();
-            
-            if (!this.database.categories[dbCategory]) {
-              this.database.categories[dbCategory] = {
-                description: `${dbCategory} error examples`,
-                examples: []
-              };
-            }
-            
-            this.database.categories[dbCategory].examples.push(example);
-          }
-          
-          // Store combined examples
-          this.allExamples = [
-            ...this.getAllExamplesFromDatabase(),
-            ...tsExamples
-          ];
-        } else {
-          console.warn('⚠️  Compiled TypeScript examples not found, run: npm run build:examples');
-          this.allExamples = this.getAllExamplesFromDatabase();
-        }
-      } catch (tsError) {
-        console.warn('⚠️  Could not load TypeScript examples:', tsError);
-        this.allExamples = this.getAllExamplesFromDatabase();
+      if (!this.database) {
+        throw new Error('Database structure invalid');
       }
       
+      // 3. Merge TypeScript examples into database categories
+      const categoryMap: Record<string, string> = {
+        'manifest_permission': 'manifest',
+        'MANIFEST_PERMISSION': 'manifest',
+        'build_cache': 'cache',
+        'BUILD_CACHE': 'cache',
+        'proguard_minification': 'proguard',
+        'PROGUARD_MINIFICATION': 'proguard',
+        'navigation_routing': 'navigation',
+        'NAVIGATION_ROUTING': 'navigation',
+        'network_connectivity': 'network',
+        'NETWORK_CONNECTIVITY': 'network',
+      };
+      
+      for (const example of tsExamples) {
+        const dbCategory = categoryMap[example.errorType] || example.errorType.toLowerCase();
+        
+        if (!this.database.categories[dbCategory]) {
+          this.database.categories[dbCategory] = {
+            description: `${dbCategory} error examples`,
+            examples: []
+          };
+        }
+        
+        this.database.categories[dbCategory].examples.push(example);
+      }
+      
+      // 4. Store combined examples
+      this.allExamples = [
+        ...this.getAllExamplesFromDatabase(),
+        ...tsExamples
+      ];
+      
       const totalCount = jsonExampleCount + tsExampleCount;
-      console.log(`✅ Loaded ${totalCount} few-shot examples (${jsonExampleCount} JSON + ${tsExampleCount} TypeScript) v${this.database?.version}`);
+      console.log(`✅ Loaded ${totalCount} few-shot examples (${jsonExampleCount} JSON + ${tsExampleCount} TS) v${this.database?.version}`);
       
     } catch (error) {
       // In test environment, it's OK if few-shot examples aren't available

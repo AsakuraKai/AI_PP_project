@@ -25,6 +25,17 @@ tests/fixtures/**/build/
 # TypeScript
 *.tsbuildinfo
 
+# TypeScript compiled output (added during CHUNK consolidation cleanup)
+**/*.js
+**/*.js.map
+**/*.d.ts
+**/*.d.ts.map
+
+# Exceptions - keep config files
+!jest.config.js
+!*.config.js
+!vscode-extension/out/**/*.js
+
 # IDE
 .vscode/*
 !.vscode/launch.json

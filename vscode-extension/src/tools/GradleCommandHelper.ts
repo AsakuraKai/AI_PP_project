@@ -15,8 +15,7 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { ExecuteCommandTool } from './ExecuteCommandTool';
-import { CommandResult } from './TerminalTool';
+import { TerminalTool, CommandResult } from './TerminalTool';
 import { Tool, ToolMetadata } from './ToolRegistry';
 
 interface GradleCommandParams {
@@ -42,7 +41,7 @@ export class GradleCommandHelper implements Tool<GradleCommandParams, CommandRes
 
   private gradlewPath: string;
   
-  constructor(private executeTool: ExecuteCommandTool) {
+  constructor(private terminalTool: TerminalTool) {
     const workspaceRoot = vscode.workspace.workspaceFolders?.[0].uri.fsPath || '';
     
     // Detect gradlew or gradlew.bat
@@ -81,49 +80,49 @@ export class GradleCommandHelper implements Tool<GradleCommandParams, CommandRes
    * Run gradle clean
    */
   async clean(): Promise<CommandResult> {
-    return await this.executeTool.executeCommand(`${this.gradlewPath} clean`);
+    return await this.terminalTool.execute({ command: `${this.gradlewPath} clean` });
   }
   
   /**
    * Run gradle build
    */
   async build(): Promise<CommandResult> {
-    return await this.executeTool.executeCommand(`${this.gradlewPath} build`);
+    return await this.terminalTool.execute({ command: `${this.gradlewPath} build` });
   }
   
   /**
    * Run gradle assembleDebug
    */
   async assembleDebug(): Promise<CommandResult> {
-    return await this.executeTool.executeCommand(`${this.gradlewPath} assembleDebug`);
+    return await this.terminalTool.execute({ command: `${this.gradlewPath} assembleDebug` });
   }
   
   /**
    * Run gradle dependencies (show dependency tree)
    */
   async dependencies(): Promise<CommandResult> {
-    return await this.executeTool.executeCommand(`${this.gradlewPath} dependencies`);
+    return await this.terminalTool.execute({ command: `${this.gradlewPath} dependencies` });
   }
   
   /**
    * Run gradle tasks (list all available tasks)
    */
   async tasks(): Promise<CommandResult> {
-    return await this.executeTool.executeCommand(`${this.gradlewPath} tasks`);
+    return await this.terminalTool.execute({ command: `${this.gradlewPath} tasks` });
   }
   
   /**
    * Sync gradle (refresh dependencies)
    */
   async sync(): Promise<CommandResult> {
-    return await this.executeTool.executeCommand(`${this.gradlewPath} --refresh-dependencies`);
+    return await this.terminalTool.execute({ command: `${this.gradlewPath} --refresh-dependencies` });
   }
   
   /**
    * Check gradle version
    */
   async version(): Promise<CommandResult> {
-    return await this.executeTool.executeCommand(`${this.gradlewPath} --version`);
+    return await this.terminalTool.execute({ command: `${this.gradlewPath} --version` });
   }
   
   /**
@@ -132,6 +131,6 @@ export class GradleCommandHelper implements Tool<GradleCommandParams, CommandRes
    * @param task - Task name (e.g., "app:assembleRelease")
    */
   async customTask(task: string): Promise<CommandResult> {
-    return await this.executeTool.executeCommand(`${this.gradlewPath} ${task}`);
+    return await this.terminalTool.execute({ command: `${this.gradlewPath} ${task}` });
   }
 }

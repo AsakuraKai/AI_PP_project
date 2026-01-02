@@ -26,20 +26,14 @@ import { KotlinParser } from './parsers/KotlinParser';
 import { GradleParser } from './parsers/GradleParser';
 import { JetpackComposeParser } from './parsers/JetpackComposeParser';
 import { XMLParser } from './parsers/XMLParser';
-
-/**
- * Interface for language-specific parsers
- */
-interface LanguageParser {
-  parse(errorText: string): ParsedError | null;
-}
+import { IParser } from './parsers/BaseParser';
 
 /**
  * Main error parser with automatic language detection
  */
 export class ErrorParser {
   private static instance: ErrorParser;
-  private parsers: Map<string, LanguageParser>;
+  private parsers: Map<string, IParser>;
 
   private constructor() {
     this.parsers = new Map();
@@ -71,9 +65,9 @@ export class ErrorParser {
    * Register a custom parser for a language
    * 
    * @param language - Language identifier
-   * @param parser - Parser instance implementing LanguageParser interface
+   * @param parser - Parser instance implementing IParser interface
    */
-  registerParser(language: string, parser: LanguageParser): void {
+  registerParser(language: string, parser: IParser): void {
     this.parsers.set(language.toLowerCase(), parser);
   }
 
@@ -191,7 +185,7 @@ export class ErrorParser {
   /**
    * Get parser for specific language (for testing or direct use)
    */
-  getParser(language: string): LanguageParser | undefined {
+  getParser(language: string): IParser | undefined {
     return this.parsers.get(language.toLowerCase());
   }
 

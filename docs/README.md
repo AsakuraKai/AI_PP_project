@@ -53,20 +53,102 @@ See [TESTING_COMPLETE.md](TESTING_COMPLETE.md) for comprehensive test results an
 
 ## 🏁 Quick Start
 
-### Prerequisites
+### Prerequisites (10 minutes)
 ```bash
-# Install Ollama (Windows)
+# Install Ollama (LLM Server)
+# Windows:
 winget install Ollama.Ollama
 
-# Download model (5GB, ~10 min)
+# Mac/Linux:
+curl -fsSL https://ollama.ai/install.sh | sh
+
+# Download AI Model (~5GB, 5-10 min depending on internet)
 ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
 
-# Test it works
-ollama run hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest "Hello"
+# Start Ollama Server
+ollama serve
+
+# Verify it's running
+# Windows PowerShell:
+Invoke-RestMethod -Uri http://localhost:11434/api/tags
+# Mac/Linux:
+curl http://localhost:11434/api/tags
 
 # Install Docker for ChromaDB
 winget install Docker.DockerDesktop
 ```
+
+### Project Setup
+```bash
+# Clone and install
+git clone <your-repo>
+cd AI_PP_project
+npm install
+
+# Build
+npm run build
+
+# Run tests
+npm test
+```
+
+### VS Code Extension Setup (2 minutes)
+
+**Option A: Install from VSIX**
+1. Open VS Code
+2. Press `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (Mac)
+3. Type "Extensions: Install from VSIX" and press Enter
+4. Navigate to and select `rca-agent-extension-0.1.0.vsix`
+5. Click "Reload Now" when prompted
+
+**Option B: Build from Source**
+```bash
+cd vscode-extension
+npm install
+npm run compile
+npm install -g @vscode/vsce
+vsce package
+# Then use Option A to install the generated .vsix file
+```
+
+### Test It! (1 minute)
+
+1. **Copy this test error:**
+   ```
+   Exception in thread "main" kotlin.UninitializedPropertyAccessException: lateinit property myProperty has not been initialized
+       at com.example.MyClass.useProperty(MyClass.kt:15)
+   ```
+
+2. **Analyze it:**
+   - Paste error in any file
+   - Press `Ctrl+Shift+R` (Windows/Linux) or `Cmd+Shift+R` (Mac)
+
+3. **View results** in "RCA Agent" output panel (bottom → OUTPUT tab)
+
+### Usage Methods
+
+**Method 1: From Selection** (Fastest)
+1. Select error text in editor
+2. Press `Ctrl+Shift+R` (`Cmd+Shift+R` on Mac)
+3. Results in OUTPUT panel → "RCA Agent"
+
+**Method 2: Command Palette**
+1. Press `Ctrl+Shift+P` (`Cmd+Shift+P` on Mac)
+2. Type "RCA Agent: Analyze Error"
+3. Paste error in input box
+
+**Method 3: Webview Mode** (Best Visual Experience)
+1. Select error text
+2. Press `Ctrl+Shift+W` (`Cmd+Shift+W` on Mac)
+3. Interactive panel opens on right
+
+### Keyboard Shortcuts
+
+| Action | Windows/Linux | macOS |
+|--------|---------------|-------|
+| Analyze Error (Output) | `Ctrl+Shift+R` | `Cmd+Shift+R` |
+| Analyze Error (Webview) | `Ctrl+Shift+W` | `Cmd+Shift+W` |
+| Educational Mode | `Ctrl+Shift+E` | `Cmd+Shift+E` |
 
 ### Common Commands
 ```bash
@@ -85,20 +167,6 @@ npm run test:accuracy       # Accuracy validation (requires Ollama)
 npm run test:golden         # Golden test suite (requires Ollama)
 npm run bench               # Performance benchmarks
 npm run test:coverage       # Test coverage report
-```
-
-### Project Setup
-```bash
-# Clone and install
-git clone <your-repo>
-cd AI_PP_project
-npm install
-
-# Build
-npm run build
-
-# Run tests
-npm test
 ```
 
 ---

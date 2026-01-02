@@ -54,6 +54,8 @@ export interface AgentConfig {
   generateFix?: boolean; // Chunk 5: Enable fix generation
   projectRoot?: string; // Chunk 7: Project root for FileResolver integration
   enableProgressivePrompting?: boolean; // Phase 3 (optional): fast-path prompting
+  tools?: ToolRegistry; // Optional: provided for compatibility, uses singleton instead
+  enableCaching?: boolean; // Optional: caching flag
 }
 
 export class MinimalReactAgent {

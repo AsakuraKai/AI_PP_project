@@ -2,9 +2,11 @@
  * Accessibility Service
  * Provides ARIA labels, keyboard navigation support, and screen reader compatibility
  * WCAG 2.1 AA Compliance
+ * CHUNK 9-10 Consolidation: Uses BaseService
  */
 
 import * as vscode from 'vscode';
+import { BaseService, SingletonService } from './BaseService';
 
 export interface AriaLabelConfig {
   role: string;
@@ -16,17 +18,12 @@ export interface AriaLabelConfig {
   live?: 'polite' | 'assertive' | 'off';
 }
 
-export class AccessibilityService {
-  private static instance: AccessibilityService;
+@SingletonService
+export class AccessibilityService extends BaseService {
   private announcements: string[] = [];
 
-  private constructor() {}
-
-  static getInstance(): AccessibilityService {
-    if (!AccessibilityService.instance) {
-      AccessibilityService.instance = new AccessibilityService();
-    }
-    return AccessibilityService.instance;
+  constructor() {
+    super({ configurationPrefix: 'rcaAgent.accessibility' });
   }
 
   /**

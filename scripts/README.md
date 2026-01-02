@@ -2,6 +2,59 @@
 
 This directory contains scripts for testing and benchmarking the RCA Agent.
 
+**⚡ Updated:** January 2, 2026 - Test infrastructure consolidation (Chunks 1 & 2)
+
+---
+
+## 🎯 Recent Consolidations
+
+### ✅ CHUNK 2: MVP Test Scripts (Jan 2, 2026)
+**Consolidated 3 duplicate MVP test scripts → 1 unified test runner**
+
+**Before:**
+- `simple-mvp-test.ts` (215 lines)
+- `simple-mvp-test-v2.ts` (309 lines)  
+- `test-mvp-project.ts` (418 lines)
+- **Total:** 942 lines with ~44% duplication
+
+**After:**
+- `unified-mvp-test.ts` (530 lines)
+- **Code reduction:** 412 lines (44% reduction)
+- **Deprecated scripts moved to:** `_deprecated_mvp/`
+
+**Quick Usage:**
+```bash
+# Simple output
+npx ts-node scripts/unified-mvp-test.ts --simple
+
+# Detailed output with report
+npx ts-node scripts/unified-mvp-test.ts --detailed
+
+# With specificity validation
+npx ts-node scripts/unified-mvp-test.ts --validation
+```
+
+See [CHUNK 2 details](_deprecated_mvp/README.md) for migration guide.
+
+---
+
+## 🚀 Quick Start (New Unified System)
+
+### Run All Tests
+```bash
+npm run test:all              # Run all 10 test cases
+npm run test:case=1,6,7       # Run specific cases
+```
+
+### Phase Validation
+```bash
+npm run test:phase1           # Phase 1 validation (Tests 6-10)
+npm run test:phase2           # Phase 2 validation (Tests 1-2)
+```
+
+### Legacy Commands
+Old test runner files have been moved to `_deprecated_chunk1/`. See [CHUNK1_CONSOLIDATION.md](../docs/CHUNK1_CONSOLIDATION.md) for details.
+
 ---
 
 ## 📝 Scripts Overview

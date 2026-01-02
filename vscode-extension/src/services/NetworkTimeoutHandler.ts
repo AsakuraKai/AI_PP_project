@@ -1,9 +1,11 @@
 /**
  * Network Timeout Handler for RCA Agent
  * Handles Ollama connection timeouts, retries, and graceful degradation
+ * CHUNK 9-10 Consolidation: Uses BaseService
  */
 
 import * as vscode from 'vscode';
+import { BaseService, SingletonService } from './BaseService';
 
 export interface TimeoutConfig {
   connectionTimeout: number;      // Initial connection timeout (ms)
@@ -23,31 +25,24 @@ export interface TimeoutResult<T> {
   duration: number;
 }
 
-export class NetworkTimeoutHandler {
-  private static _instance: NetworkTimeoutHandler;
+@SingletonService
+export class NetworkTimeoutHandler extends BaseService {
   private _config: TimeoutConfig;
   private _activeTimeouts: Map<string, NodeJS.Timeout> = new Map();
 
-  private constructor() {
-    this._config = this.loadConfig();
+  constructor() {
+    super({ configurationPrefix: 'rcaAgent.network' });
+    this._config = this.loadTimeoutConfig();
   }
 
-  static getInstance(): NetworkTimeoutHandler {
-    if (!NetworkTimeoutHandler._instance) {
-      NetworkTimeoutHandler._instance = new NetworkTimeoutHandler();
-    }
-    return NetworkTimeoutHandler._instance;
-  }
-
-  private loadConfig(): TimeoutConfig {
-    const config = vscode.workspace.getConfiguration('rcaAgent');
+  private loadTimeoutConfig(): TimeoutConfig {
     return {
-      connectionTimeout: config.get<number>('network.connectionTimeout', 5000),
-      analysisTimeout: config.get<number>('network.analysisTimeout', 30000),
-      totalTimeout: config.get<number>('network.totalTimeout', 180000),
-      retryAttempts: config.get<number>('network.retryAttempts', 3),
-      retryDelay: config.get<number>('network.retryDelay', 1000),
-      exponentialBackoff: config.get<boolean>('network.exponentialBackoff', true),
+      connectionTimeout: this.getConfig<number>('connectionTimeout', 5000),
+      analysisTimeout: this.getConfig<number>('analysisTimeout', 30000),
+      totalTimeout: this.getConfig<number>('totalTimeout', 180000),
+      retryAttempts: this.getConfig<number>('retryAttempts', 3),
+      retryDelay: this.getConfig<number>('retryDelay', 1000),
+      exponentialBackoff: this.getConfig<boolean>('exponentialBackoff', true),
     };
   }
 

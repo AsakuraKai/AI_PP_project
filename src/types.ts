@@ -22,7 +22,7 @@ export interface ParsedError {
   line: number;
   
   /** Programming language */
-  language: 'kotlin' | 'java' | 'xml' | 'gradle';
+  language: 'kotlin' | 'java' | 'xml' | 'gradle' | 'proguard';
   
   /** Optional: Framework/library (e.g., 'compose', 'android') - added in Chunk 4.1 */
   framework?: string;

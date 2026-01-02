@@ -1,14 +1,15 @@
 /**
- * Unit tests for KotlinNPEParser
+ * Unit tests for KotlinParser - NPE and lateinit functionality
+ * (consolidated from KotlinNPEParser)
  */
 
-import { KotlinNPEParser } from '../../src/utils/KotlinNPEParser';
+import { KotlinParser } from '../../src/utils/parsers/KotlinParser';
 
-describe('KotlinNPEParser', () => {
-  let parser: KotlinNPEParser;
+describe('KotlinParser - NPE and lateinit errors', () => {
+  let parser: KotlinParser;
 
   beforeEach(() => {
-    parser = new KotlinNPEParser();
+    parser = new KotlinParser();
   });
 
   describe('parse()', () => {
@@ -167,29 +168,29 @@ describe('KotlinNPEParser', () => {
 
   describe('isKotlinError()', () => {
     it('should identify .kt file references', () => {
-      expect(KotlinNPEParser.isKotlinError('Error at MainActivity.kt:45')).toBe(true);
+      expect(KotlinParser.isKotlinError('Error at MainActivity.kt:45')).toBe(true);
     });
 
     it('should identify lateinit keyword', () => {
-      expect(KotlinNPEParser.isKotlinError('lateinit property not initialized')).toBe(true);
+      expect(KotlinParser.isKotlinError('lateinit property not initialized')).toBe(true);
     });
 
     it('should identify kotlin namespace', () => {
-      expect(KotlinNPEParser.isKotlinError('kotlin.UninitializedPropertyAccessException')).toBe(true);
+      expect(KotlinParser.isKotlinError('kotlin.UninitializedPropertyAccessException')).toBe(true);
     });
 
     it('should return false for non-Kotlin errors', () => {
-      expect(KotlinNPEParser.isKotlinError('TypeError in file.js')).toBe(false);
+      expect(KotlinParser.isKotlinError('TypeError in file.js')).toBe(false);
     });
 
     it('should handle empty input', () => {
-      expect(KotlinNPEParser.isKotlinError('')).toBe(false);
+      expect(KotlinParser.isKotlinError('')).toBe(false);
     });
   });
 
   describe('getSupportedTypes()', () => {
     it('should return array of supported error types', () => {
-      const types = KotlinNPEParser.getSupportedTypes();
+      const types = KotlinParser.getSupportedTypes();
       
       expect(Array.isArray(types)).toBe(true);
       expect(types).toContain('lateinit');
