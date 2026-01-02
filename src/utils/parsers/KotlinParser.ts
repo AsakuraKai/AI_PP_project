@@ -1,17 +1,19 @@
 /**
- * KotlinParser - Comprehensive parser for Kotlin errors
+ * KotlinParser - Comprehensive parser for all Kotlin errors
  * 
- * Extends KotlinNPEParser to handle additional Kotlin error types:
+ * Handles all Kotlin error types:
+ * - lateinit property errors
+ * - NullPointerException and IndexOutOfBoundsException
  * - Unresolved reference errors
  * - Type mismatch errors
  * - Compilation errors
  * - Import errors
- * - lateinit and NPE errors (from KotlinNPEParser)
  * 
  * Design Philosophy:
- * - Composition over inheritance (uses KotlinNPEParser)
+ * - Extends BaseParser for shared utilities
  * - Pattern matching for each error type
  * - Extract maximum context for debugging
+ * - Consolidated from KotlinNPEParser (no longer separate)
  * 
  * @example
  * const parser = new KotlinParser();
@@ -22,14 +24,15 @@
  */
 
 import { ParsedError } from '../../types';
-import { KotlinNPEParser } from '../KotlinNPEParser';
+import { BaseParser } from './BaseParser';
 
-export class KotlinParser {
-  private npeParser: KotlinNPEParser;
-
-  constructor() {
-    this.npeParser = new KotlinNPEParser();
-  }
+export class KotlinParser extends BaseParser {
+  // Regex patterns for lateinit and NPE errors
+  private static readonly NPE_PATTERNS = {
+    lateinit: /lateinit property (\w+) has not been initialized/i,
+    npe: /(?:NullPointerException|IndexOutOfBoundsException)/i,
+    uninitializedProperty: /UninitializedPropertyAccessException.*lateinit property (\w+)/i,
+  };
 
   /**
    * Parse Kotlin error text into structured format
@@ -43,11 +46,11 @@ export class KotlinParser {
       return null;
     }
 
-    // Trim and limit size
-    const text = errorText.trim().slice(0, 100000);
+    // Sanitize input
+    const text = this.sanitizeInput(errorText, 100000);
 
-    // Try parsing with KotlinNPEParser first (lateinit, NPE)
-    const npeError = this.npeParser.parse(text);
+    // Try parsing lateinit and NPE errors first (most common)
+    const npeError = this.parseLateinitOrNPE(text);
     if (npeError) {
       return npeError;
     }
@@ -60,6 +63,94 @@ export class KotlinParser {
       this.parseCompilationError(text) ||
       null
     );
+  }
+
+  /**
+   * Parse lateinit and NullPointerException errors
+   * Consolidated from KotlinNPEParser
+   */
+  private parseLateinitOrNPE(text: string): ParsedError | null {
+    // Try lateinit errors first
+    const lateinitError = this.parseLateinitError(text);
+    if (lateinitError) {
+      return lateinitError;
+    }
+
+    // Try NPE errors
+    return this.parseNPE(text);
+  }
+
+  /**
+   * Parse lateinit property access error
+   */
+  private parseLateinitError(text: string): ParsedError | null {
+    // Check for lateinit pattern
+    const lateinitMatch = text.match(KotlinParser.NPE_PATTERNS.lateinit);
+    if (!lateinitMatch) {
+      // Try UninitializedPropertyAccessException format
+      const uninitMatch = text.match(KotlinParser.NPE_PATTERNS.uninitializedProperty);
+      if (!uninitMatch) {
+        return null;
+      }
+      
+      const propertyName = uninitMatch[1];
+      const { filePath, line, stackTrace } = this.extractStackInfo(text, 'kt');
+
+      return {
+        type: 'lateinit',
+        message: text,
+        filePath,
+        line,
+        language: 'kotlin',
+        stackTrace,
+        metadata: {
+          propertyName,
+          errorType: 'UninitializedPropertyAccessException',
+        },
+      };
+    }
+
+    const propertyName = lateinitMatch[1];
+    const { filePath, line, stackTrace } = this.extractStackInfo(text, 'kt');
+
+    return {
+      type: 'lateinit',
+      message: text,
+      filePath,
+      line,
+      language: 'kotlin',
+      stackTrace,
+      metadata: {
+        propertyName,
+        errorType: 'lateinit property not initialized',
+      },
+    };
+  }
+
+  /**
+   * Parse standard NullPointerException and IndexOutOfBoundsException
+   */
+  private parseNPE(text: string): ParsedError | null {
+    if (!KotlinParser.NPE_PATTERNS.npe.test(text)) {
+      return null;
+    }
+
+    const { filePath, line, stackTrace } = this.extractStackInfo(text, 'kt');
+    
+    // Determine specific error type
+    const isIndexOutOfBounds = /IndexOutOfBoundsException/i.test(text);
+
+    return {
+      type: 'npe',
+      message: text,
+      filePath,
+      line,
+      language: 'kotlin',
+      stackTrace,
+      metadata: {
+        errorType: isIndexOutOfBounds ? 'IndexOutOfBoundsException' : 'NullPointerException',
+      },
+    };
   }
 
   /**
@@ -77,7 +168,7 @@ export class KotlinParser {
       const match = text.match(pattern);
       if (match) {
         const symbolName = match[1];
-        const { filePath, line } = this.extractFileInfo(text);
+        const { filePath, line } = this.extractFileInfo(text, 'kt');
 
         return {
           type: 'unresolved_reference',
@@ -112,7 +203,7 @@ export class KotlinParser {
       if (match) {
         const foundType = match[2] || match[1];
         const expectedType = match[1] || match[2];
-        const { filePath, line } = this.extractFileInfo(text);
+        const { filePath, line } = this.extractFileInfo(text, 'kt');
 
         return {
           type: 'type_mismatch',
@@ -148,7 +239,7 @@ export class KotlinParser {
     for (const pattern of patterns) {
       const match = text.match(pattern);
       if (match) {
-        const { filePath, line } = this.extractFileInfo(text);
+        const { filePath, line } = this.extractFileInfo(text, 'kt');
         const description = match[1] || match[0];
 
         return {
@@ -193,7 +284,7 @@ export class KotlinParser {
       const match = text.match(pattern);
       if (match) {
         const packageName = match[1];
-        const { filePath, line } = this.extractFileInfo(text);
+        const { filePath, line } = this.extractFileInfo(text, 'kt');
 
         return {
           type: 'import_error',
@@ -213,43 +304,6 @@ export class KotlinParser {
   }
 
   /**
-   * Extract file path and line number from error text
-   */
-  private extractFileInfo(text: string): { filePath: string; line: number } {
-    // Try standard compiler format: "file.kt:line:column"
-    const compilerMatch = text.match(/(\w+\.kt):(\d+):(\d+)/);
-    if (compilerMatch) {
-      return {
-        filePath: compilerMatch[1],
-        line: parseInt(compilerMatch[2], 10),
-      };
-    }
-
-    // Try simplified format: "file.kt:line"
-    const simpleMatch = text.match(/(\w+\.kt):(\d+)/);
-    if (simpleMatch) {
-      return {
-        filePath: simpleMatch[1],
-        line: parseInt(simpleMatch[2], 10),
-      };
-    }
-
-    // Try format with path: "at path/file.kt (file.kt:line)"
-    const pathMatch = text.match(/\(([\w.]+\.kt):(\d+)\)/);
-    if (pathMatch) {
-      return {
-        filePath: pathMatch[1],
-        line: parseInt(pathMatch[2], 10),
-      };
-    }
-
-    return {
-      filePath: 'unknown',
-      line: 0,
-    };
-  }
-
-  /**
    * Quick check if text contains Kotlin error patterns
    * Useful for routing before full parsing
    */
@@ -264,8 +318,25 @@ export class KotlinParser {
       /coroutine/i,
       /Unresolved reference/i,
       /Type mismatch/i,
+      /NullPointerException/i,
+      /IndexOutOfBoundsException/i,
+      /UninitializedPropertyAccessException/i,
     ];
 
     return kotlinIndicators.some(pattern => pattern.test(text));
+  }
+
+  /**
+   * Get supported error types
+   */
+  static getSupportedTypes(): string[] {
+    return [
+      'lateinit',
+      'npe',
+      'unresolved_reference',
+      'type_mismatch',
+      'compilation_error',
+      'import_error',
+    ];
   }
 }

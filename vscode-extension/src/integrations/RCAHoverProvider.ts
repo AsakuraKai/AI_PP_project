@@ -1,6 +1,7 @@
 /**
  * Hover Provider for RCA Agent
  * Shows inline error explanations when hovering over errors
+ * CHUNK 9-10 Consolidation: Uses BaseProvider
  * 
  * Features:
  * - Shows brief error explanation on hover
@@ -10,20 +11,30 @@
  */
 
 import * as vscode from 'vscode';
+import { BaseProvider } from './BaseProvider';
 import { ErrorQueueManager } from '../panel/ErrorQueueManager';
 import { AnalysisService } from '../services/AnalysisService';
 
-export class RCAHoverProvider implements vscode.HoverProvider {
-  private errorQueueManager: ErrorQueueManager;
+interface CachedAnalysis {
+  result: QuickAnalysisResult;
+  timestamp: number;
+}
+
+interface QuickAnalysisResult {
+  message: string;
+  confidence?: number;
+  fixes?: string[];
+}
+
+export class RCAHoverProvider extends BaseProvider implements vscode.HoverProvider {
   private analysisService: AnalysisService | null;
   private analysisCache: Map<string, CachedAnalysis> = new Map();
-  private readonly CACHE_TTL = 60000; // 1 minute cache
 
   constructor(
     errorQueueManager: ErrorQueueManager,
     analysisService: AnalysisService | null
   ) {
-    this.errorQueueManager = errorQueueManager;
+    super({ errorQueueManager, cacheTTL: 60000 }); // 1 minute cache
     this.analysisService = analysisService;
   }
 
@@ -39,15 +50,7 @@ export class RCAHoverProvider implements vscode.HoverProvider {
     const diagnostics = vscode.languages.getDiagnostics(document.uri);
     const relevantDiagnostic = this.findDiagnosticAtPosition(diagnostics, position);
 
-    if (!relevantDiagnostic) {
-      return undefined;
-    }
-
-    // Check if this is an error or warning
-    if (
-      relevantDiagnostic.severity !== vscode.DiagnosticSeverity.Error &&
-      relevantDiagnostic.severity !== vscode.DiagnosticSeverity.Warning
-    ) {
+    if (!relevantDiagnostic || !this.isErrorOrWarning(relevantDiagnostic)) {
       return undefined;
     }
 
@@ -65,17 +68,7 @@ export class RCAHoverProvider implements vscode.HoverProvider {
     return new vscode.Hover(hoverContent, relevantDiagnostic.range);
   }
 
-  /**
-   * Find diagnostic at the given position
-   */
-  private findDiagnosticAtPosition(
-    diagnostics: vscode.Diagnostic[],
-    position: vscode.Position
-  ): vscode.Diagnostic | undefined {
-    return diagnostics.find(diagnostic => 
-      diagnostic.range.contains(position)
-    );
-  }
+  // findDiagnosticAtPosition is now provided by BaseProvider
 
   /**
    * Generate hover content for a diagnostic
@@ -143,14 +136,14 @@ export class RCAHoverProvider implements vscode.HoverProvider {
   ): Promise<QuickAnalysisResult | null> {
     const cacheKey = this.generateCacheKey(document.uri, diagnostic);
     
-    // Check cache first
-    const cached = this.analysisCache.get(cacheKey);
-    if (cached && Date.now() - cached.timestamp < this.CACHE_TTL) {
-      return cached.result;
+    // Check cache first using BaseProvider's cache
+    const cached = this.getCached<QuickAnalysisResult>(cacheKey);
+    if (cached) {
+      return cached;
     }
 
     // Check if error is in queue and already analyzed
-    const queuedError = this.errorQueueManager.getAllErrors().find(error =>
+    const queuedError = this.errorQueueManager?.getAllErrors().find(error =>
       error.filePath === document.uri.fsPath &&
       error.line === diagnostic.range.start.line &&
       error.message === diagnostic.message
@@ -163,7 +156,7 @@ export class RCAHoverProvider implements vscode.HoverProvider {
         suggestedAction: this.extractQuickFix(queuedError.analysisResult.fixGuidelines)
       };
       
-      this.cacheAnalysis(cacheKey, result);
+      this.setCached(cacheKey, result);
       return result;
     }
 
@@ -194,22 +187,7 @@ export class RCAHoverProvider implements vscode.HoverProvider {
     return fixGuidelines[0]; // Return first guideline
   }
 
-  /**
-   * Get severity icon
-   */
-  private getSeverityIcon(severity: vscode.DiagnosticSeverity): string {
-    switch (severity) {
-      case vscode.DiagnosticSeverity.Error:
-        return '🔴';
-      case vscode.DiagnosticSeverity.Warning:
-        return '🟡';
-      case vscode.DiagnosticSeverity.Information:
-        return 'ℹ️';
-      case vscode.DiagnosticSeverity.Hint:
-        return '💡';
-      default:
-        return '⚪';
-    }
+  // getSeverityIcon is now provided by BaseProvider
   }
 
   /**
@@ -281,10 +259,3 @@ interface QuickAnalysisResult {
   suggestedAction?: string;
 }
 
-/**
- * Cached analysis with timestamp
- */
-interface CachedAnalysis {
-  result: QuickAnalysisResult;
-  timestamp: number;
-}

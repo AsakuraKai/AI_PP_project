@@ -1,9 +1,11 @@
 /**
  * Feature Flag Manager
  * Controls feature flags and experimental UI toggle
+ * CHUNK 9-10 Consolidation: Uses BaseService
  */
 
 import * as vscode from 'vscode';
+import { BaseService, SingletonService } from './BaseService';
 
 export interface FeatureFlags {
   newUI: boolean;
@@ -13,36 +15,29 @@ export interface FeatureFlags {
   experimentalFeatures: boolean;
 }
 
-export class FeatureFlagManager {
-  private static instance: FeatureFlagManager;
+@SingletonService
+export class FeatureFlagManager extends BaseService {
   private flags: FeatureFlags;
   private onFlagChangeEmitter = new vscode.EventEmitter<{ flag: string; value: boolean }>();
   public readonly onFlagChange = this.onFlagChangeEmitter.event;
 
-  private constructor() {
+  constructor() {
+    super({ configurationPrefix: 'rcaAgent.experimental' });
+    this.disposables.push(this.onFlagChangeEmitter);
     this.flags = this.loadFlags();
     this.registerConfigurationListener();
-  }
-
-  static getInstance(): FeatureFlagManager {
-    if (!FeatureFlagManager.instance) {
-      FeatureFlagManager.instance = new FeatureFlagManager();
-    }
-    return FeatureFlagManager.instance;
   }
 
   /**
    * Load feature flags from VS Code settings
    */
   private loadFlags(): FeatureFlags {
-    const config = vscode.workspace.getConfiguration('rcaAgent.experimental');
-    
     return {
-      newUI: config.get<boolean>('newUI', true), // Default to true (new UI)
-      advancedDiagnostics: config.get<boolean>('advancedDiagnostics', false),
-      batchAnalysis: config.get<boolean>('batchAnalysis', true),
-      performanceMetrics: config.get<boolean>('performanceMetrics', false),
-      experimentalFeatures: config.get<boolean>('experimentalFeatures', false)
+      newUI: this.getConfig<boolean>('newUI', true),
+      advancedDiagnostics: this.getConfig<boolean>('advancedDiagnostics', false),
+      batchAnalysis: this.getConfig<boolean>('batchAnalysis', true),
+      performanceMetrics: this.getConfig<boolean>('performanceMetrics', false),
+      experimentalFeatures: this.getConfig<boolean>('experimentalFeatures', false)
     };
   }
 
@@ -50,19 +45,17 @@ export class FeatureFlagManager {
    * Register listener for configuration changes
    */
   private registerConfigurationListener(): void {
-    vscode.workspace.onDidChangeConfiguration(event => {
-      if (event.affectsConfiguration('rcaAgent.experimental')) {
-        const oldFlags = { ...this.flags };
-        this.flags = this.loadFlags();
-        
-        // Notify listeners of flag changes
-        Object.keys(this.flags).forEach(flag => {
-          const key = flag as keyof FeatureFlags;
-          if (oldFlags[key] !== this.flags[key]) {
-            this.onFlagChangeEmitter.fire({ flag, value: this.flags[key] });
-          }
-        });
-      }
+    this.onConfigChange(() => {
+      const oldFlags = { ...this.flags };
+      this.flags = this.loadFlags();
+      
+      // Notify listeners of flag changes
+      Object.keys(this.flags).forEach(flag => {
+        const key = flag as keyof FeatureFlags;
+        if (oldFlags[key] !== this.flags[key]) {
+          this.onFlagChangeEmitter.fire({ flag, value: this.flags[key] });
+        }
+      });
     });
   }
 
@@ -84,8 +77,7 @@ export class FeatureFlagManager {
    * Enable a feature flag programmatically
    */
   async enableFlag(flag: keyof FeatureFlags): Promise<void> {
-    const config = vscode.workspace.getConfiguration('rcaAgent.experimental');
-    await config.update(flag, true, vscode.ConfigurationTarget.Global);
+    await this.updateConfig(flag, true);
     this.flags[flag] = true;
     this.onFlagChangeEmitter.fire({ flag, value: true });
   }
@@ -94,8 +86,7 @@ export class FeatureFlagManager {
    * Disable a feature flag programmatically
    */
   async disableFlag(flag: keyof FeatureFlags): Promise<void> {
-    const config = vscode.workspace.getConfiguration('rcaAgent.experimental');
-    await config.update(flag, false, vscode.ConfigurationTarget.Global);
+    await this.updateConfig(flag, false);
     this.flags[flag] = false;
     this.onFlagChangeEmitter.fire({ flag, value: false });
   }

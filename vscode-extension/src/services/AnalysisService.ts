@@ -10,7 +10,7 @@
  */
 
 import * as vscode from 'vscode';
-import { ErrorItem, AnalysisProgress } from '../panel/types';
+import { ErrorItem, AgentState } from '../panel/types';  // Use shared AgentState (Chunk 6 Consolidation)
 import { RCAResult as ExtensionRCAResult } from '../panel/types';
 import { RCAResult as BackendRCAResult } from '../../../src/types';
 import { MultiPassAgent } from '../../../src/agent/MultiPassAgent';
@@ -20,9 +20,9 @@ import { ErrorParser } from '../../../src/utils/ErrorParser';
 import { ChromaDBClient } from '../../../src/db/ChromaDBClient';
 
 /**
- * Progress callback for analysis updates
+ * Progress callback for analysis updates (uses shared AgentState)
  */
-export type ProgressCallback = (progress: AnalysisProgress) => void;
+export type ProgressCallback = (progress: AgentState) => void;
 
 /**
  * Type alias for RCA results (using extension's type)

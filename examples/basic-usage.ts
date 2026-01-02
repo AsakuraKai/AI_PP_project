@@ -3,14 +3,14 @@
  * 
  * This demonstrates how to use the implemented components:
  * - OllamaClient for LLM communication
- * - KotlinNPEParser for error parsing
+ * - KotlinParser for error parsing (consolidated from KotlinNPEParser)
  * - MinimalReactAgent for root cause analysis
  * 
  * Run with: ts-node examples/basic-usage.ts
  */
 
 import { OllamaClient } from '../src/llm/OllamaClient';
-import { KotlinNPEParser } from '../src/utils/KotlinNPEParser';
+import { KotlinParser } from '../src/utils/parsers/KotlinParser';
 import { MinimalReactAgent } from '../src/agent/MinimalReactAgent';
 
 async function exampleLateinitError() {

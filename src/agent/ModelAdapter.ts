@@ -11,7 +11,7 @@
  */
 
 import { TrainingExample } from './LearningPipeline';
-import { RCADocument } from '../db/schemas/rca-collection';
+// Removed unused import: RCADocument
 
 /**
  * Fine-tuning format

@@ -5,20 +5,7 @@
 
 import * as vscode from 'vscode';
 import { ErrorItem, HistoryItem, PanelState, PanelSettings } from './types';
-
-/**
- * Learning metrics for display
- */
-export interface LearningMetrics {
-  totalAnalyses: number;
-  successfulAnalyses: number;
-  averageConfidence: number;
-  averageLatency: number; // ms
-  topErrorTypes: Array<{ type: string; count: number }>;
-  improvementTrend: number; // -1 to 1 (negative = worse, positive = better)
-  cacheHitRate: number; // 0-1
-  lastUpdated: number; // timestamp
-}
+import { LearningMetrics } from '../../../src/agent/types';  // Use shared type (Chunk 6 Consolidation)
 
 /**
  * Manages global state for the RCA Agent panel

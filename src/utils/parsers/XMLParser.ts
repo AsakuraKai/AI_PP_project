@@ -12,6 +12,7 @@
  * - Invalid attribute value errors
  * 
  * Design Philosophy:
+ * - Extends BaseParser for shared utilities
  * - XML-specific pattern matching
  * - Extract line numbers from stack traces
  * - Identify file names from error messages
@@ -26,6 +27,7 @@
  */
 
 import { ParsedError } from '../../types';
+import { BaseParser } from './BaseParser';
 
 /**
  * XML-specific error types
@@ -43,7 +45,7 @@ export type XMLErrorType =
 /**
  * Parser for Android XML layout and manifest errors
  */
-export class XMLParser {
+export class XMLParser extends BaseParser {
   /**
    * Parse XML error text into structured format
    * 

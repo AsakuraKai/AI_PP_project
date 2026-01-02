@@ -1,6 +1,7 @@
 /**
  * Diagnostic Provider for RCA Agent
  * Enhances error detection and links diagnostics to error queue
+ * CHUNK 9-10 Consolidation: Uses BaseProvider
  * 
  * Features:
  * - Monitors workspace diagnostics
@@ -10,18 +11,17 @@
  */
 
 import * as vscode from 'vscode';
+import { BaseProvider } from './BaseProvider';
 import { ErrorQueueManager } from '../panel/ErrorQueueManager';
-import { ErrorItem } from '../panel/types';
 
-export class RCADiagnosticProvider {
+export class RCADiagnosticProvider extends BaseProvider {
   private diagnosticCollection: vscode.DiagnosticCollection;
-  private disposables: vscode.Disposable[] = [];
-  private errorQueueManager: ErrorQueueManager;
   private autoDetectEnabled: boolean = true;
 
   constructor(errorQueueManager: ErrorQueueManager) {
-    this.errorQueueManager = errorQueueManager;
+    super({ errorQueueManager });
     this.diagnosticCollection = vscode.languages.createDiagnosticCollection('rca-agent');
+    this.disposables.push(this.diagnosticCollection);
     
     // Monitor diagnostics from all sources
     this.setupDiagnosticListener();
@@ -56,11 +56,8 @@ export class RCADiagnosticProvider {
    */
   private processDiagnostics(uri: vscode.Uri, diagnostics: vscode.Diagnostic[]): void {
     for (const diagnostic of diagnostics) {
-      // Only process errors and warnings
-      if (
-        diagnostic.severity === vscode.DiagnosticSeverity.Error ||
-        diagnostic.severity === vscode.DiagnosticSeverity.Warning
-      ) {
+      // Use base provider's error checking
+      if (this.isErrorOrWarning(diagnostic)) {
         // Check if this error is already in the queue
         const existingError = this.findErrorInQueue(uri, diagnostic);
         if (!existingError) {
@@ -71,33 +68,11 @@ export class RCADiagnosticProvider {
   }
 
   /**
-   * Find if an error already exists in the queue
-   */
-  private findErrorInQueue(uri: vscode.Uri, diagnostic: vscode.Diagnostic): ErrorItem | undefined {
-    const allErrors = this.errorQueueManager.getAllErrors();
-    return allErrors.find(error => 
-      error.filePath === uri.fsPath &&
-      error.line === diagnostic.range.start.line &&
-      error.message === diagnostic.message
-    );
-  }
-
-  /**
    * Add diagnostic to error queue
    */
   private addDiagnosticToQueue(uri: vscode.Uri, diagnostic: vscode.Diagnostic): void {
-    const errorItem: ErrorItem = {
-      id: this.generateErrorId(uri, diagnostic),
-      message: diagnostic.message,
-      filePath: uri.fsPath,
-      line: diagnostic.range.start.line,
-      column: diagnostic.range.start.character,
-      severity: this.mapSeverity(diagnostic.severity),
-      status: 'pending',
-      timestamp: Date.now()
-    };
-
-    this.errorQueueManager.addError(errorItem);
+    const errorItem = this.createErrorItem(uri, diagnostic);
+    this.errorQueueManager?.addError(errorItem);
   }
 
   /**
@@ -118,16 +93,7 @@ export class RCADiagnosticProvider {
   /**
    * Map VS Code diagnostic severity to RCA severity
    */
-  private mapSeverity(severity: vscode.DiagnosticSeverity | undefined): 'critical' | 'high' | 'medium' {
-    switch (severity) {
-      case vscode.DiagnosticSeverity.Error:
-        return 'critical';
-      case vscode.DiagnosticSeverity.Warning:
-        return 'high';
-      default:
-        return 'medium';
-    }
-  }
+  // mapSeverity is now provided by BaseProvider
 
   /**
    * Enable or disable auto-detection
@@ -193,11 +159,5 @@ export class RCADiagnosticProvider {
     this.diagnosticCollection.delete(uri);
   }
 
-  /**
-   * Dispose of all resources
-   */
-  public dispose(): void {
-    this.diagnosticCollection.dispose();
-    this.disposables.forEach(d => d.dispose());
-  }
+  // dispose() is now provided by BaseProvider
 }

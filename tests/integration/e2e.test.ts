@@ -7,7 +7,7 @@
  * Chunk 1.5: MVP Testing & Refinement
  */
 
-import { KotlinNPEParser } from '../../src/utils/KotlinNPEParser';
+import { KotlinParser } from '../../src/utils/parsers/KotlinParser';
 import { MinimalReactAgent } from '../../src/agent/MinimalReactAgent';
 import { OllamaClient } from '../../src/llm/OllamaClient';
 import { LLMResponse } from '../../src/types';
@@ -19,7 +19,7 @@ import * as os from 'os';
 jest.mock('../../src/llm/OllamaClient');
 
 describe('End-to-End Integration Tests', () => {
-  let parser: KotlinNPEParser;
+  let parser: KotlinParser;
   let agent: MinimalReactAgent;
   let mockLLM: jest.Mocked<OllamaClient>;
   let tempDir: string;
@@ -39,7 +39,7 @@ describe('End-to-End Integration Tests', () => {
   });
 
   beforeEach(() => {
-    parser = new KotlinNPEParser();
+    parser = new KotlinParser();
 
     // Create mock LLM
     mockLLM = new OllamaClient() as jest.Mocked<OllamaClient>;

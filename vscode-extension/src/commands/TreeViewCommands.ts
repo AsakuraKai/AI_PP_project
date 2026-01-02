@@ -3,44 +3,51 @@
  * 
  * Commands for interacting with error queue and history tree views.
  * Handles context menu actions, navigation, and item manipulation.
+ * 
+ * OPTIMIZED: Now extends BaseCommandHandler to reduce duplication
  */
 
 import * as vscode from 'vscode';
 import { ErrorQueueManager } from '../panel/ErrorQueueManager';
 import { StateManager } from '../panel/StateManager';
 import { ErrorItem, HistoryItem } from '../panel/types';
+import { BaseCommandHandler, CommandDefinition } from './BaseCommandHandler';
 
-export class TreeViewCommands {
+export class TreeViewCommands extends BaseCommandHandler {
   constructor(
     private readonly context: vscode.ExtensionContext,
     private readonly queueManager: ErrorQueueManager,
     private readonly stateManager: StateManager
-  ) {}
+  ) {
+    super();
+  }
 
   /**
-   * Register all tree view commands
+   * Register all tree view commands using base class infrastructure
    */
   registerCommands(): vscode.Disposable[] {
-    return [
+    const commands: CommandDefinition[] = [
       // Error queue commands
-      vscode.commands.registerCommand('rca-agent.refreshErrorQueue', () => this.refreshErrorQueue()),
-      vscode.commands.registerCommand('rca-agent.clearErrorQueue', () => this.clearErrorQueue()),
-      vscode.commands.registerCommand('rca-agent.clearCompleted', () => this.clearCompleted()),
-      vscode.commands.registerCommand('rca-agent.removeError', (item) => this.removeError(item)),
-      vscode.commands.registerCommand('rca-agent.pinError', (item) => this.pinError(item)),
-      vscode.commands.registerCommand('rca-agent.unpinError', (item) => this.unpinError(item)),
-      vscode.commands.registerCommand('rca-agent.openErrorLocation', (error) => this.openErrorLocation(error)),
+      { id: 'rca-agent.refreshErrorQueue', handler: 'refreshErrorQueue', title: 'Refresh Error Queue' },
+      { id: 'rca-agent.clearErrorQueue', handler: 'clearErrorQueue', title: 'Clear Error Queue' },
+      { id: 'rca-agent.clearCompleted', handler: 'clearCompleted', title: 'Clear Completed' },
+      { id: 'rca-agent.removeError', handler: 'removeError', title: 'Remove Error' },
+      { id: 'rca-agent.pinError', handler: 'pinError', title: 'Pin Error' },
+      { id: 'rca-agent.unpinError', handler: 'unpinError', title: 'Unpin Error' },
+      { id: 'rca-agent.openErrorLocation', handler: 'openErrorLocation', title: 'Open Error Location' },
       
       // History commands
-      vscode.commands.registerCommand('rca-agent.refreshHistory', () => this.refreshHistory()),
-      vscode.commands.registerCommand('rca-agent.clearHistory', () => this.clearHistory()),
-      vscode.commands.registerCommand('rca-agent.deleteHistoryItem', (item) => this.deleteHistoryItem(item)),
-      vscode.commands.registerCommand('rca-agent.reanalyzeHistoryItem', (item) => this.reanalyzeHistoryItem(item)),
-      vscode.commands.registerCommand('rca-agent.exportHistoryItem', (item) => this.exportHistoryItem(item)),
-      vscode.commands.registerCommand('rca-agent.viewHistoryItem', (item) => this.viewHistoryItem(item)),
-      vscode.commands.registerCommand('rca-agent.markHelpful', (item) => this.markHelpful(item, true)),
-      vscode.commands.registerCommand('rca-agent.markUnhelpful', (item) => this.markUnhelpful(item, false))
+      { id: 'rca-agent.refreshHistory', handler: 'refreshHistory', title: 'Refresh History' },
+      { id: 'rca-agent.clearHistory', handler: 'clearHistory', title: 'Clear History' },
+      { id: 'rca-agent.deleteHistoryItem', handler: 'deleteHistoryItem', title: 'Delete History Item' },
+      { id: 'rca-agent.reanalyzeHistoryItem', handler: 'reanalyzeHistoryItem', title: 'Reanalyze History Item' },
+      { id: 'rca-agent.exportHistoryItem', handler: 'exportHistoryItem', title: 'Export History Item' },
+      { id: 'rca-agent.viewHistoryItem', handler: 'viewHistoryItem', title: 'View History Item' },
+      { id: 'rca-agent.markHelpful', handler: 'markHelpful', title: 'Mark Helpful' },
+      { id: 'rca-agent.markUnhelpful', handler: 'markUnhelpful', title: 'Mark Unhelpful' }
     ];
+
+    return super.registerCommands(this.context, commands);
   }
 
   // ============================================================================
@@ -52,22 +59,18 @@ export class TreeViewCommands {
    */
   async refreshErrorQueue(): Promise<void> {
     await this.queueManager.refresh();
-    vscode.window.showInformationMessage('Error queue refreshed.');
+    this.showInfo('Error queue refreshed.');
   }
 
   /**
    * Clear all errors from queue
    */
   async clearErrorQueue(): Promise<void> {
-    const result = await vscode.window.showWarningMessage(
-      'Clear all errors from queue?',
-      { modal: true },
-      'Clear'
-    );
-
-    if (result === 'Clear') {
+    const confirmed = await this.confirm('Clear all errors from queue?');
+    
+    if (confirmed) {
       await this.queueManager.clearQueue();
-      vscode.window.showInformationMessage('Error queue cleared.');
+      this.showInfo('Error queue cleared.');
     }
   }
 
@@ -76,7 +79,7 @@ export class TreeViewCommands {
    */
   async clearCompleted(): Promise<void> {
     await this.queueManager.clearCompleted();
-    vscode.window.showInformationMessage('Completed errors cleared.');
+    this.showInfo('Completed errors cleared.');
   }
 
   /**
@@ -87,7 +90,7 @@ export class TreeViewCommands {
     if (!error) return;
 
     await this.queueManager.removeError(error.id);
-    vscode.window.showInformationMessage('Error removed from queue.');
+    this.showInfo('Error removed from queue.');
   }
 
   /**
@@ -98,6 +101,19 @@ export class TreeViewCommands {
     if (!error) return;
 
     await this.queueManager.pinError(error.id);
+    this.showInfo(`Error pinned: ${error.message.substring(0, 50)}...`);
+  }
+
+  /**
+   * Unpin error from top of queue
+   */
+  async unpinError(item: any): Promise<void> {
+    const error = item?.errorData as ErrorItem;
+    if (!error) return;
+
+    await this.queueManager.unpinError(error.id);
+    this.showInfo(`Error unpinned: ${error.message.substring(0, 50)}...`);
+  }
     vscode.window.showInformationMessage('Error pinned to top.');
   }
 
@@ -149,15 +165,11 @@ export class TreeViewCommands {
    * Clear all history
    */
   async clearHistory(): Promise<void> {
-    const result = await vscode.window.showWarningMessage(
-      'Clear all analysis history?',
-      { modal: true },
-      'Clear'
-    );
-
-    if (result === 'Clear') {
+    const confirmed = await this.confirm('Clear all analysis history?');
+    
+    if (confirmed) {
       await this.stateManager.clearHistory();
-      vscode.window.showInformationMessage('History cleared.');
+      this.showInfo('History cleared.');
     }
   }
 

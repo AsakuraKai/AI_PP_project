@@ -11,7 +11,7 @@
  */
 
 import { OllamaClient } from '../../src/llm/OllamaClient';
-import { KotlinNPEParser } from '../../src/utils/KotlinNPEParser';
+import { KotlinParser } from '../../src/utils/parsers/KotlinParser';
 import { MinimalReactAgent } from '../../src/agent/MinimalReactAgent';
 import { testDataset, TestCase } from '../fixtures/test-dataset';
 import * as fs from 'fs/promises';
@@ -56,7 +56,7 @@ describe('Accuracy Testing Suite - Chunk 1.5', () => {
     }
 
     llmClient = new OllamaClient();
-    parser = new KotlinNPEParser();
+    parser = new KotlinParser();
     
     // Use new constructor signature with config
     agent = new MinimalReactAgent(llmClient, {

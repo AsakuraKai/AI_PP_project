@@ -2,6 +2,8 @@
  * Inline Integration Commands for RCA Agent
  * Handles commands triggered from inline editor integrations
  * 
+ * OPTIMIZED: Now extends BaseCommandHandler to reduce duplication
+ * 
  * Commands:
  * - analyzeFromDiagnostic: Analyze error from lightbulb quick action
  * - analyzeCurrentError: Analyze error at cursor position
@@ -13,41 +15,33 @@ import * as vscode from 'vscode';
 import { ErrorQueueManager } from '../panel/ErrorQueueManager';
 import { ErrorItem } from '../panel/types';
 import { RCAPanelProvider } from '../panel/RCAPanelProvider';
+import { BaseCommandHandler, CommandDefinition } from './BaseCommandHandler';
 
-export class InlineIntegrationCommands {
+export class InlineIntegrationCommands extends BaseCommandHandler {
   constructor(
     private errorQueueManager: ErrorQueueManager,
     private panelProvider: RCAPanelProvider
-  ) {}
+  ) {
+    super();
+  }
 
   /**
-   * Register all inline integration commands
+   * Register all inline integration commands using base class infrastructure
    */
   public register(context: vscode.ExtensionContext): void {
-    context.subscriptions.push(
-      vscode.commands.registerCommand(
-        'rca-agent.analyzeFromDiagnostic',
-        this.analyzeFromDiagnostic.bind(this)
-      ),
-      vscode.commands.registerCommand(
-        'rca-agent.analyzeCurrentError',
-        this.analyzeCurrentError.bind(this)
-      ),
-      vscode.commands.registerCommand(
-        'rca-agent.nextError',
-        this.nextError.bind(this)
-      ),
-      vscode.commands.registerCommand(
-        'rca-agent.previousError',
-        this.previousError.bind(this)
-      ),
-      vscode.commands.registerCommand(
-        'rca-agent.togglePanel',
-        this.togglePanel.bind(this)
-      ),
-      // Phase 4: New commands for enhanced code actions
-      vscode.commands.registerCommand(
-        'rca-agent.explainError',
+    const commands: CommandDefinition[] = [
+      { id: 'rca-agent.analyzeFromDiagnostic', handler: 'analyzeFromDiagnostic', title: 'Analyze from Diagnostic' },
+      { id: 'rca-agent.analyzeCurrentError', handler: 'analyzeCurrentError', title: 'Analyze Current Error' },
+      { id: 'rca-agent.nextError', handler: 'nextError', title: 'Next Error' },
+      { id: 'rca-agent.previousError', handler: 'previousError', title: 'Previous Error' },
+      { id: 'rca-agent.togglePanel', handler: 'togglePanel', title: 'Toggle Panel' },
+      { id: 'rca-agent.explainError', handler: 'explainError', title: 'Explain Error' },
+      { id: 'rca-agent.quickFixError', handler: 'quickFixError', title: 'Quick Fix Error' },
+      { id: 'rca-agent.showRelatedErrors', handler: 'showRelatedErrors', title: 'Show Related Errors' }
+    ];
+
+    super.registerCommands(context, commands);
+  }
         this.explainError.bind(this)
       ),
       vscode.commands.registerCommand(

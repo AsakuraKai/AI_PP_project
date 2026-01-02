@@ -1,6 +1,7 @@
 /**
  * Code Action Provider for RCA Agent
  * Provides lightbulb quick actions for errors in the editor
+ * CHUNK 9-10 Consolidation: Uses BaseProvider
  * 
  * Features:
  * - Shows "Analyze with RCA Agent" in quick fix menu
@@ -11,18 +12,17 @@
  */
 
 import * as vscode from 'vscode';
+import { BaseProvider } from './BaseProvider';
 import { ErrorQueueManager } from '../panel/ErrorQueueManager';
 
-export class RCACodeActionProvider implements vscode.CodeActionProvider {
+export class RCACodeActionProvider extends BaseProvider implements vscode.CodeActionProvider {
   private static readonly providedCodeActionKinds = [
     vscode.CodeActionKind.QuickFix,
     vscode.CodeActionKind.Refactor
   ];
-  
-  private errorQueueManager?: ErrorQueueManager;
 
   constructor(errorQueueManager?: ErrorQueueManager) {
-    this.errorQueueManager = errorQueueManager;
+    super({ errorQueueManager });
   }
 
   /**
@@ -43,11 +43,8 @@ export class RCACodeActionProvider implements vscode.CodeActionProvider {
 
     // Create code actions for each diagnostic
     for (const diagnostic of context.diagnostics) {
-      // Only provide actions for errors and warnings
-      if (
-        diagnostic.severity === vscode.DiagnosticSeverity.Error ||
-        diagnostic.severity === vscode.DiagnosticSeverity.Warning
-      ) {
+      // Use BaseProvider's error checking
+      if (this.isErrorOrWarning(diagnostic)) {
         // Primary action: Analyze with RCA Agent
         const analyzeAction = this.createAnalyzeAction(document, diagnostic);
         codeActions.push(analyzeAction);

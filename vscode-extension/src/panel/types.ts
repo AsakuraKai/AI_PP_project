@@ -1,7 +1,11 @@
 /**
  * Type definitions for RCA Agent Panel UI
  * Chunk 1: Foundation & Activity Bar
+ * Chunk 6: Consolidated with shared agent types
  */
+
+// Re-export shared types (Chunk 6 Consolidation)
+export { AgentState, LearningMetrics } from '../../../src/agent/types';
 
 /**
  * Represents an error item in the error queue
@@ -128,35 +132,6 @@ export interface RCAResult {
 }
 
 /**
- * Represents the progress of an ongoing analysis
- */
-export interface AnalysisProgress {
-  /** Current iteration number */
-  iteration: number;
-  
-  /** Maximum number of iterations */
-  maxIterations: number;
-  
-  /** Overall progress percentage (0-100) */
-  progress: number;
-  
-  /** Current thought/action being performed */
-  currentThought?: string;
-  
-  /** Current tool being executed */
-  currentTool?: string;
-  
-  /** Elapsed time in seconds */
-  elapsedTime?: number;
-  
-  /** Tools used so far (for progress display) */
-  toolsUsed?: string[];
-  
-  /** Elapsed time in milliseconds (for progress display) */
-  elapsed?: number;
-}
-
-/**
  * Represents the state of the panel
  */
 export interface PanelState {
@@ -166,8 +141,8 @@ export interface PanelState {
   /** Currently analyzing error (if any) */
   currentError?: ErrorItem;
   
-  /** Current analysis progress (if analyzing) */
-  currentProgress?: AnalysisProgress;
+  /** Current analysis progress (if analyzing) - uses shared AgentState type */
+  currentProgress?: AgentState;
   
   /** Current analysis result (if complete) */
   currentResult?: RCAResult;
@@ -287,7 +262,7 @@ export type WebviewMessage =
  */
 export type ExtensionMessage =
   | { type: 'stateUpdate'; state: PanelState }
-  | { type: 'progressUpdate'; progress: AnalysisProgress }
+  | { type: 'progressUpdate'; progress: AgentState }
   | { type: 'analysisComplete'; result: RCAResult }
   | { type: 'analysisError'; error: string }
   | { type: 'settingsUpdate'; settings: PanelSettings };

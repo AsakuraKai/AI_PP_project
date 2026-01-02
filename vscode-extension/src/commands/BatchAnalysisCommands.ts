@@ -4,6 +4,8 @@
  * Commands for batch analysis of multiple errors.
  * Provides sequential processing with queue management, progress tracking,
  * and cancel/pause functionality.
+ * 
+ * OPTIMIZED: Now extends BaseCommandHandler to reduce duplication
  */
 
 import * as vscode from 'vscode';
@@ -11,8 +13,9 @@ import { ErrorQueueManager } from '../panel/ErrorQueueManager';
 import { AnalysisService } from '../services/AnalysisService';
 import { StateManager } from '../panel/StateManager';
 import { ErrorItem, HistoryItem } from '../panel/types';
+import { BaseCommandHandler, CommandDefinition } from './BaseCommandHandler';
 
-export class BatchAnalysisCommands {
+export class BatchAnalysisCommands extends BaseCommandHandler {
   private _isAnalyzing = false;
   private _shouldCancel = false;
   private _currentProgress: vscode.Progress<{ message?: string; increment?: number }> | undefined;
@@ -22,18 +25,22 @@ export class BatchAnalysisCommands {
     private readonly queueManager: ErrorQueueManager,
     private readonly analysisService: AnalysisService,
     private readonly stateManager: StateManager
-  ) {}
+  ) {
+    super();
+  }
 
   /**
-   * Register all batch analysis commands
+   * Register all batch analysis commands using base class infrastructure
    */
   registerCommands(): vscode.Disposable[] {
-    return [
-      vscode.commands.registerCommand('rca-agent.analyzeAll', () => this.analyzeAll()),
-      vscode.commands.registerCommand('rca-agent.analyzePending', () => this.analyzePending()),
-      vscode.commands.registerCommand('rca-agent.cancelBatch', () => this.cancelBatch()),
-      vscode.commands.registerCommand('rca-agent.analyzeSelected', (errors: ErrorItem[]) => this.analyzeSelected(errors))
+    const commands: CommandDefinition[] = [
+      { id: 'rca-agent.analyzeAll', handler: 'analyzeAll', title: 'Analyze All' },
+      { id: 'rca-agent.analyzePending', handler: 'analyzePending', title: 'Analyze Pending' },
+      { id: 'rca-agent.cancelBatch', handler: 'cancelBatch', title: 'Cancel Batch' },
+      { id: 'rca-agent.analyzeSelected', handler: 'analyzeSelected', title: 'Analyze Selected' }
     ];
+
+    return super.registerCommands(this.context, commands);
   }
 
   /**
@@ -43,7 +50,7 @@ export class BatchAnalysisCommands {
     const errors = this.queueManager.getQueue();
     
     if (errors.length === 0) {
-      vscode.window.showInformationMessage('No errors in queue to analyze.');
+      this.showInfo('No errors in queue to analyze.');
       return;
     }
 
@@ -57,7 +64,7 @@ export class BatchAnalysisCommands {
     const errors = this.queueManager.getPendingErrors();
     
     if (errors.length === 0) {
-      vscode.window.showInformationMessage('No pending errors to analyze.');
+      this.showInfo('No pending errors to analyze.');
       return;
     }
 
@@ -69,7 +76,7 @@ export class BatchAnalysisCommands {
    */
   async analyzeSelected(errors: ErrorItem[]): Promise<void> {
     if (!errors || errors.length === 0) {
-      vscode.window.showInformationMessage('No errors selected.');
+      this.showInfo('No errors selected.');
       return;
     }
 
@@ -81,12 +88,12 @@ export class BatchAnalysisCommands {
    */
   cancelBatch(): void {
     if (!this._isAnalyzing) {
-      vscode.window.showInformationMessage('No batch analysis in progress.');
+      this.showInfo('No batch analysis in progress.');
       return;
     }
 
     this._shouldCancel = true;
-    vscode.window.showInformationMessage('Cancelling batch analysis...');
+    this.showInfo('Cancelling batch analysis...');
   }
 
   /**

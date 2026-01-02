@@ -17,11 +17,13 @@
  */
 
 import { z } from 'zod';
+import { BaseTool, BaseToolMetadata, ToolExecutionResult } from './shared-types';
 
 /**
  * Tool interface that all tools must implement
+ * Extends BaseTool from shared-types for consistency
  */
-export interface Tool {
+export interface Tool extends BaseTool {
   /** Tool name (unique identifier) */
   name: string;
   
@@ -34,8 +36,9 @@ export interface Tool {
 
 /**
  * Tool metadata for LLM understanding
+ * Extends BaseToolMetadata from shared-types for consistency
  */
-export interface ToolMetadata {
+export interface ToolMetadata extends BaseToolMetadata {
   /** Tool name */
   name: string;
   
@@ -62,13 +65,17 @@ export interface ToolExample {
 
 /**
  * Tool execution result
+ * Extends ToolExecutionResult from shared-types for consistency
  */
-export interface ToolResult {
+export interface ToolResult extends ToolExecutionResult {
+  /** Result data if successful (aliased as 'data' for backward compatibility) */
+  data?: any;
+  
+  /** Result data (from base interface) */
+  result?: any;
+  
   /** Whether execution succeeded */
   success: boolean;
-  
-  /** Result data if successful */
-  data?: any;
   
   /** Error message if failed */
   error?: string;
