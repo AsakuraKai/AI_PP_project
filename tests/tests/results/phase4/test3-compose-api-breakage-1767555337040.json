@@ -1,0 +1,60 @@
+{
+  "testCase": {
+    "id": 3,
+    "name": "Compose API Breakage",
+    "description": "Deprecated Compose API after upgrade 1.5 → 1.6",
+    "errorType": "compose-deprecation",
+    "complexity": "medium",
+    "targetUsability": 75,
+    "error": {
+      "type": "compose-deprecation",
+      "message": "Unresolved reference: MaterialTheme. Use androidx.compose.material3.MaterialTheme",
+      "filePath": "app/src/main/kotlin/ui/HomeScreen.kt",
+      "line": 88,
+      "column": 5,
+      "language": "kotlin",
+      "metadata": {
+        "severity": "error",
+        "context": "Compose Material upgraded to Material3"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/kotlin/ui/HomeScreen.kt",
+      "lineNumber": 88,
+      "codeChange": "import androidx.compose.material3.MaterialTheme",
+      "explanation": "Material2 deprecated, use Material3"
+    }
+  },
+  "timestamp": "2026-01-04T19:35:37.039Z",
+  "duration_ms": 76133,
+  "agent_response": {
+    "error": "",
+    "rootCause": "The error is due to an unresolved reference to MaterialTheme from androidx.compose.material3, which is a core library for material design in Kotlin Compose. The code likely attempts to use MaterialTheme components or styles without properly importing or initializing it.",
+    "fixGuidelines": [
+      "Step 1: Verify that the MaterialTheme package is included in the build.gradle.kts file with the correct version number (e.g., 'agp=8.7.3') and ensure that the androidx.compose.material3 library is referenced.",
+      "Step 2: In the HomeScreen.kt file, replace all instances of MaterialTheme usage with the appropriate composable components or refer to the MaterialTheme properly by initializing it if necessary (e.g., val theme = MaterialTheme.init()).",
+      "Step 3: Rebuild and run the app to confirm that the error is resolved.",
+      "Step 4: If the issue persists, check for any typos in the import statements or ensure that all required dependencies are included in the build.gradle.kts file.",
+      "Step 5: Log additional runtime errors if they occur and compare them with the expected MaterialTheme exceptions to troubleshoot further."
+    ],
+    "confidence": 0.6,
+    "toolsUsed": [],
+    "codeContext": "Evidence: Root cause analysis mentions: error, unresolved, reference, materialtheme, androidx, compose, material3\nContradictions: None"
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 60,
+    "file_identification": 30,
+    "code_examples": 40,
+    "version_suggestions": 0,
+    "overall_usability": 55,
+    "confidence": 0.6,
+    "latency_ms": 76133,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false
+}

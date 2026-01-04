@@ -1,0 +1,62 @@
+{
+  "testCase": {
+    "id": 1,
+    "name": "AGP Version Conflict",
+    "description": "Invalid AGP version 8.10.0 doesn't exist in Maven Central",
+    "errorType": "gradle-dependency",
+    "complexity": "simple",
+    "baselineUsability": 40,
+    "targetUsability": 80,
+    "error": {
+      "type": "gradle-dependency",
+      "message": "Could not find com.android.tools.build:gradle:8.10.0",
+      "filePath": "gradle/libs.versions.toml",
+      "line": 2,
+      "column": 1,
+      "language": "gradle",
+      "metadata": {
+        "severity": "error",
+        "context": "AGP version 8.10.0 not found in Maven Central",
+        "raw": "Could not find com.android.tools.build:gradle:8.10.0"
+      }
+    },
+    "expectedFix": {
+      "file": "gradle/libs.versions.toml",
+      "lineNumber": 2,
+      "codeChange": "agp = \"8.7.3\"",
+      "explanation": "AGP 8.10.0 doesn't exist. Use 8.7.3 (latest stable)"
+    }
+  },
+  "timestamp": "2026-01-04T19:31:58.822Z",
+  "duration_ms": 289,
+  "agent_response": {
+    "error": "Could not find com.android.tools.build:gradle:8.10.0",
+    "rootCause": "Unable to generate complete analysis. Manual review recommended. Context: You are an expert Kotlin/Android debugging assistant specializing in root cause analysis.\n\n**YOUR ROLE:**\nYou help developers understand WHY errors oc...",
+    "fixGuidelines": [
+      "1. Review the error logs carefully for stack traces and error messages",
+      "2. Check official Android/Kotlin documentation for this error type",
+      "3. Search Stack Overflow with specific error message",
+      "4. Consider using a larger model or manual analysis for complex errors"
+    ],
+    "confidence": 0.2,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 60,
+    "file_identification": 30,
+    "code_examples": 0,
+    "version_suggestions": 90,
+    "overall_usability": 60,
+    "confidence": 0.2,
+    "latency_ms": 289,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": true,
+    "identified_exact_file": false
+  },
+  "passed": false,
+  "improvement_over_baseline": 20
+}

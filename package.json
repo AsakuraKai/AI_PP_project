@@ -14,6 +14,7 @@
     "test:phase1": "ts-node scripts/run-phase-tests.ts --phase 1",
     "test:phase2": "ts-node scripts/run-phase-tests.ts --phase 2",
     "test:phase4": "ts-node scripts/phase4-test-runner.ts",
+    "test:phase4:optionc": "ts-node tests/real-world/run-option-c-tests.ts",
     "test:case": "ts-node scripts/run-all-tests.ts --tests",
     "populate:chromadb": "ts-node scripts/populate-chromadb.ts",
     "perf-test": "ts-node scripts/run-performance-tests.ts",

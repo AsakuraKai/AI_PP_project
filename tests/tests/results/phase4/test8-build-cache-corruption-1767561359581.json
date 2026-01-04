@@ -1,0 +1,58 @@
+{
+  "testCase": {
+    "id": 8,
+    "name": "Build Cache Corruption",
+    "description": "Gradle build cache corrupted causing build failures",
+    "errorType": "gradle-cache",
+    "complexity": "simple",
+    "baselineUsability": 70,
+    "targetUsability": 85,
+    "error": {
+      "type": "gradle-cache",
+      "message": "Execution failed for task :app:compileDebugKotlin. Compilation error",
+      "filePath": "build.gradle.kts",
+      "line": 1,
+      "column": 1,
+      "language": "gradle",
+      "metadata": {
+        "severity": "error",
+        "context": "Intermittent build failures, works after clean"
+      }
+    },
+    "expectedFix": {
+      "explanation": "Run ./gradlew clean or delete .gradle cache"
+    }
+  },
+  "timestamp": "2026-01-04T21:15:59.581Z",
+  "duration_ms": 11863,
+  "agent_response": {
+    "error": "Execution failed for task :app:compileDebugKotlin. Compilation error",
+    "rootCause": "undefined variable or method at build.gradle.kts:1",
+    "fixGuidelines": [
+      "1. Check if there's an import statement missing in the Kotlin file being compiled at line 1 of build.gradle.kts. Add the necessary imports to resolve the undefined reference.",
+      "2. Ensure that any referenced variables, functions, or classes are correctly defined and accessible within the compilation context. This might involve verifying that all required files have been merged into the working directory before compiling.",
+      "3. If the issue is due to a variable that was recently modified elsewhere in the codebase, consider creating a new variable with a unique name that doesn't conflict and use this instead until the original variable is fixed or moved.",
+      "4. Verify that there are no syntax errors in the compileDebugKotlin task itself, such as typos or incorrect references within the build.gradle.kts file at line 1."
+    ],
+    "confidence": 0.6,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 0,
+    "solution_specificity": 70,
+    "file_identification": 0,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 21,
+    "confidence": 0.6,
+    "latency_ms": 11863,
+    "has_root_cause": false,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false,
+  "improvement_over_baseline": -49
+}

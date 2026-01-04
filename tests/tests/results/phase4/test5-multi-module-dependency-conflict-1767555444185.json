@@ -1,0 +1,55 @@
+{
+  "testCase": {
+    "id": 5,
+    "name": "Multi-Module Dependency Conflict",
+    "description": "Version conflict between :app and :core modules",
+    "errorType": "gradle-dependency",
+    "complexity": "complex",
+    "targetUsability": 70,
+    "error": {
+      "type": "gradle-dependency",
+      "message": "Conflict with dependency androidx.lifecycle:lifecycle-runtime-ktx",
+      "filePath": "app/build.gradle.kts",
+      "line": 45,
+      "column": 1,
+      "language": "gradle",
+      "metadata": {
+        "severity": "error",
+        "context": "Module :app requires 2.6.0, :core requires 2.5.0"
+      }
+    },
+    "expectedFix": {
+      "file": "gradle/libs.versions.toml",
+      "explanation": "Align lifecycle version across all modules"
+    }
+  },
+  "timestamp": "2026-01-04T19:37:24.184Z",
+  "duration_ms": 59828,
+  "agent_response": {
+    "error": "",
+    "rootCause": "The error is due to a conflict in the dependency management where 'lifecycle-runtime-ktx' version 8.7.3 is being pulled from multiple vendors, causing an overlap and thus a conflict.",
+    "fixGuidelines": [
+      "Check if there are multiple versions of 'lifecycle-runtime-ktx' available",
+      "Verify that only one vendor's package is included in the build.gradle file"
+    ],
+    "confidence": 0.725,
+    "toolsUsed": [],
+    "codeContext": "Evidence: Root cause analysis mentions: version\nContradictions: None"
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 40,
+    "file_identification": 30,
+    "code_examples": 0,
+    "version_suggestions": 90,
+    "overall_usability": 54,
+    "confidence": 0.725,
+    "latency_ms": 59828,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": true,
+    "identified_exact_file": false
+  },
+  "passed": false
+}

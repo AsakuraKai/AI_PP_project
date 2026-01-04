@@ -1,0 +1,59 @@
+{
+  "testCase": {
+    "id": 2,
+    "name": "Kotlin lateinit NPE",
+    "description": "lateinit property accessed before initialization",
+    "errorType": "kotlin-npe",
+    "complexity": "medium",
+    "targetUsability": 75,
+    "error": {
+      "type": "kotlin-npe",
+      "message": "lateinit property viewModel has not been initialized",
+      "filePath": "app/src/main/kotlin/MainActivity.kt",
+      "line": 42,
+      "column": 9,
+      "language": "kotlin",
+      "metadata": {
+        "severity": "error",
+        "context": "Accessing viewModel before onCreate() completes"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/kotlin/MainActivity.kt",
+      "lineNumber": 35,
+      "explanation": "Initialize viewModel in onCreate() before first use"
+    }
+  },
+  "timestamp": "2026-01-04T21:15:00.293Z",
+  "duration_ms": 5018,
+  "agent_response": {
+    "error": "lateinit property viewModel has not been initialized",
+    "rootCause": "Kotlin NPE: viewModel (declared at app/src/main/kotlin/MainActivity.kt:42) is null when accessed in app/src/main/kotlin/MainActivity.kt:42",
+    "fixGuidelines": [
+      "1. Open MainActivity.kt and locate the line where 'viewModel' is first accessed.",
+      "2. Add initialization for 'viewModel' before this access, typically within onCreate() or another appropriate lifecycle method.",
+      "3. Use code example from similar cases to initialize the property properly.",
+      "4. Verify that the initialization occurs before any access to 'viewModel'.",
+      "5. Ensure that all possible paths in the code correctly initialize 'viewModel' before it is used."
+    ],
+    "confidence": 0.8,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 100,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 68,
+    "confidence": 0.8,
+    "latency_ms": 5018,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": true
+  },
+  "passed": false
+}

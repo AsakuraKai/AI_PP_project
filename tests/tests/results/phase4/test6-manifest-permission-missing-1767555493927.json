@@ -1,0 +1,59 @@
+{
+  "testCase": {
+    "id": 6,
+    "name": "Manifest Permission Missing",
+    "description": "SecurityException due to missing CAMERA permission",
+    "errorType": "manifest-permission",
+    "complexity": "simple",
+    "baselineUsability": 65,
+    "targetUsability": 80,
+    "error": {
+      "type": "manifest-permission",
+      "message": "java.lang.SecurityException: Permission denial: starting Intent requires android.permission.CAMERA",
+      "filePath": "app/src/main/AndroidManifest.xml",
+      "line": 5,
+      "column": 1,
+      "language": "xml",
+      "metadata": {
+        "severity": "error",
+        "context": "Runtime permission error"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/AndroidManifest.xml",
+      "lineNumber": 5,
+      "codeChange": "<uses-permission android:name=\"android.permission.CAMERA\" />",
+      "explanation": "Add CAMERA permission to manifest"
+    }
+  },
+  "timestamp": "2026-01-04T19:38:13.926Z",
+  "duration_ms": 48736,
+  "agent_response": {
+    "error": "",
+    "rootCause": "The error occurs because the current AGP version is incompatible with Gradle. The manifest file requires Android permission for a camera operation, which might be due to an update in Gradle's API or a change in how permissions are handled.",
+    "fixGuidelines": [
+      "Update AGP version in gradle/libs.versions.toml",
+      "Verify the fix by rebuilding the project"
+    ],
+    "confidence": 0.6,
+    "toolsUsed": [],
+    "codeContext": "Evidence: Root cause analysis mentions: error, occurs, permission, camera\nContradictions: None"
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 40,
+    "file_identification": 30,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 45,
+    "confidence": 0.6,
+    "latency_ms": 48736,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false,
+  "improvement_over_baseline": -20
+}

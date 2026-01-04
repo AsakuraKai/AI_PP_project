@@ -1,0 +1,59 @@
+{
+  "testCase": {
+    "id": 9,
+    "name": "ProGuard Rule Missing",
+    "description": "Runtime crash in release build due to obfuscation",
+    "errorType": "proguard",
+    "complexity": "complex",
+    "baselineUsability": 55,
+    "targetUsability": 70,
+    "error": {
+      "type": "proguard",
+      "message": "java.lang.NoSuchMethodError: No virtual method toJson",
+      "filePath": "app/proguard-rules.pro",
+      "line": 1,
+      "column": 1,
+      "language": "proguard",
+      "metadata": {
+        "severity": "error",
+        "context": "Gson reflection methods removed by R8"
+      }
+    },
+    "expectedFix": {
+      "file": "app/proguard-rules.pro",
+      "codeChange": "-keep class com.example.** { *; }",
+      "explanation": "Add ProGuard keep rule for serialization classes"
+    }
+  },
+  "timestamp": "2026-01-04T19:42:11.668Z",
+  "duration_ms": 75800,
+  "agent_response": {
+    "error": "",
+    "rootCause": "The error 'No virtual method toJson' occurs because the class does not implement the interface that defines the toJson method as a virtual method. ProGuard rules need to specify the correct interface or provide an implementation of the toJson method in their rule definitions.",
+    "fixGuidelines": [
+      "Ensure that all classes implementing proguard rules include the necessary interfaces with virtual methods such as toJson, and implement them if needed.",
+      "Verify that the specific version numbers (e.g., AGP 8.7.3) are correctly specified in the ProGuard configuration files to ensure compatibility.",
+      "Check that the variable names used in the rule definitions match exactly those in the codebase to avoid any naming conflicts."
+    ],
+    "confidence": 0.6,
+    "toolsUsed": [],
+    "codeContext": "Evidence: Root cause analysis mentions: virtual, method, tojson, interface, proguard, rules\nContradictions: None"
+  },
+  "metrics": {
+    "diagnosis_accuracy": 100,
+    "solution_specificity": 60,
+    "file_identification": 0,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 48,
+    "confidence": 0.6,
+    "latency_ms": 75800,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false,
+  "improvement_over_baseline": -7
+}

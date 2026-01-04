@@ -1,0 +1,58 @@
+{
+  "testCase": {
+    "id": 4,
+    "name": "XML Layout Inflation",
+    "description": "Runtime inflation error due to unknown attribute",
+    "errorType": "xml-layout",
+    "complexity": "medium",
+    "targetUsability": 70,
+    "error": {
+      "type": "xml-layout",
+      "message": "Binary XML file line #12: Error inflating class android.widget.TextView",
+      "filePath": "app/src/main/res/layout/activity_main.xml",
+      "line": 12,
+      "column": 5,
+      "language": "xml",
+      "metadata": {
+        "severity": "error",
+        "context": "Unknown attribute android:textFontWeight"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/res/layout/activity_main.xml",
+      "lineNumber": 12,
+      "explanation": "Remove invalid attribute or use android:textStyle=\"bold\""
+    }
+  },
+  "timestamp": "2026-01-04T21:15:19.113Z",
+  "duration_ms": 11021,
+  "agent_response": {
+    "error": "Binary XML file line #12: Error inflating class android.widget.TextView",
+    "rootCause": "The TextView class does not have an appropriate constructor signature for XML layout inflation. It should use @JvmOverloads with specific parameters to support (Context, AttributeSet?) when compiling against a JAR file.",
+    "fixGuidelines": [
+      "1. Replace the current constructor of TextView with one that uses @JvmOverloads and includes Context or (Context, AttributeSet?) as parameters. Ensure the constructor is compatible with the version specified in the JAR file.",
+      "2. In the project's pom.xml, specify the exact version number for the JAR containing the compiled class files to ensure proper compatibility during inflation.",
+      "3. Provide a clear before-and-after code example showing the modification of the TextView class constructor and any necessary imports or annotations added.",
+      "4. Verify the fix by running the application with the correct command line arguments that include the appropriate version information for the JAR file."
+    ],
+    "confidence": 0.85,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 0,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 48,
+    "confidence": 0.85,
+    "latency_ms": 11021,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false
+}

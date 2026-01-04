@@ -1,0 +1,61 @@
+{
+  "testCase": {
+    "id": 7,
+    "name": "Gradle Network Failure",
+    "description": "Failed to resolve dependency due to network/repository issue",
+    "errorType": "gradle-network",
+    "complexity": "medium",
+    "baselineUsability": 60,
+    "targetUsability": 75,
+    "error": {
+      "type": "gradle-network",
+      "message": "Could not resolve all dependencies for configuration :classpath",
+      "filePath": "settings.gradle.kts",
+      "line": 15,
+      "column": 1,
+      "language": "gradle",
+      "metadata": {
+        "severity": "error",
+        "context": "Repository not accessible or dependency missing"
+      }
+    },
+    "expectedFix": {
+      "file": "settings.gradle.kts",
+      "explanation": "Add missing repository or check network connection"
+    }
+  },
+  "timestamp": "2026-01-04T21:15:46.705Z",
+  "duration_ms": 11532,
+  "agent_response": {
+    "error": "Could not resolve all dependencies for configuration :classpath",
+    "rootCause": "Could not resolve all dependencies for configuration :classpath at settings.gradle.kts:15",
+    "fixGuidelines": [
+      "1. Verify that the build.gradle.kt file has the correct 'implementation' section pointing to the correct Maven repositories. For example, ensuring it's using the system's default repository or adding alternative mirrors if needed.",
+      "2. Check the 'gradle' entry in build.gradle.kt and settings.gradle.kts to ensure they are correctly configured for your project's dependencies. This includes verifying that any local repositories are properly listed and that URLs match known Maven repositories.",
+      "3. If using a local repository, test building with just that repository before including others to identify if it's the source of the problem.",
+      "4. Ensure that network access is enabled in Android settings for your project's build.gradle.kt file so that dependencies can be fetched from remote repositories.",
+      "5. Verify that any custom paths or URLs in the 'implementation' section are correct and accessible, possibly by checking Maven's repository listing.",
+      "6. If the issue persists, consider adding alternative Google Maven mirrors to Gradle's configuration to ensure dependency resolution succeeds."
+    ],
+    "confidence": 0.8,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 60,
+    "file_identification": 100,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 65,
+    "confidence": 0.8,
+    "latency_ms": 11532,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": true
+  },
+  "passed": false,
+  "improvement_over_baseline": 5
+}
