@@ -21,6 +21,7 @@
 import { ParsedError, AgentState } from '../types';
 import { getFewShotService } from '../knowledge/FewShotExampleService';
 import { BasePromptEngine } from './BasePromptEngine';
+import { TemplateEngine } from './TemplateEngine'; // ITERATION 11: Template-based approach
 
 /**
  * Few-shot example for teaching agent (legacy format - kept for backward compatibility)
@@ -51,6 +52,7 @@ export interface FewShotExample {
  */
 export class PromptEngine extends BasePromptEngine {
   private fewShotService = getFewShotService();
+  private templateEngine = new TemplateEngine(); // ITERATION 11: Template engine
 
   constructor() {
     super(); // Call parent constructor
@@ -66,8 +68,16 @@ export class PromptEngine extends BasePromptEngine {
   }
   /**
    * Get system prompt with agent instructions
+   * ITERATION 11: Use template-based prompts for structured responses
    */
-  getSystemPrompt(): string {
+  getSystemPrompt(error?: ParsedError): string {
+    // ITERATION 11: Use template-based prompts if error provided
+    if (error) {
+      const category = this.templateEngine.classifyForTemplate(error);
+      return this.templateEngine.getTemplatePrompt(category);
+    }
+    
+    // Fallback to original verbose prompt
     return `You are an expert Kotlin/Android debugging assistant specializing in root cause analysis.
 
 **YOUR ROLE:**

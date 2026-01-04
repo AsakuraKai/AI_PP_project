@@ -1,0 +1,62 @@
+{
+  "testCase": {
+    "id": 1,
+    "name": "AGP Version Conflict",
+    "description": "Invalid AGP version 8.10.0 doesn't exist in Maven Central",
+    "errorType": "gradle-dependency",
+    "complexity": "simple",
+    "baselineUsability": 40,
+    "targetUsability": 80,
+    "error": {
+      "type": "gradle-dependency",
+      "message": "Could not find com.android.tools.build:gradle:8.10.0",
+      "filePath": "gradle/libs.versions.toml",
+      "line": 2,
+      "column": 1,
+      "language": "gradle",
+      "metadata": {
+        "severity": "error",
+        "context": "AGP version 8.10.0 not found in Maven Central",
+        "raw": "Could not find com.android.tools.build:gradle:8.10.0"
+      }
+    },
+    "expectedFix": {
+      "file": "gradle/libs.versions.toml",
+      "lineNumber": 2,
+      "codeChange": "agp = \"8.7.3\"",
+      "explanation": "AGP 8.10.0 doesn't exist. Use 8.7.3 (latest stable)"
+    }
+  },
+  "timestamp": "2026-01-04T20:54:22.033Z",
+  "duration_ms": 11985,
+  "agent_response": {
+    "error": "Could not find com.android.tools.build:gradle:8.10.0",
+    "rootCause": "AGP 8.10.0 not found in Maven Central; consider migrating to a compatible version or adjusting repository sources.",
+    "fixGuidelines": [
+      "1. Update settings.gradle.kts: Remove JCenter entries and add Maven Central for AGP dependencies",
+      "2. Before:\n```kotlin\n// Original code with JCenter\nrepositories {\n    jcenter()\n    google()\n}\n```\nAfter:\n```kotlin\n// Fixed code using Maven Central\nrepositories {\n    mavenCentral()\n    google()\n}\n``",
+      "3. Verify that the build process correctly downloads AGP 8.10.0 from Maven Central and that no errors occur during compilation.",
+      "4. Check if any other dependencies are affected by this change and update them as necessary."
+    ],
+    "confidence": 0.7,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 60,
+    "file_identification": 30,
+    "code_examples": 80,
+    "version_suggestions": 90,
+    "overall_usability": 68,
+    "confidence": 0.7,
+    "latency_ms": 11985,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": true,
+    "has_specific_version": true,
+    "identified_exact_file": false
+  },
+  "passed": false,
+  "improvement_over_baseline": 28
+}

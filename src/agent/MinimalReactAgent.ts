@@ -238,7 +238,8 @@ export class MinimalReactAgent {
       const stopPromptGen = this.performanceTracker.startTimer('prompt_generation');
       let systemPrompt: string | null = null;
       if (this.usePromptEngine) {
-        const basePrompt = this.promptEngine.getSystemPrompt();
+        // ITERATION 11: Pass error to get template-based prompt
+        const basePrompt = this.promptEngine.getSystemPrompt(error);
         // Enhance with category-specific prompt
         systemPrompt = buildEnhancedSystemPrompt(basePrompt, classification.category);
       }

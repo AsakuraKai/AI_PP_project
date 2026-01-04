@@ -1,0 +1,61 @@
+{
+  "testCase": {
+    "id": 3,
+    "name": "Compose API Breakage",
+    "description": "Deprecated Compose API after upgrade 1.5 → 1.6",
+    "errorType": "compose-deprecation",
+    "complexity": "medium",
+    "targetUsability": 75,
+    "error": {
+      "type": "compose-deprecation",
+      "message": "Unresolved reference: MaterialTheme. Use androidx.compose.material3.MaterialTheme",
+      "filePath": "app/src/main/kotlin/ui/HomeScreen.kt",
+      "line": 88,
+      "column": 5,
+      "language": "kotlin",
+      "metadata": {
+        "severity": "error",
+        "context": "Compose Material upgraded to Material3"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/kotlin/ui/HomeScreen.kt",
+      "lineNumber": 88,
+      "codeChange": "import androidx.compose.material3.MaterialTheme",
+      "explanation": "Material2 deprecated, use Material3"
+    }
+  },
+  "timestamp": "2026-01-04T21:15:07.087Z",
+  "duration_ms": 5783,
+  "agent_response": {
+    "error": "Unresolved reference: MaterialTheme. Use androidx.compose.material3.MaterialTheme",
+    "rootCause": "Unresolved reference: MaterialTheme from androidx.compose.material. Use androidx.compose.material3.MaterialTheme at app/src/main/kotlin/ui/HomeScreen.kt:88",
+    "fixGuidelines": [
+      "1. Update import statement in HomeScreen.kt to use androidx.compose.material3.",
+      "2. Replace Material with Material3 in the code block below:\nBefore:\n```kotlin\nimport androidx.compose.material.Material\n// ... existing code ...\n```\nAfter:\n```kotlin\nimport androidx.compose.material3.Material\n// ... updated code ...\n",
+      "3. Verify that all Material components are migrated to Material3 by checking the entire file for any remaining references to the old package.",
+      "4. Ensure that the implementation of Material3 is compatible with the current AndroidX version and JDK.",
+      "5. Run ./gradlew --refresh-dependencies to update dependency versions and rebuild.",
+      "6. Test the UI screen after making these changes."
+    ],
+    "confidence": 0.8,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 60,
+    "file_identification": 100,
+    "code_examples": 80,
+    "version_suggestions": 0,
+    "overall_usability": 73,
+    "confidence": 0.8,
+    "latency_ms": 5783,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": true,
+    "has_specific_version": false,
+    "identified_exact_file": true
+  },
+  "passed": false
+}

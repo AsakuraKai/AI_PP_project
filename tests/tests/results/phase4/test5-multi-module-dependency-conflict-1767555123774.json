@@ -1,0 +1,57 @@
+{
+  "testCase": {
+    "id": 5,
+    "name": "Multi-Module Dependency Conflict",
+    "description": "Version conflict between :app and :core modules",
+    "errorType": "gradle-dependency",
+    "complexity": "complex",
+    "targetUsability": 70,
+    "error": {
+      "type": "gradle-dependency",
+      "message": "Conflict with dependency androidx.lifecycle:lifecycle-runtime-ktx",
+      "filePath": "app/build.gradle.kts",
+      "line": 45,
+      "column": 1,
+      "language": "gradle",
+      "metadata": {
+        "severity": "error",
+        "context": "Module :app requires 2.6.0, :core requires 2.5.0"
+      }
+    },
+    "expectedFix": {
+      "file": "gradle/libs.versions.toml",
+      "explanation": "Align lifecycle version across all modules"
+    }
+  },
+  "timestamp": "2026-01-04T19:32:03.774Z",
+  "duration_ms": 194,
+  "agent_response": {
+    "error": "Conflict with dependency androidx.lifecycle:lifecycle-runtime-ktx",
+    "rootCause": "Unable to generate complete analysis. Manual review recommended. Context: You are an expert Kotlin/Android debugging assistant specializing in root cause analysis.\n\n**YOUR ROLE:**\nYou help developers understand WHY errors oc...",
+    "fixGuidelines": [
+      "1. Review the error logs carefully for stack traces and error messages",
+      "2. Check official Android/Kotlin documentation for this error type",
+      "3. Search Stack Overflow with specific error message",
+      "4. Consider using a larger model or manual analysis for complex errors"
+    ],
+    "confidence": 0.2,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 60,
+    "file_identification": 0,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 45,
+    "confidence": 0.2,
+    "latency_ms": 194,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false
+}

@@ -1,0 +1,57 @@
+{
+  "testCase": {
+    "id": 7,
+    "name": "Gradle Network Failure",
+    "description": "Failed to resolve dependency due to network/repository issue",
+    "errorType": "gradle-network",
+    "complexity": "medium",
+    "baselineUsability": 60,
+    "targetUsability": 75,
+    "error": {
+      "type": "gradle-network",
+      "message": "Could not resolve all dependencies for configuration :classpath",
+      "filePath": "settings.gradle.kts",
+      "line": 15,
+      "column": 1,
+      "language": "gradle",
+      "metadata": {
+        "severity": "error",
+        "context": "Repository not accessible or dependency missing"
+      }
+    },
+    "expectedFix": {
+      "file": "settings.gradle.kts",
+      "explanation": "Add missing repository or check network connection"
+    }
+  },
+  "timestamp": "2026-01-04T19:39:29.460Z",
+  "duration_ms": 74530,
+  "agent_response": {
+    "error": "",
+    "rootCause": "Could not resolve all dependencies for configuration :classpath because the AGP version specified in settings.gradle.kts at line 15 is incompatible with Gradle's current or required version. AGP versions prior to a certain point may require older or newer Gradle versions, leading to dependency resolution issues.",
+    "fixGuidelines": [
+      "Update AGP version in settings.gradle.kts at line 15: ",
+      "Verify the fix by running ./gradlew clean build and check if all dependencies are resolved."
+    ],
+    "confidence": 0.6,
+    "toolsUsed": [],
+    "codeContext": "Evidence: Root cause analysis mentions: could, resolve, dependencies, configuration, classpath, version, gradle, incompatible, current\nContradictions: None"
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 50,
+    "file_identification": 100,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 62,
+    "confidence": 0.6,
+    "latency_ms": 74530,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": true
+  },
+  "passed": false,
+  "improvement_over_baseline": 2
+}

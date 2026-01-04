@@ -1,0 +1,60 @@
+{
+  "testCase": {
+    "id": 7,
+    "name": "Gradle Network Failure",
+    "description": "Failed to resolve dependency due to network/repository issue",
+    "errorType": "gradle-network",
+    "complexity": "medium",
+    "baselineUsability": 60,
+    "targetUsability": 75,
+    "error": {
+      "type": "gradle-network",
+      "message": "Could not resolve all dependencies for configuration :classpath",
+      "filePath": "settings.gradle.kts",
+      "line": 15,
+      "column": 1,
+      "language": "gradle",
+      "metadata": {
+        "severity": "error",
+        "context": "Repository not accessible or dependency missing"
+      }
+    },
+    "expectedFix": {
+      "file": "settings.gradle.kts",
+      "explanation": "Add missing repository or check network connection"
+    }
+  },
+  "timestamp": "2026-01-04T20:25:54.714Z",
+  "duration_ms": 40456,
+  "agent_response": {
+    "error": "Could not resolve all dependencies for configuration :classpath",
+    "rootCause": "Could not resolve all dependencies for configuration :classpath. This could be due to missing or incompatible versions of AGP (Android Google Play) or Kotlin. The error occurs in settings.gradle.kts at line 15, which suggests it's related to the build.gradle configuration file.",
+    "fixGuidelines": [
+      "1. Ensure that all required dependencies including AGP and Kotlin are present in the build.gradle.kts file.",
+      "2. Check the versions of AGP and Kotlin in the build.gradle.kts file at line 15 and ensure they are compatible with each other.",
+      "3. Verify that the build.gradle.kts file is correctly configured to include all necessary dependencies for the current project version.",
+      "4. Consider using the version_lookup tool to validate the versions of AGP and Kotlin before making any changes.",
+      "5. If the issue persists, examine the build.gradle.kts file for missing or incorrect dependency declarations."
+    ],
+    "confidence": 0.7,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 100,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 68,
+    "confidence": 0.7,
+    "latency_ms": 40456,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": true
+  },
+  "passed": false,
+  "improvement_over_baseline": 8
+}

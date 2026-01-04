@@ -1,0 +1,60 @@
+{
+  "testCase": {
+    "id": 6,
+    "name": "Manifest Permission Missing",
+    "description": "SecurityException due to missing CAMERA permission",
+    "errorType": "manifest-permission",
+    "complexity": "simple",
+    "baselineUsability": 65,
+    "targetUsability": 80,
+    "error": {
+      "type": "manifest-permission",
+      "message": "java.lang.SecurityException: Permission denial: starting Intent requires android.permission.CAMERA",
+      "filePath": "app/src/main/AndroidManifest.xml",
+      "line": 5,
+      "column": 1,
+      "language": "xml",
+      "metadata": {
+        "severity": "error",
+        "context": "Runtime permission error"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/AndroidManifest.xml",
+      "lineNumber": 5,
+      "codeChange": "<uses-permission android:name=\"android.permission.CAMERA\" />",
+      "explanation": "Add CAMERA permission to manifest"
+    }
+  },
+  "timestamp": "2026-01-04T20:55:47.214Z",
+  "duration_ms": 3772,
+  "agent_response": {
+    "error": "java.lang.SecurityException: Permission denial: starting Intent requires android.permission.CAMERA",
+    "rootCause": "Missing android.permission.CAMERA in AndroidManifest.xml",
+    "fixGuidelines": [
+      "1. File: app/src/main/AndroidManifest.xml at line 5\n   Add the permission declaration right after the manifest tag.",
+      "2. Before:\n```\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    package=\"com.example.app\">\n</manifest>\n```\nAfter:\n```\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    package=\"com.example.app\">\n    <uses-permission android:name=\"android.permission.CAMERA\" />\n</manifest>\n```\n",
+      "3. Verify by running the app again and checking if it grants the necessary permissions during runtime."
+    ],
+    "confidence": 0.8,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 100,
+    "code_examples": 80,
+    "version_suggestions": 0,
+    "overall_usability": 76,
+    "confidence": 0.8,
+    "latency_ms": 3772,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": true,
+    "has_specific_version": false,
+    "identified_exact_file": true
+  },
+  "passed": false,
+  "improvement_over_baseline": 11
+}

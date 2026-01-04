@@ -1,0 +1,57 @@
+{
+  "testCase": {
+    "id": 4,
+    "name": "XML Layout Inflation",
+    "description": "Runtime inflation error due to unknown attribute",
+    "errorType": "xml-layout",
+    "complexity": "medium",
+    "targetUsability": 70,
+    "error": {
+      "type": "xml-layout",
+      "message": "Binary XML file line #12: Error inflating class android.widget.TextView",
+      "filePath": "app/src/main/res/layout/activity_main.xml",
+      "line": 12,
+      "column": 5,
+      "language": "xml",
+      "metadata": {
+        "severity": "error",
+        "context": "Unknown attribute android:textFontWeight"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/res/layout/activity_main.xml",
+      "lineNumber": 12,
+      "explanation": "Remove invalid attribute or use android:textStyle=\"bold\""
+    }
+  },
+  "timestamp": "2026-01-04T20:55:35.737Z",
+  "duration_ms": 36400,
+  "agent_response": {
+    "error": "Binary XML file line #12: Error inflating class android.widget.TextView",
+    "rootCause": "Binary XML file line #12: Error inflating class android.widget.TextView",
+    "fixGuidelines": [
+      "Locate the exact location (file path and line number) where the error occurs to pinpoint the issue. For instance, if the file is src/main/res/Android/Xperia/AdaptBlue.xml and the line is 15, specify this.",
+      "Implement a fix that ensures the correct class is being inflated by adjusting the XML structure or correcting any invalid references in the file. This might involve validating the XML schema or ensuring that all necessary classes are properly defined.",
+      "Test the fix by running the application again to confirm if the error has been resolved and log any subsequent issues that arise."
+    ],
+    "confidence": 0.8,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 0,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 48,
+    "confidence": 0.8,
+    "latency_ms": 36400,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false
+}

@@ -1,0 +1,58 @@
+{
+  "testCase": {
+    "id": 2,
+    "name": "Kotlin lateinit NPE",
+    "description": "lateinit property accessed before initialization",
+    "errorType": "kotlin-npe",
+    "complexity": "medium",
+    "targetUsability": 75,
+    "error": {
+      "type": "kotlin-npe",
+      "message": "lateinit property viewModel has not been initialized",
+      "filePath": "app/src/main/kotlin/MainActivity.kt",
+      "line": 42,
+      "column": 9,
+      "language": "kotlin",
+      "metadata": {
+        "severity": "error",
+        "context": "Accessing viewModel before onCreate() completes"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/kotlin/MainActivity.kt",
+      "lineNumber": 35,
+      "explanation": "Initialize viewModel in onCreate() before first use"
+    }
+  },
+  "timestamp": "2026-01-04T19:32:00.033Z",
+  "duration_ms": 194,
+  "agent_response": {
+    "error": "lateinit property viewModel has not been initialized",
+    "rootCause": "Unable to generate complete analysis. Manual review recommended. Context: You are an expert Kotlin/Android debugging assistant specializing in root cause analysis.\n\n**YOUR ROLE:**\nYou help developers understand WHY errors oc...",
+    "fixGuidelines": [
+      "1. Review the error logs carefully for stack traces and error messages",
+      "2. Check official Android/Kotlin documentation for this error type",
+      "3. Search Stack Overflow with specific error message",
+      "4. Consider using a larger model or manual analysis for complex errors"
+    ],
+    "confidence": 0.2,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 60,
+    "file_identification": 0,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 45,
+    "confidence": 0.2,
+    "latency_ms": 194,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false
+}

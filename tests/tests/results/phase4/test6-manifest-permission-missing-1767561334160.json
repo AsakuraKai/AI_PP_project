@@ -1,0 +1,60 @@
+{
+  "testCase": {
+    "id": 6,
+    "name": "Manifest Permission Missing",
+    "description": "SecurityException due to missing CAMERA permission",
+    "errorType": "manifest-permission",
+    "complexity": "simple",
+    "baselineUsability": 65,
+    "targetUsability": 80,
+    "error": {
+      "type": "manifest-permission",
+      "message": "java.lang.SecurityException: Permission denial: starting Intent requires android.permission.CAMERA",
+      "filePath": "app/src/main/AndroidManifest.xml",
+      "line": 5,
+      "column": 1,
+      "language": "xml",
+      "metadata": {
+        "severity": "error",
+        "context": "Runtime permission error"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/AndroidManifest.xml",
+      "lineNumber": 5,
+      "codeChange": "<uses-permission android:name=\"android.permission.CAMERA\" />",
+      "explanation": "Add CAMERA permission to manifest"
+    }
+  },
+  "timestamp": "2026-01-04T21:15:34.160Z",
+  "duration_ms": 4010,
+  "agent_response": {
+    "error": "java.lang.SecurityException: Permission denial: starting Intent requires android.permission.CAMERA",
+    "rootCause": "java.lang.SecurityException: Permission denial: starting Intent requires android.permission.CAMERA at app/src/main/AndroidManifest.xml:5",
+    "fixGuidelines": [
+      "1. Open app/src/main/AndroidManifest.xml at line 5 and check if the <uses-permission> tag for CAMERA is present.",
+      "2. If not, add the following XML snippet before the <application> tag:\n\n<uses-permission android:name=\"android.permission.CAMERA\" />",
+      "3. Verify that all necessary permissions are declared in the manifest to prevent runtime exceptions."
+    ],
+    "confidence": 0.7,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 100,
+    "code_examples": 40,
+    "version_suggestions": 0,
+    "overall_usability": 72,
+    "confidence": 0.7,
+    "latency_ms": 4010,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": true
+  },
+  "passed": false,
+  "improvement_over_baseline": 7
+}

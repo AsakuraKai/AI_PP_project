@@ -1,0 +1,56 @@
+{
+  "testCase": {
+    "id": 4,
+    "name": "XML Layout Inflation",
+    "description": "Runtime inflation error due to unknown attribute",
+    "errorType": "xml-layout",
+    "complexity": "medium",
+    "targetUsability": 70,
+    "error": {
+      "type": "xml-layout",
+      "message": "Binary XML file line #12: Error inflating class android.widget.TextView",
+      "filePath": "app/src/main/res/layout/activity_main.xml",
+      "line": 12,
+      "column": 5,
+      "language": "xml",
+      "metadata": {
+        "severity": "error",
+        "context": "Unknown attribute android:textFontWeight"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/res/layout/activity_main.xml",
+      "lineNumber": 12,
+      "explanation": "Remove invalid attribute or use android:textStyle=\"bold\""
+    }
+  },
+  "timestamp": "2026-01-04T19:36:23.353Z",
+  "duration_ms": 45308,
+  "agent_response": {
+    "error": "",
+    "rootCause": "The error is occurring in activity_main.xml at line 12 because the AGP version used (8.1.0) is incompatible with Gradle 8.9. AGP 8.1.x requires a lower version of Gradle, specifically up to 8.2.",
+    "fixGuidelines": [
+      "Update AGP version in gradle/libs.versions.toml at line 8 from '8.1.0' to '8.7.3'",
+      "Re-run ./gradlew clean build to ensure compatibility"
+    ],
+    "confidence": 0.6,
+    "toolsUsed": [],
+    "codeContext": "Evidence: Root cause analysis mentions: error, activity_main\nContradictions: None"
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 50,
+    "file_identification": 30,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 48,
+    "confidence": 0.6,
+    "latency_ms": 45308,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false
+}
