@@ -1,0 +1,62 @@
+{
+  "testCase": {
+    "id": 6,
+    "name": "Manifest Permission Missing",
+    "description": "SecurityException due to missing CAMERA permission",
+    "errorType": "manifest-permission",
+    "complexity": "simple",
+    "baselineUsability": 65,
+    "targetUsability": 80,
+    "error": {
+      "type": "manifest-permission",
+      "message": "java.lang.SecurityException: Permission denial: starting Intent requires android.permission.CAMERA",
+      "filePath": "app/src/main/AndroidManifest.xml",
+      "line": 5,
+      "column": 1,
+      "language": "xml",
+      "metadata": {
+        "severity": "error",
+        "context": "Runtime permission error"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/AndroidManifest.xml",
+      "lineNumber": 5,
+      "codeChange": "<uses-permission android:name=\"android.permission.CAMERA\" />",
+      "explanation": "Add CAMERA permission to manifest"
+    }
+  },
+  "timestamp": "2026-01-04T13:49:57.687Z",
+  "duration_ms": 3125,
+  "agent_response": {
+    "error": "java.lang.SecurityException: Permission denial: starting Intent requires android.permission.CAMERA",
+    "rootCause": "Missing android.permission.CAMERA in AndroidManifest.xml at line 5",
+    "fixGuidelines": [
+      "1. Add <uses-permission android:name=\"android.permission.CAMERA\" /> inside <manifest> tag, before <application>",
+      "2. Ensure that the app request permissions via runtime if API version is >=23 (requires CAMERA)",
+      "3. Verify by running the app and checking if the permission is requested.",
+      "4. If still denied, check for any existing manifest edits or consider updating to a newer Android version with compatible APIs.",
+      "5. Ensure that all necessary permissions are included in the manifest."
+    ],
+    "confidence": 0.8,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 30,
+    "code_examples": 40,
+    "version_suggestions": 0,
+    "overall_usability": 58,
+    "confidence": 0.8,
+    "latency_ms": 3125,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false,
+  "improvement_over_baseline": -7
+}

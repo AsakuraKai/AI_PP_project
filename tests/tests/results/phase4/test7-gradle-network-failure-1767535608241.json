@@ -1,0 +1,61 @@
+{
+  "testCase": {
+    "id": 7,
+    "name": "Gradle Network Failure",
+    "description": "Failed to resolve dependency due to network/repository issue",
+    "errorType": "gradle-network",
+    "complexity": "medium",
+    "baselineUsability": 60,
+    "targetUsability": 75,
+    "error": {
+      "type": "gradle-network",
+      "message": "Could not resolve all dependencies for configuration :classpath",
+      "filePath": "settings.gradle.kts",
+      "line": 15,
+      "column": 1,
+      "language": "gradle",
+      "metadata": {
+        "severity": "error",
+        "context": "Repository not accessible or dependency missing"
+      }
+    },
+    "expectedFix": {
+      "file": "settings.gradle.kts",
+      "explanation": "Add missing repository or check network connection"
+    }
+  },
+  "timestamp": "2026-01-04T14:06:48.241Z",
+  "duration_ms": 6149,
+  "agent_response": {
+    "error": "Could not resolve all dependencies for configuration :classpath",
+    "rootCause": "Invalid AGP version declared in settings.gradle.kts:15 causing dependency resolution to fail",
+    "fixGuidelines": [
+      "1. Open settings.gradle.kt and verify the AGP version declaration at line 15.",
+      "2. Ensure that the AGP version is valid by checking against a trusted source using version_lookup tool.",
+      "3. If an invalid version is used, replace it with a valid one that exists in the AGP repository.",
+      "4. Check for any missing compiler options or incorrect paths in settings.gradle that might be causing build issues.",
+      "5. Update Gradle to ensure compatibility with the selected AGP and Kotlin versions.",
+      "6. Verify that all necessary dependencies are included in the build.gradle.kt file."
+    ],
+    "confidence": 0.8,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 100,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 68,
+    "confidence": 0.8,
+    "latency_ms": 6149,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": true
+  },
+  "passed": false,
+  "improvement_over_baseline": 8
+}

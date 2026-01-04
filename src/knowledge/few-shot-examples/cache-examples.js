@@ -9,7 +9,7 @@ exports.BUILD_CACHE_EXAMPLES = [
     {
         id: 'cache_gradle_daemon_died',
         errorType: 'BUILD_CACHE',
-        error: `Gradle build daemon disappeared unexpectedly (it may have been killed or may have crashed)`,
+        error: "Gradle build daemon disappeared unexpectedly (it may have been killed or may have crashed)",
         diagnosis: {
             problem: 'Gradle daemon process terminated unexpectedly during build',
             rootCause: 'Corrupted daemon state, memory issues, or system instability',
@@ -18,22 +18,7 @@ exports.BUILD_CACHE_EXAMPLES = [
         },
         solution: {
             summary: 'Stop Gradle daemon, clear caches, and restart build',
-            specificFix: `Run these commands in order:
-
-1. Stop all Gradle daemons:
-   ./gradlew --stop
-
-2. Clean build outputs:
-   ./gradlew clean
-
-3. Clear Gradle caches (if issue persists):
-   rm -rf ~/.gradle/caches/
-   (Windows: rmdir /s /q %USERPROFILE%\\.gradle\\caches)
-
-4. Restart Android Studio and sync Gradle
-
-5. Rebuild project:
-   ./gradlew build`,
+            specificFix: "Run these commands in order:\n\n1. Stop all Gradle daemons:\n   ./gradlew --stop\n\n2. Clean build outputs:\n   ./gradlew clean\n\n3. Clear Gradle caches (if issue persists):\n   rm -rf ~/.gradle/caches/\n   (Windows: rmdir /s /q %USERPROFILE%\\.gradle\\caches)\n\n4. Restart Android Studio and sync Gradle\n\n5. Rebuild project:\n   ./gradlew build",
             fileIdentification: 'N/A (command-line fix)',
             codeExamples: [],
             verificationSteps: [
@@ -47,8 +32,7 @@ exports.BUILD_CACHE_EXAMPLES = [
     {
         id: 'cache_incremental_compilation_failed',
         errorType: 'BUILD_CACHE',
-        error: `Internal error in Kotlin incremental compilation
-    Caused by: java.io.IOException: Could not read file: .gradle/caches/transforms-X/files-X.bin`,
+        error: "Internal error in Kotlin incremental compilation\n    Caused by: java.io.IOException: Could not read file: .gradle/caches/transforms-X/files-X.bin",
         diagnosis: {
             problem: 'Kotlin incremental compilation cache corrupted',
             rootCause: 'Corrupted cache files in .gradle/caches directory, possibly from interrupted build',
@@ -57,21 +41,7 @@ exports.BUILD_CACHE_EXAMPLES = [
         },
         solution: {
             summary: 'Clean Kotlin caches and rebuild',
-            specificFix: `1. Clean build outputs:
-   ./gradlew clean
-
-2. Delete Kotlin incremental compilation cache:
-   rm -rf .gradle/caches/
-   (Windows: rmdir /s /q .gradle\\caches)
-
-3. Invalidate Android Studio caches:
-   File → Invalidate Caches → Invalidate and Restart
-
-4. Rebuild project:
-   ./gradlew build
-
-Optional: Disable incremental compilation temporarily in gradle.properties:
-   kotlin.incremental=false`,
+            specificFix: "1. Clean build outputs:\n   ./gradlew clean\n\n2. Delete Kotlin incremental compilation cache:\n   rm -rf .gradle/caches/\n   (Windows: rmdir /s /q .gradle\\caches)\n\n3. Invalidate Android Studio caches:\n   File \u2192 Invalidate Caches \u2192 Invalidate and Restart\n\n4. Rebuild project:\n   ./gradlew build\n\nOptional: Disable incremental compilation temporarily in gradle.properties:\n   kotlin.incremental=false",
             fileIdentification: '.gradle/caches/ (directory)',
             codeExamples: [],
             verificationSteps: [
@@ -85,8 +55,7 @@ Optional: Disable incremental compilation temporarily in gradle.properties:
     {
         id: 'cache_build_cache_corrupt',
         errorType: 'BUILD_CACHE',
-        error: `Could not load cache value for task ':app:compileDebugKotlin'
-    Caused by: java.lang.IllegalStateException: Could not open cache directory`,
+        error: "Could not load cache value for task ':app:compileDebugKotlin'\n    Caused by: java.lang.IllegalStateException: Could not open cache directory",
         diagnosis: {
             problem: 'Gradle build cache directory corrupted or locked',
             rootCause: 'Build cache state corrupted, possibly from concurrent builds or system crash',
@@ -95,24 +64,7 @@ Optional: Disable incremental compilation temporarily in gradle.properties:
         },
         solution: {
             summary: 'Clear build cache and rebuild',
-            specificFix: `1. Stop any running Gradle processes:
-   ./gradlew --stop
-
-2. Clean build outputs:
-   ./gradlew clean
-
-3. Clear build cache:
-   ./gradlew cleanBuildCache
-
-4. Delete cache directory manually:
-   rm -rf .gradle/caches/ .gradle/build-cache/
-   (Windows: rmdir /s /q .gradle\\caches .gradle\\build-cache)
-
-5. Rebuild:
-   ./gradlew build --no-build-cache
-
-Optional: Disable build cache in gradle.properties:
-   org.gradle.caching=false`,
+            specificFix: "1. Stop any running Gradle processes:\n   ./gradlew --stop\n\n2. Clean build outputs:\n   ./gradlew clean\n\n3. Clear build cache:\n   ./gradlew cleanBuildCache\n\n4. Delete cache directory manually:\n   rm -rf .gradle/caches/ .gradle/build-cache/\n   (Windows: rmdir /s /q .gradle\\caches .gradle\\build-cache)\n\n5. Rebuild:\n   ./gradlew build --no-build-cache\n\nOptional: Disable build cache in gradle.properties:\n   org.gradle.caching=false",
             fileIdentification: '.gradle/caches/, .gradle/build-cache/',
             codeExamples: [],
             verificationSteps: [
@@ -126,8 +78,7 @@ Optional: Disable build cache in gradle.properties:
     {
         id: 'cache_lock_timeout',
         errorType: 'BUILD_CACHE',
-        error: `Timeout waiting to lock file cache (~/.gradle/caches/modules-2/files-2.1).
-    It is currently in use by another Gradle instance.`,
+        error: "Timeout waiting to lock file cache (~/.gradle/caches/modules-2/files-2.1).\n    It is currently in use by another Gradle instance.",
         diagnosis: {
             problem: 'Multiple Gradle instances trying to access cache simultaneously',
             rootCause: 'Another Gradle build running, or orphaned lock file from crashed process',
@@ -136,24 +87,7 @@ Optional: Disable build cache in gradle.properties:
         },
         solution: {
             summary: 'Stop all Gradle processes and clear lock files',
-            specificFix: `1. Stop all Gradle daemons:
-   ./gradlew --stop
-
-2. Check for running Gradle processes:
-   ps aux | grep gradle (Linux/Mac)
-   tasklist | findstr gradle (Windows)
-
-3. Kill orphaned Gradle processes if found:
-   kill -9 <PID> (Linux/Mac)
-   taskkill /F /PID <PID> (Windows)
-
-4. Remove lock files manually:
-   rm ~/.gradle/caches/modules-2/*.lock
-   rm ~/.gradle/caches/*/*.lock
-   (Windows: del %USERPROFILE%\\.gradle\\caches\\modules-2\\*.lock)
-
-5. Restart build:
-   ./gradlew build`,
+            specificFix: "1. Stop all Gradle daemons:\n   ./gradlew --stop\n\n2. Check for running Gradle processes:\n   ps aux | grep gradle (Linux/Mac)\n   tasklist | findstr gradle (Windows)\n\n3. Kill orphaned Gradle processes if found:\n   kill -9 <PID> (Linux/Mac)\n   taskkill /F /PID <PID> (Windows)\n\n4. Remove lock files manually:\n   rm ~/.gradle/caches/modules-2/*.lock\n   rm ~/.gradle/caches/*/*.lock\n   (Windows: del %USERPROFILE%\\.gradle\\caches\\modules-2\\*.lock)\n\n5. Restart build:\n   ./gradlew build",
             fileIdentification: '~/.gradle/caches/ (lock files)',
             codeExamples: [],
             verificationSteps: [
@@ -167,8 +101,7 @@ Optional: Disable build cache in gradle.properties:
     {
         id: 'cache_metadata_corrupt',
         errorType: 'BUILD_CACHE',
-        error: `Could not read metadata for dependency: androidx.compose.ui:ui:1.6.0
-    Caused by: java.io.InvalidClassException: invalid stream header`,
+        error: "Could not read metadata for dependency: androidx.compose.ui:ui:1.6.0\n    Caused by: java.io.InvalidClassException: invalid stream header",
         diagnosis: {
             problem: 'Corrupted dependency metadata cache',
             rootCause: 'Cache metadata files corrupted, possibly from Gradle version upgrade or interrupted download',
@@ -177,23 +110,7 @@ Optional: Disable build cache in gradle.properties:
         },
         solution: {
             summary: 'Clear dependency cache and re-download',
-            specificFix: `1. Clean Gradle dependency cache:
-   rm -rf ~/.gradle/caches/modules-2/
-   (Windows: rmdir /s /q %USERPROFILE%\\.gradle\\caches\\modules-2)
-
-2. Force refresh dependencies:
-   ./gradlew build --refresh-dependencies
-
-3. If issue persists, clear all caches:
-   rm -rf ~/.gradle/caches/
-   ./gradlew clean
-   ./gradlew build --refresh-dependencies
-
-4. Verify in build.gradle repositories are correct:
-   repositories {
-       google()
-       mavenCentral()
-   }`,
+            specificFix: "1. Clean Gradle dependency cache:\n   rm -rf ~/.gradle/caches/modules-2/\n   (Windows: rmdir /s /q %USERPROFILE%\\.gradle\\caches\\modules-2)\n\n2. Force refresh dependencies:\n   ./gradlew build --refresh-dependencies\n\n3. If issue persists, clear all caches:\n   rm -rf ~/.gradle/caches/\n   ./gradlew clean\n   ./gradlew build --refresh-dependencies\n\n4. Verify in build.gradle repositories are correct:\n   repositories {\n       google()\n       mavenCentral()\n   }",
             fileIdentification: '~/.gradle/caches/modules-2/',
             codeExamples: [],
             verificationSteps: [
@@ -205,4 +122,3 @@ Optional: Disable build cache in gradle.properties:
         }
     }
 ];
-//# sourceMappingURL=cache-examples.js.map

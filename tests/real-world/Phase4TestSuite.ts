@@ -15,9 +15,8 @@
  * @week Week 1-2: Testing Infrastructure
  */
 
-import { MinimalReactAgent } from '../src/agent/MinimalReactAgent';
-import { OllamaClient } from '../src/llm/OllamaClient';
-import { ParsedError } from '../src/types';
+import { MinimalReactAgent } from '../../src/agent/MinimalReactAgent';
+import { ParsedError } from '../../src/types';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
@@ -102,10 +101,26 @@ export interface TestSuiteReport {
 export class Phase4TestSuite {
   private agent: MinimalReactAgent;
   private resultsDir: string;
+  private testFixturesRoot: string;
+  
+  // Map test IDs to actual fixture folder names
+  private fixtureNameMap: Record<number, string> = {
+    1: 'mvp-test-project',  // AGP test uses MVP project
+    2: 'test-2-lateinit-npe',
+    3: 'test3-compose-breakage',
+    4: 'test-4-xml-inflation',
+    5: 'test5-multi-module',
+    6: 'test6-manifest-permission',
+    7: 'test7-gradle-network',
+    8: 'test8-build-cache',
+    9: 'test9-proguard',
+    10: 'test10-navigation'
+  };
   
   constructor(agent: MinimalReactAgent) {
     this.agent = agent;
     this.resultsDir = path.join(__dirname, '../tests/results/phase4');
+    this.testFixturesRoot = path.join(__dirname, '../fixtures');
   }
   
   /**
@@ -373,6 +388,7 @@ export class Phase4TestSuite {
         }
       },
       expectedFix: {
+        file: 'build.gradle',
         explanation: 'Run ./gradlew clean or delete .gradle cache'
       }
     };
@@ -453,8 +469,22 @@ export class Phase4TestSuite {
     const startTime = Date.now();
     
     try {
-      // Run RCA Agent
-      const result = await this.agent.analyze(testCase.error);
+      // Get test fixture root for this specific test using fixture name map
+      const fixtureFolderName = this.fixtureNameMap[testCase.id];
+      const testFixturePath = path.join(this.testFixturesRoot, fixtureFolderName);
+      
+      // Create a new agent with correct projectRoot for file resolution
+      const testAgent = new MinimalReactAgent((this.agent as any).llm, {
+        maxIterations: 5,
+        generateFix: true,
+        projectRoot: testFixturePath, // Fix file resolution issue
+        enableCaching: true
+      });
+      
+      console.log(`   📂 Using test fixture: ${fixtureFolderName} (${testFixturePath})`);
+      
+      // Run RCA Agent with test-specific agent
+      const result = await testAgent.analyze(testCase.error);
       
       const duration = Date.now() - startTime;
       
@@ -669,7 +699,7 @@ export class Phase4TestSuite {
       if (result.passed) stats.passed++;
       stats.avg_usability += result.metrics.overall_usability;
     }
-    for (const [type, stats] of byErrorType) {
+    for (const [_type, stats] of byErrorType) {
       stats.avg_usability /= stats.total;
     }
     
@@ -685,7 +715,7 @@ export class Phase4TestSuite {
       if (result.passed) stats.passed++;
       stats.avg_usability += result.metrics.overall_usability;
     }
-    for (const [complexity, stats] of byComplexity) {
+    for (const [_complexity, stats] of byComplexity) {
       stats.avg_usability /= stats.total;
     }
     

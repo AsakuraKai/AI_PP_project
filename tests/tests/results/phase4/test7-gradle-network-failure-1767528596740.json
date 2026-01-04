@@ -1,0 +1,60 @@
+{
+  "testCase": {
+    "id": 7,
+    "name": "Gradle Network Failure",
+    "description": "Failed to resolve dependency due to network/repository issue",
+    "errorType": "gradle-network",
+    "complexity": "medium",
+    "baselineUsability": 60,
+    "targetUsability": 75,
+    "error": {
+      "type": "gradle-network",
+      "message": "Could not resolve all dependencies for configuration :classpath",
+      "filePath": "settings.gradle.kts",
+      "line": 15,
+      "column": 1,
+      "language": "gradle",
+      "metadata": {
+        "severity": "error",
+        "context": "Repository not accessible or dependency missing"
+      }
+    },
+    "expectedFix": {
+      "file": "settings.gradle.kts",
+      "explanation": "Add missing repository or check network connection"
+    }
+  },
+  "timestamp": "2026-01-04T12:09:56.739Z",
+  "duration_ms": 3577,
+  "agent_response": {
+    "error": "Could not resolve all dependencies for configuration :classpath",
+    "rootCause": "The settings.gradle.kt at line 15 has an issue where it references a configuration that cannot be resolved, possibly because the required modules are not properly defined or their paths are incorrect.",
+    "fixGuidelines": [
+      "1. Check if all dependencies in settings.gradle.kts have valid and correct module definitions with proper paths.",
+      "2. Ensure that any unresolved dependencies listed in settings.gradle.kt are either removed or replaced with compatible versions.",
+      "3. Verify the module paths in build.gradle.kts to ensure they point to existing modules or correctly reference AGP versions.",
+      "4. Update the build.gradle file's module definitions to include all necessary dependencies, possibly adding missing modules or adjusting their versions.",
+      "5. If using AGP as a module, confirm that it is properly listed and its version is compatible with the current Gradle and Kotlin versions."
+    ],
+    "confidence": 0.7,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 100,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 68,
+    "confidence": 0.7,
+    "latency_ms": 3577,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": true
+  },
+  "passed": false,
+  "improvement_over_baseline": 8
+}

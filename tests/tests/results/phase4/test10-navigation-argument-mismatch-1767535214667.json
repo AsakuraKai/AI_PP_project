@@ -1,0 +1,58 @@
+{
+  "testCase": {
+    "id": 10,
+    "name": "Navigation Argument Mismatch",
+    "description": "Runtime crash due to missing/wrong navigation arguments",
+    "errorType": "navigation",
+    "complexity": "medium",
+    "baselineUsability": 50,
+    "targetUsability": 70,
+    "error": {
+      "type": "navigation",
+      "message": "java.lang.IllegalArgumentException: Required argument \"userId\" is missing",
+      "filePath": "app/src/main/kotlin/navigation/NavGraph.kt",
+      "line": 32,
+      "column": 5,
+      "language": "kotlin",
+      "metadata": {
+        "severity": "error",
+        "context": "Navigation argument not passed correctly"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/kotlin/navigation/NavGraph.kt",
+      "lineNumber": 32,
+      "explanation": "Add userId argument to navigation call"
+    }
+  },
+  "timestamp": "2026-01-04T14:00:14.666Z",
+  "duration_ms": 4085,
+  "agent_response": {
+    "error": "java.lang.IllegalArgumentException: Required argument \"userId\" is missing",
+    "rootCause": "Navigation argument 'userId' is missing when navigating from NavGraph.kt:32. The route definition in NavHost expects this argument, indicating a possible type mismatch or missing parameter in the navigation call.",
+    "fixGuidelines": [
+      "1. Check if the route in NavHost defines 'userId' as an IntType and ensure that the navigation call passes an Int value.",
+      "2. Before:\n```kotlin\ncomposable(route = "
+    ],
+    "confidence": 0.5,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 100,
+    "solution_specificity": 40,
+    "file_identification": 0,
+    "code_examples": 80,
+    "version_suggestions": 0,
+    "overall_usability": 50,
+    "confidence": 0.5,
+    "latency_ms": 4085,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": true,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false,
+  "improvement_over_baseline": 0
+}

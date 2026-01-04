@@ -1,0 +1,59 @@
+{
+  "testCase": {
+    "id": 2,
+    "name": "Kotlin lateinit NPE",
+    "description": "lateinit property accessed before initialization",
+    "errorType": "kotlin-npe",
+    "complexity": "medium",
+    "targetUsability": 75,
+    "error": {
+      "type": "kotlin-npe",
+      "message": "lateinit property viewModel has not been initialized",
+      "filePath": "app/src/main/kotlin/MainActivity.kt",
+      "line": 42,
+      "column": 9,
+      "language": "kotlin",
+      "metadata": {
+        "severity": "error",
+        "context": "Accessing viewModel before onCreate() completes"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/kotlin/MainActivity.kt",
+      "lineNumber": 35,
+      "explanation": "Initialize viewModel in onCreate() before first use"
+    }
+  },
+  "timestamp": "2026-01-04T13:13:53.093Z",
+  "duration_ms": 4262,
+  "agent_response": {
+    "error": "lateinit property viewModel has not been initialized",
+    "rootCause": "A NullPointerException occurred because the viewModel property was accessed before the onCreate() method completes in MainActivity.kt at line 42. This is a common issue when trying to access the ActivityManager or other core activity-related elements without first ensuring that the main activity has been initialized.",
+    "fixGuidelines": [
+      "1. Ensure that the onCreate() method of MainActivity is properly implemented and called before any other operations in the file.",
+      "2. Before:\n```kotlin\n// Incorrect code accessing viewModel before initialization\nval viewModel = ActivityManager instance\n```\nAfter:\n```kotlin\n// Correct approach: Initialize main activity first, then access viewModel\nwhen (startActivity(Entry()) ?: run { }) {\n  // Ensure the activity is initialized and active\n}\nval viewModel = ActivityManager instance",
+      "3. Verify that all necessary activities are started before accessing any of their components or properties.",
+      "4. Check if there are any missing imports for ActivityManager or other required classes used in the code.",
+      "5. Make sure that the main activity's onCreate() method is correctly implemented and called from the entry point."
+    ],
+    "confidence": 0.7,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 0,
+    "code_examples": 80,
+    "version_suggestions": 0,
+    "overall_usability": 56,
+    "confidence": 0.7,
+    "latency_ms": 4262,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": true,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false
+}

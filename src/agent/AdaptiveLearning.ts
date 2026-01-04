@@ -9,7 +9,7 @@
 
 import { ChromaDBClient } from '../db/ChromaDBClient';
 import { RCADocument } from '../db/schemas/rca-collection';
-import { FeedbackHandler, FeedbackResult } from './FeedbackHandler';
+import { FeedbackHandler } from './FeedbackHandler';
 
 /**
  * Learning pattern identified from feedback

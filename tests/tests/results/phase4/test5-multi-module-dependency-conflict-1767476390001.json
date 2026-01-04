@@ -1,0 +1,58 @@
+{
+  "testCase": {
+    "id": 5,
+    "name": "Multi-Module Dependency Conflict",
+    "description": "Version conflict between :app and :core modules",
+    "errorType": "gradle-dependency",
+    "complexity": "complex",
+    "targetUsability": 70,
+    "error": {
+      "type": "gradle-dependency",
+      "message": "Conflict with dependency androidx.lifecycle:lifecycle-runtime-ktx",
+      "filePath": "app/build.gradle.kts",
+      "line": 45,
+      "column": 1,
+      "language": "gradle",
+      "metadata": {
+        "severity": "error",
+        "context": "Module :app requires 2.6.0, :core requires 2.5.0"
+      }
+    },
+    "expectedFix": {
+      "file": "gradle/libs.versions.toml",
+      "explanation": "Align lifecycle version across all modules"
+    }
+  },
+  "timestamp": "2026-01-03T21:39:50.000Z",
+  "duration_ms": 15904,
+  "agent_response": {
+    "error": "Conflict with dependency androidx.lifecycle:lifecycle-runtime-ktx",
+    "rootCause": "The app requires conflicting versions of androidx.lifecycle:lifecycle-runtime-ktx (2.6.0 and 2.5.0). This is likely due to incorrect version specification in app/build.gradle.kts at line 45, where multiple versions are listed for the same package.",
+    "fixGuidelines": [
+      "1. First, check the build.gradle.kts file at app/build.gradle.kts:45 and ensure only one version of androidx.lifecycle:lifecycle-runtime-ktx is specified.",
+      "2. Replace the conflicting lines with a single compatible version. For example, if 2.6.0 is needed, update to that version while ensuring it's compatible with other dependencies like Kotlin and Gradle.",
+      "3. Verify that the chosen version of androidx.lifecycle:lifecycle-runtime-ktx is compatible with the current versions of Kotlin (e.g., >=1.8) and Gradle.",
+      "4. Additionally, ensure that all dependent libraries are updated to their latest stable versions to avoid further conflicts.",
+      "5. After making these changes, run ./gradlew --refresh-dependencies to check if the conflict is resolved."
+    ],
+    "confidence": 0.7,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 30,
+    "code_examples": 40,
+    "version_suggestions": 90,
+    "overall_usability": 67,
+    "confidence": 0.7,
+    "latency_ms": 15904,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": true,
+    "identified_exact_file": false
+  },
+  "passed": false
+}

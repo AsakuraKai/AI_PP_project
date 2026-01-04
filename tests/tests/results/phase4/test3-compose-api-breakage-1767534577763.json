@@ -1,0 +1,60 @@
+{
+  "testCase": {
+    "id": 3,
+    "name": "Compose API Breakage",
+    "description": "Deprecated Compose API after upgrade 1.5 → 1.6",
+    "errorType": "compose-deprecation",
+    "complexity": "medium",
+    "targetUsability": 75,
+    "error": {
+      "type": "compose-deprecation",
+      "message": "Unresolved reference: MaterialTheme. Use androidx.compose.material3.MaterialTheme",
+      "filePath": "app/src/main/kotlin/ui/HomeScreen.kt",
+      "line": 88,
+      "column": 5,
+      "language": "kotlin",
+      "metadata": {
+        "severity": "error",
+        "context": "Compose Material upgraded to Material3"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/kotlin/ui/HomeScreen.kt",
+      "lineNumber": 88,
+      "codeChange": "import androidx.compose.material3.MaterialTheme",
+      "explanation": "Material2 deprecated, use Material3"
+    }
+  },
+  "timestamp": "2026-01-04T13:49:37.762Z",
+  "duration_ms": 12481,
+  "agent_response": {
+    "error": "Unresolved reference: MaterialTheme. Use androidx.compose.material3.MaterialTheme",
+    "rootCause": "MaterialTheme (com.android.material) is not available in the current version of Material3. The error suggests that the project should be migrated to use Material3 instead of the deprecated MaterialUI.",
+    "fixGuidelines": [
+      "1. Replace MaterialUI imports with Material3 equivalents and update package names from com.android material to com.google packages.",
+      "2. Update all code references to use Material3's new APIs and components, ensuring compatibility with version 8.7.3.",
+      "3. Verify the fix by running the application after making these changes and checking for any remaining errors related to MaterialTheme availability.",
+      "4. If issues persist, check for specific Material3 package versions that are compatible with the current Android version being used (e.g., ensure com.google.android.material is correctly aligned with Android 10 or higher).",
+      "5. Provide a detailed before-and-after code snippet demonstrating these changes in context."
+    ],
+    "confidence": 0.85,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 60,
+    "file_identification": 0,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 45,
+    "confidence": 0.85,
+    "latency_ms": 12481,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false
+}

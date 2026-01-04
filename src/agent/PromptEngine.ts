@@ -51,32 +51,18 @@ export interface FewShotExample {
  */
 export class PromptEngine extends BasePromptEngine {
   private fewShotService = getFewShotService();
-  private fewShotLoaded = false;
 
   constructor() {
     super(); // Call parent constructor
-    // Load few-shot examples asynchronously
-    this.loadFewShotExamples();
+    // Service will handle lazy loading when needed
   }
 
   /**
-   * Load few-shot examples database
+   * Ensure few-shot examples are loaded (lazy loading)
+   * The service handles idempotency and thread-safety
    */
-  private async loadFewShotExamples(): Promise<void> {
-    try {
-      await this.fewShotService.loadDatabase();
-      this.fewShotLoaded = true;
-      const stats = this.fewShotService.getStatistics();
-      if (stats) {
-        console.log(`✅ Loaded ${stats.totalExamples} few-shot examples (v${stats.version})`);
-      }
-    } catch (error) {
-      // Suppress console errors in test environment
-      if (!process.env.JEST_WORKER_ID) {
-        console.error('⚠️  Failed to load few-shot examples:', error);
-      }
-      this.fewShotLoaded = false;
-    }
+  private async ensureFewShotLoaded(): Promise<void> {
+    await this.fewShotService.loadDatabase();
   }
   /**
    * Get system prompt with agent instructions
@@ -97,26 +83,37 @@ You help developers understand WHY errors occur and HOW to fix them properly.
 **CRITICAL SPECIFICITY RULES (MUST FOLLOW):**
 
 1. **File Paths - MUST ALWAYS include exact line numbers:**
+   ❌ ULTRA BAD: "Check the gradle file"
    ❌ BAD: "Update build.gradle"
    ❌ BAD: "Fix the version in the configuration file"
    ❌ BAD: "Check build.gradle"
+   ✅ ACCEPTABLE: "Update gradle/libs.versions.toml"
    ✅ GOOD: "Update gradle/libs.versions.toml at line 5"
-   ✅ GOOD: "Modify app/build.gradle.kts at line 42"
-   ✅ GOOD: "Add permission to AndroidManifest.xml at line 8"
+   ✅ EXCELLENT: "Update gradle/libs.versions.toml at line 5: change agp = \"8.10.0\" to agp = \"8.7.3\""
+   ✅ EXCELLENT: "Modify app/build.gradle.kts at line 42: add implementation(\"androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1\")"
+   ✅ EXCELLENT: "Add permission to AndroidManifest.xml at line 8 (before <application> tag)"
    
    **MANDATORY: Every file reference MUST have ":line X" or "at line X"**
+   **EVEN BETTER: Include the actual change needed at that line**
    
-2. **Version Numbers - MUST be specific and validated:**
+2. **Version Numbers - MUST be specific, validated, and justified:**
+   ❌ ULTRA BAD: "Update dependencies"
    ❌ BAD: "Update to latest AGP"
    ❌ BAD: "Use a newer version"
+   ❌ BAD: "AGP 8.7.3" (no justification)
+   ✅ ACCEPTABLE: "Update to AGP 8.7.3"
    ✅ GOOD: "Update to AGP 8.7.3 (stable, released Nov 2024)"
-   ✅ GOOD: "Upgrade Kotlin to 2.0.0 (compatible with AGP 8.7.3+)"
+   ✅ EXCELLENT: "Update to AGP 8.7.3 (stable, released Nov 2024, compatible with your Kotlin 1.9.0)"
+   ✅ EXCELLENT: "Upgrade Kotlin to 2.0.0 (requires AGP 8.7.0+, your AGP 8.7.3 is compatible)"
    → ALWAYS use VersionLookupTool to validate versions before suggesting!
+   → ALWAYS explain WHY this version (stability, compatibility, release date)
    
 3. **Code Examples - MANDATORY (MUST include in fixGuidelines!):**
+   ❌ ULTRA BAD: "Fix the code"
    ❌ BAD: "Change the version"
    ❌ BAD: "Initialize the variable"
    ❌ BAD: "Update agp to 8.7.3" (no code shown)
+   ✅ ACCEPTABLE: "Change agp = \"8.10.0\" to agp = \"8.7.3\""
    ✅ GOOD:
    Before:
    \`\`\`gradle
@@ -125,6 +122,20 @@ You help developers understand WHY errors occur and HOW to fix them properly.
    After:
    \`\`\`gradle
    agp = "8.7.3"  // Stable, compatible with Kotlin 1.9.0+
+   \`\`\`
+   
+   ✅ EXCELLENT (showing context):
+   Before:
+   \`\`\`gradle
+   [versions]
+   agp = "8.10.0"  // Invalid - this version doesn't exist
+   kotlin = "1.9.0"
+   \`\`\`
+   After:
+   \`\`\`gradle
+   [versions]
+   agp = "8.7.3"  // Stable release, compatible with Kotlin 1.9.0+
+   kotlin = "1.9.0"
    \`\`\`
    
    **REQUIRED FORMAT (AT LEAST ONE fixGuideline MUST INCLUDE THIS):**
@@ -136,23 +147,63 @@ You help developers understand WHY errors occur and HOW to fix them properly.
    - Minimum 3 lines of code context
    - THIS IS MANDATORY - DO NOT SKIP CODE EXAMPLES!
    
-4. **Variable/Function Names - MUST reference actual code:**
+4. **Variable/Function Names - MUST reference actual code with context:**
+   ❌ ULTRA BAD: "Fix the null pointer"
    ❌ BAD: "The variable is not initialized"
-   ❌ BAD: "Fix the null pointer"
+   ❌ BAD: "Initialize the lateinit variable"
+   ✅ ACCEPTABLE: "Variable 'viewModel' is not initialized"
    ✅ GOOD: "Variable 'viewModel' (declared at line 15) is not initialized before use at line 45"
-   ✅ GOOD: "Function 'loadData()' (called at UserActivity.kt:67) receives null from 'getUserId()'"
+   ✅ EXCELLENT: "Lateinit property 'viewModel' (declared at MainActivity.kt:15) is accessed at line 45 in onCreate() before being initialized in setupViewModel() (called at line 52)"
+   ✅ EXCELLENT: "Function 'loadData()' (called at UserActivity.kt:67) receives null from 'getUserId()' because the user object is not initialized in onStart()"
    
 5. **Verification Steps - MUST explain how to test fix:**
+   ❌ ULTRA BAD: "This will work"
    ❌ BAD: "This should fix it"
    ❌ BAD: "The error will be resolved"
+   ✅ ACCEPTABLE: "Run the build to verify"
    ✅ GOOD: "After applying fix, run './gradlew clean build' to verify compilation succeeds"
-   ✅ GOOD: "Test fix by running the app and navigating to ProfileScreen to ensure no crash"
+   ✅ EXCELLENT: "After applying fix: 1) Run './gradlew clean build' (should complete without errors), 2) Run app on device, 3) Navigate to ProfileScreen, 4) Verify no crash occurs when loading user data"
+   ✅ EXCELLENT: "Test fix by running './gradlew app:dependencies' to confirm AGP 8.7.3 is resolved correctly with no version conflicts"
    
-6. **Dependencies/Compatibility - MUST validate relationships:**
+6. **Dependencies/Compatibility - MUST validate relationships with version numbers:**
+   ❌ ULTRA BAD: "Update dependencies"
    ❌ BAD: "Ensure dependencies are compatible"
    ❌ BAD: "Update related libraries"
+   ❌ BAD: "AGP requires newer Gradle"
+   ✅ ACCEPTABLE: "AGP 8.7.3 requires Gradle 8.9+"
    ✅ GOOD: "AGP 8.7.3 requires Gradle 8.9+ (current: 8.2) - update gradle/wrapper/gradle-wrapper.properties"
-   ✅ GOOD: "Kotlin 2.0.0 requires kotlin-compose-compiler 2.0.0 (currently using 1.9.0) - update in build.gradle.kts"
+   ✅ EXCELLENT: "AGP 8.7.3 requires Gradle 8.9+ (current: 8.2). Update gradle/wrapper/gradle-wrapper.properties line 3: change distributionUrl=...gradle-8.2-bin.zip to distributionUrl=...gradle-8.9-bin.zip"
+   ✅ EXCELLENT: "Kotlin 2.0.0 requires kotlin-compose-compiler 2.0.0 (currently 1.9.0). Update app/build.gradle.kts line 78: change kotlinCompilerExtensionVersion = \"1.9.0\" to \"2.0.0\""
+
+7. **Root Cause Analysis - MUST be precise and technical:**
+   ❌ ULTRA BAD: "Something is wrong with the build"
+   ❌ BAD: "Version conflict"
+   ❌ BAD: "Gradle error"
+   ✅ ACCEPTABLE: "Invalid AGP version 8.10.0"
+   ✅ GOOD: "Invalid AGP version 8.10.0 in gradle/libs.versions.toml line 2 - this version doesn't exist"
+   ✅ EXCELLENT: "Invalid AGP version 8.10.0 declared in gradle/libs.versions.toml:2. The AGP 8.x series only goes up to 8.7.3 (latest stable). Version 8.10.0 doesn't exist, causing Gradle to fail during dependency resolution with error 'Could not find com.android.tools.build:gradle:8.10.0'"
+
+8. **Fix Guidelines - MUST be actionable step-by-step instructions:**
+   ❌ ULTRA BAD: "Fix the error"
+   ❌ BAD: "Update the version"
+   ❌ BAD: "Make the code compile"
+   ✅ ACCEPTABLE: "Change AGP to 8.7.3"
+   ✅ GOOD: "Open gradle/libs.versions.toml and change agp version to 8.7.3"
+   ✅ EXCELLENT: "Step 1: Open gradle/libs.versions.toml. Step 2: Navigate to line 2. Step 3: Change agp = \"8.10.0\" to agp = \"8.7.3\". Step 4: Run './gradlew clean build' to verify fix"
+
+9. **Null Safety - MUST identify specific null flow:**
+   ❌ ULTRA BAD: "Null pointer exception"
+   ❌ BAD: "Variable can be null"
+   ✅ ACCEPTABLE: "Property 'user' is null"
+   ✅ GOOD: "Property 'user' is null when accessed at line 45"
+   ✅ EXCELLENT: "Property 'user' (declared as 'var user: User?' at line 15) is null when accessed at line 45 in displayProfile() because it's only initialized in onSuccess() callback (line 30), but displayProfile() is called immediately in onCreate() (line 20) before the API response arrives"
+
+10. **Deprecation Fixes - MUST provide migration path with alternatives:**
+    ❌ ULTRA BAD: "API is deprecated"
+    ❌ BAD: "Stop using deprecated API"
+    ✅ ACCEPTABLE: "Replace MaterialTheme with Material3 version"
+    ✅ GOOD: "Replace MaterialTheme (Material2) with Material3 theme. Change import from androidx.compose.material to androidx.compose.material3"
+    ✅ EXCELLENT: "Replace deprecated Material2 components (error at MainActivity.kt:25). Before: import androidx.compose.material.MaterialTheme. After: import androidx.compose.material3.MaterialTheme. Also update colors: MaterialTheme.colors.primary → MaterialTheme.colorScheme.primary at line 45. Requires dependency: implementation(\"androidx.compose.material3:material3:1.2.0\") in app/build.gradle.kts"
 
 **QUALITY STANDARDS:**
 - Be specific - reference actual variable names, line numbers, function names
@@ -731,13 +782,17 @@ ${example.conclusion.fixGuidelines.map(step => `    - ${step}`).join('\n')}
     }
 
     // Add few-shot examples from knowledge base (on first iteration only)
-    if (iteration === 1 && this.fewShotLoaded) {
+    if (iteration === 1) {
       try {
-        const relevantExamples = await this.fewShotService.findRelevantExamples(error, 3);
+        // Ensure few-shot examples are loaded before use (fixes race condition)
+        await this.ensureFewShotLoaded();
+        
+        // Use only 1 most relevant example to avoid noise
+        const relevantExamples = await this.fewShotService.findRelevantExamples(error, 1);
         if (relevantExamples.length > 0) {
           const formattedExamples = this.fewShotService.formatExamplesForPrompt(relevantExamples);
           prompt += `${formattedExamples}\n\n`;
-          console.log(`📚 Added ${relevantExamples.length} relevant examples to prompt`);
+          console.log(`📚 Added ${relevantExamples.length} best matching example to prompt`);
         }
       } catch (error) {
         console.warn('Failed to retrieve few-shot examples:', error);
@@ -834,8 +889,11 @@ Consider using the read_file tool to examine the code at the error location.\n`;
       prompt += `4) At least ONE fixGuideline must include a Before/After code example\n\n`;
     }
 
-    if (includeExamples && this.fewShotLoaded) {
+    if (includeExamples) {
       try {
+        // Ensure database is loaded (idempotent)
+        await this.ensureFewShotLoaded();
+        
         const relevantExamples = await this.fewShotService.findRelevantExamples(error, exampleCount);
         if (relevantExamples.length > 0) {
           prompt += this.fewShotService.formatExamplesForPrompt(relevantExamples);

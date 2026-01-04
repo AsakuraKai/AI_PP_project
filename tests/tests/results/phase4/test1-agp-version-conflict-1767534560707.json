@@ -1,0 +1,63 @@
+{
+  "testCase": {
+    "id": 1,
+    "name": "AGP Version Conflict",
+    "description": "Invalid AGP version 8.10.0 doesn't exist in Maven Central",
+    "errorType": "gradle-dependency",
+    "complexity": "simple",
+    "baselineUsability": 40,
+    "targetUsability": 80,
+    "error": {
+      "type": "gradle-dependency",
+      "message": "Could not find com.android.tools.build:gradle:8.10.0",
+      "filePath": "gradle/libs.versions.toml",
+      "line": 2,
+      "column": 1,
+      "language": "gradle",
+      "metadata": {
+        "severity": "error",
+        "context": "AGP version 8.10.0 not found in Maven Central",
+        "raw": "Could not find com.android.tools.build:gradle:8.10.0"
+      }
+    },
+    "expectedFix": {
+      "file": "gradle/libs.versions.toml",
+      "lineNumber": 2,
+      "codeChange": "agp = \"8.7.3\"",
+      "explanation": "AGP 8.10.0 doesn't exist. Use 8.7.3 (latest stable)"
+    }
+  },
+  "timestamp": "2026-01-04T13:49:20.704Z",
+  "duration_ms": 7646,
+  "agent_response": {
+    "error": "Could not find com.android.tools.build:gradle:8.10.0",
+    "rootCause": "Invalid AGP version 8.10.0 declared in gradle/libs.versions.toml:2 - this version doesn't exist, causing Gradle to fail during dependency resolution with error 'Could not find com.android.tools.build:gradle:8.10.0'",
+    "fixGuidelines": [
+      "1. First step: Open gradle/libs.versions.toml and check line 2.",
+      "2. Code example (MANDATORY - MUST INCLUDE):\nBefore:\n```kotlin\nagp = \"8.10.0\"  // Invalid version\n```\nAfter:\n```kotlin\nagp = \"8.7.3\"  // Stable, compatible with Kotlin 1.9.0+\n``",
+      "3. Verification step explaining how to test the fix: Run './gradlew clean build' to verify compilation succeeds.",
+      "4. Additional step: Ensure Gradle is updated by running './gradlew --refresh-dependencies'",
+      "5. Check if there's a newer AGP version available that's compatible with the current Kotlin and Gradle versions."
+    ],
+    "confidence": 0.8,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 100,
+    "code_examples": 80,
+    "version_suggestions": 90,
+    "overall_usability": 85,
+    "confidence": 0.8,
+    "latency_ms": 7646,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": true,
+    "has_specific_version": true,
+    "identified_exact_file": true
+  },
+  "passed": true,
+  "improvement_over_baseline": 45
+}

@@ -1,0 +1,58 @@
+{
+  "testCase": {
+    "id": 4,
+    "name": "XML Layout Inflation",
+    "description": "Runtime inflation error due to unknown attribute",
+    "errorType": "xml-layout",
+    "complexity": "medium",
+    "targetUsability": 70,
+    "error": {
+      "type": "xml-layout",
+      "message": "Binary XML file line #12: Error inflating class android.widget.TextView",
+      "filePath": "app/src/main/res/layout/activity_main.xml",
+      "line": 12,
+      "column": 5,
+      "language": "xml",
+      "metadata": {
+        "severity": "error",
+        "context": "Unknown attribute android:textFontWeight"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/res/layout/activity_main.xml",
+      "lineNumber": 12,
+      "explanation": "Remove invalid attribute or use android:textStyle=\"bold\""
+    }
+  },
+  "timestamp": "2026-01-04T11:45:40.251Z",
+  "duration_ms": 49595,
+  "agent_response": {
+    "error": "Binary XML file line #12: Error inflating class android.widget.TextView",
+    "rootCause": "The error occurs at line 12 of activity_main.xml due to an unknown android:textFontWeight attribute which may be invalid or missing from styles.xml.",
+    "fixGuidelines": [
+      "Step 1: Identify exact file and line number where the error occurs in activity_main.xml. Add specific code changes with BEFORE/_AFTER examples showing the modifications to the XML file.",
+      "Step 2: Provide concrete implementation details, such as replacing android:textFontWeight with a valid attribute like android:textFont or specifying it within styles.xml if necessary.",
+      "Step 3: Include verification steps by suggesting commands to run and expected output to confirm that the fix resolves the error.",
+      "Step 4: Offer additional troubleshooting tips, like checking for typos in XML attributes or ensuring all styles are properly defined in styles.xml."
+    ],
+    "confidence": 0.85,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 0,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 48,
+    "confidence": 0.85,
+    "latency_ms": 49595,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false
+}

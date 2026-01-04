@@ -1,0 +1,57 @@
+{
+  "testCase": {
+    "id": 8,
+    "name": "Build Cache Corruption",
+    "description": "Gradle build cache corrupted causing build failures",
+    "errorType": "gradle-cache",
+    "complexity": "simple",
+    "baselineUsability": 70,
+    "targetUsability": 85,
+    "error": {
+      "type": "gradle-cache",
+      "message": "Execution failed for task :app:compileDebugKotlin. Compilation error",
+      "filePath": "build.gradle.kts",
+      "line": 1,
+      "column": 1,
+      "language": "gradle",
+      "metadata": {
+        "severity": "error",
+        "context": "Intermittent build failures, works after clean"
+      }
+    },
+    "expectedFix": {
+      "explanation": "Run ./gradlew clean or delete .gradle cache"
+    }
+  },
+  "timestamp": "2026-01-04T13:59:50.870Z",
+  "duration_ms": 10081,
+  "agent_response": {
+    "error": "Execution failed for task :app:compileDebugKotlin. Compilation error",
+    "rootCause": "Enhanced compilation error in app:compileDebugKotlin suggests a problem with the Kotlin code being compiled. This could be due to missing dependencies, incorrect imports, or syntax errors at specific file paths and line numbers. The exact location of the issue is crucial for providing an accurate fix.",
+    "fixGuidelines": [
+      "Step 1: Identify the exact file path and line number where the error occurs in src/main/java/com/yourcompany/app/kotlin/compileDebugKotlin.kt. Add a before and after code snippet showing the problematic code and the corrected version.",
+      "Step 2: Check for missing dependencies by verifying that all required Kotlin libraries are included with their correct versions (e.g., @kotlinjin 8.7.3, @reactkotlin 4.1.0). Provide specific versions of each dependency used in your project.",
+      "Step 3: Verify the import statements at the top of compileDebugKotlin.kt to ensure all necessary packages are imported correctly and there are no missing or incorrect imports."
+    ],
+    "confidence": 0.85,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 0,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 48,
+    "confidence": 0.85,
+    "latency_ms": 10081,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false,
+  "improvement_over_baseline": -22
+}

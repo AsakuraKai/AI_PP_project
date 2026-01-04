@@ -1,0 +1,59 @@
+{
+  "testCase": {
+    "id": 10,
+    "name": "Navigation Argument Mismatch",
+    "description": "Runtime crash due to missing/wrong navigation arguments",
+    "errorType": "navigation",
+    "complexity": "medium",
+    "baselineUsability": 50,
+    "targetUsability": 70,
+    "error": {
+      "type": "navigation",
+      "message": "java.lang.IllegalArgumentException: Required argument \"userId\" is missing",
+      "filePath": "app/src/main/kotlin/navigation/NavGraph.kt",
+      "line": 32,
+      "column": 5,
+      "language": "kotlin",
+      "metadata": {
+        "severity": "error",
+        "context": "Navigation argument not passed correctly"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/kotlin/navigation/NavGraph.kt",
+      "lineNumber": 32,
+      "explanation": "Add userId argument to navigation call"
+    }
+  },
+  "timestamp": "2026-01-03T21:42:22.623Z",
+  "duration_ms": 34627,
+  "agent_response": {
+    "error": "java.lang.IllegalArgumentException: Required argument \"userId\" is missing",
+    "rootCause": "NavHost in MainActivity.kt line 67 expects required argument \"userId\" (type: String) defined in navigation.xml line 23, but calling code at HomeFragment.kt line 89 passes no arguments.",
+    "fixGuidelines": [
+      "1. Add argument to navigation call in HomeFragment.kt at line 89: findNavController().navigate(R.id.action_home_to_profile, bundleOf(\"userId\" to currentUserId))",
+      "2. Verify navigation.xml line 23 defines required argument: <argument android:name=\"userId\" app:argType=\"string\" />",
+      "3. Test navigation flow: Run app, navigate from HomeFragment to ProfileFragment - should pass userId correctly, verify in ProfileFragment onCreate() with arguments?.getString(\"userId\")"
+    ],
+    "confidence": 0.85,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 100,
+    "solution_specificity": 70,
+    "file_identification": 0,
+    "code_examples": 40,
+    "version_suggestions": 0,
+    "overall_usability": 55,
+    "confidence": 0.85,
+    "latency_ms": 34627,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false,
+  "improvement_over_baseline": 5
+}

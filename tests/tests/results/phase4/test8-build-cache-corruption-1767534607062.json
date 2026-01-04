@@ -1,0 +1,59 @@
+{
+  "testCase": {
+    "id": 8,
+    "name": "Build Cache Corruption",
+    "description": "Gradle build cache corrupted causing build failures",
+    "errorType": "gradle-cache",
+    "complexity": "simple",
+    "baselineUsability": 70,
+    "targetUsability": 85,
+    "error": {
+      "type": "gradle-cache",
+      "message": "Execution failed for task :app:compileDebugKotlin. Compilation error",
+      "filePath": "build.gradle.kts",
+      "line": 1,
+      "column": 1,
+      "language": "gradle",
+      "metadata": {
+        "severity": "error",
+        "context": "Intermittent build failures, works after clean"
+      }
+    },
+    "expectedFix": {
+      "explanation": "Run ./gradlew clean or delete .gradle cache"
+    }
+  },
+  "timestamp": "2026-01-04T13:50:07.062Z",
+  "duration_ms": 3528,
+  "agent_response": {
+    "error": "Execution failed for task :app:compileDebugKotlin. Compilation error",
+    "rootCause": "Error is likely caused by an issue in the build.gradle.kts file at line 1. The compilation failure suggests that there's a problem with the code being compiled, possibly due to invalid syntax or incorrect imports.",
+    "fixGuidelines": [
+      "1. Examine the contents of build.gradle.kts at line 1 for any syntax errors or missing imports.",
+      "2. Check if the AGP version declared in gradle/libs.versions.toml is compatible with the current Kotlin version used in the project.",
+      "3. Verify that all dependencies listed in build.gradle.kts are correctly specified and available.",
+      "4. Ensure that the necessary permissions are granted for the Android app to function properly.",
+      "5. Look for any missing or incorrect references to AGP versions, such as 'agp = "
+    ],
+    "confidence": 0.7,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 0,
+    "code_examples": 40,
+    "version_suggestions": 0,
+    "overall_usability": 52,
+    "confidence": 0.7,
+    "latency_ms": 3528,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false,
+  "improvement_over_baseline": -18
+}

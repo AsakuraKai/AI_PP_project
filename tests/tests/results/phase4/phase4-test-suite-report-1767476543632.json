@@ -1,0 +1,714 @@
+{
+  "timestamp": "2026-01-03T21:42:23.631Z",
+  "total_tests": 10,
+  "passed_tests": 2,
+  "failed_tests": 8,
+  "average_usability": 57.4,
+  "average_latency_ms": 30504,
+  "test_results": [
+    {
+      "testCase": {
+        "id": 1,
+        "name": "AGP Version Conflict",
+        "description": "Invalid AGP version 8.10.0 doesn't exist in Maven Central",
+        "errorType": "gradle-dependency",
+        "complexity": "simple",
+        "baselineUsability": 40,
+        "targetUsability": 80,
+        "error": {
+          "type": "gradle-dependency",
+          "message": "Could not find com.android.tools.build:gradle:8.10.0",
+          "filePath": "gradle/libs.versions.toml",
+          "line": 2,
+          "column": 1,
+          "language": "gradle",
+          "metadata": {
+            "severity": "error",
+            "context": "AGP version 8.10.0 not found in Maven Central",
+            "raw": "Could not find com.android.tools.build:gradle:8.10.0"
+          }
+        },
+        "expectedFix": {
+          "file": "gradle/libs.versions.toml",
+          "lineNumber": 2,
+          "codeChange": "agp = \"8.7.3\"",
+          "explanation": "AGP 8.10.0 doesn't exist. Use 8.7.3 (latest stable)"
+        }
+      },
+      "timestamp": "2026-01-03T21:38:10.717Z",
+      "duration_ms": 62238,
+      "agent_response": {
+        "error": "Could not find com.android.tools.build:gradle:8.10.0",
+        "rootCause": "The AGP version 8.10.0 is not found in Maven Central, causing Gradle to fail. The latest stable version available is 8.7.3 which is compatible with Kotlin 2.0.0 and requires Gradle 8.9+.",
+        "fixGuidelines": [
+          "Update gradle/libs.versions.toml at line 2: agp = \"8.7.3\" (latest stable, compatible with Kotlin 2.0.0)",
+          "Before:\n```gradle\nagp = \"8.10.0\"\n```\nAfter:\n```gradle\nagp = \"8.7.3\"\n``",
+          "Run ./gradlew --refresh-dependencies to verify the fix"
+        ],
+        "confidence": 0.95,
+        "iterations": 1,
+        "toolsUsed": []
+      },
+      "metrics": {
+        "diagnosis_accuracy": 90,
+        "solution_specificity": 70,
+        "file_identification": 100,
+        "code_examples": 80,
+        "version_suggestions": 90,
+        "overall_usability": 85,
+        "confidence": 0.95,
+        "latency_ms": 62238,
+        "has_root_cause": true,
+        "has_fix_guidelines": true,
+        "has_code_diff": true,
+        "has_specific_version": true,
+        "identified_exact_file": true
+      },
+      "passed": true,
+      "improvement_over_baseline": 45
+    },
+    {
+      "testCase": {
+        "id": 2,
+        "name": "Kotlin lateinit NPE",
+        "description": "lateinit property accessed before initialization",
+        "errorType": "kotlin-npe",
+        "complexity": "medium",
+        "targetUsability": 75,
+        "error": {
+          "type": "kotlin-npe",
+          "message": "lateinit property viewModel has not been initialized",
+          "filePath": "app/src/main/kotlin/MainActivity.kt",
+          "line": 42,
+          "column": 9,
+          "language": "kotlin",
+          "metadata": {
+            "severity": "error",
+            "context": "Accessing viewModel before onCreate() completes"
+          }
+        },
+        "expectedFix": {
+          "file": "app/src/main/kotlin/MainActivity.kt",
+          "lineNumber": 35,
+          "explanation": "Initialize viewModel in onCreate() before first use"
+        }
+      },
+      "timestamp": "2026-01-03T21:38:23.402Z",
+      "duration_ms": 11674,
+      "agent_response": {
+        "error": "lateinit property viewModel has not been initialized",
+        "rootCause": "A NullPointerException occurred because the viewModel property was accessed before the onCreate() method completes in MainActivity.kt at line 42. This usually happens when the app is not started properly or there's a missing initialization step.",
+        "fixGuidelines": [
+          "1. Ensure that the onCreate() function of MainActivity has been correctly implemented and called.",
+          "2. Verify that all necessary setup steps, such as initializing services or setting up the main activity, have been completed before accessing any properties.",
+          "3. Check if there are any missing imports or dependencies related to the initialization process.",
+          "4. Review the code around line 42 in MainActivity.kt to ensure that the main activity is properly initialized and accessible.",
+          "5. Consider adding null checks for critical components accessed during initialization to prevent similar errors in the future."
+        ],
+        "confidence": 0.7,
+        "iterations": 1,
+        "toolsUsed": []
+      },
+      "metrics": {
+        "diagnosis_accuracy": 90,
+        "solution_specificity": 70,
+        "file_identification": 0,
+        "code_examples": 0,
+        "version_suggestions": 0,
+        "overall_usability": 48,
+        "confidence": 0.7,
+        "latency_ms": 11674,
+        "has_root_cause": true,
+        "has_fix_guidelines": true,
+        "has_code_diff": false,
+        "has_specific_version": false,
+        "identified_exact_file": false
+      },
+      "passed": false
+    },
+    {
+      "testCase": {
+        "id": 3,
+        "name": "Compose API Breakage",
+        "description": "Deprecated Compose API after upgrade 1.5 → 1.6",
+        "errorType": "compose-deprecation",
+        "complexity": "medium",
+        "targetUsability": 75,
+        "error": {
+          "type": "compose-deprecation",
+          "message": "Unresolved reference: MaterialTheme. Use androidx.compose.material3.MaterialTheme",
+          "filePath": "app/src/main/kotlin/ui/HomeScreen.kt",
+          "line": 88,
+          "column": 5,
+          "language": "kotlin",
+          "metadata": {
+            "severity": "error",
+            "context": "Compose Material upgraded to Material3"
+          }
+        },
+        "expectedFix": {
+          "file": "app/src/main/kotlin/ui/HomeScreen.kt",
+          "lineNumber": 88,
+          "codeChange": "import androidx.compose.material3.MaterialTheme",
+          "explanation": "Material2 deprecated, use Material3"
+        }
+      },
+      "timestamp": "2026-01-03T21:38:39.608Z",
+      "duration_ms": 15195,
+      "agent_response": {
+        "error": "Unresolved reference: MaterialTheme. Use androidx.compose.material3.MaterialTheme",
+        "rootCause": "MaterialTheme is not resolved in HomeScreen.kt at line 88 because the project hasn't been updated to use Material3. The code references MaterialTheme which has been deprecated in favor of Material3.",
+        "fixGuidelines": [
+          "1. First, update the Materialcompose module to a version compatible with Material3. For example, using 'Material3' instead of 'MaterialTheme'. Check the latest compatible versions using VersionLookupTool.",
+          "2. In app/src/main/kotlin/ui/HomeScreen.kt at line 88: Replace MaterialTheme with Material3 in the code. Here's an example:\nBefore:\n```kotlin\nimplementation(",
+          true,
+          ")\n```\nAfter:\n```kotlin\nimplementation(",
+          true,
+          ")\n```\nWait, that doesn't make sense. Let me think again.",
+          "3. After updating the code, run './gradlew --refresh-dependencies' to update the build dependencies and ensure everything is compatible."
+        ],
+        "confidence": 0.7,
+        "iterations": 1,
+        "toolsUsed": []
+      },
+      "metrics": {
+        "diagnosis_accuracy": 90,
+        "solution_specificity": 70,
+        "file_identification": 100,
+        "code_examples": 80,
+        "version_suggestions": 0,
+        "overall_usability": 76,
+        "confidence": 0.7,
+        "latency_ms": 15195,
+        "has_root_cause": true,
+        "has_fix_guidelines": true,
+        "has_code_diff": true,
+        "has_specific_version": false,
+        "identified_exact_file": true
+      },
+      "passed": true
+    },
+    {
+      "testCase": {
+        "id": 4,
+        "name": "XML Layout Inflation",
+        "description": "Runtime inflation error due to unknown attribute",
+        "errorType": "xml-layout",
+        "complexity": "medium",
+        "targetUsability": 70,
+        "error": {
+          "type": "xml-layout",
+          "message": "Binary XML file line #12: Error inflating class android.widget.TextView",
+          "filePath": "app/src/main/res/layout/activity_main.xml",
+          "line": 12,
+          "column": 5,
+          "language": "xml",
+          "metadata": {
+            "severity": "error",
+            "context": "Unknown attribute android:textFontWeight"
+          }
+        },
+        "expectedFix": {
+          "file": "app/src/main/res/layout/activity_main.xml",
+          "lineNumber": 12,
+          "explanation": "Remove invalid attribute or use android:textStyle=\"bold\""
+        }
+      },
+      "timestamp": "2026-01-03T21:39:33.085Z",
+      "duration_ms": 52466,
+      "agent_response": {
+        "error": "Binary XML file line #12: Error inflating class android.widget.TextView",
+        "rootCause": "Enhanced version with file paths and line numbers",
+        "fixGuidelines": [
+          "Step 1: Verify that the textFontWeight attribute is correctly defined in the styles file associated with activity_main.xml. If it's missing or incorrectly spelled, add or correct it.",
+          "Step 2: Ensure that the attribute is properly referenced in the XML declaration of activity_main.xml to declare the attribute type and value format.",
+          "Step 3: Test the application after making these changes to confirm if the error persists and observe any improvements in behavior."
+        ],
+        "confidence": 0.6,
+        "iterations": 1,
+        "toolsUsed": []
+      },
+      "metrics": {
+        "diagnosis_accuracy": 0,
+        "solution_specificity": 70,
+        "file_identification": 0,
+        "code_examples": 0,
+        "version_suggestions": 0,
+        "overall_usability": 21,
+        "confidence": 0.6,
+        "latency_ms": 52466,
+        "has_root_cause": false,
+        "has_fix_guidelines": true,
+        "has_code_diff": false,
+        "has_specific_version": false,
+        "identified_exact_file": false
+      },
+      "passed": false
+    },
+    {
+      "testCase": {
+        "id": 5,
+        "name": "Multi-Module Dependency Conflict",
+        "description": "Version conflict between :app and :core modules",
+        "errorType": "gradle-dependency",
+        "complexity": "complex",
+        "targetUsability": 70,
+        "error": {
+          "type": "gradle-dependency",
+          "message": "Conflict with dependency androidx.lifecycle:lifecycle-runtime-ktx",
+          "filePath": "app/build.gradle.kts",
+          "line": 45,
+          "column": 1,
+          "language": "gradle",
+          "metadata": {
+            "severity": "error",
+            "context": "Module :app requires 2.6.0, :core requires 2.5.0"
+          }
+        },
+        "expectedFix": {
+          "file": "gradle/libs.versions.toml",
+          "explanation": "Align lifecycle version across all modules"
+        }
+      },
+      "timestamp": "2026-01-03T21:39:50.000Z",
+      "duration_ms": 15904,
+      "agent_response": {
+        "error": "Conflict with dependency androidx.lifecycle:lifecycle-runtime-ktx",
+        "rootCause": "The app requires conflicting versions of androidx.lifecycle:lifecycle-runtime-ktx (2.6.0 and 2.5.0). This is likely due to incorrect version specification in app/build.gradle.kts at line 45, where multiple versions are listed for the same package.",
+        "fixGuidelines": [
+          "1. First, check the build.gradle.kts file at app/build.gradle.kts:45 and ensure only one version of androidx.lifecycle:lifecycle-runtime-ktx is specified.",
+          "2. Replace the conflicting lines with a single compatible version. For example, if 2.6.0 is needed, update to that version while ensuring it's compatible with other dependencies like Kotlin and Gradle.",
+          "3. Verify that the chosen version of androidx.lifecycle:lifecycle-runtime-ktx is compatible with the current versions of Kotlin (e.g., >=1.8) and Gradle.",
+          "4. Additionally, ensure that all dependent libraries are updated to their latest stable versions to avoid further conflicts.",
+          "5. After making these changes, run ./gradlew --refresh-dependencies to check if the conflict is resolved."
+        ],
+        "confidence": 0.7,
+        "iterations": 1,
+        "toolsUsed": []
+      },
+      "metrics": {
+        "diagnosis_accuracy": 90,
+        "solution_specificity": 70,
+        "file_identification": 30,
+        "code_examples": 40,
+        "version_suggestions": 90,
+        "overall_usability": 67,
+        "confidence": 0.7,
+        "latency_ms": 15904,
+        "has_root_cause": true,
+        "has_fix_guidelines": true,
+        "has_code_diff": false,
+        "has_specific_version": true,
+        "identified_exact_file": false
+      },
+      "passed": false
+    },
+    {
+      "testCase": {
+        "id": 6,
+        "name": "Manifest Permission Missing",
+        "description": "SecurityException due to missing CAMERA permission",
+        "errorType": "manifest-permission",
+        "complexity": "simple",
+        "baselineUsability": 65,
+        "targetUsability": 80,
+        "error": {
+          "type": "manifest-permission",
+          "message": "java.lang.SecurityException: Permission denial: starting Intent requires android.permission.CAMERA",
+          "filePath": "app/src/main/AndroidManifest.xml",
+          "line": 5,
+          "column": 1,
+          "language": "xml",
+          "metadata": {
+            "severity": "error",
+            "context": "Runtime permission error"
+          }
+        },
+        "expectedFix": {
+          "file": "app/src/main/AndroidManifest.xml",
+          "lineNumber": 5,
+          "codeChange": "<uses-permission android:name=\"android.permission.CAMERA\" />",
+          "explanation": "Add CAMERA permission to manifest"
+        }
+      },
+      "timestamp": "2026-01-03T21:40:05.036Z",
+      "duration_ms": 14027,
+      "agent_response": {
+        "error": "java.lang.SecurityException: Permission denial: starting Intent requires android.permission.CAMERA",
+        "rootCause": "The app requires the CAMERA permission to start an intent but the AndroidManifest.xml does not include this permission. The error occurs at line 5 of the manifest file, indicating that either the permission is missing or improperly declared.",
+        "fixGuidelines": [
+          "1. Add <uses-permission android:name=\"android.permission.CAMERA\" /> inside <manifest> tag before <application>.",
+          "2. Before:\n```xml\n<manifest>\n</manifest>\n```\nAfter:\n```xml\n<manifest>\n  <uses-permission android:name=\"android.permission.CAMERA\" />\n  ...\n</manifest>\n``",
+          "3. Re-run the app to check if the permission is granted.",
+          "4. Ensure that any runtime permissions are requested with manifest permissions (API >=23). For example, add a requestPermissions call in MainActivity.",
+          "5. Verify that all necessary permissions for other intents are also included in the manifest."
+        ],
+        "confidence": 0.8,
+        "iterations": 1,
+        "toolsUsed": []
+      },
+      "metrics": {
+        "diagnosis_accuracy": 90,
+        "solution_specificity": 70,
+        "file_identification": 30,
+        "code_examples": 80,
+        "version_suggestions": 0,
+        "overall_usability": 62,
+        "confidence": 0.8,
+        "latency_ms": 14027,
+        "has_root_cause": true,
+        "has_fix_guidelines": true,
+        "has_code_diff": true,
+        "has_specific_version": false,
+        "identified_exact_file": false
+      },
+      "passed": false,
+      "improvement_over_baseline": -3
+    },
+    {
+      "testCase": {
+        "id": 7,
+        "name": "Gradle Network Failure",
+        "description": "Failed to resolve dependency due to network/repository issue",
+        "errorType": "gradle-network",
+        "complexity": "medium",
+        "baselineUsability": 60,
+        "targetUsability": 75,
+        "error": {
+          "type": "gradle-network",
+          "message": "Could not resolve all dependencies for configuration :classpath",
+          "filePath": "settings.gradle.kts",
+          "line": 15,
+          "column": 1,
+          "language": "gradle",
+          "metadata": {
+            "severity": "error",
+            "context": "Repository not accessible or dependency missing"
+          }
+        },
+        "expectedFix": {
+          "file": "settings.gradle.kts",
+          "explanation": "Add missing repository or check network connection"
+        }
+      },
+      "timestamp": "2026-01-03T21:40:22.094Z",
+      "duration_ms": 16044,
+      "agent_response": {
+        "error": "Could not resolve all dependencies for configuration :classpath",
+        "rootCause": "The settings.gradle.kt at line 15 has an invalid configuration for :classpath which causes Gradle to fail in resolving dependencies.",
+        "fixGuidelines": [
+          "Locate the exact file path and version of the project",
+          "Verify that the :classpath entry is correctly formatted with source paths",
+          "Run gradle build command and check the output for any dependency resolution issues"
+        ],
+        "confidence": 0.85,
+        "iterations": 1,
+        "toolsUsed": []
+      },
+      "metrics": {
+        "diagnosis_accuracy": 90,
+        "solution_specificity": 70,
+        "file_identification": 30,
+        "code_examples": 0,
+        "version_suggestions": 0,
+        "overall_usability": 54,
+        "confidence": 0.85,
+        "latency_ms": 16044,
+        "has_root_cause": true,
+        "has_fix_guidelines": true,
+        "has_code_diff": false,
+        "has_specific_version": false,
+        "identified_exact_file": false
+      },
+      "passed": false,
+      "improvement_over_baseline": -6
+    },
+    {
+      "testCase": {
+        "id": 8,
+        "name": "Build Cache Corruption",
+        "description": "Gradle build cache corrupted causing build failures",
+        "errorType": "gradle-cache",
+        "complexity": "simple",
+        "baselineUsability": 70,
+        "targetUsability": 85,
+        "error": {
+          "type": "gradle-cache",
+          "message": "Execution failed for task :app:compileDebugKotlin. Compilation error",
+          "filePath": "build.gradle.kts",
+          "line": 1,
+          "column": 1,
+          "language": "gradle",
+          "metadata": {
+            "severity": "error",
+            "context": "Intermittent build failures, works after clean"
+          }
+        },
+        "expectedFix": {
+          "explanation": "Run ./gradlew clean or delete .gradle cache"
+        }
+      },
+      "timestamp": "2026-01-03T21:41:01.170Z",
+      "duration_ms": 38066,
+      "agent_response": {
+        "error": "Execution failed for task :app:compileDebugKotlin. Compilation error",
+        "rootCause": "Error occurs at specific location with detailed context about the cause and impact.",
+        "fixGuidelines": [
+          "1. Verify the presence of required Kotlin libraries in build.gradle.kts file with exact versions specified.",
+          "2. Add explicit dependencies to the build.gradle.kts file using @{kotlin version} syntax, ensuring correct versions are included.",
+          "3. Test the changes by rebuilding the project and running the app to confirm if the issue is resolved."
+        ],
+        "confidence": 0.85,
+        "iterations": 1,
+        "toolsUsed": []
+      },
+      "metrics": {
+        "diagnosis_accuracy": 90,
+        "solution_specificity": 60,
+        "file_identification": 0,
+        "code_examples": 0,
+        "version_suggestions": 0,
+        "overall_usability": 45,
+        "confidence": 0.85,
+        "latency_ms": 38066,
+        "has_root_cause": true,
+        "has_fix_guidelines": true,
+        "has_code_diff": false,
+        "has_specific_version": false,
+        "identified_exact_file": false
+      },
+      "passed": false,
+      "improvement_over_baseline": -25
+    },
+    {
+      "testCase": {
+        "id": 9,
+        "name": "ProGuard Rule Missing",
+        "description": "Runtime crash in release build due to obfuscation",
+        "errorType": "proguard",
+        "complexity": "complex",
+        "baselineUsability": 55,
+        "targetUsability": 70,
+        "error": {
+          "type": "proguard",
+          "message": "java.lang.NoSuchMethodError: No virtual method toJson",
+          "filePath": "app/proguard-rules.pro",
+          "line": 1,
+          "column": 1,
+          "language": "proguard",
+          "metadata": {
+            "severity": "error",
+            "context": "Gson reflection methods removed by R8"
+          }
+        },
+        "expectedFix": {
+          "file": "app/proguard-rules.pro",
+          "codeChange": "-keep class com.example.** { *; }",
+          "explanation": "Add ProGuard keep rule for serialization classes"
+        }
+      },
+      "timestamp": "2026-01-03T21:41:46.986Z",
+      "duration_ms": 44799,
+      "agent_response": {
+        "error": "java.lang.NoSuchMethodError: No virtual method toJson",
+        "rootCause": "ProGuard in build.gradle.kts line 28 (minifyEnabled=true) removes method getUserName() from User class at User.kt line 45, causing NoSuchMethodError at runtime in MainActivity.kt line 102. ProGuard in proguard-rules.pro is missing the necessary JSON handling rules due to R8 changes.",
+        "fixGuidelines": [
+          "Step 1: Update build.gradle.kts to disable minification for debug builds by modifying lines 28-30. This ensures that ProGuard does not remove any methods that are essential for JSON serialization.",
+          "Step 2: Edit proguard-rules.pro at the exact location where the JSON handling rules are defined (e.g., line 15). Add the necessary JSON-specific reflection rules to retain methods like getUserName(). For example, adding a rule that keeps the User class with its public method.",
+          "Step 3: Verify the fix by running gradle assemble and checking the build output mapping file. Ensure that all required methods are preserved and no NoSuchMethodError occurs in runtime.",
+          "Before making these changes, it's crucial to review the exact ProGuard configuration files (proguard-rules.pro) to identify which specific rules need to be added or modified. This ensures that only the necessary JSON handling methods are retained while others are removed as intended.",
+          "Code Example Before:\n\nkotlin\nproguard-rules.pro: { public jsonHandling = false; }\n\nkotlin\ncom.example.User {\n    public java.lang.String getUserName();\n}\n\nCode After:\n\nkotlin\nproguard-rules.pro: { public jsonHandling = true; }\n\nkotlin\ncom.example.User {\n    public java.lang.String getUserName();\n}\n"
+        ],
+        "confidence": 0.85,
+        "iterations": 1,
+        "toolsUsed": []
+      },
+      "metrics": {
+        "diagnosis_accuracy": 100,
+        "solution_specificity": 70,
+        "file_identification": 30,
+        "code_examples": 40,
+        "version_suggestions": 0,
+        "overall_usability": 61,
+        "confidence": 0.85,
+        "latency_ms": 44799,
+        "has_root_cause": true,
+        "has_fix_guidelines": true,
+        "has_code_diff": false,
+        "has_specific_version": false,
+        "identified_exact_file": false
+      },
+      "passed": false,
+      "improvement_over_baseline": 6
+    },
+    {
+      "testCase": {
+        "id": 10,
+        "name": "Navigation Argument Mismatch",
+        "description": "Runtime crash due to missing/wrong navigation arguments",
+        "errorType": "navigation",
+        "complexity": "medium",
+        "baselineUsability": 50,
+        "targetUsability": 70,
+        "error": {
+          "type": "navigation",
+          "message": "java.lang.IllegalArgumentException: Required argument \"userId\" is missing",
+          "filePath": "app/src/main/kotlin/navigation/NavGraph.kt",
+          "line": 32,
+          "column": 5,
+          "language": "kotlin",
+          "metadata": {
+            "severity": "error",
+            "context": "Navigation argument not passed correctly"
+          }
+        },
+        "expectedFix": {
+          "file": "app/src/main/kotlin/navigation/NavGraph.kt",
+          "lineNumber": 32,
+          "explanation": "Add userId argument to navigation call"
+        }
+      },
+      "timestamp": "2026-01-03T21:42:22.623Z",
+      "duration_ms": 34627,
+      "agent_response": {
+        "error": "java.lang.IllegalArgumentException: Required argument \"userId\" is missing",
+        "rootCause": "NavHost in MainActivity.kt line 67 expects required argument \"userId\" (type: String) defined in navigation.xml line 23, but calling code at HomeFragment.kt line 89 passes no arguments.",
+        "fixGuidelines": [
+          "1. Add argument to navigation call in HomeFragment.kt at line 89: findNavController().navigate(R.id.action_home_to_profile, bundleOf(\"userId\" to currentUserId))",
+          "2. Verify navigation.xml line 23 defines required argument: <argument android:name=\"userId\" app:argType=\"string\" />",
+          "3. Test navigation flow: Run app, navigate from HomeFragment to ProfileFragment - should pass userId correctly, verify in ProfileFragment onCreate() with arguments?.getString(\"userId\")"
+        ],
+        "confidence": 0.85,
+        "iterations": 1,
+        "toolsUsed": []
+      },
+      "metrics": {
+        "diagnosis_accuracy": 100,
+        "solution_specificity": 70,
+        "file_identification": 0,
+        "code_examples": 40,
+        "version_suggestions": 0,
+        "overall_usability": 55,
+        "confidence": 0.85,
+        "latency_ms": 34627,
+        "has_root_cause": true,
+        "has_fix_guidelines": true,
+        "has_code_diff": false,
+        "has_specific_version": false,
+        "identified_exact_file": false
+      },
+      "passed": false,
+      "improvement_over_baseline": 5
+    }
+  ],
+  "summary": {
+    "by_error_type": {
+      "gradle-dependency": {
+        "passed": 1,
+        "total": 2,
+        "avg_usability": 76
+      },
+      "kotlin-npe": {
+        "passed": 0,
+        "total": 1,
+        "avg_usability": 48
+      },
+      "compose-deprecation": {
+        "passed": 1,
+        "total": 1,
+        "avg_usability": 76
+      },
+      "xml-layout": {
+        "passed": 0,
+        "total": 1,
+        "avg_usability": 21
+      },
+      "manifest-permission": {
+        "passed": 0,
+        "total": 1,
+        "avg_usability": 62
+      },
+      "gradle-network": {
+        "passed": 0,
+        "total": 1,
+        "avg_usability": 54
+      },
+      "gradle-cache": {
+        "passed": 0,
+        "total": 1,
+        "avg_usability": 45
+      },
+      "proguard": {
+        "passed": 0,
+        "total": 1,
+        "avg_usability": 61
+      },
+      "navigation": {
+        "passed": 0,
+        "total": 1,
+        "avg_usability": 55
+      }
+    },
+    "by_complexity": {
+      "simple": {
+        "passed": 1,
+        "total": 3,
+        "avg_usability": 64
+      },
+      "medium": {
+        "passed": 1,
+        "total": 5,
+        "avg_usability": 50.8
+      },
+      "complex": {
+        "passed": 0,
+        "total": 2,
+        "avg_usability": 64
+      }
+    },
+    "improvements": [
+      {
+        "test_id": 1,
+        "name": "AGP Version Conflict",
+        "baseline": 40,
+        "current": 85,
+        "improvement": 45
+      },
+      {
+        "test_id": 9,
+        "name": "ProGuard Rule Missing",
+        "baseline": 55,
+        "current": 61,
+        "improvement": 6
+      },
+      {
+        "test_id": 10,
+        "name": "Navigation Argument Mismatch",
+        "baseline": 50,
+        "current": 55,
+        "improvement": 5
+      },
+      {
+        "test_id": 6,
+        "name": "Manifest Permission Missing",
+        "baseline": 65,
+        "current": 62,
+        "improvement": -3
+      },
+      {
+        "test_id": 7,
+        "name": "Gradle Network Failure",
+        "baseline": 60,
+        "current": 54,
+        "improvement": -6
+      },
+      {
+        "test_id": 8,
+        "name": "Build Cache Corruption",
+        "baseline": 70,
+        "current": 45,
+        "improvement": -25
+      }
+    ]
+  }
+}

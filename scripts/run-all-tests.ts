@@ -11,7 +11,6 @@
  */
 
 import { TestRunnerCore, TestCase } from './shared/test-runner-core';
-import * as path from 'path';
 
 // All 10 test cases consolidated
 const ALL_TEST_CASES: TestCase[] = [

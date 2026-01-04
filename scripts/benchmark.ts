@@ -17,7 +17,6 @@
 import { OllamaClient } from '../src/llm/OllamaClient';
 import { KotlinParser } from '../src/utils/parsers/KotlinParser';
 import { MinimalReactAgent } from '../src/agent/MinimalReactAgent';
-import { ReadFileTool } from '../src/tools/ReadFileTool';
 import { testDataset } from '../tests/fixtures/test-dataset';
 import * as fs from 'fs/promises';
 import * as path from 'path';
@@ -62,8 +61,7 @@ async function main() {
   // Initialize components
   const llmClient = new OllamaClient();
   const parser = new KotlinParser();
-  const readFileTool = new ReadFileTool();
-  const agent = new MinimalReactAgent(llmClient, parser, readFileTool);
+  const agent = new MinimalReactAgent(llmClient);
 
   await llmClient.connect();
 
@@ -95,7 +93,7 @@ async function main() {
 
       // Analyze
       const analysisStart = Date.now();
-      const result = await agent.analyze(parsedError);
+      await agent.analyze(parsedError);
       const analysisTime = Date.now() - analysisStart;
 
       const totalTime = Date.now() - startTotal;

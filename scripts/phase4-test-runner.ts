@@ -33,10 +33,11 @@ async function main() {
     
     // Test LLM connection
     try {
-      await llmClient.health();
+      await llmClient.connect();
       console.log('   ✅ LLM connection successful');
-    } catch (error) {
+    } catch (error: any) {
       console.error('   ❌ LLM connection failed. Is Ollama running?');
+      console.error(`   Error: ${error.message}`);
       console.error('   Run: ollama serve');
       process.exit(1);
     }

@@ -1,0 +1,59 @@
+{
+  "testCase": {
+    "id": 2,
+    "name": "Kotlin lateinit NPE",
+    "description": "lateinit property accessed before initialization",
+    "errorType": "kotlin-npe",
+    "complexity": "medium",
+    "targetUsability": 75,
+    "error": {
+      "type": "kotlin-npe",
+      "message": "lateinit property viewModel has not been initialized",
+      "filePath": "app/src/main/kotlin/MainActivity.kt",
+      "line": 42,
+      "column": 9,
+      "language": "kotlin",
+      "metadata": {
+        "severity": "error",
+        "context": "Accessing viewModel before onCreate() completes"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/kotlin/MainActivity.kt",
+      "lineNumber": 35,
+      "explanation": "Initialize viewModel in onCreate() before first use"
+    }
+  },
+  "timestamp": "2026-01-03T21:38:23.402Z",
+  "duration_ms": 11674,
+  "agent_response": {
+    "error": "lateinit property viewModel has not been initialized",
+    "rootCause": "A NullPointerException occurred because the viewModel property was accessed before the onCreate() method completes in MainActivity.kt at line 42. This usually happens when the app is not started properly or there's a missing initialization step.",
+    "fixGuidelines": [
+      "1. Ensure that the onCreate() function of MainActivity has been correctly implemented and called.",
+      "2. Verify that all necessary setup steps, such as initializing services or setting up the main activity, have been completed before accessing any properties.",
+      "3. Check if there are any missing imports or dependencies related to the initialization process.",
+      "4. Review the code around line 42 in MainActivity.kt to ensure that the main activity is properly initialized and accessible.",
+      "5. Consider adding null checks for critical components accessed during initialization to prevent similar errors in the future."
+    ],
+    "confidence": 0.7,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 0,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 48,
+    "confidence": 0.7,
+    "latency_ms": 11674,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false
+}
