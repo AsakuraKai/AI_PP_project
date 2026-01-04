@@ -10,7 +10,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { ParsedError } from '../types';
 import { ErrorCategory } from '../agent/ErrorClassifier';
-import { ALL_CATEGORY_EXAMPLES } from './few-shot-examples'; // Direct import from TS files
+
+// Dynamic import to avoid circular dependencies
+const { ALL_CATEGORY_EXAMPLES } = require('./few-shot-examples/index');
 
 export interface FewShotExample {
   id: string;
@@ -77,6 +79,8 @@ export class FewShotExampleService {
   private database: FewShotDatabase | null = null;
   private examplesPath: string;
   private allExamples: FewShotExample[] = []; // Combined examples from JSON + TS
+  private loadPromise: Promise<void> | null = null; // Track loading state
+  private isLoaded: boolean = false; // Track if successfully loaded
 
   constructor() {
     this.examplesPath = path.join(__dirname, '../knowledge/few-shot-examples.json');
@@ -84,19 +88,53 @@ export class FewShotExampleService {
 
   /**
    * Load few-shot examples database from JSON file and TypeScript examples
-   * OPTIMIZED: Now loads directly from TS files instead of compiled JSON
+   * THREAD-SAFE: Multiple concurrent calls will share the same loading promise
+   * IDEMPOTENT: Subsequent calls after successful load return immediately
    */
   public async loadDatabase(): Promise<void> {
+    // If already loaded successfully, return immediately
+    if (this.isLoaded && this.database) {
+      return;
+    }
+
+    // If currently loading, wait for existing load to complete
+    if (this.loadPromise) {
+      return this.loadPromise;
+    }
+
+    // Start new load
+    this.loadPromise = this._loadDatabaseInternal();
+    
     try {
+      await this.loadPromise;
+    } finally {
+      // Clear promise after completion (success or failure)
+      this.loadPromise = null;
+    }
+  }
+
+  /**
+   * Internal database loading implementation
+   * Should only be called through loadDatabase()
+   */
+  private async _loadDatabaseInternal(): Promise<void> {
+    try {
+      console.log('🔄 Loading few-shot database...');
+      
       // 1. Load JSON database (version/dependency examples)
       const content = await fs.promises.readFile(this.examplesPath, 'utf-8');
       this.database = JSON.parse(content);
       
-      const jsonExampleCount = this.getTotalExampleCount();
+      // Count JSON examples safely
+      const jsonExampleCount = this.database && this.database.categories
+        ? Object.values(this.database.categories).reduce((sum, cat) => sum + cat.examples.length, 0)
+        : 0;
       
       // 2. Load TypeScript examples directly (no compilation needed)
-      const tsExamples = ALL_CATEGORY_EXAMPLES;
+      const tsExamples = ALL_CATEGORY_EXAMPLES || [];
       const tsExampleCount = tsExamples.length;
+      
+      console.log(`[FewShotService] TS examples loaded: ${tsExampleCount} examples`);
       
       if (!this.database) {
         throw new Error('Database structure invalid');
@@ -114,6 +152,12 @@ export class FewShotExampleService {
         'NAVIGATION_ROUTING': 'navigation',
         'network_connectivity': 'network',
         'NETWORK_CONNECTIVITY': 'network',
+        'kotlin_npe': 'kotlin',
+        'KOTLIN_NPE': 'kotlin',
+        'compose_deprecation': 'compose',
+        'COMPOSE_DEPRECATION': 'compose',
+        'xml_layout': 'xml',
+        'XML_LAYOUT': 'xml',
       };
       
       for (const example of tsExamples) {
@@ -136,18 +180,26 @@ export class FewShotExampleService {
       ];
       
       const totalCount = jsonExampleCount + tsExampleCount;
+      this.isLoaded = true; // Mark as successfully loaded
+      
       console.log(`✅ Loaded ${totalCount} few-shot examples (${jsonExampleCount} JSON + ${tsExampleCount} TS) v${this.database?.version}`);
+      console.log(`   Available categories: ${Object.keys(this.database.categories).join(', ')}`);
+      console.log(`   Category counts:`, Object.fromEntries(
+        Object.entries(this.database.categories).map(([k, v]) => [k, v.examples.length])
+      ));
       
     } catch (error) {
+      this.isLoaded = false;
+      this.database = null;
+      this.allExamples = [];
+      
       // In test environment, it's OK if few-shot examples aren't available
       if (!process.env.JEST_WORKER_ID) {
         console.error('Failed to load few-shot examples database:', error);
+        console.warn('\u26a0\ufe0f  Running without few-shot examples');
       }
+      
       // Don't throw - allow tests to continue without few-shot examples
-      this.allExamples = [];
-      if (!process.env.JEST_WORKER_ID) {
-        console.warn('\u26a0\ufe0f  Running without few-shot examples (test mode)');
-      }
     }
   }
   
@@ -195,8 +247,16 @@ export class FewShotExampleService {
 
     // 1. Determine error category from type
     const category = this.getCategoryFromErrorType(error.type);
+    console.log(`[FewShotService] Looking for examples:
+  - Error type: ${error.type}
+  - Mapped category: ${category || 'null'}
+  - Database loaded: ${!!this.database}
+  - Available categories: ${this.database ? Object.keys(this.database.categories).join(', ') : 'N/A'}`);
+    
     if (!category || !this.database.categories[category]) {
       console.warn(`No few-shot examples found for error type: ${error.type}`);
+      console.warn(`  Mapped category: ${category || 'null'}`);
+      console.warn(`  Available categories: ${Object.keys(this.database.categories).join(', ')}`);
       return [];
     }
 
@@ -236,11 +296,27 @@ export class FewShotExampleService {
     // Map category to database category key
     const categoryMap: Record<string, string> = {
       'manifest_permission': 'manifest',
+      'manifest-permission': 'manifest',
       'build_cache': 'cache',
+      'gradle-cache': 'cache',
+      'gradle_cache': 'cache',
       'proguard_minification': 'proguard',
+      'proguard-minification': 'proguard',
+      'proguard': 'proguard',
       'navigation_routing': 'navigation',
+      'navigation-routing': 'navigation',
+      'navigation': 'navigation',
       'network_connectivity': 'network',
+      'gradle-network': 'network',
+      'gradle_network': 'network',
       'version_dependency': 'version_dependency',
+      'gradle-dependency': 'version_dependency',
+      'kotlin-npe': 'kotlin',
+      'kotlin_npe': 'kotlin',
+      'compose-deprecation': 'compose',
+      'compose_deprecation': 'compose',
+      'xml-layout': 'xml',
+      'xml_layout': 'xml',
       'unknown': 'gradle', // Fallback to generic Gradle examples
     };
     
@@ -259,15 +335,24 @@ export class FewShotExampleService {
   /**
    * Get category name from error type
    * Maps error types to few-shot example categories
+   * ENHANCED: Now supports kebab-case, snake_case, and UPPER_SNAKE_CASE formats
    */
   private getCategoryFromErrorType(errorType: string): string | null {
+    // Normalize the errorType to UPPER_SNAKE_CASE for lookup
+    const normalizedType = errorType
+      .replace(/-/g, '_')  // Replace hyphens with underscores
+      .toUpperCase();      // Convert to uppercase
+    
     const typeMap: Record<string, string> = {
-      // Gradle errors
+      // Gradle errors (support all formats)
       'GRADLE_DEPENDENCY': 'gradle',
       'GRADLE_COMPATIBILITY': 'gradle',
       'GRADLE_PLUGIN': 'gradle',
       'GRADLE_REPOSITORY': 'gradle',
-      'GRADLE_CACHE': 'gradle',
+      'GRADLE_CACHE': 'cache',      // Map to cache category
+      'GRADLE-CACHE': 'cache',      // Support hyphenated version
+      'GRADLE_NETWORK': 'network',  // Map to network category
+      'GRADLE-NETWORK': 'network',  // Support hyphenated version
       'GRADLE_MANIFEST': 'gradle',
       'GRADLE_R8': 'gradle',
       'GRADLE_NATIVE': 'gradle',
@@ -278,26 +363,48 @@ export class FewShotExampleService {
       
       // Kotlin errors
       'KOTLIN_NPE': 'kotlin',
+      'KOTLIN-NPE': 'kotlin',       // Support hyphenated version
       'KOTLIN_TYPE_MISMATCH': 'kotlin',
       'KOTLIN_LATEINIT': 'kotlin',
       'KOTLIN_COROUTINE': 'kotlin',
       
       // Compose errors
       'COMPOSE_API_BREAKAGE': 'compose',
+      'COMPOSE_DEPRECATION': 'compose',  // NEW: Support compose-deprecation
+      'COMPOSE-DEPRECATION': 'compose',  // Support hyphenated version
       'COMPOSE_RECOMPOSITION': 'compose',
       'COMPOSE_STATE': 'compose',
       
       // XML errors
       'XML_INFLATION': 'xml',
       'XML_ATTRIBUTE': 'xml',
+      'XML_LAYOUT': 'xml',  // NEW: Support xml-layout
+      'XML-LAYOUT': 'xml',  // Support hyphenated version
       
       // Manifest errors
       'MANIFEST_PERMISSION': 'manifest',
+      'MANIFEST-PERMISSION': 'manifest',  // Support hyphenated version
       'MANIFEST_COMPONENT': 'manifest',
       'MANIFEST_MERGE': 'manifest',
+      
+      // ProGuard errors
+      'PROGUARD': 'proguard',
+      'PROGUARD_MINIFICATION': 'proguard',
+      'PROGUARD-MINIFICATION': 'proguard',  // Support hyphenated version
+      
+      // Navigation errors
+      'NAVIGATION': 'navigation',
+      'NAVIGATION_ROUTING': 'navigation',
+      'NAVIGATION-ROUTING': 'navigation',  // Support hyphenated version
     };
 
-    return typeMap[errorType] || null;
+    const mappedCategory = typeMap[normalizedType];
+    
+    if (!mappedCategory) {
+      console.warn(`No category mapping for error type: ${errorType} (normalized: ${normalizedType})`);
+    }
+    
+    return mappedCategory || null;
   }
 
   /**

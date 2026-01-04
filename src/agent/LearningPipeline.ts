@@ -13,8 +13,7 @@
 import { ChromaDBClient } from '../db/ChromaDBClient';
 import { RCADocument } from '../db/schemas/rca-collection';
 import { FeedbackHandler } from './FeedbackHandler';
-import { AdaptiveLearning, LearningPattern } from './AdaptiveLearning';
-import { QualityScorer } from '../db/QualityScorer';
+import { AdaptiveLearning } from './AdaptiveLearning';
 
 /**
  * Training example generated from successful RCAs
@@ -157,13 +156,13 @@ const DEFAULT_CONFIG: Required<LearningPipelineConfig> = {
 export class LearningPipeline {
   private readonly config: Required<LearningPipelineConfig>;
   private readonly adaptiveLearning: AdaptiveLearning;
-  private readonly qualityScorer: QualityScorer;
+  // private readonly qualityScorer: QualityScorer; // Unused for now
   private autoRunTimer: NodeJS.Timeout | null = null;
   private trainingExamples: Map<string, TrainingExample> = new Map();
   
   constructor(
     private readonly db: ChromaDBClient,
-    private readonly feedbackHandler: FeedbackHandler,
+    _feedbackHandler: FeedbackHandler, // Removed private readonly - not stored
     config?: LearningPipelineConfig
   ) {
     this.config = {
@@ -171,11 +170,11 @@ export class LearningPipeline {
       ...config
     };
     
-    this.adaptiveLearning = new AdaptiveLearning(db, feedbackHandler, {
+    this.adaptiveLearning = new AdaptiveLearning(db, _feedbackHandler, {
       enableLogging: this.config.enableLogging
     });
     
-    this.qualityScorer = new QualityScorer();
+    // this.qualityScorer = new QualityScorer(); // Commented out - unused
     
     if (this.config.enableAutoRun) {
       this.startAutoRun();
@@ -355,7 +354,7 @@ export class LearningPipeline {
       }
       
       // Generate training examples (limited per type)
-      for (const [errorType, docs] of typeGroups.entries()) {
+      for (const [_errorType, docs] of typeGroups.entries()) {
         const limitedDocs = docs
           .sort((a, b) => b.quality_score - a.quality_score)
           .slice(0, this.config.maxExamplesPerType);

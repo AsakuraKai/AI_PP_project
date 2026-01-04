@@ -1,0 +1,63 @@
+{
+  "testCase": {
+    "id": 1,
+    "name": "AGP Version Conflict",
+    "description": "Invalid AGP version 8.10.0 doesn't exist in Maven Central",
+    "errorType": "gradle-dependency",
+    "complexity": "simple",
+    "baselineUsability": 40,
+    "targetUsability": 80,
+    "error": {
+      "type": "gradle-dependency",
+      "message": "Could not find com.android.tools.build:gradle:8.10.0",
+      "filePath": "gradle/libs.versions.toml",
+      "line": 2,
+      "column": 1,
+      "language": "gradle",
+      "metadata": {
+        "severity": "error",
+        "context": "AGP version 8.10.0 not found in Maven Central",
+        "raw": "Could not find com.android.tools.build:gradle:8.10.0"
+      }
+    },
+    "expectedFix": {
+      "file": "gradle/libs.versions.toml",
+      "lineNumber": 2,
+      "codeChange": "agp = \"8.7.3\"",
+      "explanation": "AGP 8.10.0 doesn't exist. Use 8.7.3 (latest stable)"
+    }
+  },
+  "timestamp": "2026-01-04T11:44:04.868Z",
+  "duration_ms": 34615,
+  "agent_response": {
+    "error": "Could not find com.android.tools.build:gradle:8.10.0",
+    "rootCause": "Could not find com.android.tools.build:gradle:8.10.0 at gradle/libs.versions.toml line 2",
+    "fixGuidelines": [
+      "1. Update AGP to a known stable version compatible with current Kotlin and Gradle.",
+      "Before:\n```kotlin\nagp = \"8.10.0\"\n```\nAfter:\n```kotlin\nagp = \"8.7.3\"\n",
+      "2. Verify that the build.gradle file is updated to use AGP 8.7.3.",
+      "Check if the JDK version is compatible with AGP 8.7.3 (requires JDK 16+).",
+      "After updating, run ./gradlew --refresh-dependencies to check for compatibility."
+    ],
+    "confidence": 0.95,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 100,
+    "code_examples": 80,
+    "version_suggestions": 90,
+    "overall_usability": 85,
+    "confidence": 0.95,
+    "latency_ms": 34615,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": true,
+    "has_specific_version": true,
+    "identified_exact_file": true
+  },
+  "passed": true,
+  "improvement_over_baseline": 45
+}

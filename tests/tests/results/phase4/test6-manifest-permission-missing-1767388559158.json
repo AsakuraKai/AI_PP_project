@@ -1,0 +1,62 @@
+{
+  "testCase": {
+    "id": 6,
+    "name": "Manifest Permission Missing",
+    "description": "SecurityException due to missing CAMERA permission",
+    "errorType": "manifest-permission",
+    "complexity": "simple",
+    "baselineUsability": 65,
+    "targetUsability": 80,
+    "error": {
+      "type": "manifest-permission",
+      "message": "java.lang.SecurityException: Permission denial: starting Intent requires android.permission.CAMERA",
+      "filePath": "app/src/main/AndroidManifest.xml",
+      "line": 5,
+      "column": 1,
+      "language": "xml",
+      "metadata": {
+        "severity": "error",
+        "context": "Runtime permission error"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/AndroidManifest.xml",
+      "lineNumber": 5,
+      "codeChange": "<uses-permission android:name=\"android.permission.CAMERA\" />",
+      "explanation": "Add CAMERA permission to manifest"
+    }
+  },
+  "timestamp": "2026-01-02T21:15:59.157Z",
+  "duration_ms": 4631,
+  "agent_response": {
+    "error": "java.lang.SecurityException: Permission denial: starting Intent requires android.permission.CAMERA",
+    "rootCause": "The app requires the CAMERA permission to start an intent but the AndroidManifest.xml does not include this permission. The error occurs at line 5 of the manifest file, indicating that the missing permission declaration is causing a SecurityException during runtime.",
+    "fixGuidelines": [
+      "1. Add <uses-permission android:name=\"android.permission.CAMERA\" /> inside <manifest> tag before <application>.",
+      "2. Before:\n```xml\n<manifest>\n</manifest>\n```\nAfter:\n```xml\n<manifest>\n  <uses-permission android:name=\"android.permission.CAMERA\" />\n  ...\n</manifest>\n``",
+      "3. Re-run the app to check if it's granted the CAMERA permission at runtime.",
+      "4. Ensure that any other permissions required are also added in a similar manner.",
+      "5. If using API 23 or higher, add runtime permission handling code for CAMERA and other dangerous permissions."
+    ],
+    "confidence": 0.8,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 30,
+    "code_examples": 80,
+    "version_suggestions": 0,
+    "overall_usability": 62,
+    "confidence": 0.8,
+    "latency_ms": 4631,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": true,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false,
+  "improvement_over_baseline": -3
+}

@@ -1,0 +1,59 @@
+{
+  "testCase": {
+    "id": 4,
+    "name": "XML Layout Inflation",
+    "description": "Runtime inflation error due to unknown attribute",
+    "errorType": "xml-layout",
+    "complexity": "medium",
+    "targetUsability": 70,
+    "error": {
+      "type": "xml-layout",
+      "message": "Binary XML file line #12: Error inflating class android.widget.TextView",
+      "filePath": "app/src/main/res/layout/activity_main.xml",
+      "line": 12,
+      "column": 5,
+      "language": "xml",
+      "metadata": {
+        "severity": "error",
+        "context": "Unknown attribute android:textFontWeight"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/res/layout/activity_main.xml",
+      "lineNumber": 12,
+      "explanation": "Remove invalid attribute or use android:textStyle=\"bold\""
+    }
+  },
+  "timestamp": "2026-01-04T12:09:40.182Z",
+  "duration_ms": 9788,
+  "agent_response": {
+    "error": "Binary XML file line #12: Error inflating class android.widget.TextView",
+    "rootCause": "The error is due to an unknown android:textFontWeight attribute in activity_main.xml at line 12. This could be because the attribute is invalid or not properly defined in the styles file.",
+    "fixGuidelines": [
+      "1. Check if the attribute android:textFontWeight exists in activity_main.xml and ensure it's valid.",
+      "2. Verify that the font definitions are correctly set up in the corresponding styles.xml file.",
+      "3. Ensure that the project is using compatible fonts for the version of Android being targeted.",
+      "4. Consider updating to a newer version of the font resource if necessary, ensuring compatibility with the current AGP version.",
+      "5. If the attribute was introduced recently, ensure that the project's build.gradle.kt file includes the appropriate compile options or resources."
+    ],
+    "confidence": 0.7,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 30,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 54,
+    "confidence": 0.7,
+    "latency_ms": 9788,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false
+}

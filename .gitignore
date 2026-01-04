@@ -68,3 +68,5 @@ temp/
 chroma_data/
 
 # Other
+
+.github

@@ -1,9 +1,9 @@
 # 📚 Documentation Index
 
 > **Quick navigation to all RCA Agent documentation**  
-> **Last Updated:** January 2, 2026  
+> **Last Updated:** January 3, 2026  
 > **Status:** Phase 4 Week 1-4 Complete ✅  
-> **Note:** Documentation consolidated for easier navigation (18 → 11 core files)
+> **Note:** Documentation streamlined - 27 → 12 core files (15 historical files archived)
 
 ---
 
@@ -107,11 +107,10 @@
 
 ---
 
-### 🎓 Learning & Insights
+### � Planning & Roadmap
 
 | Document | Purpose | Lines | Status |
 |----------|---------|-------|--------|
-| [AGENT_LEARNING_SUMMARY.md](AGENT_LEARNING_SUMMARY.md) | Agent learning patterns and insights | ~8,500 | ✅ Complete |
 | [IMPROVEMENT_ROADMAP.md](IMPROVEMENT_ROADMAP.md) | Future enhancement roadmap (Phase 3-5) | ~2,000 | ✅ Planning |
 
 ---
@@ -124,8 +123,14 @@
 | [_archive/milestones/](\_archive/milestones/) | Chunk completion reports |
 | [_archive/phases/](\_archive/phases/) | Detailed implementation guides |
 | [_archive/data/](\_archive/data/) | Raw test outputs (text files) |
+| [_archive/consolidation-history/](\_archive/consolidation-history/) | **NEW:** CHUNK consolidations, cleanup summaries, agent learning |
 
-**Recently Consolidated (Jan 2, 2026):**
+**Recently Archived (Jan 3, 2026):**
+- 15 CHUNK consolidation files (CHUNK1-15) → [_archive/consolidation-history/](_archive/consolidation-history/)
+- CLEANUP_SUMMARY.md + WEEK4_CLEANUP_COMPLETE.md → [_archive/consolidation-history/](_archive/consolidation-history/)
+- AGENT_LEARNING_SUMMARY.md → [_archive/consolidation-history/](_archive/consolidation-history/) (now in TESTING_COMPLETE.md)
+
+**Previously Consolidated (Jan 2, 2026):**
 - QUICKSTART.md + QUICK_START_FOR_USERS.md → New QUICKSTART.md
 - PHASE-2-3-COMPLETE.md + PHASE4_WEEK1-2_COMPLETE.md + PHASE4_WEEK1-2_IMPLEMENTATION_SUMMARY.md + PHASE4_WEEK3-4_OPTIONALS_COMPLETE.md → PHASE_HISTORY.md
 - EXTENSION_README.md → Merged into EXTENSION_DOCS_INDEX.md
@@ -158,20 +163,25 @@
 
 ## 📊 Documentation Statistics
 
-**Total Documentation:** ~30,000+ lines across 20 core documents
+**Total Documentation:** ~30,000+ lines across 12 core documents + subdirectories
 
 | Category | Files | Lines | Status |
 |----------|-------|-------|--------|
-| Core Docs | 7 | ~6,910 | ✅ Consolidated |
-| API Docs | 4 | ~3,050 | ✅ Complete |
-| Architecture | 3 | ~5,200 | ✅ Complete |
-| Performance | 1 | ~1,400 | ✅ Complete |
-| Testing | 1 | ~2,500 | ✅ Consolidated |
-| Extension | 7 | ~4,300 | ✅ Complete |
-| Learning | 2 | ~10,500 | ✅ Complete |
-| **Total** | **25** | **~33,860** | **✅ Production Ready** |
+| Core Docs | 5 | ~5,400 | ✅ Streamlined |
+| Extension | 4 | ~109,000 | ✅ Complete |
+| Planning | 1 | ~52,000 | ✅ Current |
+| Subdirectories | - | - | - |
+| ↳ API Docs | 4 | ~3,050 | ✅ Complete |
+| ↳ Architecture | 3+ | ~5,200 | ✅ Complete |
+| ↳ Performance | 1 | ~1,400 | ✅ Complete |
+| ↳ Testing | 1 | ~1,600 | ✅ Complete |
+| **Total (Main)** | **12** | **~177,650** | **✅ Production Ready** |
 
-**Reduction:** From 23 main files → 20 main files (13% reduction) while preserving all important content
+**Consolidation Results:**
+- **Before:** 27 files in main docs/ folder
+- **After:** 12 files in main docs/ folder
+- **Reduction:** 55% fewer files while preserving all important content
+- **Archived:** 15 historical consolidation documents
 
 ---
 
@@ -180,30 +190,33 @@
 ### Common Tasks
 
 **I want to...**
-- **Get started quickly** → [QUICKSTART.md](QUICKSTART.md) ⭐ START HERE
+- **Get started quickly** → [README.md](README.md) ⭐ START HERE
 - **Understand the project** → [README.md](README.md)
 - **Check current status** → [STATUS.md](STATUS.md)
 - **See recent progress** → [DEVLOG.md](DEVLOG.md)
-- **Review phase history** → [PHASE_HISTORY.md](PHASE_HISTORY.md)
 - **Use the APIs** → [API_CONTRACTS.md](API_CONTRACTS.md) or [api/](api/)
 - **Understand architecture** → [architecture/overview.md](architecture/overview.md)
 - **Check test results** → [TESTING_COMPLETE.md](TESTING_COMPLETE.md)
 - **Optimize performance** → [performance/benchmarks.md](performance/benchmarks.md)
-- **Use the extension** → [EXTENSION_DOCS_INDEX.md](EXTENSION_DOCS_INDEX.md)
-- **Learn keyboard shortcuts** → [KEYBOARD_SHORTCUTS.md](KEYBOARD_SHORTCUTS.md)
-- **Learn from agent** → [AGENT_LEARNING_SUMMARY.md](AGENT_LEARNING_SUMMARY.md)
+- **Use the extension** → [VSCODE_EXTENSION_GUIDE.md](VSCODE_EXTENSION_GUIDE.md)
+- **Understand extension architecture** → [EXTENSION_ARCHITECTURE.md](EXTENSION_ARCHITECTURE.md)
+- **See visual workflows** → [EXTENSION_VISUAL_WORKFLOW.md](EXTENSION_VISUAL_WORKFLOW.md)
+- **Learn educational mode** → [EDUCATIONAL_MODE.md](EDUCATIONAL_MODE.md)
 - **Plan future work** → [IMPROVEMENT_ROADMAP.md](IMPROVEMENT_ROADMAP.md)
+- **Review historical work** → [_archive/consolidation-history/](_archive/consolidation-history/)
 
 ---
 
 ## 💡 Documentation Tips
 
 1. **Start with README.md** - Gets you oriented
-2. **Check DEVLOG.md** - See what's been done recently
-3. **Refer to API_CONTRACTS.md** - Quick API reference
-4. **Deep dive in api/** - Detailed API documentation
-5. **Understand flow in architecture/** - System design
-6. **Check performance/** - Performance targets and optimization
+2. **Check STATUS.md** - Current phase and progress
+3. **Review DEVLOG.md** - See what's been done recently
+4. **Refer to API_CONTRACTS.md** - Quick API reference
+5. **Deep dive in api/** - Detailed API documentation
+6. **Understand flow in architecture/** - System design
+7. **Check performance/** - Performance targets and optimization
+8. **Historical context in _archive/consolidation-history/** - Past consolidation work
 
 ---
 
@@ -212,28 +225,31 @@
 When adding new documentation:
 1. Update this index with new files
 2. Update DEVLOG.md with progress
-3. Update PROJECT_January 2, 2026  
+3. Update STATUS.md if it affects project status
+4. Follow existing document structure
+5. Include clear headers and navigation
+6. Add to appropriate subdirectory (api/, architecture/, etc.)
+
+---
+
+**Last Updated:** January 3, 2026  
 **Maintained By:** Kai (Backend Developer)  
 **Next Update:** After major documentation changes
 
 ---
 
-## 📝 Recent Changes (January 2, 2026)
+## 📝 Recent Changes
 
-**Documentation Consolidation:**
-- ✅ Merged QUICKSTART.md + QUICK_START_FOR_USERS.md → Single QUICKSTART.md (users + developers)
-- ✅ Consolidated 4 phase completion docs → PHASE_HISTORY.md (cleaner history tracking)
-- ✅ Merged EXTENSION_README.md into EXTENSION_DOCS_INDEX.md (less duplication)
-- ✅ Reduced from 23 to 20 main files while preserving all important content
+### January 3, 2026 - Major Consolidation
+**Documentation Streamlining:**
+- ✅ Archived 15 CHUNK consolidation files → [_archive/consolidation-history/](_archive/consolidation-history/)
+- ✅ Archived CLEANUP_SUMMARY.md, WEEK4_CLEANUP_COMPLETE.md
+- ✅ Archived AGENT_LEARNING_SUMMARY.md (content in TESTING_COMPLETE.md)
+- ✅ Reduced from 27 to 12 main files (55% reduction)
+- ✅ All important content preserved in active files or archived
 
 **Benefits:**
-- Easier navigation (fewer files to search)
-- Less duplication (single source of truth)
-- Better organization (related content together)
-- All important information retained
-
----
-
-**Last Updated:** December 26, 2025  
-**Maintained By:** Kai (Backend Developer)  
-**Next Update:** After major documentation changes
+- Much easier to find current documentation
+- Clear separation between active and historical documents
+- Less clutter in main docs/ folder
+- Historical work preserved in organized archive
