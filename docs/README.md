@@ -28,8 +28,8 @@
 **Current Milestone:** Week 13 - **PHASE 1 BACKEND COMPLETE** ✅  
 **Next:** VS Code Extension Integration (Sokchea's work)
 
-See [DEVLOG.md](DEVLOG.md) for detailed weekly progress.  
-See [TESTING_COMPLETE.md](TESTING_COMPLETE.md) for comprehensive test results and performance metrics.
+See [DEVLOG.md](DEVLOG.md) for detailed weekly progress and current status.  
+See [testing/TESTING_COMPLETE.md](testing/TESTING_COMPLETE.md) for comprehensive test results and performance metrics.
 
 ---
 
@@ -190,10 +190,12 @@ npm run test:coverage       # Test coverage report
 - **[performance/benchmarks.md](performance/benchmarks.md)** - Complete performance metrics and optimization guide
 
 ### Essential Docs
-- **[DEVLOG.md](DEVLOG.md)** - Weekly development journal with progress, metrics, and learnings
-- **[TESTING_COMPLETE.md](TESTING_COMPLETE.md)** - Comprehensive test results, performance tools, and validation (99% pass rate)
-- **[API_CONTRACTS.md](API_CONTRACTS.md)** - Tool interfaces and JSON schemas  
+- **[DEVLOG.md](DEVLOG.md)** - Weekly development journal with current status, progress, metrics, and learnings
+- **[testing/TESTING_COMPLETE.md](testing/TESTING_COMPLETE.md)** - Comprehensive test results, performance tools, and validation (99% pass rate)
+- **[api/API_CONTRACTS.md](api/API_CONTRACTS.md)** - Tool interfaces and JSON schemas  
 - **[PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)** - Complete file tree with descriptions
+- **[architecture/extension/VSCODE_EXTENSION_GUIDE.md](architecture/extension/VSCODE_EXTENSION_GUIDE.md)** - Complete extension user guide
+- **[architecture/EDUCATIONAL_MODE.md](architecture/EDUCATIONAL_MODE.md)** - Educational mode feature guide
 
 ### Archived Docs
 - **[_archive/](\_archive/)** - Old milestones, phase guides, completion summaries, raw test outputs
