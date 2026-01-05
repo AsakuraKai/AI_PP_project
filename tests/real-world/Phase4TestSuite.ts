@@ -16,7 +16,7 @@
  */
 
 import { MinimalReactAgent } from '../../src/agent/MinimalReactAgent';
-import { ValidatedMultiPassAgent } from '../../src/agent/ValidatedMultiPassAgent';
+import { MultiPassAgent } from '../../src/agent/MultiPassAgent';
 import { ParsedError } from '../../src/types';
 import * as fs from 'fs/promises';
 import * as path from 'path';
@@ -100,7 +100,7 @@ export interface TestSuiteReport {
 // ============================================================================
 
 export class Phase4TestSuite {
-  private agent: MinimalReactAgent | ValidatedMultiPassAgent;
+  private agent: MinimalReactAgent | MultiPassAgent;
   private resultsDir: string;
   private testFixturesRoot: string;
   private useValidation: boolean;
@@ -119,9 +119,9 @@ export class Phase4TestSuite {
     10: 'test10-navigation'
   };
   
-  constructor(agent: MinimalReactAgent | ValidatedMultiPassAgent, options?: { useValidation?: boolean }) {
+  constructor(agent: MinimalReactAgent | MultiPassAgent, options?: { useValidation?: boolean }) {
     this.agent = agent;
-    this.useValidation = options?.useValidation ?? (agent instanceof ValidatedMultiPassAgent);
+    this.useValidation = options?.useValidation ?? (agent instanceof MultiPassAgent);
     this.resultsDir = path.join(__dirname, '../tests/results/phase4');
     this.testFixturesRoot = path.join(__dirname, '../fixtures');
   }
@@ -478,15 +478,14 @@ export class Phase4TestSuite {
       
       // Create a new agent with proper projectRoot for this test
       const testAgent = this.useValidation
-        ? new ValidatedMultiPassAgent((this.agent as any).llm, {
+        ? new MultiPassAgent((this.agent as any).llm, {
             maxIterations: 5,
             generateFix: true,
-            projectRoot: testFixturePath, // Fix file resolution issue
+            projectRoot: testFixturePath,
             enableCaching: true,
-            qualityThreshold: 70,
-            maxRegenerationAttempts: 3,
-            verboseValidation: true,
-            trackMetrics: true
+            numHypotheses: 3,
+            enableConsensus: true,
+            minEvidenceItems: 2
           })
         : new MinimalReactAgent((this.agent as any).llm, {
             maxIterations: 5,
@@ -496,21 +495,14 @@ export class Phase4TestSuite {
           });
       
       console.log(`   📂 Using test fixture: ${fixtureFolderName} (${testFixturePath})`);
-      console.log(`   🔍 Using agent: ${this.useValidation ? 'ValidatedMultiPassAgent (Option C)' : 'MinimalReactAgent (Baseline)'}`);
+      console.log(`   🔍 Using agent: ${this.useValidation ? 'MultiPassAgent (Option C)' : 'MinimalReactAgent (Baseline)'}`);
       
       // Run RCA Agent with test-specific agent
       const result = await testAgent.analyze(testCase.error);
       
-      // Print validation metrics if using ValidatedMultiPassAgent
-      if (this.useValidation && testAgent instanceof ValidatedMultiPassAgent) {
-        const metrics = testAgent.getMetrics();
-        console.log(`   📊 Validation Metrics:`);
-        console.log(`      - Total analyses: ${metrics.totalAnalyses}`);
-        console.log(`      - First attempt pass: ${metrics.passedFirstAttempt}`);
-        console.log(`      - Pass after retry: ${metrics.passedAfterRetry}`);
-        console.log(`      - Failed validation: ${metrics.failedValidation}`);
-        console.log(`      - Average score: ${metrics.averageScore.toFixed(1)}/100`);
-        console.log(`      - Average attempts: ${metrics.averageAttempts.toFixed(2)}`);
+      // Print validation metrics if using MultiPassAgent
+      if (this.useValidation && testAgent instanceof MultiPassAgent) {
+        console.log(`   📊 Validation: Multi-hypothesis analysis with consensus building`);
       }
       
       const duration = Date.now() - startTime;

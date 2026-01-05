@@ -100,11 +100,14 @@ export interface VersionQueryParams {
   /** Tool to query: agp, kotlin, gradle */
   tool: 'agp' | 'kotlin' | 'gradle';
   
-  /** Query type */
-  queryType: 'exists' | 'latest-stable' | 'latest-any' | 'compatible' | 'suggest';
+  /** Query type - Phase 5: Added 'migration-path' */
+  queryType: 'exists' | 'latest-stable' | 'latest-any' | 'compatible' | 'suggest' | 'migration-path';
   
   /** Version to check (for exists/suggest queries) */
   version?: string;
+  
+  /** Target version (for migration-path query) - Phase 5 */
+  targetVersion?: string;
   
   /** Reference version for compatibility check */
   referenceVersion?: string;
@@ -146,6 +149,12 @@ export interface VersionLookupResult {
       reason: string;
       status: string;
     }>;
+    
+    /** Phase 5: Migration path data */
+    migrationPath?: string[];
+    steps?: string[];
+    breakingChanges?: string[];
+    estimatedEffort?: string;
   };
   
   /** Error message if query failed */
@@ -162,8 +171,11 @@ export class VersionLookupTool implements Tool {
   private agpVersions: AGPVersion[] = [];
   private kotlinVersions: KotlinVersion[] = [];
   private compatibilityRules: CompatibilityRule[] = [];
-  private initialized = false;
-  
+  private initialized = false;  
+  // Phase 5: Performance optimization - query result caching
+  private queryCache = new Map<string, any>();
+  private cacheExpiry = 5 * 60 * 1000; // 5 minutes
+  private cacheTimestamps = new Map<string, number>();  
   private knowledgePath: string;
   
   constructor(knowledgePath?: string) {
@@ -214,26 +226,51 @@ export class VersionLookupTool implements Tool {
     
     const params = parameters as VersionQueryParams;
     
+    // Phase 5: Check cache first
+    const cacheKey = JSON.stringify(params);
+    const cachedResult = this.getCachedResult(cacheKey);
+    if (cachedResult) {
+      console.log(`[VersionLookupTool] Cache hit for ${params.queryType}`);
+      return cachedResult;
+    }
+    
     try {
+      let result: VersionLookupResult;
+      
       switch (params.queryType) {
         case 'exists':
-          return this.queryExists(params);
+          result = this.queryExists(params);
+          break;
         case 'latest-stable':
-          return this.queryLatestStable(params);
+          result = this.queryLatestStable(params);
+          break;
         case 'latest-any':
-          return this.queryLatestAny(params);
+          result = this.queryLatestAny(params);
+          break;
         case 'compatible':
-          return this.queryCompatible(params);
+          result = this.queryCompatible(params);
+          break;
         case 'suggest':
-          return this.querySuggest(params);
+          result = this.querySuggest(params);
+          break;
+        case 'migration-path': // Phase 5: New query type
+          result = this.queryMigrationPath(params);
+          break;
         default:
-          return {
+          result = {
             success: false,
             queryType: params.queryType,
             data: {},
             error: `Unknown query type: ${params.queryType}`,
           };
       }
+      
+      // Phase 5: Cache successful results
+      if (result.success) {
+        this.setCachedResult(cacheKey, result);
+      }
+      
+      return result;
     } catch (error) {
       return {
         success: false,
@@ -670,5 +707,140 @@ export class VersionLookupTool implements Tool {
       return this.kotlinVersions.find(v => v.version === version) || null;
     }
     return null;
+  }
+  
+  // ========== Phase 5: Performance Optimizations ==========
+  
+  /**
+   * Get cached query result
+   */
+  private getCachedResult(key: string): VersionLookupResult | null {
+    const timestamp = this.cacheTimestamps.get(key);
+    if (!timestamp) return null;
+    
+    const now = Date.now();
+    if (now - timestamp > this.cacheExpiry) {
+      // Cache expired
+      this.queryCache.delete(key);
+      this.cacheTimestamps.delete(key);
+      return null;
+    }
+    
+    return this.queryCache.get(key) || null;
+  }
+  
+  /**
+   * Cache query result
+   */
+  private setCachedResult(key: string, result: VersionLookupResult): void {
+    this.queryCache.set(key, result);
+    this.cacheTimestamps.set(key, Date.now());
+  }
+  
+  /**
+   * Clear cache (useful for testing or manual refresh)
+   */
+  clearCache(): void {
+    this.queryCache.clear();
+    this.cacheTimestamps.clear();
+  }
+  
+  /**
+   * Query migration path between versions
+   * Phase 5: New feature for upgrade guidance
+   */
+  private queryMigrationPath(params: VersionQueryParams): VersionLookupResult {
+    if (!params.version || !params.targetVersion) {
+      return {
+        success: false,
+        queryType: 'migration-path',
+        data: {},
+        error: 'Both version and targetVersion parameters required for migration-path query',
+      };
+    }
+    
+    const tool = params.tool;
+    const from = params.version;
+    const to = params.targetVersion;
+    
+    // Get version infos
+    const fromInfo = this.getVersionInfo(tool, from);
+    const toInfo = this.getVersionInfo(tool, to);
+    
+    if (!fromInfo || !toInfo) {
+      return {
+        success: false,
+        queryType: 'migration-path',
+        data: {},
+        error: `Version not found: ${!fromInfo ? from : to}`,
+      };
+    }
+    
+    // Build migration path
+    const path: string[] = [];
+    const steps: string[] = [];
+    const breakingChanges: string[] = [];
+    
+    // Find intermediate stable versions
+    const allVersions = tool === 'agp' ? this.agpVersions : this.kotlinVersions;
+    const intermediates = allVersions
+      .filter(v => 
+        v.status === 'stable' &&
+        !v.deprecated &&
+        this.compareVersions(v.version, from) > 0 &&
+        this.compareVersions(v.version, to) <= 0
+      )
+      .slice(0, 3); // Max 3 intermediate steps
+    
+    path.push(from);
+    intermediates.forEach(v => path.push(v.version));
+    if (path[path.length - 1] !== to) {
+      path.push(to);
+    }
+    
+    // Generate migration steps
+    for (let i = 0; i < path.length - 1; i++) {
+      const currentVer = path[i];
+      const nextVer = path[i + 1];
+      const nextInfo = this.getVersionInfo(tool, nextVer);
+      
+      steps.push(`Step ${i + 1}: Upgrade from ${currentVer} to ${nextVer}`);
+      
+      if (nextInfo && 'breakingChanges' in nextInfo && nextInfo.breakingChanges) {
+        breakingChanges.push(...nextInfo.breakingChanges.map(bc => `[${nextVer}] ${bc}`));
+      }
+      
+      if (nextInfo && nextInfo.migrationGuide) {
+        steps.push(`  📖 Migration guide: ${nextInfo.migrationGuide}`);
+      }
+    }
+    
+    return {
+      success: true,
+      queryType: 'migration-path',
+      data: {
+        migrationPath: path,
+        steps,
+        breakingChanges: breakingChanges.length > 0 ? breakingChanges : undefined,
+        estimatedEffort: this.estimateMigrationEffort(from, to, breakingChanges.length),
+      },
+    };
+  }
+  
+  /**
+   * Estimate migration effort (low/medium/high)
+   */
+  private estimateMigrationEffort(from: string, to: string, numBreakingChanges: number): string {
+    const versionJump = this.compareVersions(to, from);
+    
+    if (numBreakingChanges === 0) {
+      return 'Low - No breaking changes detected';
+    } else if (numBreakingChanges <= 2 && versionJump === 0) {
+      return 'Low-Medium - Minor version bump with few breaking changes';
+    } else if (numBreakingChanges <= 5) {
+      return 'Medium - Moderate number of breaking changes';
+    } else {
+      return 'High - Many breaking changes, plan for thorough testing';
+    }
   }
 }

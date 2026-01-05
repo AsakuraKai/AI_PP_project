@@ -24,6 +24,7 @@ import { MinimalReactAgent, AgentConfig } from './MinimalReactAgent';
 import { OllamaClient } from '../llm/OllamaClient';
 import { ParsedError, RCAResult } from '../types';
 import { PerformanceTracker } from '../monitoring/PerformanceTracker';
+import { TemplateEngine } from './TemplateEngine'; // Phase 5: Template integration
 
 /**
  * Hypothesis about error root cause
@@ -72,12 +73,14 @@ export class MultiPassAgent extends MinimalReactAgent {
   private readonly numHypotheses: number;
   private readonly enableConsensus: boolean;
   private readonly minEvidenceItems: number;
+  private readonly templateEngine: TemplateEngine; // Phase 5: Template support
 
   constructor(llm: OllamaClient, config?: MultiPassConfig) {
     super(llm, config);
     this.numHypotheses = config?.numHypotheses ?? 3;
     this.enableConsensus = config?.enableConsensus ?? false;
     this.minEvidenceItems = config?.minEvidenceItems ?? 2;
+    this.templateEngine = new TemplateEngine(); // Phase 5: Initialize template engine
   }
 
   /**
@@ -128,8 +131,18 @@ export class MultiPassAgent extends MinimalReactAgent {
   private async generateHypotheses(error: ParsedError): Promise<Hypothesis[]> {
     const hypotheses: Hypothesis[] = [];
 
+    // Phase 5: Get error category for template selection
+    const errorCategory = this.templateEngine.classifyError(error);
+    console.log(`  📋 Using template category: ${errorCategory}`);
+
     for (let i = 0; i < this.numHypotheses; i++) {
-      const diversityPrompt = this.buildDiversityPrompt(error, hypotheses, i);
+      // Phase 5: Build template-aware prompt
+      const diversityPrompt = this.buildTemplateAwareDiversityPrompt(
+        error,
+        errorCategory,
+        hypotheses,
+        i
+      );
       
       try {
         const response = await this.llm.generate(diversityPrompt, {
@@ -148,6 +161,45 @@ export class MultiPassAgent extends MinimalReactAgent {
     }
 
     return hypotheses;
+  }
+  
+  // ========== Phase 5: Template Integration Methods ==========
+  
+  /**
+   * Build template-aware diversity prompt
+   * Phase 5: Leverage templates for structured hypothesis generation
+   */
+  private buildTemplateAwareDiversityPrompt(
+    error: ParsedError,
+    errorCategory: string,
+    existingHypotheses: Hypothesis[],
+    iteration: number
+  ): string {
+    // Get template-based prompt for this error category
+    const templatePrompt = this.templateEngine.getTemplatePrompt(errorCategory);
+    
+    // Add diversity instructions
+    const diversityHint = existingHypotheses.length > 0
+      ? `\n\n**DIVERSITY REQUIREMENT**: This is hypothesis #${iteration + 1}. Generate a DIFFERENT perspective from:\n${existingHypotheses.map(h => `- ${h.rootCause.substring(0, 60)}...`).join('\n')}`
+      : '';
+    
+    return `${templatePrompt}
+
+**ERROR DETAILS**:
+File: ${error.filePath}
+Line: ${error.line}
+Message: ${error.message}
+Type: ${error.errorType}
+${diversityHint}
+
+Generate a hypothesis by filling the template placeholders with specific values extracted from the error.
+Return JSON format:
+{
+  "rootCause": "...",
+  "evidence": ["...", "..."],
+  "fixGuidelines": ["...", "..."],
+  "confidence": 0.7
+}`;
   }
 
   /**

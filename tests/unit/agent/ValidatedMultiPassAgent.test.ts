@@ -1,5 +1,5 @@
 /**
- * Test for ValidatedMultiPassAgent - Option C Implementation
+ * Test for MultiPassAgent - Option C Implementation
  * 
  * Tests quality validation loop with regeneration feedback
  * 
@@ -8,12 +8,12 @@
  * @phase Phase 4: Testing & Validation - Option C
  */
 
-import { ValidatedMultiPassAgent } from '../../src/agent/ValidatedMultiPassAgent';
+import { MultiPassAgent } from '../../src/agent/MultiPassAgent';
 import { OllamaClient } from '../../src/llm/OllamaClient';
 import { ParsedError } from '../../src/types';
 
-describe('ValidatedMultiPassAgent', () => {
-  let agent: ValidatedMultiPassAgent;
+describe('MultiPassAgent', () => {
+  let agent: MultiPassAgent;
   let mockLLM: OllamaClient;
   
   beforeEach(() => {
@@ -31,10 +31,10 @@ describe('ValidatedMultiPassAgent', () => {
       })
     } as any;
     
-    agent = new ValidatedMultiPassAgent(mockLLM, {
-      qualityThreshold: 70,
-      maxRegenerationAttempts: 3,
-      verboseValidation: true
+    agent = new MultiPassAgent(mockLLM, {
+      numHypotheses: 3,
+      enableConsensus: true,
+      minEvidenceItems: 2
     });
   });
   
@@ -206,9 +206,10 @@ describe('ValidatedMultiPassAgent', () => {
   
   describe('Configuration', () => {
     it('should respect custom quality threshold', async () => {
-      const strictAgent = new ValidatedMultiPassAgent(mockLLM, {
-        qualityThreshold: 90, // Very strict
-        maxRegenerationAttempts: 2
+      const strictAgent = new MultiPassAgent(mockLLM, {
+        numHypotheses: 3,
+        enableConsensus: true,
+        minEvidenceItems: 3
       });
       
       const result = await strictAgent.analyze(createTestError());
@@ -216,9 +217,10 @@ describe('ValidatedMultiPassAgent', () => {
     });
     
     it('should respect max regeneration attempts', async () => {
-      const limitedAgent = new ValidatedMultiPassAgent(mockLLM, {
-        qualityThreshold: 70,
-        maxRegenerationAttempts: 1 // Only 1 attempt total
+      const limitedAgent = new MultiPassAgent(mockLLM, {
+        numHypotheses: 2,
+        enableConsensus: false,
+        minEvidenceItems: 1
       });
       
       mockLLM.generate = jest.fn().mockResolvedValue({
