@@ -12,7 +12,7 @@
  * @phase Phase 5: Backend Intelligence Polish
  */
 
-import { Tool, ToolRegistry } from '../tools/ToolRegistry';
+import { ToolRegistry } from '../tools/ToolRegistry';
 import { ParsedError } from '../types';
 import { PerformanceTracker } from '../monitoring/PerformanceTracker';
 
@@ -62,7 +62,7 @@ export class ToolOrchestrator {
    */
   createExecutionPlan(error: ParsedError): ToolExecutionPlan {
     const selectedTools: string[] = [];
-    const errorType = error.errorType?.toLowerCase() || '';
+    const errorType = error.type?.toLowerCase() || '';
     const errorMessage = error.message.toLowerCase();
 
     // Always useful tools
@@ -201,7 +201,7 @@ export class ToolOrchestrator {
     const timer = this.performanceTracker.startTimer(`tool_${toolName}`);
 
     try {
-      const tool = this.toolRegistry.getTool(toolName);
+      const tool = this.toolRegistry.get(toolName);
       if (!tool) {
         throw new Error(`Tool '${toolName}' not found in registry`);
       }
@@ -271,6 +271,6 @@ export class ToolOrchestrator {
    * Get performance metrics
    */
   getMetrics() {
-    return this.performanceTracker.getMetrics();
+    return this.performanceTracker.exportMetrics();
   }
 }

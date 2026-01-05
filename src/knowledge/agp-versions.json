@@ -1,30 +1,11 @@
 {
   "metadata": {
     "lastUpdated": "2025-12-27T00:00:00Z",
-    "totalVersions": 156,
+    "totalVersions": 44,
     "source": "Maven Central + Official Android Developer Documentation",
     "maintainer": "RCA Agent Team"
   },
   "versions": [
-    {
-      "version": "9.0.0",
-      "releaseDate": "2024-10-15",
-      "status": "stable",
-      "minGradleVersion": "8.9",
-      "maxGradleVersion": "8.10",
-      "minKotlinVersion": "2.0.0",
-      "recommendedKotlinVersion": "2.0.20",
-      "minJdk": 17,
-      "recommendedJdk": 21,
-      "breakingChanges": [
-        "Removed deprecated BuildConfig customization APIs",
-        "Changed default minSdk to API 21",
-        "New R8 default rules for better optimization"
-      ],
-      "knownIssues": [],
-      "migrationGuide": "https://developer.android.com/build/releases/gradle-plugin#9-0-0",
-      "deprecated": false
-    },
     {
       "version": "8.7.3",
       "releaseDate": "2024-11-15",
@@ -53,6 +34,25 @@
       "breakingChanges": [],
       "knownIssues": [],
       "migrationGuide": "https://developer.android.com/build/releases/gradle-plugin#8-7-0",
+      "deprecated": false
+    },
+    {
+      "version": "9.0.0",
+      "releaseDate": "2024-10-15",
+      "status": "stable",
+      "minGradleVersion": "8.9",
+      "maxGradleVersion": "8.10",
+      "minKotlinVersion": "2.0.0",
+      "recommendedKotlinVersion": "2.0.20",
+      "minJdk": 17,
+      "recommendedJdk": 21,
+      "breakingChanges": [
+        "Removed deprecated BuildConfig customization APIs",
+        "Changed default minSdk to API 21",
+        "New R8 default rules for better optimization"
+      ],
+      "knownIssues": [],
+      "migrationGuide": "https://developer.android.com/build/releases/gradle-plugin#9-0-0",
       "deprecated": false
     },
     {

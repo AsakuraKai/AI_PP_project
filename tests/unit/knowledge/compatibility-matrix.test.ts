@@ -2,7 +2,7 @@ import { describe, it, expect } from '@jest/globals';
 import * as fs from 'fs';
 import * as path from 'path';
 import Ajv from 'ajv';
-const addFormats = require('ajv-formats').default || require('ajv-formats');
+import addFormats from 'ajv-formats';
 
 describe('Compatibility Matrix', () => {
   const matrixPath = path.join(__dirname, '../../../src/knowledge/compatibility-matrix.json');
@@ -65,8 +65,10 @@ describe('Compatibility Matrix', () => {
 
   it('should specify JDK 11 for AGP 7.x', () => {
     const agp7xRules = matrixData.compatibilityRules.filter((r: any) => 
-      r.agpVersionRange.includes('7.')
+      r.agpVersionRange.startsWith('7.') || r.agpVersionRange.match(/^7\./)
     );
+    
+    expect(agp7xRules.length).toBeGreaterThan(0);
     
     agp7xRules.forEach((rule: any) => {
       expect(rule.jdkVersions).toContain(11);
