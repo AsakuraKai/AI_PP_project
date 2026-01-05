@@ -328,13 +328,13 @@ curl http://localhost:8000/api/v1/heartbeat
    npm install -g @vscode/vsce
    vsce package
    ```
-   This creates `rca-agent-extension-0.1.0.vsix`
+   This creates `rca-agent-extension-2.0.vsix`
 
 3. **Install in VS Code**:
    - Open VS Code
    - Press `Ctrl+Shift+P` (or `Cmd+Shift+P`)
    - Type "Extensions: Install from VSIX..."
-   - Select `rca-agent-extension-0.1.0.vsix`
+   - Select `rca-agent-extension-2.0.vsix`
    - Click "Reload" when prompted
 
 4. **Verify installation**:
