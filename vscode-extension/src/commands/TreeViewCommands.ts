@@ -114,19 +114,6 @@ export class TreeViewCommands extends BaseCommandHandler {
     await this.queueManager.unpinError(error.id);
     this.showInfo(`Error unpinned: ${error.message.substring(0, 50)}...`);
   }
-    vscode.window.showInformationMessage('Error pinned to top.');
-  }
-
-  /**
-   * Unpin error
-   */
-  async unpinError(item: any): Promise<void> {
-    const error = item?.errorData as ErrorItem;
-    if (!error) return;
-
-    await this.queueManager.unpinError(error.id);
-    vscode.window.showInformationMessage('Error unpinned.');
-  }
 
   /**
    * Open error location in editor

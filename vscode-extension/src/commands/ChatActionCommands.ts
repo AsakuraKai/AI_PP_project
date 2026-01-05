@@ -10,7 +10,6 @@
 
 import * as vscode from 'vscode';
 import { RCAResult } from '../panel/types';
-import { FileOperationTool } from '../tools/FileOperationTool';
 
 /**
  * Apply fix suggested by RCA analysis
@@ -42,7 +41,7 @@ export async function applyFixCommand(result: RCAResult): Promise<void> {
     const success = await applyFix(result);
 
     if (success) {
-      vscode.window.showInformationMessage('✅ Fix applied successfully!');
+      vscode.window.showInformationMessage('Fix applied successfully!');
       
       // Offer to run build
       const runBuild = await vscode.window.showInformationMessage(
@@ -54,7 +53,7 @@ export async function applyFixCommand(result: RCAResult): Promise<void> {
         await vscode.commands.executeCommand('rca-agent.runGradleBuild');
       }
     } else {
-      vscode.window.showErrorMessage('❌ Failed to apply fix. Check the output for details.');
+      vscode.window.showErrorMessage('Failed to apply fix. Check the output for details.');
     }
   } catch (error) {
     vscode.window.showErrorMessage(`Error applying fix: ${error instanceof Error ? error.message : String(error)}`);
@@ -145,7 +144,7 @@ async function showDiffPreview(result: RCAResult): Promise<void> {
 function formatFixGuidelines(result: RCAResult): string {
   let content = `# Fix Guidelines\n\n`;
   content += `## Root Cause\n\n${result.rootCause}\n\n`;
-  content += `## Confidence: ${Math.round(result.confidence * 100)}%\n\n`;
+  content += `## Confidence: ${Math.round(result.confidence)}%\n\n`;
   content += `## Steps to Fix\n\n`;
 
   result.fixGuidelines?.forEach((guideline, index) => {
@@ -153,10 +152,7 @@ function formatFixGuidelines(result: RCAResult): string {
   });
 
   content += `\n## Additional Context\n\n`;
-  if (result.context) {
-    content += `- **Project:** ${result.context.projectPath || 'Unknown'}\n`;
-    content += `- **File:** ${result.context.filePath || 'Unknown'}\n`;
-  }
+  content += `- **File:** ${result.filePath || 'Unknown'}${result.line ? `:${result.line}` : ''}\n`;
 
   return content;
 }
@@ -212,7 +208,7 @@ function generateExplanationHTML(result: RCAResult): string {
   </style>
 </head>
 <body>
-  <h1>🔍 Detailed Root Cause Analysis</h1>
+  <h1>Detailed Root Cause Analysis</h1>
   
   <h2>Root Cause</h2>
   <p>${result.rootCause}</p>
@@ -229,9 +225,9 @@ function generateExplanationHTML(result: RCAResult): string {
   
   <h2>Additional Context</h2>
   <ul>
-    <li><strong>Analysis Time:</strong> ${result.timestamp ? new Date(result.timestamp).toLocaleString() : 'N/A'}</li>
-    <li><strong>Project:</strong> ${result.context?.projectPath || 'Unknown'}</li>
-    <li><strong>File:</strong> ${result.context?.filePath || 'Unknown'}</li>
+    <li><strong>Confidence:</strong> ${result.confidence}%</li>
+    <li><strong>Iterations:</strong> ${result.iterations}</li>
+    <li><strong>Tools Used:</strong> ${result.toolsUsed?.join(', ') || 'N/A'}</li>
   </ul>
   
   <hr>

@@ -119,8 +119,20 @@ export class ErrorBoundary {
     // Ollama connection errors
     if (error.message.includes('ECONNREFUSED') || error.message.includes('Ollama')) {
       return {
-        canRecover: false,
-        userMessage: 'Cannot connect to Ollama server. Please ensure Ollama is running.',
+        canRecover: true,
+        recoveryAction: async () => {
+          const result = await vscode.window.showInformationMessage(
+            'Quick Fix: Open a terminal and run "ollama serve"',
+            'Open Terminal',
+            'Check Again'
+          );
+          if (result === 'Open Terminal') {
+            const terminal = vscode.window.createTerminal('Ollama');
+            terminal.show();
+            terminal.sendText('ollama serve');
+          }
+        },
+        userMessage: 'Cannot connect to Ollama AI service. Start Ollama by running "ollama serve" in a terminal.',
         fallbackUI: this.getOllamaErrorUI()
       };
     }
@@ -128,8 +140,20 @@ export class ErrorBoundary {
     // Model not found errors
     if (error.message.includes('model') && error.message.includes('not found')) {
       return {
-        canRecover: false,
-        userMessage: 'Model not found. Please install the required model.',
+        canRecover: true,
+        recoveryAction: async () => {
+          const result = await vscode.window.showInformationMessage(
+            'Download the AI model to continue. This is a one-time setup (~5GB download).',
+            'Download Now',
+            'Choose Different Model'
+          );
+          if (result === 'Download Now') {
+            const terminal = vscode.window.createTerminal('Model Download');
+            terminal.show();
+            terminal.sendText('ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest');
+          }
+        },
+        userMessage: 'AI model not installed. Download it with "ollama pull" command (one-time setup).',
         fallbackUI: this.getModelErrorUI()
       };
     }
@@ -139,9 +163,12 @@ export class ErrorBoundary {
       return {
         canRecover: true,
         recoveryAction: async () => {
-          // Could implement retry logic here
+          await vscode.window.showInformationMessage(
+            'The request timed out. This can happen with complex errors or slow systems.',
+            'Understood'
+          );
         },
-        userMessage: 'Request timed out. Would you like to try again?'
+        userMessage: 'Request timed out. Try simplifying the error or increasing timeout in settings.'
       };
     }
 
@@ -151,10 +178,14 @@ export class ErrorBoundary {
         canRecover: true,
         recoveryAction: async () => {
           // Reload panel
+          await vscode.window.showInformationMessage(
+            'Reloading the RCA Agent panel...',
+            'OK'
+          );
           await vscode.commands.executeCommand('rca-agent.togglePanel');
           await vscode.commands.executeCommand('rca-agent.togglePanel');
         },
-        userMessage: 'Panel error occurred. Reloading panel...',
+        userMessage: 'Panel encountered an error. Reloading automatically...',
         fallbackUI: this.getGenericErrorUI()
       };
     }
@@ -163,14 +194,36 @@ export class ErrorBoundary {
     if (component === 'AnalysisService') {
       return {
         canRecover: true,
-        userMessage: 'Analysis failed. You can try again or check the error details.'
+        recoveryAction: async () => {
+          const result = await vscode.window.showInformationMessage(
+            'Analysis failed. This might be due to complex error text or resource constraints.',
+            'Try Simpler Error',
+            'Check Logs',
+            'Cancel'
+          );
+          if (result === 'Check Logs') {
+            await vscode.commands.executeCommand('rca-agent.showLogs');
+          }
+        },
+        userMessage: 'Analysis failed. Try with a simpler error message or check if Ollama is running properly.'
       };
     }
 
     // Generic error
     return {
-      canRecover: false,
-      userMessage: 'An unexpected error occurred. Please check the output logs.',
+      canRecover: true,
+      recoveryAction: async () => {
+        await vscode.window.showInformationMessage(
+          'Unexpected error occurred. Check logs for details or try restarting Ollama.',
+          'View Logs',
+          'Dismiss'
+        ).then((selection) => {
+          if (selection === 'View Logs') {
+            vscode.commands.executeCommand('rca-agent.showLogs');
+          }
+        });
+      },
+      userMessage: 'An unexpected error occurred. Check the logs for more details or try restarting Ollama.',
       fallbackUI: this.getGenericErrorUI()
     };
   }
@@ -213,62 +266,90 @@ export class ErrorBoundary {
   }
 
   /**
-   * Get Ollama error UI
+   * Get Ollama error UI with improved user guidance
    */
   private getOllamaErrorUI(): string {
     return `
       <div class="error-state" role="alert">
-        <h2>! Ollama Server Not Available</h2>
-        <p>The Ollama server is not responding.</p>
+        <h2>Ollama Server Not Available</h2>
+        <p>I can't connect to the Ollama AI service. Don't worry, this is usually an easy fix!</p>
         <div class="steps">
-          <h3>To fix this:</h3>
+          <h3>Quick Fix (Most Common):</h3>
           <ol>
-            <li>Open a terminal</li>
+            <li>Open a terminal window</li>
             <li>Run: <code>ollama serve</code></li>
             <li>Wait for "Ollama is running" message</li>
             <li>Click "Check Connection" below</li>
           </ol>
+          <h3>Still Not Working? Try These:</h3>
+          <ul>
+            <li><strong>Check if Ollama is installed:</strong> Run <code>ollama --version</code></li>
+            <li><strong>Different port:</strong> If running on a non-standard port, update URL in settings</li>
+            <li><strong>Firewall:</strong> Make sure port 11434 is not blocked</li>
+            <li><strong>Process conflict:</strong> Kill existing Ollama process and restart</li>
+          </ul>
+          <p><em>Tip: Ollama needs to be running whenever you use the RCA Agent</em></p>
         </div>
-        <button onclick="checkOllamaConnection()"> Check Connection</button>
-        <button onclick="openSettings()">[TOOL] Change URL</button>
+        <button onclick="checkOllamaConnection()">Check Connection</button>
+        <button onclick="openSettings()">Change URL</button>
+        <a href="https://ollama.ai/download" target="_blank">Install Ollama</a>
       </div>
     `;
   }
 
   /**
-   * Get model error UI
+   * Get model error UI with download size and time estimates
    */
   private getModelErrorUI(): string {
     return `
       <div class="error-state" role="alert">
-        <h2>! Model Not Found</h2>
-        <p>The required model is not installed.</p>
+        <h2>AI Model Not Found</h2>
+        <p>The AI model needed for analysis isn't installed yet. Let's get it set up!</p>
         <div class="steps">
-          <h3>To install:</h3>
+          <h3>Quick Install (Recommended Model):</h3>
           <ol>
-            <li>Open a terminal</li>
-            <li>Run: <code>ollama pull deepseek-r1</code></li>
-            <li>Wait for download to complete</li>
-            <li>Click "Check Model" below</li>
+            <li>Open a terminal window</li>
+            <li>Run: <code>ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest</code></li>
+            <li>Wait for download (~5GB, takes 5-10 minutes)</li>
+            <li>Click "Check Model" below when done</li>
           </ol>
+          <h3>Alternative Options:</h3>
+          <ul>
+            <li><strong>Smaller model:</strong> <code>ollama pull deepseek-r1:1.5b</code> (~1GB, faster but less accurate)</li>
+            <li><strong>Already have a model?</strong> Click "Choose Different Model" to select it</li>
+            <li><strong>Check installed models:</strong> Run <code>ollama list</code> in terminal</li>
+          </ul>
+          <p><em>Tip: Model only needs to be downloaded once. You can use it offline after that!</em></p>
         </div>
-        <button onclick="checkModel()"> Check Model</button>
-        <button onclick="chooseModel()"> Choose Different Model</button>
+        <button onclick="checkModel()">Check Model</button>
+        <button onclick="chooseModel()">Choose Different Model</button>
+        <a href="https://ollama.ai/library" target="_blank">Browse All Models</a>
       </div>
     `;
   }
 
   /**
-   * Get generic error UI
+   * Get generic error UI with helpful troubleshooting steps
    */
   private getGenericErrorUI(): string {
     return `
       <div class="error-state" role="alert">
-        <h2>! Error Occurred</h2>
-        <p>An unexpected error occurred. Please try again.</p>
-        <button onclick="retryAction()"> Try Again</button>
-        <button onclick="viewLogs()">[MANIFEST] View Logs</button>
-        <button onclick="reportIssue()">[BUG] Report Issue</button>
+        <h2>Something Went Wrong</h2>
+        <p>An unexpected error occurred, but there are a few things we can try to fix it.</p>
+        <div class="steps">
+          <h3>Quick Fixes to Try:</h3>
+          <ol>
+            <li><strong>Retry:</strong> Click "Try Again" - sometimes temporary glitches happen</li>
+            <li><strong>Restart Ollama:</strong> Stop and restart the Ollama service</li>
+            <li><strong>Check Resources:</strong> Make sure you have enough RAM/disk space</li>
+            <li><strong>View Logs:</strong> Check the logs for more specific error details</li>
+          </ol>
+          <h3>Still Having Issues?</h3>
+          <p>If the error persists, the logs can help identify the root cause. You can also report this issue on GitHub with the error details.</p>
+        </div>
+        <button onclick="retryAction()">Try Again</button>
+        <button onclick="viewLogs()">View Logs</button>
+        <button onclick="reportIssue()">Report Issue</button>
       </div>
     `;
   }

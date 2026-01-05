@@ -89,7 +89,7 @@ export function SingletonService<T extends new (...args: any[]) => any>(
   constructor: T
 ) {
   return class extends constructor {
-    private static _instance: any;
+    static _instance: any;
 
     static getInstance(...args: any[]): InstanceType<T> {
       if (!this._instance) {
@@ -99,3 +99,10 @@ export function SingletonService<T extends new (...args: any[]) => any>(
     }
   };
 }
+
+/**
+ * Helper type for singleton services
+ */
+export type SingletonType<T> = T & {
+  getInstance(): T;
+};

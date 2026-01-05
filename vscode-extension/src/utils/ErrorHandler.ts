@@ -45,7 +45,7 @@ export class ErrorHandler {
     this.logError(rcaError);
 
     // Show user-friendly error message in chat
-    stream.markdown(`\n\n## ❌ Error: ${rcaError.message}\n\n`);
+    stream.markdown(`\n\n## Error: ${rcaError.message}\n\n`);
     stream.markdown(`${rcaError.userMessage}\n\n`);
 
     // Add recovery suggestions
@@ -53,7 +53,7 @@ export class ErrorHandler {
       stream.markdown(`**Recovery:**\n`);
       stream.button({
         command: 'rca-agent.retry',
-        title: '🔄 Retry',
+        title: 'Retry',
         arguments: [rcaError]
       });
     }
@@ -314,7 +314,7 @@ This might be a bug. Please report it if it persists.`,
   </style>
 </head>
 <body>
-  <h1>❌ Error Details</h1>
+  <h1>Error Details</h1>
   
   <div class="field">
     <div class="label">Error Code:</div>
@@ -400,11 +400,11 @@ export class EdgeCaseHandler {
    * Handle empty workspace
    */
   static async handleEmptyWorkspace(stream: vscode.ChatResponseStream): Promise<void> {
-    stream.markdown(`## ℹ️ No Workspace Open\n\n`);
+    stream.markdown(`## No Workspace Open\n\n`);
     stream.markdown(`I need a workspace to analyze errors. Please open a folder or workspace first.\n\n`);
     stream.button({
       command: 'workbench.action.files.openFolder',
-      title: '📁 Open Folder',
+      title: 'Open Folder',
       arguments: []
     });
   }
@@ -413,9 +413,9 @@ export class EdgeCaseHandler {
    * Handle no errors found
    */
   static async handleNoErrors(stream: vscode.ChatResponseStream): Promise<void> {
-    stream.markdown(`## ✅ No Errors Found\n\n`);
+    stream.markdown(`## No Errors Found\n\n`);
     stream.markdown(`Great! I couldn't find any errors in your workspace. Your code looks good!\n\n`);
-    stream.markdown(`💡 **Tip:** If you're seeing errors in your IDE, try:\n`);
+    stream.markdown(`**Tip:** If you're seeing errors in your IDE, try:\n`);
     stream.markdown(`- Running a build to update diagnostics\n`);
     stream.markdown(`- Reloading the window\n`);
     stream.markdown(`- Checking if the error is in a different file\n`);
@@ -441,7 +441,7 @@ export class EdgeCaseHandler {
     stream: vscode.ChatResponseStream,
     errorCount: number
   ): Promise<void> {
-    stream.markdown(`## ⚠️ Too Many Errors (${errorCount})\n\n`);
+    stream.markdown(`## Too Many Errors (${errorCount})\n\n`);
     stream.markdown(`Your workspace has ${errorCount} errors. That's a lot! Let me help you prioritize:\n\n`);
     stream.markdown(`**Suggestions:**\n`);
     stream.markdown(`1. Fix build-blocking errors first (Gradle, dependencies)\n`);
@@ -463,7 +463,7 @@ export class EdgeCaseHandler {
     filePath: string,
     size: number
   ): Promise<void> {
-    stream.markdown(`## ⚠️ Large File Warning\n\n`);
+    stream.markdown(`## Large File Warning\n\n`);
     stream.markdown(`The file ${filePath} is very large (${(size / 1024 / 1024).toFixed(2)} MB).\n\n`);
     stream.markdown(`Analysis might take longer or fail. Consider:\n`);
     stream.markdown(`- Analyzing a specific section of the file\n`);
@@ -471,7 +471,7 @@ export class EdgeCaseHandler {
     stream.markdown(`- Providing more specific error location\n\n`);
     stream.button({
       command: 'rca-agent.analyzeAnyway',
-      title: '▶️ Analyze Anyway',
+      title: 'Analyze Anyway',
       arguments: [filePath]
     });
   }

@@ -17,6 +17,8 @@ export interface FeatureFlags {
 
 @SingletonService
 export class FeatureFlagManager extends BaseService {
+  static getInstance: () => FeatureFlagManager;
+  
   private flags: FeatureFlags;
   private onFlagChangeEmitter = new vscode.EventEmitter<{ flag: string; value: boolean }>();
   public readonly onFlagChange = this.onFlagChangeEmitter.event;
@@ -117,7 +119,7 @@ export class FeatureFlagManager extends BaseService {
   async showFeatureFlagPicker(): Promise<void> {
     const flags = Object.entries(this.flags).map(([flag, enabled]) => ({
       label: flag,
-      description: enabled ? '✅ Enabled' : '❌ Disabled',
+      description: enabled ? 'Enabled' : 'Disabled',
       flag: flag as keyof FeatureFlags,
       enabled
     }));

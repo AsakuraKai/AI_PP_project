@@ -125,29 +125,34 @@ Comprehensive root cause analysis with code context and actionable fix guideline
 
 #### Manual Selection (Classic)
 1. **Select error text** in your editor (stack trace, error message, build output)
-2. Press **`Ctrl+Shift+R`** (or `Cmd+Shift+R` on Mac)
+2. **Run command:** Press `Ctrl+Shift+P` and type "RCA Agent: Analyze Error"
 3. View results in the panel
 
 ### Keyboard Shortcuts
 
-For complete keyboard shortcuts guide, see [KEYBOARD_SHORTCUTS.md](KEYBOARD_SHORTCUTS.md)
+**No default keybindings are set.** You can configure your own shortcuts:
 
-#### Primary Actions
-| Action | Windows/Linux | macOS |
-|--------|---------------|-------|
-| **Toggle RCA Panel** | `Ctrl+Shift+A` | `Cmd+Shift+A` |
-| **Analyze Selected Error** | `Ctrl+Shift+R` | `Cmd+Shift+R` |
-| **Analyze in Panel** | `Ctrl+Shift+W` | `Cmd+Shift+W` |
-| **Analyze All Errors** | `Ctrl+Shift+Alt+A` | `Cmd+Shift+Alt+A` |
+1. Open Command Palette: `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac)
+2. Type "Preferences: Open Keyboard Shortcuts"
+3. Search for "RCA Agent" or "rca-agent"
+4. Click the "+" icon next to any command to set your preferred shortcut
 
-#### Panel Navigation
-| Action | Windows/Linux | macOS |
-|--------|---------------|-------|
-| Next Error | `Alt+F8` | `Option+F8` |
-| Previous Error | `Shift+Alt+F8` | `Shift+Option+F8` |
-| Stop Analysis | `Escape` | `Escape` |
+**Available Commands:**
+- `rcaAgent.analyzeError` - Analyze error in editor
+- `rcaAgent.analyzeErrorWebview` - Analyze in webview panel
+- `rcaAgent.togglePanel` - Toggle RCA Agent panel
+- `rcaAgent.toggleEducationalMode` - Toggle educational mode
+- `rcaAgent.togglePerformanceMetrics` - Toggle performance metrics
+- `rca-agent.analyzeAll` - Analyze all errors in queue
+- `rca-agent.analyzeCurrentError` - Analyze error at cursor
+- `rca-agent.nextError` - Navigate to next error
+- `rca-agent.previousError` - Navigate to previous error
+- `rca-agent.cancelBatch` - Cancel batch analysis
 
-#### Settings Toggles
+**Note:** Standard VS Code shortcuts still work within the panel:
+- `Tab`: Navigate between sections
+- `Enter`: Activate selected item
+- `Escape`: Close panel/cancel operations
 | Action | Windows/Linux | macOS |
 |--------|---------------|-------|
 | Toggle Educational Mode | `Ctrl+Shift+E` | `Cmd+Shift+E` |

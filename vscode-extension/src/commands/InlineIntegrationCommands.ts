@@ -42,38 +42,6 @@ export class InlineIntegrationCommands extends BaseCommandHandler {
 
     super.registerCommands(context, commands);
   }
-        this.explainError.bind(this)
-      ),
-      vscode.commands.registerCommand(
-        'rca-agent.viewPreviousAnalysis',
-        this.viewPreviousAnalysis.bind(this)
-      ),
-      vscode.commands.registerCommand(
-        'rca-agent.searchImports',
-        this.searchImports.bind(this)
-      ),
-      vscode.commands.registerCommand(
-        'rca-agent.checkInitialization',
-        this.checkInitialization.bind(this)
-      ),
-      vscode.commands.registerCommand(
-        'rca-agent.suggestTypeConversion',
-        this.suggestTypeConversion.bind(this)
-      ),
-      vscode.commands.registerCommand(
-        'rca-agent.searchDependency',
-        this.searchDependency.bind(this)
-      ),
-      vscode.commands.registerCommand(
-        'rca-agent.checkVersionCompatibility',
-        this.checkVersionCompatibility.bind(this)
-      ),
-      vscode.commands.registerCommand(
-        'rca-agent.addPermission',
-        this.addPermission.bind(this)
-      )
-    );
-  }
 
   /**
    * Analyze error from diagnostic (lightbulb action)

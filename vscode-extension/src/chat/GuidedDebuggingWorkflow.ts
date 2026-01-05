@@ -104,7 +104,7 @@ export class GuidedDebuggingWorkflow {
     });
     
     // Welcome message
-    stream.markdown(`# 🛠️ Guided Debugging Assistant\n\n`);
+    stream.markdown(`# Guided Debugging Assistant\n\n`);
     stream.markdown(`I'll help you debug this error step by step. Let's start!\n\n`);
     
     // Step 1: Understand the error
@@ -156,7 +156,7 @@ export class GuidedDebuggingWorkflow {
   private async stepUnderstandError(): Promise<void> {
     if (!this.state || !this.stream) return;
     
-    this.stream.markdown(`---\n\n## Step 1: Understanding the Error 🔍\n\n`);
+    this.stream.markdown(`---\n\n## Step 1: Understanding the Error\n\n`);
     
     // Show error details
     this.stream.markdown(`**Error Message:**\n\`\`\`\n${this.state.error.message}\n\`\`\`\n\n`);
@@ -175,7 +175,7 @@ export class GuidedDebuggingWorkflow {
     // Add action buttons
     this.stream.button({
       command: 'rca-agent.guided.nextStep',
-      title: '➡️ Continue to Step 2: Gather Context',
+      title: 'Continue to Step 2: Gather Context',
       arguments: [DebuggingStep.GATHER_CONTEXT]
     });
     
@@ -192,7 +192,7 @@ export class GuidedDebuggingWorkflow {
   private async stepGatherContext(): Promise<void> {
     if (!this.state || !this.stream) return;
     
-    this.stream.markdown(`\n\n---\n\n## Step 2: Gathering Context 📋\n\n`);
+    this.stream.markdown(`\n\n---\n\n## Step 2: Gathering Context\n\n`);
     this.stream.progress('Analyzing your code and project structure...');
     
     // Collect context information
@@ -210,10 +210,10 @@ export class GuidedDebuggingWorkflow {
     }
     
     this.stream.markdown(`**Analyzing:**\n`);
-    this.stream.markdown(`- ✅ Error location\n`);
-    this.stream.markdown(`- ✅ Surrounding code\n`);
-    this.stream.markdown(`- ✅ File dependencies\n`);
-    this.stream.markdown(`- ✅ Project configuration\n\n`);
+    this.stream.markdown(`- Error location\n`);
+    this.stream.markdown(`- Surrounding code\n`);
+    this.stream.markdown(`- File dependencies\n`);
+    this.stream.markdown(`- Project configuration\n\n`);
     
     // Ask agent about context
     const contextAnalysis = await this.conversationalAgent.chat(
@@ -225,7 +225,7 @@ export class GuidedDebuggingWorkflow {
     // Next steps
     this.stream.button({
       command: 'rca-agent.guided.nextStep',
-      title: '➡️ Continue to Step 3: Analyze Root Cause',
+      title: 'Continue to Step 3: Analyze Root Cause',
       arguments: [DebuggingStep.ANALYZE_ROOT_CAUSE]
     });
     
@@ -286,13 +286,13 @@ export class GuidedDebuggingWorkflow {
       });
       
     } catch (error: any) {
-      this.stream.markdown(`⚠️ Analysis encountered an issue: ${error.message}\n\n`);
+      this.stream.markdown(`Analysis encountered an issue: ${error.message}\n\n`);
     }
     
     // Next steps
     this.stream.button({
       command: 'rca-agent.guided.nextStep',
-      title: '➡️ Continue to Step 4: Get Fix Suggestion',
+      title: 'Continue to Step 4: Get Fix Suggestion',
       arguments: [DebuggingStep.SUGGEST_FIX]
     });
     
@@ -309,7 +309,7 @@ export class GuidedDebuggingWorkflow {
   private async stepSuggestFix(): Promise<void> {
     if (!this.state || !this.stream) return;
     
-    this.stream.markdown(`\n\n---\n\n## Step 4: Fix Suggestion 💡\n\n`);
+    this.stream.markdown(`\n\n---\n\n## Step 4: Fix Suggestion\n\n`);
     
     if (this.state.analysis?.fixGuidelines) {
       this.stream.markdown(`**Recommended Fix:**\n\n`);
@@ -338,7 +338,7 @@ export class GuidedDebuggingWorkflow {
     // Next steps
     this.stream.button({
       command: 'rca-agent.guided.nextStep',
-      title: '➡️ Continue to Step 5: Apply Fix',
+      title: 'Continue to Step 5: Apply Fix',
       arguments: [DebuggingStep.APPLY_FIX]
     });
     
@@ -350,7 +350,7 @@ export class GuidedDebuggingWorkflow {
     
     this.stream.button({
       command: 'rca-agent.guided.ask',
-      title: '🔄 Suggest alternative approaches',
+      title: 'Suggest alternative approaches',
       arguments: ['alternatives']
     });
   }
@@ -361,10 +361,10 @@ export class GuidedDebuggingWorkflow {
   private async stepApplyFix(): Promise<void> {
     if (!this.state || !this.stream) return;
     
-    this.stream.markdown(`\n\n---\n\n## Step 5: Applying Fix 🔧\n\n`);
+    this.stream.markdown(`\n\n---\n\n## Step 5: Applying Fix\n\n`);
     
     if (!this.state.suggestedFix) {
-      this.stream.markdown(`⚠️ No fix has been suggested yet. Please complete Step 4 first.\n\n`);
+      this.stream.markdown(`No fix has been suggested yet. Please complete Step 4 first.\n\n`);
       return;
     }
     
@@ -374,19 +374,19 @@ export class GuidedDebuggingWorkflow {
     // Provide options
     this.stream.button({
       command: 'rca-agent.applyFix',
-      title: '✅ Apply Fix Now',
+      title: 'Apply Fix Now',
       arguments: [this.state.suggestedFix]
     });
     
     this.stream.button({
       command: 'rca-agent.showDiff',
-      title: '👁️ Preview Changes First',
+      title: 'Preview Changes First',
       arguments: [this.state.suggestedFix]
     });
     
     this.stream.button({
       command: 'rca-agent.guided.nextStep',
-      title: '➡️ Skip to Verification',
+      title: 'Skip to Verification',
       arguments: [DebuggingStep.VERIFY_FIX]
     });
   }
@@ -397,26 +397,26 @@ export class GuidedDebuggingWorkflow {
   private async stepVerifyFix(): Promise<void> {
     if (!this.state || !this.stream) return;
     
-    this.stream.markdown(`\n\n---\n\n## Step 6: Verifying Fix ✅\n\n`);
+    this.stream.markdown(`\n\n---\n\n## Step 6: Verifying Fix\n\n`);
     
     this.stream.markdown(`**Verification Options:**\n\n`);
     
     // Offer verification methods
     this.stream.button({
       command: 'rca-agent.runBuild',
-      title: '🔨 Run Build',
+      title: 'Run Build',
       arguments: []
     });
     
     this.stream.button({
       command: 'rca-agent.runTests',
-      title: '🧪 Run Tests',
+      title: 'Run Tests',
       arguments: []
     });
     
     this.stream.button({
       command: 'rca-agent.guided.nextStep',
-      title: '✅ Mark as Complete',
+      title: 'Mark as Complete',
       arguments: [DebuggingStep.COMPLETED]
     });
   }
@@ -427,27 +427,27 @@ export class GuidedDebuggingWorkflow {
   private async stepCompleted(): Promise<void> {
     if (!this.state || !this.stream) return;
     
-    this.stream.markdown(`\n\n---\n\n## 🎉 Debugging Session Complete!\n\n`);
+    this.stream.markdown(`\n\n---\n\n## Debugging Session Complete!\n\n`);
     this.stream.markdown(`Great job working through the debugging process!\n\n`);
     
     // Summary
     this.stream.markdown(`**Summary:**\n`);
-    this.stream.markdown(`- ✅ Error understood\n`);
-    this.stream.markdown(`- ✅ Context gathered\n`);
-    this.stream.markdown(`- ✅ Root cause identified\n`);
-    this.stream.markdown(`- ${this.state.appliedFix ? '✅' : '⏸️'} Fix ${this.state.appliedFix ? 'applied' : 'suggested'}\n`);
+    this.stream.markdown(`- Error understood\n`);
+    this.stream.markdown(`- Context gathered\n`);
+    this.stream.markdown(`- Root cause identified\n`);
+    this.stream.markdown(`- ${this.state.appliedFix ? 'DONE' : 'PENDING'} Fix ${this.state.appliedFix ? 'applied' : 'suggested'}\n`);
     this.stream.markdown(`\n\n`);
     
     // Offer to export
     this.stream.button({
       command: 'rca-agent.exportConversation',
-      title: '📄 Export Conversation to Markdown',
+      title: 'Export Conversation to Markdown',
       arguments: []
     });
     
     this.stream.button({
       command: 'rca-agent.startNew',
-      title: '🆕 Start New Debugging Session',
+      title: 'Start New Debugging Session',
       arguments: []
     });
   }

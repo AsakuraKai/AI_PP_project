@@ -100,7 +100,7 @@ export class RCAChatParticipant {
       
     } catch (error: any) {
       // Error handling
-      stream.markdown(`## ❌ Error\n\n${error.message}\n\n`);
+      stream.markdown(`## Error\n\n${error.message}\n\n`);
       stream.markdown('Please try again or provide more context.');
       
       console.error('[RCAChatParticipant] Error handling request:', error);
@@ -176,7 +176,7 @@ export class RCAChatParticipant {
     // Get current error from workspace
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
-      stream.markdown(`⚠️ Please open a file with an error to start guided debugging.\n`);
+      stream.markdown(`Please open a file with an error to start guided debugging.\n`);
       return;
     }
     
@@ -184,7 +184,7 @@ export class RCAChatParticipant {
     const errors = diagnostics.filter(d => d.severity === vscode.DiagnosticSeverity.Error);
     
     if (errors.length === 0) {
-      stream.markdown(`⚠️ No errors found in the current file.\n`);
+      stream.markdown(`No errors found in the current file.\n`);
       return;
     }
     
@@ -219,13 +219,13 @@ export class RCAChatParticipant {
     // Offer follow-up options
     stream.button({
       command: 'rca-agent.askFollowUp',
-      title: '💬 Ask Another Question',
+      title: 'Ask Another Question',
       arguments: []
     });
     
     stream.button({
       command: 'rca-agent.exportConversation',
-      title: '📄 Export Conversation',
+      title: 'Export Conversation',
       arguments: []
     });
   }
@@ -240,7 +240,7 @@ export class RCAChatParticipant {
     const session = this.conversationalAgent.getCurrentSession();
     
     if (!session || session.messages.length === 0) {
-      stream.markdown(`⚠️ No active conversation found. Start by analyzing an error first.\n`);
+      stream.markdown(`No active conversation found. Start by analyzing an error first.\n`);
       return;
     }
     
@@ -264,7 +264,7 @@ export class RCAChatParticipant {
     
     await vscode.window.showTextDocument(doc);
     
-    stream.markdown(`✅ Conversation exported to new document!\n`);
+    stream.markdown(`Conversation exported to new document!\n`);
   }
   
   /**

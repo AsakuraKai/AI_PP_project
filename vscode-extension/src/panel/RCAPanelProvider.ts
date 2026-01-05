@@ -8,6 +8,7 @@ import { StateManager } from './StateManager';
 import { WebviewMessage, ExtensionMessage, PanelState, HistoryItem } from './types';
 import { WebviewContentGenerator } from './webview-content';
 import { AnalysisService } from '../services/AnalysisService';
+import { FixApplicationService } from '../services/FixApplicationService';
 
 /**
  * Provides the webview for the RCA Agent panel in the activity bar
@@ -18,6 +19,7 @@ export class RCAPanelProvider implements vscode.WebviewViewProvider {
   private _view?: vscode.WebviewView;
   private _stateManager: StateManager;
   private _analysisService: AnalysisService;
+  private _fixService: FixApplicationService;
   
   constructor(
     private readonly _extensionUri: vscode.Uri,
@@ -25,6 +27,7 @@ export class RCAPanelProvider implements vscode.WebviewViewProvider {
   ) {
     this._stateManager = StateManager.getInstance(_context);
     this._analysisService = AnalysisService.getInstance();
+    this._fixService = new FixApplicationService();
     
     // Listen for state changes and update webview
     this._stateManager.onStateChange(state => {
@@ -77,6 +80,8 @@ export class RCAPanelProvider implements vscode.WebviewViewProvider {
    */
   private async _handleMessage(message: WebviewMessage): Promise<void> {
     console.log('[RCAPanelProvider] Received message:', message.type);
+
+    this._trackTelemetry(message.type);
     
     switch (message.type) {
       case 'analyze':
@@ -95,6 +100,30 @@ export class RCAPanelProvider implements vscode.WebviewViewProvider {
         
       case 'stop':
         this._handleStop();
+        break;
+
+      case 'viewFile':
+        await this._handleViewFile(message.filePath, message.line);
+        break;
+
+      case 'searchSimilar':
+        await this._handleSearchSimilar(message.query);
+        break;
+
+      case 'runValidationTests':
+        await this._handleRunValidationTests();
+        break;
+
+      case 'previewFix':
+        await this._handlePreviewFix(message.fixIndex);
+        break;
+
+      case 'applyFixIndex':
+        await this._handleApplyFixIndex(message.fixIndex);
+        break;
+
+      case 'applyAllFixes':
+        await this._handleApplyAllFixes();
         break;
         
       case 'refresh':
@@ -155,6 +184,14 @@ export class RCAPanelProvider implements vscode.WebviewViewProvider {
       case 'clearCache':
         vscode.commands.executeCommand('rcaAgent.clearCache');
         break;
+
+      case 'openExternal':
+        vscode.env.openExternal(vscode.Uri.parse(message.url));
+        break;
+
+      case 'updateSettings':
+        await this._handleUpdateSettings(message.settings);
+        break;
         
       case 'requestState':
         this._sendState();
@@ -163,6 +200,184 @@ export class RCAPanelProvider implements vscode.WebviewViewProvider {
       default:
         console.warn('[RCAPanelProvider] Unknown message type:', message);
     }
+  }
+
+  private _trackTelemetry(eventName: string): void {
+    try {
+      const key = 'rcaAgent.telemetry';
+      const existing = this._context.globalState.get<Record<string, number>>(key, {});
+      const next = { ...existing, [eventName]: (existing[eventName] || 0) + 1 };
+      void this._context.globalState.update(key, next);
+    } catch {
+      // Local-only telemetry must never break the UI.
+    }
+  }
+
+  private async _handleViewFile(filePath: string, line: number): Promise<void> {
+    try {
+      const uri = vscode.Uri.file(filePath);
+      const doc = await vscode.workspace.openTextDocument(uri);
+      await vscode.window.showTextDocument(doc, {
+        selection: new vscode.Range(Math.max(0, line - 1), 0, Math.max(0, line - 1), 0),
+        preview: true
+      });
+    } catch (error) {
+      const err = error as Error;
+      vscode.window.showErrorMessage(`Could not open file: ${err.message}`);
+    }
+  }
+
+  private async _handleSearchSimilar(query: string): Promise<void> {
+    await vscode.commands.executeCommand('workbench.action.findInFiles', {
+      query: query || '',
+      triggerSearch: true,
+      isCaseSensitive: false
+    });
+  }
+
+  private async _handleRunValidationTests(): Promise<void> {
+    const folders = vscode.workspace.workspaceFolders;
+    const cwd = folders?.[0]?.uri.fsPath;
+    if (!cwd) {
+      vscode.window.showWarningMessage('No workspace folder available to run tests.');
+      return;
+    }
+
+    const terminal = vscode.window.createTerminal({
+      name: 'RCA Agent - Validation Tests',
+      cwd
+    });
+    terminal.show();
+    terminal.sendText('npm test');
+  }
+
+  private _getCurrentResult(): any | undefined {
+    const state = this._stateManager.getState();
+    return state.result;
+  }
+
+  private async _handlePreviewFix(fixIndex: number): Promise<void> {
+    const result = this._getCurrentResult();
+    if (!result) {
+      vscode.window.showWarningMessage('No analysis result available.');
+      return;
+    }
+
+    const fixes = await this._fixService.generateFix(result);
+    const fix = fixes[fixIndex];
+    if (!fix) {
+      vscode.window.showWarningMessage('No fix found to preview.');
+      return;
+    }
+
+    const previews = await this._fixService.generateDiffPreview([fix]);
+    const preview = previews[0];
+    if (!preview) {
+      vscode.window.showWarningMessage('Could not generate diff preview for this fix.');
+      return;
+    }
+
+    await this._fixService.showDiffInEditor(preview);
+  }
+
+  private async _handleApplyFixIndex(fixIndex: number): Promise<void> {
+    const result = this._getCurrentResult();
+    if (!result) {
+      vscode.window.showWarningMessage('No analysis result available.');
+      return;
+    }
+
+    const fixes = await this._fixService.generateFix(result);
+    const fix = fixes[fixIndex];
+    if (!fix) {
+      vscode.window.showWarningMessage('No fix found to apply.');
+      return;
+    }
+
+    const choice = await vscode.window.showInformationMessage(
+      `Apply fix #${fixIndex + 1}?`,
+      { modal: true },
+      'Preview Diff',
+      'Apply',
+      'Cancel'
+    );
+
+    if (!choice || choice === 'Cancel') {
+      return;
+    }
+
+    if (choice === 'Preview Diff') {
+      await this._handlePreviewFix(fixIndex);
+      return;
+    }
+
+    const res = await this._fixService.applyFixes([fix]);
+    if (res.success) {
+      vscode.window.showInformationMessage('Fix applied successfully.');
+    } else {
+      vscode.window.showErrorMessage(`Failed to apply fix: ${res.errors.join('; ')}`);
+    }
+  }
+
+  private async _handleApplyAllFixes(): Promise<void> {
+    const result = this._getCurrentResult();
+    if (!result) {
+      vscode.window.showWarningMessage('No analysis result available.');
+      return;
+    }
+
+    const fixes = await this._fixService.generateFix(result);
+    if (!fixes.length) {
+      vscode.window.showWarningMessage('No structured fixes could be generated from the guidelines.');
+      return;
+    }
+
+    const choice = await vscode.window.showInformationMessage(
+      `Apply all ${fixes.length} fix(es)?`,
+      { modal: true },
+      'Preview First Diff',
+      'Apply All',
+      'Cancel'
+    );
+
+    if (!choice || choice === 'Cancel') {
+      return;
+    }
+
+    if (choice === 'Preview First Diff') {
+      await this._handlePreviewFix(0);
+      return;
+    }
+
+    const res = await this._fixService.applyFixes(fixes);
+    if (res.success) {
+      vscode.window.showInformationMessage(`Applied ${res.applied} fix(es).`);
+    } else {
+      vscode.window.showErrorMessage(`Applied ${res.applied}, failed ${res.failed}: ${res.errors.join('; ')}`);
+    }
+  }
+
+  private async _handleUpdateSettings(settings: any): Promise<void> {
+    const config = vscode.workspace.getConfiguration('rcaAgent');
+
+    if (typeof settings?.modelName === 'string' && settings.modelName.trim()) {
+      await config.update('model', settings.modelName.trim(), true);
+    }
+
+    if (typeof settings?.ollamaUrl === 'string' && settings.ollamaUrl.trim()) {
+      await config.update('ollamaUrl', settings.ollamaUrl.trim(), true);
+    }
+
+    if (typeof settings?.showPerformanceMetrics === 'boolean') {
+      await config.update('showPerformanceMetrics', settings.showPerformanceMetrics, true);
+    }
+
+    // syntaxHighlighting is currently webview-only; store locally.
+    if (typeof settings?.syntaxHighlighting === 'boolean') {
+      await this._context.globalState.update('rcaAgent.ui.syntaxHighlighting', settings.syntaxHighlighting);
+    }
+
+    vscode.window.showInformationMessage('RCA Agent settings saved.');
   }
   
   /**

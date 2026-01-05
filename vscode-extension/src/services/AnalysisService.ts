@@ -184,6 +184,7 @@ export class AnalysisService {
       // Set up AgentStateStream event listeners for real-time progress
       let currentIteration = 0;
       const maxIterations = this._agent!['maxIterations'] || 5;
+      const startTime = Date.now();
       
       this._stateStream!.on('iteration', (event) => {
         currentIteration = event.iteration;
@@ -191,7 +192,11 @@ export class AnalysisService {
           iteration: event.iteration,
           maxIterations: event.maxIterations,
           progress: event.progress * 100,
-          currentThought: ''
+          currentThought: '',
+          recentActions: [],
+          recentObservations: [],
+          elapsed: Date.now() - startTime,
+          isActive: true
         });
       });
       
@@ -200,7 +205,11 @@ export class AnalysisService {
           iteration: currentIteration,
           maxIterations,
           progress: (currentIteration / maxIterations) * 100,
-          currentThought: event.thought
+          currentThought: event.thought,
+          recentActions: [],
+          recentObservations: [],
+          elapsed: Date.now() - startTime,
+          isActive: true
         });
       });
       
@@ -209,7 +218,11 @@ export class AnalysisService {
           iteration: currentIteration,
           maxIterations,
           progress: (currentIteration / maxIterations) * 100,
-          currentThought: `Executing tool: ${event.action.tool}`
+          currentThought: `Executing tool: ${event.action.tool}`,
+          recentActions: [],
+          recentObservations: [],
+          elapsed: Date.now() - startTime,
+          isActive: true
         });
       });
       
@@ -218,7 +231,11 @@ export class AnalysisService {
           iteration: currentIteration,
           maxIterations,
           progress: (currentIteration / maxIterations) * 100,
-          currentThought: `Received: ${event.observation.substring(0, 50)}...`
+          currentThought: `Received: ${event.observation.substring(0, 50)}...`,
+          recentActions: [],
+          recentObservations: [],
+          elapsed: Date.now() - startTime,
+          isActive: true
         });
       });
       

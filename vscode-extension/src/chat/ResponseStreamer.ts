@@ -37,7 +37,7 @@ export class ResponseStreamer {
     if (token.isCancellationRequested) return;
     
     // Stream analysis header
-    stream.markdown(`## 🔍 Root Cause Analysis\n\n`);
+    stream.markdown(`## Root Cause Analysis\n\n`);
     
     // Note: Skip error type - not in RCAResult interface
     
@@ -50,7 +50,7 @@ export class ResponseStreamer {
     
     // Stream fix guidelines
     if (result.fixGuidelines && result.fixGuidelines.length > 0) {
-      stream.markdown(`## 🛠️ Fix Guidelines\n\n`);
+      stream.markdown(`## Fix Guidelines\n\n`);
       
       result.fixGuidelines.forEach((guideline, index) => {
         stream.markdown(`${index + 1}. ${guideline}\n`);
@@ -66,7 +66,7 @@ export class ResponseStreamer {
     this.addActionButtons(result, stream);
     
     // Add follow-up suggestions
-    stream.markdown(`\n---\n\n💬 **Follow-up actions:**\n`);
+    stream.markdown(`\n---\n\n**Follow-up actions:**\n`);
     stream.markdown(`- Ask me to explain more about this error\n`);
     stream.markdown(`- Request code examples\n`);
     stream.markdown(`- Ask about similar issues\n`);
@@ -83,7 +83,7 @@ export class ResponseStreamer {
     if (result.fixGuidelines && result.fixGuidelines.length > 0) {
       stream.button({
         command: 'rca-agent.applyFix',
-        title: '✅ Apply Fix',
+        title: 'Apply Fix',
         arguments: [result]
       });
     }
@@ -91,7 +91,7 @@ export class ResponseStreamer {
     // Explain more button
     stream.button({
       command: 'rca-agent.explainMore',
-      title: '📚 Explain More',
+      title: 'Explain More',
       arguments: [result]
     });
     

@@ -304,14 +304,14 @@ export class NetworkTimeoutHandler extends BaseService {
   /**
    * Update configuration
    */
-  updateConfig(newConfig: Partial<TimeoutConfig>): void {
+  updateTimeoutConfig(newConfig: Partial<TimeoutConfig>): void {
     this._config = { ...this._config, ...newConfig };
   }
 
   /**
    * Get current configuration
    */
-  getConfig(): Readonly<TimeoutConfig> {
+  getTimeoutConfig(): Readonly<TimeoutConfig> {
     return { ...this._config };
   }
 

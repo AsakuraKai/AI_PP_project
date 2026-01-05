@@ -19,6 +19,9 @@ export class StateManager {
   private _errorQueue: ErrorItem[] = [];
   private _history: HistoryItem[] = [];
   private _currentError: ErrorItem | undefined;
+
+  // Non-persistent UI state (current analysis/progress/result)
+  private _panelState: Partial<PanelState> = {};
   
   // Learning metrics storage
   private _learningMetrics: LearningMetrics | undefined;
@@ -98,11 +101,16 @@ export class StateManager {
    * Get the current panel state
    */
   getState(): PanelState {
+    const computedView: PanelState['view'] = this._currentError
+      ? 'active'
+      : (this._errorQueue.length > 0 ? 'empty' : 'empty');
+
     return {
-      view: this._currentError ? 'active' : (this._errorQueue.length > 0 ? 'empty' : 'empty'),
+      view: this._panelState.view || computedView,
       currentError: this._currentError,
       errorQueue: this._errorQueue,
-      history: this._history.slice(0, 50) // Limit to 50 most recent
+      history: this._history.slice(0, 50), // Limit to 50 most recent
+      ...this._panelState
     };
   }
 
@@ -114,6 +122,9 @@ export class StateManager {
     if (partialState.currentError !== undefined) {
       this._currentError = partialState.currentError;
     }
+
+    // Keep a copy of transient UI state so actions can access it later
+    this._panelState = { ...this._panelState, ...partialState };
     
     // Fire state change event with merged state
     const newState = { ...this.getState(), ...partialState };

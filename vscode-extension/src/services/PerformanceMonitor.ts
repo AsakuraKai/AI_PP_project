@@ -24,6 +24,8 @@ export interface PerformanceThreshold {
 
 @SingletonService
 export class PerformanceMonitor extends BaseService {
+  static getInstance: () => PerformanceMonitor;
+  
   private metrics: PerformanceMetrics[] = [];
   private timers: Map<string, number> = new Map();
   private thresholds: PerformanceThreshold = {
@@ -234,7 +236,7 @@ Average Metrics (last ${this.metrics.length} measurements):
 - Error Queue Render: ${avg.errorQueueRenderTime}ms
 - Memory Usage: ${avg.memoryUsage}MB
 
-Status: ${status.acceptable ? '✅ ACCEPTABLE' : '⚠️ NEEDS IMPROVEMENT'}
+Status: ${status.acceptable ? 'ACCEPTABLE' : 'NEEDS IMPROVEMENT'}
 ${status.issues.length > 0 ? '\nIssues:\n' + status.issues.map(i => `- ${i}`).join('\n') : ''}
     `.trim();
   }

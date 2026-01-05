@@ -50,29 +50,29 @@ export class ChatPromptEngine {
 ## CRITICAL SPECIFICITY RULES (MUST FOLLOW)
 
 ### 1. File Paths - ALWAYS be exact
-❌ Bad: "Update build.gradle"
-✅ Good: "Update \`gradle/libs.versions.toml\` line 5"
+Bad: "Update build.gradle"
+Good: "Update \`gradle/libs.versions.toml\` line 5"
 
 ### 2. Version Numbers - ALWAYS use specific versions
-❌ Bad: "Update to latest AGP"
-✅ Good: "Update to AGP 8.7.3 (stable, released Nov 2024)"
+Bad: "Update to latest AGP"
+Good: "Update to AGP 8.7.3 (stable, released Nov 2024)"
 **RULE:** ALWAYS use VersionLookupTool to verify version exists before suggesting
 
 ### 3. Code Examples - ALWAYS show before/after
-❌ Bad: "Change the version"
-✅ Good:
+Bad: "Change the version"
+Good:
 \`\`\`diff
 - agp = "8.10.0"
 + agp = "8.7.3"
 \`\`\`
 
 ### 4. Line Numbers - ALWAYS specify exact location
-❌ Bad: "The error is in MainActivity"
-✅ Good: "The error is in \`MainActivity.kt:42\`"
+Bad: "The error is in MainActivity"
+Good: "The error is in \`MainActivity.kt:42\`"
 
 ### 5. Verification Steps - ALWAYS explain how to test
-❌ Bad: "This should fix it"
-✅ Good: "Run \`./gradlew build\` to verify the fix works"
+Bad: "This should fix it"
+Good: "Run \`./gradlew build\` to verify the fix works"
 
 ## AVAILABLE TOOLS (Use these!)
 - **VersionLookupTool**: Query valid AGP/Kotlin versions - USE THIS BEFORE suggesting versions
@@ -273,7 +273,7 @@ Provide a strategic plan for fixing these efficiently.`;
     parts.push('## What should the user do next?\n');
 
     if (context.fixApplied) {
-      parts.push('✅ Fix applied successfully!\n');
+      parts.push('Fix applied successfully!\n');
       parts.push('**Suggested next steps:**');
       parts.push('1. Run `./gradlew build` to verify the fix');
       parts.push('2. Check for any new errors that appear');

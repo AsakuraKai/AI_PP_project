@@ -78,7 +78,7 @@ export class RCADiagnosticProvider extends BaseProvider {
   /**
    * Generate unique error ID
    */
-  private generateErrorId(uri: vscode.Uri, diagnostic: vscode.Diagnostic): string {
+  protected generateErrorId(uri: vscode.Uri, diagnostic: vscode.Diagnostic): string {
     const content = `${uri.fsPath}:${diagnostic.range.start.line}:${diagnostic.message}`;
     // Simple hash function
     let hash = 0;

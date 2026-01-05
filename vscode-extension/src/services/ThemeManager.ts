@@ -23,6 +23,8 @@ export interface ThemeColors {
 
 @SingletonService
 export class ThemeManager extends BaseService {
+  static getInstance: () => ThemeManager;
+  
   private currentTheme: ThemeKind = 'dark';
   private onThemeChangeEmitter = new vscode.EventEmitter<ThemeKind>();
   public readonly onThemeChange = this.onThemeChangeEmitter.event;
