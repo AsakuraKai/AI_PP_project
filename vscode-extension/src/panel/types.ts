@@ -4,8 +4,54 @@
  * Chunk 6: Consolidated with shared agent types
  */
 
-// Re-export shared types (Chunk 6 Consolidation)
-export { AgentState, LearningMetrics } from '../../../src/agent/types';
+/**
+ * Agent state for progress tracking
+ */
+export interface AgentState {
+  /** Current iteration number */
+  iteration: number;
+  
+  /** Maximum number of iterations */
+  maxIterations: number;
+  
+  /** Overall progress (0-100) */
+  progress: number;
+  
+  /** Current thought/hypothesis being processed */
+  currentThought: string;
+  
+  /** Recent tool actions executed */
+  recentActions: Array<{ tool: string; timestamp: number }>;
+  
+  /** Recent observations from tools */
+  recentObservations: Array<{ text: string; success: boolean; timestamp: number }>;
+  
+  /** Elapsed time in milliseconds */
+  elapsed: number;
+  
+  /** Whether analysis is currently active */
+  isActive: boolean;
+  
+  /** Current tool being executed (optional) */
+  currentTool?: string;
+  
+  /** Tools used so far (optional) */
+  toolsUsed?: string[];
+}
+
+/**
+ * Learning metrics for agent performance tracking
+ */
+export interface LearningMetrics {
+  totalAnalyses: number;
+  successfulAnalyses: number;
+  averageConfidence: number;
+  averageLatency: number;
+  topErrorTypes: Array<{ type: string; count: number }>;
+  improvementTrend: number;
+  cacheHitRate: number;
+  lastUpdated: number;
+}
 
 /**
  * Represents an error item in the error queue
@@ -43,6 +89,13 @@ export interface ErrorItem {
   
   /** Optional source of the diagnostic (e.g., 'typescript', 'eslint') */
   source?: string;
+  
+  /** Optional analysis result from RCA */
+  analysisResult?: {
+    explanation: string;
+    confidence: number;
+    fixGuidelines: string[];
+  };
 }
 
 /**
@@ -244,9 +297,15 @@ export type WebviewMessage =
   | { type: 'reanalyze'; historyId: string }
   | { type: 'feedback'; value?: any; historyId?: string; helpful?: boolean; feedback?: string }
   | { type: 'copy'; fixIndex: string }
+  | { type: 'searchSimilar'; query: string }
+  | { type: 'runValidationTests' }
+  | { type: 'previewFix'; fixIndex: number }
+  | { type: 'applyFixIndex'; fixIndex: number }
+  | { type: 'applyAllFixes' }
   | { type: 'copyFix'; fixText: string }
   | { type: 'applyFix'; fixText: string; filePath: string; line: number }
   | { type: 'viewFile'; filePath: string; line: number }
+  | { type: 'openExternal'; url: string }
   | { type: 'updateSettings'; settings: Partial<PanelSettings> }
   | { type: 'clearCache' }
   | { type: 'checkConnection' }

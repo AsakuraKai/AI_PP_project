@@ -94,7 +94,7 @@ export class RCAHoverProvider extends BaseProvider implements vscode.HoverProvid
     
     if (quickAnalysis) {
       markdown.appendMarkdown(`---\n\n`);
-      markdown.appendMarkdown(`**🔍 Quick Analysis**\n\n`);
+      markdown.appendMarkdown(`**Quick Analysis**\n\n`);
       markdown.appendMarkdown(`${quickAnalysis.summary}\n\n`);
       
       if (quickAnalysis.confidence) {
@@ -151,6 +151,7 @@ export class RCAHoverProvider extends BaseProvider implements vscode.HoverProvid
 
     if (queuedError?.analysisResult) {
       const result: QuickAnalysisResult = {
+        message: queuedError.message,
         summary: this.extractSummary(queuedError.analysisResult.explanation),
         confidence: queuedError.analysisResult.confidence,
         suggestedAction: this.extractQuickFix(queuedError.analysisResult.fixGuidelines)
@@ -188,7 +189,6 @@ export class RCAHoverProvider extends BaseProvider implements vscode.HoverProvid
   }
 
   // getSeverityIcon is now provided by BaseProvider
-  }
 
   /**
    * Format confidence score

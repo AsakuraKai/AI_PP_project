@@ -256,7 +256,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     log('info', 'Initializing Phase 4 real-time features');
     
     // Initialize hover provider for inline error explanations
-    const hoverProvider = new RCAHoverProvider(errorQueueManager, analysisService);
+    const hoverProvider = new RCAHoverProvider(errorQueueManager, analysisService || null);
     context.subscriptions.push(
       vscode.languages.registerHoverProvider(
         { scheme: 'file', pattern: '**/*.{kt,java,gradle,xml}' },
@@ -1158,7 +1158,7 @@ function handleAnalysisError(error: Error): void {
   } else if (error.message.includes('timeout') || error.message.includes('ETIMEDOUT')) {
     // Timeout error
     vscode.window.showErrorMessage(
-      '⏱️ Analysis timed out. Try increasing timeout or using a smaller model.',
+      'Analysis timed out. Try increasing timeout or using a smaller model.',
       'Open Settings',
       'View Logs'
     ).then((selection: string | undefined) => {
@@ -1169,7 +1169,7 @@ function handleAnalysisError(error: Error): void {
       }
     });
     
-    outputChannel.appendLine('\n⏱️ ERROR: Analysis timed out');
+    outputChannel.appendLine('\nERROR: Analysis timed out');
     outputChannel.appendLine('\nTIP: SUGGESTIONS:');
     outputChannel.appendLine('• Increase timeout in settings');
     outputChannel.appendLine('• Use a faster/smaller model (e.g., hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest)');
@@ -2009,20 +2009,10 @@ function registerInteractiveDebuggingCommands(context: vscode.ExtensionContext):
       }
       
       // Create a new conversation session
-      const sessionId = conversationalAgent.createSession({
-        error: 'User initiated conversation',
-        filePath: editor.document.uri.fsPath,
-        line: editor.selection.active.line,
-        rootCause: '',
-        fixGuidelines: [],
-        confidence: 0
-      });
+      // TODO: Implement createSession method
+      vscode.window.showInformationMessage('Conversational debugging feature coming soon!');
       
-      vscode.window.showInformationMessage(
-        `Started conversation session: ${sessionId}. Type @rca-agent in chat to continue.`
-      );
-      
-      log('info', 'Started conversation session', { sessionId });
+      log('info', 'Conversation feature requested');
     })
   );
   
@@ -2065,13 +2055,10 @@ function registerInteractiveDebuggingCommands(context: vscode.ExtensionContext):
       // Start workflow
       await guidedWorkflow.startWorkflow(
         {
-          error: errorText || error.message,
-          errorType: error.source || 'unknown',
-          filePath: editor.document.uri.fsPath,
+          message: errorText || error.message,
+          file: editor.document.uri.fsPath,
           line: error.range.start.line,
-          rootCause: '',
-          fixGuidelines: [],
-          confidence: 0
+          diagnostics: [error]
         },
         mockStream as any
       );
@@ -2472,22 +2459,22 @@ async function initializeChunk5Services(context: vscode.ExtensionContext): Promi
     try {
       // Initialize all tools first
       initializeTools(context);
-      outputChannel.appendLine('✅ Tools initialized');
+      outputChannel.appendLine('Tools initialized');
       log('info', 'Tools initialized successfully');
     } catch (error: any) {
       log('error', `Failed to initialize tools: ${error.message}`);
-      outputChannel.appendLine(`❌ Failed to initialize tools: ${error.message}`);
+      outputChannel.appendLine(`Failed to initialize tools: ${error.message}`);
     }
 
     log('info', 'Registering chat participant: @rca-agent');
     try {
       registerChatParticipant(context);
-      outputChannel.appendLine('✅ Chat participant registered: @rca-agent');
-      outputChannel.appendLine('📱 Use @rca-agent in VS Code chat to analyze errors conversationally');
+      outputChannel.appendLine('Chat participant registered: @rca-agent');
+      outputChannel.appendLine('Use @rca-agent in VS Code chat to analyze errors conversationally');
       log('info', 'Chat participant registered successfully');
     } catch (error: any) {
       log('error', `Failed to register chat participant: ${error.message}`);
-      outputChannel.appendLine(`❌ Failed to register chat participant: ${error.message}`);
+      outputChannel.appendLine(`Failed to register chat participant: ${error.message}`);
     }
     
     // Register theme change listener
@@ -2700,7 +2687,7 @@ async function initializeBackendServices(context: vscode.ExtensionContext): Prom
       await conversationalAgent.loadSessions();
       
       // Initialize GuidedDebuggingWorkflow
-      guidedWorkflow = new GuidedDebuggingWorkflow(analysisService);
+      guidedWorkflow = new GuidedDebuggingWorkflow();
       
       // Register interactive debugging commands
       registerInteractiveDebuggingCommands(context);

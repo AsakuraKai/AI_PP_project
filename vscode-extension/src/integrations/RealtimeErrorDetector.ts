@@ -14,6 +14,7 @@
 import * as vscode from 'vscode';
 import { BaseProvider } from './BaseProvider';
 import { ErrorQueueManager } from '../panel/ErrorQueueManager';
+import { ErrorItem } from '../panel/types';
 
 export class RealtimeErrorDetector extends BaseProvider {
   private detectionEnabled: boolean = true;
@@ -192,7 +193,7 @@ export class RealtimeErrorDetector extends BaseProvider {
     }
 
     // Check if already in queue
-    const existingError = this.errorQueueManager.getAllErrors().find(error =>
+    const existingError = this.errorQueueManager?.getAllErrors().find(error =>
       error.filePath === document.uri.fsPath &&
       error.line === diagnostic.range.start.line &&
       error.message === diagnostic.message
@@ -216,7 +217,7 @@ export class RealtimeErrorDetector extends BaseProvider {
     };
 
     // Add to queue
-    this.errorQueueManager.addError(errorItem);
+    this.errorQueueManager?.addError(errorItem);
 
     // Mark as processed
     this.processedErrors.add(errorKey);
@@ -238,7 +239,7 @@ export class RealtimeErrorDetector extends BaseProvider {
   /**
    * Generate unique error ID
    */
-  private generateErrorId(uri: vscode.Uri, diagnostic: vscode.Diagnostic): string {
+  protected generateErrorId(uri: vscode.Uri, diagnostic: vscode.Diagnostic): string {
     const timestamp = Date.now();
     const hash = this.simpleHash(`${uri.fsPath}:${diagnostic.message}:${timestamp}`);
     return `rtd-${hash}`;
@@ -260,14 +261,14 @@ export class RealtimeErrorDetector extends BaseProvider {
   /**
    * Map VS Code severity to RCA severity
    */
-  private mapSeverity(severity: vscode.DiagnosticSeverity): 'error' | 'warning' | 'info' {
+  protected mapSeverity(severity: vscode.DiagnosticSeverity): 'critical' | 'high' | 'medium' {
     switch (severity) {
       case vscode.DiagnosticSeverity.Error:
-        return 'error';
+        return 'critical';
       case vscode.DiagnosticSeverity.Warning:
-        return 'warning';
+        return 'high';
       default:
-        return 'info';
+        return 'medium';
     }
   }
 

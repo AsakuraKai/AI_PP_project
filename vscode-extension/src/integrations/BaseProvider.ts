@@ -105,13 +105,13 @@ export abstract class BaseProvider implements vscode.Disposable {
   protected getSeverityIcon(severity: vscode.DiagnosticSeverity): string {
     switch (severity) {
       case vscode.DiagnosticSeverity.Error:
-        return '❌';
+        return '[ERR]';
       case vscode.DiagnosticSeverity.Warning:
-        return '⚠️';
+        return '[WARN]';
       case vscode.DiagnosticSeverity.Information:
-        return 'ℹ️';
+        return '[INFO]';
       default:
-        return '💡';
+        return '[TIP]';
     }
   }
 

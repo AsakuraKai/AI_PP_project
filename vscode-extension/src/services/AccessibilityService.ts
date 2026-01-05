@@ -20,6 +20,8 @@ export interface AriaLabelConfig {
 
 @SingletonService
 export class AccessibilityService extends BaseService {
+  static getInstance: () => AccessibilityService;
+  
   private announcements: string[] = [];
 
   constructor() {
@@ -136,7 +138,7 @@ export class AccessibilityService extends BaseService {
            aria-live="assertive" 
            class="error-message"
            aria-label="Error: ${this.escapeHtml(errorType)}">
-        <span class="error-icon" aria-hidden="true">⚠️</span>
+        <span class="error-icon" aria-hidden="true">[!]</span>
         <span class="error-text">${this.escapeHtml(message)}</span>
       </div>
     `;

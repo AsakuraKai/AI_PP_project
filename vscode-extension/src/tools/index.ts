@@ -42,7 +42,7 @@ export function initializeTools(context: vscode.ExtensionContext): void {
     }
   });
 
-  console.log(`✅ Registered ${registry.getAll().length} tools`);
+  console.log(`Registered ${registry.getAll().length} tools`);
 }
 
 /**

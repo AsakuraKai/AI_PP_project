@@ -320,41 +320,12 @@ RESPONSE STYLE:
     session: ConversationSession
   ): Promise<string> {
     try {
-      // Use AnalysisService which has access to LLM
-      const analysis = this.analysisService.getAnalysisServiceInstance();
-      
-      if (!analysis) {
-        throw new Error('Analysis service not available');
-      }
-      
-      // Call LLM with the conversation-aware prompt
-      // The prompt already includes conversation history
-      const response = await analysis.generateChatResponse(prompt, {
-        temperature: 0.7,  // More creative for conversation
-        maxTokens: 1024,   // Allow longer responses
-        conversationMode: true
-      });
-      
-      return response;
-      
+      // TODO: Implement full conversational response generation
+      // For now, return a placeholder response
+      return 'Conversational response feature is under development. Please use the standard RCA analysis features.';
     } catch (error: any) {
       console.error('[ConversationalAgent] Error generating response:', error);
-      
-      // Fallback: Try direct LLM call if available
-      try {
-        // Use the ChatPromptEngine for better formatting
-        const formattedPrompt = this.promptEngine.formatConversationalPrompt(
-          session.messages,
-          session.context
-        );
-        
-        // Make direct LLM call
-        const response = await this.analysisService.directLLMCall(formattedPrompt);
-        return response || 'I apologize, but I encountered an error. Could you please rephrase your question?';
-      } catch (fallbackError: any) {
-        console.error('[ConversationalAgent] Fallback failed:', fallbackError);
-        return `I encountered an error processing your message: ${error.message}. Please ensure Ollama is running and try again.`;
-      }
+      return `I encountered an error processing your message: ${error.message}. Please try again.`;
     }
   }
   

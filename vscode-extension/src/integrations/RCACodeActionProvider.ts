@@ -120,7 +120,7 @@ export class RCACodeActionProvider extends BaseProvider implements vscode.CodeAc
     }
 
     const action = new vscode.CodeAction(
-      '📋 View Previous Analysis',
+      'View Previous Analysis',
       vscode.CodeActionKind.QuickFix
     );
 
@@ -215,7 +215,7 @@ export class RCACodeActionProvider extends BaseProvider implements vscode.CodeAc
     diagnostic: vscode.Diagnostic
   ): vscode.CodeAction {
     const action = new vscode.CodeAction(
-      '🔍 Search for Missing Import',
+      'Search for Missing Import',
       vscode.CodeActionKind.QuickFix
     );
 
@@ -237,7 +237,7 @@ export class RCACodeActionProvider extends BaseProvider implements vscode.CodeAc
     diagnostic: vscode.Diagnostic
   ): vscode.CodeAction {
     const action = new vscode.CodeAction(
-      '🔧 Check Initialization Flow',
+      'Check Initialization Flow',
       vscode.CodeActionKind.QuickFix
     );
 
@@ -259,7 +259,7 @@ export class RCACodeActionProvider extends BaseProvider implements vscode.CodeAc
     diagnostic: vscode.Diagnostic
   ): vscode.CodeAction {
     const action = new vscode.CodeAction(
-      '🔄 Suggest Type Conversion',
+      'Suggest Type Conversion',
       vscode.CodeActionKind.QuickFix
     );
 
@@ -281,7 +281,7 @@ export class RCACodeActionProvider extends BaseProvider implements vscode.CodeAc
     diagnostic: vscode.Diagnostic
   ): vscode.CodeAction {
     const action = new vscode.CodeAction(
-      '📦 Search Maven Central',
+      'Search Maven Central',
       vscode.CodeActionKind.QuickFix
     );
 
@@ -303,7 +303,7 @@ export class RCACodeActionProvider extends BaseProvider implements vscode.CodeAc
     diagnostic: vscode.Diagnostic
   ): vscode.CodeAction {
     const action = new vscode.CodeAction(
-      '✅ Check Version Compatibility',
+      'Check Version Compatibility',
       vscode.CodeActionKind.QuickFix
     );
 

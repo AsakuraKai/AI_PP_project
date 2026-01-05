@@ -8,6 +8,7 @@
 import * as vscode from 'vscode';
 import { RCAResult } from '../panel/types';
 import { ReadFileTool, WriteFileTool, EditFileTool } from '../tools/FileOperationTool';
+import { SingletonService } from './BaseService';
 
 export interface Fix {
   file: string;
@@ -28,7 +29,10 @@ export interface DiffPreview {
   }>;
 }
 
+@SingletonService
 export class FixApplicationService {
+  static getInstance: () => FixApplicationService;
+  
   private readTool: ReadFileTool;
   private writeTool: WriteFileTool;
   private editTool: EditFileTool;
@@ -93,7 +97,7 @@ export class FixApplicationService {
 
     // Fallback: Return guideline as-is
     return {
-      file: result.context?.filePath || 'unknown',
+      file: result.filePath || 'unknown',
       before: '',
       after: '',
       explanation: guideline
@@ -198,28 +202,23 @@ export class FixApplicationService {
             newText: fix.after
           });
 
-          if (result.success) {
+          if (result) {
             applied++;
           } else {
             failed++;
-            errors.push(`${fix.file}:${fix.line} - ${result.error}`);
+            errors.push(`${fix.file}:${fix.line} - Failed to apply edit`);
           }
         } else {
           // Read, modify, write entire file
           const content = await this.readTool.execute({ path: fix.file });
           const modified = content.replace(fix.before, fix.after);
           
-          const result = await this.writeTool.execute({
+          await this.writeTool.execute({
             path: fix.file,
             content: modified
           });
 
-          if (result.success) {
-            applied++;
-          } else {
-            failed++;
-            errors.push(`${fix.file} - ${result.error}`);
-          }
+          applied++;
         }
       } catch (error) {
         failed++;

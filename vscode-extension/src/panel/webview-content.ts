@@ -497,6 +497,29 @@ export class WebviewContentGenerator {
         font-weight: 600;
         color: var(--vscode-textLink-foreground);
       }
+
+      .file-link {
+        color: var(--vscode-textLink-foreground);
+        text-decoration: none;
+        word-break: break-all;
+      }
+
+      .file-link:hover {
+        text-decoration: underline;
+      }
+
+      .fix-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+
+      .fix-item-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
       
       .copy-button {
         background: none;
@@ -511,6 +534,106 @@ export class WebviewContentGenerator {
       
       .copy-button:hover {
         background-color: var(--vscode-button-hoverBackground);
+      }
+
+      .preview-button,
+      .apply-button {
+        background: none;
+        border: 1px solid var(--vscode-button-border);
+        color: var(--vscode-button-foreground);
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 3px;
+        font-size: 11px;
+        transition: all 0.1s;
+      }
+
+      .preview-button:hover,
+      .apply-button:hover {
+        background-color: var(--vscode-button-hoverBackground);
+      }
+
+      details.expandable {
+        margin-top: 8px;
+      }
+
+      details.expandable summary {
+        cursor: pointer;
+        color: var(--vscode-textLink-foreground);
+        user-select: none;
+      }
+
+      details.expandable .expandable-body {
+        margin-top: 8px;
+      }
+
+      pre.code {
+        white-space: pre;
+      }
+
+      .tok-keyword {
+        color: var(--vscode-symbolIcon-keywordForeground, var(--vscode-textLink-foreground));
+        font-weight: 600;
+      }
+
+      .tok-string {
+        color: var(--vscode-symbolIcon-stringForeground, var(--vscode-charts-orange));
+      }
+
+      .tok-number {
+        color: var(--vscode-symbolIcon-numberForeground, var(--vscode-charts-blue));
+      }
+
+      .tok-comment {
+        color: var(--vscode-descriptionForeground);
+        font-style: italic;
+      }
+
+      .diff-add {
+        color: var(--vscode-gitDecoration-addedResourceForeground, var(--vscode-charts-green));
+      }
+
+      .diff-remove {
+        color: var(--vscode-gitDecoration-deletedResourceForeground, var(--vscode-charts-red));
+      }
+
+      .diff-hunk {
+        color: var(--vscode-textLink-foreground);
+      }
+
+      .diff-meta {
+        color: var(--vscode-descriptionForeground);
+      }
+
+      .settings-panel {
+        margin-top: 16px;
+      }
+
+      .settings-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .settings-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .settings-row input[type="text"],
+      .settings-row select {
+        width: 60%;
+        background-color: var(--vscode-input-background);
+        color: var(--vscode-input-foreground);
+        border: 1px solid var(--vscode-input-border);
+        border-radius: 3px;
+        padding: 6px 8px;
+      }
+
+      .settings-row.settings-actions {
+        justify-content: flex-end;
       }
       
       /* Confidence bar */
@@ -685,6 +808,7 @@ export class WebviewContentGenerator {
         </div>
       </div>
       <div class="settings-dropdown" id="settings-dropdown">
+        <div class="settings-item" id="open-settings-panel">Settings...</div>
         <div class="settings-item" id="toggle-educational">Toggle Educational Mode</div>
         <div class="settings-item" id="toggle-perf">Toggle Performance Metrics</div>
         <div class="settings-item" id="view-logs">View Logs</div>
@@ -732,13 +856,14 @@ export class WebviewContentGenerator {
         </button>
         
         <div class="empty-state-tips">
-          <h3>Tips:</h3>
+          <h3>Quick Start Tips:</h3>
           <ul>
-            <li>Use <span class="shortcut-hint">Ctrl+Shift+R</span> for quick analysis</li>
-            <li>Use <span class="shortcut-hint">Ctrl+Shift+W</span> for panel analysis</li>
-            <li>Right-click errors for quick actions</li>
-            <li>Enable auto-detect in settings</li>
-            <li>Use educational mode for learning</li>
+            <li><strong>Keyboard Shortcuts:</strong> <span class="shortcut-hint">Ctrl+Shift+R</span> for quick analysis or <span class="shortcut-hint">Ctrl+Shift+W</span> for panel view</li>
+            <li><strong>Select & Analyze:</strong> Highlight error text in editor and click "Analyze Selected Error"</li>
+            <li><strong>Right-Click Menu:</strong> Right-click on any error for quick actions (fix, search, copy)</li>
+            <li><strong>Auto-Detect:</strong> Enable in settings to automatically catch build errors</li>
+            <li><strong>Learning Mode:</strong> Turn on educational mode to see detailed explanations with each analysis</li>
+            <li><strong>Need Help?</strong> Click the <strong>?</strong> button in the header for full documentation</li>
           </ul>
         </div>
       </div>
@@ -817,6 +942,9 @@ export class WebviewContentGenerator {
           <button class="button button-secondary" id="view-logs-btn">
             [MANIFEST] View Logs
           </button>
+          <button class="button button-secondary" id="help-inline-btn">
+            Help
+          </button>
         </div>
       </div>
     `;
@@ -830,6 +958,11 @@ export class WebviewContentGenerator {
     const iteration = state.currentIteration || 1;
     const maxIterations = state.maxIterations || 3;
     const thought = state.currentThought || 'Analyzing error pattern...';
+
+    const elapsedMs = state.elapsed || 0;
+    const etaSeconds = progress > 1 && elapsedMs > 0
+      ? Math.max(0, ((elapsedMs / (progress / 100)) - elapsedMs) / 1000)
+      : undefined;
     
     return `
       <div class="analysis-section">
@@ -859,6 +992,7 @@ export class WebviewContentGenerator {
             Iteration ${iteration} of ${maxIterations}
             ${state.toolsUsed ? `• Tools used: ${state.toolsUsed.join(', ')}` : ''}
             ${state.elapsed ? `• Elapsed: ${(state.elapsed / 1000).toFixed(1)}s` : ''}
+            ${etaSeconds !== undefined ? `• ETA: ${etaSeconds.toFixed(1)}s` : ''}
           </div>
         </div>
       </div>
@@ -879,22 +1013,32 @@ export class WebviewContentGenerator {
     if (!result) {
       return this.getEmptyStateHTML();
     }
+
+    const errorType = (result as any).errorType as string | undefined;
+    const icon = this.getErrorTypeIcon(errorType, result.error || state.currentError?.message);
+    const filePath = result.filePath || state.currentError?.filePath || '';
+    const line = result.line || state.currentError?.line || 1;
+    const locationLabel = filePath ? `${filePath}:${line}` : 'Unknown location';
+
+    const rootCauseHtml = this.renderMarkdown(result.rootCause || '');
     
     return `
       <div class="result-section">
         <div class="section-header">
-          <div class="section-title">ANALYSIS COMPLETE</div>
+          <div class="section-title">${icon} ANALYSIS COMPLETE</div>
         </div>
         
         <div class="result-content mb-16">
-          <strong>${result.error}</strong> at ${result.filePath}:${result.line}
+          <strong>${this.escapeHtml(result.error || state.currentError?.message || 'Unknown error')}</strong>
+          <span> at </span>
+          <a href="#" class="file-link" data-file-path="${this.escapeHtml(filePath)}" data-line="${line}">${this.escapeHtml(locationLabel)}</a>
         </div>
         
         <!-- Root Cause -->
         <div class="result-box">
           <div class="result-label">ROOT CAUSE</div>
           <div class="result-content">
-            ${result.rootCause}
+            ${rootCauseHtml}
           </div>
         </div>
         
@@ -903,7 +1047,7 @@ export class WebviewContentGenerator {
         <div class="result-box">
           <div class="result-label">CODE CONTEXT</div>
           <div class="code-block">
-            <pre>${this.escapeHtml(result.codeSnippet)}</pre>
+            <pre class="code"><code>${this.highlightCode(this.escapeHtml(result.codeSnippet), this.guessLanguage(filePath))}</code></pre>
           </div>
         </div>
         ` : ''}
@@ -911,14 +1055,23 @@ export class WebviewContentGenerator {
         <!-- Fix Guidelines -->
         <div class="result-box">
           <div class="result-label">FIX GUIDELINES</div>
+          <div class="fix-actions">
+            <button class="button button-secondary" id="search-similar-btn">Search Similar Errors</button>
+            <button class="button button-secondary" id="run-validation-btn">Run Validation Tests</button>
+            <button class="button" id="apply-all-fixes-btn">Apply All Fixes</button>
+          </div>
           <ul class="fix-list">
             ${result.fixGuidelines.map((fix, index) => `
               <li class="fix-item">
                 <div class="fix-item-header">
-                  <span class="fix-number">${index + 1}. ${fix.split('\n')[0]}</span>
-                  <button class="copy-button" data-fix="${index}">Copy</button>
+                  <span class="fix-number">${index + 1}. ${this.escapeHtml(fix.split('\n')[0] || fix)}</span>
+                  <div class="fix-item-actions">
+                    <button class="copy-button" data-fix="${index}">Copy</button>
+                    <button class="preview-button" data-fix="${index}">Preview Diff</button>
+                    <button class="apply-button" data-fix="${index}">Apply</button>
+                  </div>
                 </div>
-                ${fix.includes('\n') ? `<div class="code-block"><pre>${this.escapeHtml(fix.substring(fix.indexOf('\n') + 1))}</pre></div>` : ''}
+                ${this.renderFixBody(fix)}
               </li>
             `).join('')}
           </ul>
@@ -940,6 +1093,40 @@ export class WebviewContentGenerator {
           <button class="button button-secondary" id="not-helpful-btn">Not Helpful</button>
           <button class="button button-secondary" id="feedback-btn">[COMMENT] Feedback</button>
         </div>
+
+        <!-- Settings Panel (Phase 6) -->
+        <div class="settings-panel" id="settings-panel" style="display:none;">
+          <div class="result-box">
+            <div class="result-label">SETTINGS</div>
+            <div class="settings-grid">
+              <label class="settings-row">
+                <input type="checkbox" id="setting-syntax" checked />
+                <span>Syntax highlighting</span>
+              </label>
+              <label class="settings-row">
+                <input type="checkbox" id="setting-perf" />
+                <span>Show performance metrics</span>
+              </label>
+              <div class="settings-row">
+                <span>Model</span>
+                <select id="setting-model">
+                  <option value="hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest">DeepSeek-R1-Distill-Qwen-7B</option>
+                  <option value="codellama:7b">Code Llama 7B</option>
+                  <option value="qwen-coder:7b">Qwen Coder 7B</option>
+                  <option value="deepseek-coder:6.7b">DeepSeek Coder 6.7B</option>
+                </select>
+              </div>
+              <div class="settings-row">
+                <span>Ollama URL</span>
+                <input type="text" id="setting-ollama" placeholder="http://localhost:11434" />
+              </div>
+              <div class="settings-row settings-actions">
+                <button class="button button-secondary" id="settings-cancel-btn">Cancel</button>
+                <button class="button" id="settings-save-btn">Save</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       
       <div class="text-center mt-16">
@@ -956,6 +1143,15 @@ export class WebviewContentGenerator {
   private static getScript(): string {
     return `
       const vscode = acquireVsCodeApi();
+
+      const escapeHtml = (text) => {
+        return String(text)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      };
       
       // Event handlers
       document.getElementById('analyze-btn')?.addEventListener('click', () => {
@@ -994,6 +1190,10 @@ export class WebviewContentGenerator {
       document.getElementById('view-logs-btn')?.addEventListener('click', () => {
         vscode.postMessage({ type: 'viewLogs' });
       });
+
+      document.getElementById('help-inline-btn')?.addEventListener('click', () => {
+        vscode.postMessage({ type: 'openDocs' });
+      });
       
       document.getElementById('retry-btn')?.addEventListener('click', () => {
         vscode.postMessage({ type: 'analyze' });
@@ -1011,6 +1211,14 @@ export class WebviewContentGenerator {
       
       document.getElementById('toggle-perf')?.addEventListener('click', () => {
         vscode.postMessage({ type: 'togglePerf' });
+        document.getElementById('settings-dropdown')?.classList.remove('show');
+      });
+
+      document.getElementById('open-settings-panel')?.addEventListener('click', () => {
+        const panel = document.getElementById('settings-panel');
+        if (panel) {
+          panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
         document.getElementById('settings-dropdown')?.classList.remove('show');
       });
       
@@ -1044,6 +1252,85 @@ export class WebviewContentGenerator {
           vscode.postMessage({ type: 'copy', fixIndex });
         });
       });
+
+      // Preview diff buttons
+      document.querySelectorAll('.preview-button').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const fixIndex = e.target.getAttribute('data-fix');
+          vscode.postMessage({ type: 'previewFix', fixIndex: Number(fixIndex) });
+        });
+      });
+
+      // Apply single fix buttons
+      document.querySelectorAll('.apply-button').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const fixIndex = e.target.getAttribute('data-fix');
+          vscode.postMessage({ type: 'applyFixIndex', fixIndex: Number(fixIndex) });
+        });
+      });
+
+      // Apply all fixes
+      document.getElementById('apply-all-fixes-btn')?.addEventListener('click', () => {
+        vscode.postMessage({ type: 'applyAllFixes' });
+      });
+
+      // Search similar errors
+      document.getElementById('search-similar-btn')?.addEventListener('click', () => {
+        const err = document.querySelector('.result-content strong')?.textContent || '';
+        vscode.postMessage({ type: 'searchSimilar', query: err });
+      });
+
+      // Run validation tests
+      document.getElementById('run-validation-btn')?.addEventListener('click', () => {
+        vscode.postMessage({ type: 'runValidationTests' });
+      });
+
+      // Clickable file links
+      document.querySelectorAll('.file-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const target = e.currentTarget;
+          const filePath = target.getAttribute('data-file-path');
+          const line = Number(target.getAttribute('data-line') || '1');
+          if (filePath) {
+            vscode.postMessage({ type: 'viewFile', filePath, line });
+          }
+        });
+      });
+
+      // External links in rendered markdown
+      document.querySelectorAll('a.external-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const url = e.currentTarget.getAttribute('data-url');
+          if (url) {
+            vscode.postMessage({ type: 'openExternal', url });
+          }
+        });
+      });
+
+      document.getElementById('settings-cancel-btn')?.addEventListener('click', () => {
+        const panel = document.getElementById('settings-panel');
+        if (panel) panel.style.display = 'none';
+      });
+
+      document.getElementById('settings-save-btn')?.addEventListener('click', () => {
+        const syntax = document.getElementById('setting-syntax')?.checked ?? true;
+        const perf = document.getElementById('setting-perf')?.checked ?? false;
+        const model = document.getElementById('setting-model')?.value;
+        const ollamaUrl = document.getElementById('setting-ollama')?.value;
+        vscode.postMessage({
+          type: 'updateSettings',
+          settings: {
+            syntaxHighlighting: !!syntax,
+            showPerformanceMetrics: !!perf,
+            modelName: model,
+            ollamaUrl
+          }
+        });
+        const panel = document.getElementById('settings-panel');
+        if (panel) panel.style.display = 'none';
+      });
       
       // Close dropdown when clicking outside
       document.addEventListener('click', (e) => {
@@ -1065,6 +1352,38 @@ export class WebviewContentGenerator {
             break;
         }
       });
+
+      // Keyboard shortcuts (Phase 6)
+      document.addEventListener('keydown', (e) => {
+        const isMac = /Mac|iPhone|iPad|iPod/.test(navigator.platform);
+        const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
+
+        // Ctrl/Cmd+Enter: Analyze
+        if (ctrlOrCmd && e.key === 'Enter') {
+          if (document.getElementById('analyze-btn')) {
+            e.preventDefault();
+            vscode.postMessage({ type: 'analyze' });
+          }
+        }
+
+        // Ctrl/Cmd+Shift+F: Search similar (when available)
+        if (ctrlOrCmd && e.shiftKey && (e.key === 'F' || e.key === 'f')) {
+          const btn = document.getElementById('search-similar-btn');
+          if (btn) {
+            e.preventDefault();
+            btn.click();
+          }
+        }
+
+        // Ctrl/Cmd+Shift+T: Run validation tests (when available)
+        if (ctrlOrCmd && e.shiftKey && (e.key === 'T' || e.key === 't')) {
+          const btn = document.getElementById('run-validation-btn');
+          if (btn) {
+            e.preventDefault();
+            btn.click();
+          }
+        }
+      });
     `;
   }
   
@@ -1078,6 +1397,159 @@ export class WebviewContentGenerator {
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;');
+  }
+
+  private static renderFixBody(fix: string): string {
+    const body = fix.includes('\n') ? fix.substring(fix.indexOf('\n') + 1) : '';
+    if (!body.trim()) {
+      return '';
+    }
+
+    // Detect diff-like content and render as expandable block
+    const isDiff = /(^diff --git\s)|(^@@\s)|(^\+\+\+\s)|(^---\s)|(^[+-].+)/m.test(body);
+    const bodyHtml = isDiff
+      ? `<pre class="code diff"><code>${this.highlightDiff(this.escapeHtml(body))}</code></pre>`
+      : this.renderMarkdown(body);
+
+    return `
+      <details class="expandable">
+        <summary>Details</summary>
+        <div class="expandable-body">${bodyHtml}</div>
+      </details>
+    `;
+  }
+
+  private static renderMarkdown(text: string): string {
+    const escaped = this.escapeHtml(text);
+
+    // Links
+    let html = escaped.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, '<a href="#" class="external-link" data-url="$2">$1</a>');
+
+    // Inline code
+    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+    // Bold
+    html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+    // Basic lists
+    html = html.replace(/^\s*[-*]\s+(.+)$/gm, '<li>$1</li>');
+    html = html.replace(/(<li>.*<\/li>\n?)+/g, (m) => `<ul>${m}</ul>`);
+
+    // Paragraphs / line breaks
+    html = html
+      .split(/\n\n+/)
+      .map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`)
+      .join('');
+
+    // Fenced code blocks (post-process on the raw text to keep code intact)
+    // If the original includes ``` blocks, render them specially.
+    if (text.includes('```')) {
+      return this.renderFencedCodeBlocks(text);
+    }
+
+    return html;
+  }
+
+  private static renderFencedCodeBlocks(text: string): string {
+    // Split into fenced code blocks and prose.
+    const parts: string[] = [];
+    const fenceRe = /```(\w+)?\n([\s\S]*?)```/g;
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    while ((match = fenceRe.exec(text)) !== null) {
+      const before = text.slice(lastIndex, match.index);
+      if (before.trim()) {
+        parts.push(this.renderMarkdown(before));
+      }
+
+      const lang = (match[1] || '').trim().toLowerCase();
+      const code = match[2] || '';
+      const safe = this.escapeHtml(code);
+      const highlighted = lang === 'diff' ? this.highlightDiff(safe) : this.highlightCode(safe, lang);
+      parts.push(`<pre class="code"><code>${highlighted}</code></pre>`);
+
+      lastIndex = match.index + match[0].length;
+    }
+
+    const after = text.slice(lastIndex);
+    if (after.trim()) {
+      parts.push(this.renderMarkdown(after));
+    }
+
+    return parts.join('');
+  }
+
+  private static guessLanguage(filePath?: string): string {
+    const fp = (filePath || '').toLowerCase();
+    if (fp.endsWith('.kt') || fp.endsWith('.kts')) return 'kotlin';
+    if (fp.endsWith('.java')) return 'java';
+    if (fp.endsWith('.xml')) return 'xml';
+    if (fp.endsWith('.gradle') || fp.includes('build.gradle')) return 'gradle';
+    if (fp.endsWith('.toml')) return 'toml';
+    return '';
+  }
+
+  private static highlightDiff(escapedCode: string): string {
+    // escapedCode is already HTML-escaped.
+    return escapedCode
+      .split('\n')
+      .map(line => {
+        if (line.startsWith('+') && !line.startsWith('+++')) return `<span class="diff-add">${line}</span>`;
+        if (line.startsWith('-') && !line.startsWith('---')) return `<span class="diff-remove">${line}</span>`;
+        if (line.startsWith('@@')) return `<span class="diff-hunk">${line}</span>`;
+        if (line.startsWith('diff --git') || line.startsWith('+++') || line.startsWith('---')) return `<span class="diff-meta">${line}</span>`;
+        return line;
+      })
+      .join('\n');
+  }
+
+  private static highlightCode(escapedCode: string, language: string): string {
+    // escapedCode is already HTML-escaped.
+    const keywords = {
+      kotlin: ['fun', 'val', 'var', 'class', 'object', 'interface', 'when', 'if', 'else', 'try', 'catch', 'finally', 'return', 'null', 'true', 'false', 'override', 'private', 'public', 'protected', 'internal', 'suspend', 'data', 'sealed'],
+      java: ['class', 'interface', 'enum', 'public', 'private', 'protected', 'static', 'final', 'void', 'new', 'return', 'null', 'true', 'false', 'try', 'catch', 'finally', 'throw', 'throws', 'extends', 'implements'],
+      xml: ['android', 'xmlns', 'layout_width', 'layout_height', 'id'],
+      gradle: ['plugins', 'dependencies', 'android', 'compileSdk', 'defaultConfig', 'minSdk', 'targetSdk', 'implementation', 'api', 'classpath', 'kotlin', 'id'],
+      toml: ['version', 'versions', 'libraries', 'plugins', 'group', 'name']
+    } as Record<string, string[]>;
+
+    const lang = (language || '').toLowerCase();
+    let html = escapedCode;
+
+    // Comments
+    html = html.replace(/(^\s*\/\/.*$)/gm, '<span class="tok-comment">$1</span>');
+    html = html.replace(/(^\s*#.*$)/gm, '<span class="tok-comment">$1</span>');
+    html = html.replace(/(<!--([\s\S]*?)-->)/g, '<span class="tok-comment">$1</span>');
+
+    // Strings
+    html = html.replace(/(&quot;[^\n&]*?&quot;)/g, '<span class="tok-string">$1</span>');
+    html = html.replace(/('(?:\\'|[^'])*')/g, '<span class="tok-string">$1</span>');
+
+    // Numbers
+    html = html.replace(/\b(\d+(?:\.\d+)?)\b/g, '<span class="tok-number">$1</span>');
+
+    // Keywords
+    const ks = keywords[lang];
+    if (ks && ks.length) {
+      const re = new RegExp(`\\b(${ks.map(k => k.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')).join('|')})\\b`, 'g');
+      html = html.replace(re, '<span class="tok-keyword">$1</span>');
+    }
+
+    return html;
+  }
+
+  private static getErrorTypeIcon(errorType?: string, errorText?: string): string {
+    const t = (errorType || '').toLowerCase();
+    const msg = (errorText || '').toLowerCase();
+    if (t.includes('gradle') || msg.includes('gradle') || msg.includes('agp')) return '[G]';
+    if (t.includes('kotlin') || msg.includes('kotlin') || msg.includes('kotlinnullpointerexception')) return '[K]';
+    if (t.includes('compose') || msg.includes('compose')) return '[C]';
+    if (t.includes('manifest') || msg.includes('androidmanifest')) return '[M]';
+    if (t.includes('xml') || msg.includes('inflate') || msg.includes('xml')) return '[X]';
+    if (t.includes('proguard') || msg.includes('proguard') || msg.includes('r8')) return '[P]';
+    if (t.includes('navigation') || msg.includes('navigation')) return '[N]';
+    return '[E]';
   }
   
   /**
