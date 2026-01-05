@@ -134,6 +134,15 @@ export class FileResolver {
   }
 
   /**
+   * Clear the project structure cache
+   * Phase 5: Added for testing and manual cache invalidation
+   */
+  clearCache(): void {
+    this.structureCache = null;
+    this.cacheTimestamp = 0;
+  }
+
+  /**
    * Resolve a generic file reference to exact path
    * 
    * @param genericPath - Generic reference (e.g., "build.gradle", "dependencies")
@@ -1183,15 +1192,6 @@ export class FileResolver {
     
     return undefined;
   }
-}
-    
-    return lowerPath.includes('navigation') ||
-           lowerPath.includes('navgraph') ||
-           lowerPath.includes('nav_graph') ||
-           lowerContext.includes('navigation') ||
-           lowerContext.includes('routing') ||
-           errorType.includes('navigation');
-  }
 
   private isSourceCodeReference(genericPath: string, _context?: ResolutionContext): boolean {
     const sourceExtensions = ['.kt', '.java', '.xml'];
@@ -1212,14 +1212,5 @@ export class FileResolver {
     
     return dependencyKeywords.some(kw => ctx.includes(kw));
   }
-
-  /**
-   * Clear structure cache (useful for testing)
-   */
-  clearCache(): void {
-    this.structureCache = null;
-    this.cacheTimestamp = 0;
-  }
-
 }
 

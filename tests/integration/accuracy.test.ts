@@ -42,7 +42,7 @@ interface AccuracyMetrics {
 
 describe('Accuracy Testing Suite - Chunk 1.5', () => {
   let llmClient: OllamaClient;
-  let parser: KotlinNPEParser;
+  let parser: KotlinParser;
   let agent: MinimalReactAgent;
 
   // Skip tests if Ollama not available

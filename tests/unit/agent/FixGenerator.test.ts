@@ -21,6 +21,7 @@ describe('FixGenerator', () => {
   let fixGenerator: FixGenerator;
   let mockLLM: jest.Mocked<OllamaClient>;
   let mockReadFileTool: jest.Mocked<ReadFileTool>;
+  let mockFileResolver: jest.Mocked<any>;
 
   beforeEach(() => {
     // Mock LLM
@@ -34,7 +35,18 @@ describe('FixGenerator', () => {
       execute: jest.fn(),
     } as any;
 
-    fixGenerator = new FixGenerator(mockLLM, mockReadFileTool);
+    // Mock FileResolver - return the path given as input
+    mockFileResolver = {
+      resolve: jest.fn().mockImplementation((filePath: string) => Promise.resolve({
+        exists: true,
+        path: filePath, // Return the same path
+        relativePath: filePath,
+        confidence: 1.0,
+        reason: 'Mocked resolution',
+      })),
+    };
+
+    fixGenerator = new FixGenerator(mockLLM, mockReadFileTool, undefined, mockFileResolver);
   });
 
   describe('generateFix', () => {

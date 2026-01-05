@@ -30,11 +30,9 @@ describe('PromptEngine Integration with FewShotExampleService', () => {
       const error: ParsedError = {
         type: 'GRADLE_DEPENDENCY',
         message: 'Could not find com.android.tools.build:gradle:8.10.0',
-        file: 'gradle/libs.versions.toml',
+        filePath: 'gradle/libs.versions.toml',
         line: 5,
         language: 'kotlin',
-        filePath: '/path/to/gradle/libs.versions.toml',
-        context: {}
       };
 
       const prompt = await promptEngine.buildIterationPrompt({
@@ -57,11 +55,9 @@ describe('PromptEngine Integration with FewShotExampleService', () => {
       const error: ParsedError = {
         type: 'KOTLIN_LATEINIT',
         message: 'lateinit property viewModel has not been initialized',
-        file: 'MainActivity.kt',
+        filePath: 'MainActivity.kt',
         line: 45,
         language: 'kotlin',
-        filePath: '/path/to/MainActivity.kt',
-        context: {}
       };
 
       const prompt = await promptEngine.buildIterationPrompt({
@@ -84,11 +80,9 @@ describe('PromptEngine Integration with FewShotExampleService', () => {
       const error: ParsedError = {
         type: 'COMPOSE_STATE',
         message: 'State read without remember',
-        file: 'ProfileScreen.kt',
+        filePath: 'ProfileScreen.kt',
         line: 23,
         language: 'kotlin',
-        filePath: '/path/to/ProfileScreen.kt',
-        context: {}
       };
 
       const prompt = await promptEngine.buildIterationPrompt({
@@ -110,11 +104,9 @@ describe('PromptEngine Integration with FewShotExampleService', () => {
       const error: ParsedError = {
         type: 'GRADLE_DEPENDENCY',
         message: 'Dependency error',
-        file: 'build.gradle',
+        filePath: 'build.gradle',
         line: 10,
         language: 'kotlin',
-        filePath: '/path/to/build.gradle',
-        context: {}
       };
 
       const prompt = await promptEngine.buildIterationPrompt({
@@ -130,7 +122,6 @@ describe('PromptEngine Integration with FewShotExampleService', () => {
 
       // Should not include examples on iteration 2+
       // (Still has analysis history, but not new examples)
-      const hasSimilarCases = prompt.includes('Similar Cases from Knowledge Base');
       const hasAnalysisHistory = prompt.includes('ANALYSIS HISTORY');
       
       expect(hasAnalysisHistory).toBe(true);
@@ -141,11 +132,9 @@ describe('PromptEngine Integration with FewShotExampleService', () => {
       const error: ParsedError = {
         type: 'GRADLE_DEPENDENCY',
         message: 'AGP version not found',
-        file: 'gradle/libs.versions.toml',
+        filePath: 'gradle/libs.versions.toml',
         line: 5,
         language: 'kotlin',
-        filePath: '/path/to/gradle/libs.versions.toml',
-        context: {}
       };
 
       const prompt = await promptEngine.buildIterationPrompt({
@@ -169,11 +158,9 @@ describe('PromptEngine Integration with FewShotExampleService', () => {
       const error: ParsedError = {
         type: 'KOTLIN_LATEINIT',
         message: 'lateinit not initialized',
-        file: 'MainActivity.kt',
+        filePath: 'MainActivity.kt',
         line: 45,
         language: 'kotlin',
-        filePath: '/path/to/MainActivity.kt',
-        context: {}
       };
 
       const prompt = await promptEngine.buildIterationPrompt({
@@ -196,11 +183,9 @@ describe('PromptEngine Integration with FewShotExampleService', () => {
       const error: ParsedError = {
         type: 'GRADLE_DEPENDENCY',
         message: 'Could not find com.android.tools.build:gradle:8.10.0',
-        file: 'gradle/libs.versions.toml',
+        filePath: 'gradle/libs.versions.toml',
         line: 5,
         language: 'kotlin',
-        filePath: '/path/to/gradle/libs.versions.toml',
-        context: {}
       };
 
       const fewShotService = getFewShotService();
@@ -215,11 +200,9 @@ describe('PromptEngine Integration with FewShotExampleService', () => {
       const error: ParsedError = {
         type: 'KOTLIN_NPE',
         message: 'NullPointerException: viewModel is null',
-        file: 'MainActivity.kt',
+        filePath: 'MainActivity.kt',
         line: 67,
         language: 'kotlin',
-        filePath: '/path/to/MainActivity.kt',
-        context: {}
       };
 
       const fewShotService = getFewShotService();
@@ -228,9 +211,9 @@ describe('PromptEngine Integration with FewShotExampleService', () => {
       // Should find Kotlin NPE or null-related examples
       expect(examples.length).toBeGreaterThan(0);
       const hasRelevantKeywords = examples.some(ex => 
-        ex.errorMessage.toLowerCase().includes('null') ||
-        ex.errorMessage.toLowerCase().includes('npe') ||
-        ex.title.toLowerCase().includes('null')
+        (ex.errorMessage && ex.errorMessage.toLowerCase().includes('null')) ||
+        (ex.errorMessage && ex.errorMessage.toLowerCase().includes('npe')) ||
+        (ex.title && ex.title.toLowerCase().includes('null'))
       );
       expect(hasRelevantKeywords).toBe(true);
     });
@@ -239,11 +222,9 @@ describe('PromptEngine Integration with FewShotExampleService', () => {
       const error: ParsedError = {
         type: 'GRADLE_DEPENDENCY',
         message: 'Dependency error',
-        file: 'build.gradle',
+        filePath: 'build.gradle',
         line: 10,
         language: 'kotlin',
-        filePath: '/path/to/build.gradle',
-        context: {}
       };
 
       const prompt = await promptEngine.buildIterationPrompt({
@@ -270,11 +251,9 @@ describe('PromptEngine Integration with FewShotExampleService', () => {
       const error: ParsedError = {
         type: 'GRADLE_DEPENDENCY',
         message: 'Dependency error',
-        file: 'build.gradle',
+        filePath: 'build.gradle',
         line: 10,
         language: 'kotlin',
-        filePath: '/path/to/build.gradle',
-        context: {}
       };
 
       const prompt = await promptEngine.buildIterationPrompt({
@@ -301,11 +280,9 @@ describe('PromptEngine Integration with FewShotExampleService', () => {
       const error: ParsedError = {
         type: 'KOTLIN_LATEINIT',
         message: 'lateinit error',
-        file: 'MainActivity.kt',
+        filePath: 'MainActivity.kt',
         line: 45,
         language: 'kotlin',
-        filePath: '/path/to/MainActivity.kt',
-        context: {}
       };
 
       const prompt = await promptEngine.buildIterationPrompt({
@@ -329,11 +306,9 @@ describe('PromptEngine Integration with FewShotExampleService', () => {
       const error: ParsedError = {
         type: 'GRADLE_DEPENDENCY',
         message: 'Dependency error',
-        file: 'build.gradle',
+        filePath: 'build.gradle',
         line: 10,
         language: 'kotlin',
-        filePath: '/path/to/build.gradle',
-        context: {}
       };
 
       const prompt = await promptEngine.buildIterationPrompt({
@@ -358,11 +333,9 @@ describe('PromptEngine Integration with FewShotExampleService', () => {
       const error: ParsedError = {
         type: 'GRADLE_DEPENDENCY',
         message: 'AGP version error',
-        file: 'libs.versions.toml',
+        filePath: 'libs.versions.toml',
         line: 5,
         language: 'kotlin',
-        filePath: '/path/to/gradle/libs.versions.toml',
-        context: {}
       };
 
       const prompt = await promptEngine.buildIterationPrompt({
@@ -386,11 +359,9 @@ describe('PromptEngine Integration with FewShotExampleService', () => {
       const error: ParsedError = {
         type: 'KOTLIN_LATEINIT',
         message: 'lateinit not initialized',
-        file: 'MainActivity.kt',
+        filePath: 'MainActivity.kt',
         line: 45,
         language: 'kotlin',
-        filePath: '/path/to/MainActivity.kt',
-        context: {}
       };
 
       const prompt = await promptEngine.buildIterationPrompt({
@@ -413,11 +384,9 @@ describe('PromptEngine Integration with FewShotExampleService', () => {
       const error: ParsedError = {
         type: 'COMPOSE_STATE',
         message: 'State error',
-        file: 'ProfileScreen.kt',
+        filePath: 'ProfileScreen.kt',
         line: 23,
         language: 'kotlin',
-        filePath: '/path/to/ProfileScreen.kt',
-        context: {}
       };
 
       const prompt = await promptEngine.buildIterationPrompt({
@@ -444,11 +413,9 @@ describe('PromptEngine Integration with FewShotExampleService', () => {
       const error: ParsedError = {
         type: 'GRADLE_DEPENDENCY',
         message: 'Dependency error',
-        file: 'build.gradle',
+        filePath: 'build.gradle',
         line: 10,
         language: 'kotlin',
-        filePath: '/path/to/build.gradle',
-        context: {}
       };
 
       // Should not throw error
@@ -468,11 +435,10 @@ describe('PromptEngine Integration with FewShotExampleService', () => {
       const error: ParsedError = {
         type: 'UNKNOWN_ERROR',
         message: 'Unknown error',
-        file: 'unknown.file',
         line: 1,
-        language: 'unknown',
+        language: 'kotlin', // Changed from 'unknown' as it's not a valid type
         filePath: '/path/to/unknown.file',
-        context: {}
+        metadata: { originalLanguage: 'unknown' }
       };
 
       const prompt = await promptEngine.buildIterationPrompt({
@@ -497,11 +463,9 @@ describe('PromptEngine Integration with FewShotExampleService', () => {
       const error: ParsedError = {
         type: 'GRADLE_DEPENDENCY',
         message: 'Dependency error',
-        file: 'build.gradle',
+        filePath: 'build.gradle',
         line: 10,
         language: 'kotlin',
-        filePath: '/path/to/build.gradle',
-        context: {}
       };
 
       const startTime = Date.now();
@@ -524,3 +488,5 @@ describe('PromptEngine Integration with FewShotExampleService', () => {
     });
   });
 });
+
+

@@ -719,14 +719,20 @@ export class FewShotExampleService {
       return null;
     }
 
+    // Use allExamples for accurate count (includes both JSON and TS examples)
+    const totalExamples = this.allExamples.length;
+    
     const byCategory: Record<string, number> = {};
     let totalConfidence = 0;
-    let totalExamples = 0;
 
+    // Count by category from database structure
     for (const [category, data] of Object.entries(this.database.categories)) {
       byCategory[category] = data.examples.length;
-      totalExamples += data.examples.length;
-      totalConfidence += data.examples.reduce((sum, ex) => sum + (ex.confidence || 0), 0);
+    }
+    
+    // Calculate confidence from all examples
+    for (const example of this.allExamples) {
+      totalConfidence += example.confidence || 0;
     }
 
     return {

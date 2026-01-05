@@ -132,7 +132,7 @@ export class MultiPassAgent extends MinimalReactAgent {
     const hypotheses: Hypothesis[] = [];
 
     // Phase 5: Get error category for template selection
-    const errorCategory = this.templateEngine.classifyError(error);
+    const errorCategory = error.type || 'generic';
     console.log(`  📋 Using template category: ${errorCategory}`);
 
     for (let i = 0; i < this.numHypotheses; i++) {
@@ -189,7 +189,7 @@ export class MultiPassAgent extends MinimalReactAgent {
 File: ${error.filePath}
 Line: ${error.line}
 Message: ${error.message}
-Type: ${error.errorType}
+Type: ${error.type}
 ${diversityHint}
 
 Generate a hypothesis by filling the template placeholders with specific values extracted from the error.
@@ -203,9 +203,9 @@ Return JSON format:
   }
 
   /**
-   * Build prompt for generating diverse hypotheses
+   * Build prompt for generating diverse hypotheses (deprecated - use buildTemplateAwareDiversityPrompt)
    */
-  private buildDiversityPrompt(error: ParsedError, existingHypotheses: Hypothesis[], index: number): string {
+  /* private buildDiversityPrompt(error: ParsedError, existingHypotheses: Hypothesis[], index: number): string {
     const existingSummary = existingHypotheses.length > 0
       ? `\n\n**EXISTING HYPOTHESES (generate a DIFFERENT one):**\n${existingHypotheses.map((h, i) => 
           `${i + 1}. ${h.rootCause.substring(0, 100)}...`
@@ -235,7 +235,7 @@ Generate a hypothesis in JSON format:
 }
 
 OUTPUT ONLY VALID JSON:`;
-  }
+  } */
 
   /**
    * Parse hypothesis response from LLM
