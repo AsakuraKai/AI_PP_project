@@ -1,7 +1,7 @@
 # RCA Agent Extension - Build Summary
 **Date:** January 6, 2025  
 **Build Version:** 0.1.0  
-**VSIX Package:** rca-agent-extension-1.2.0.vsix
+**VSIX Package:** rca-agent-extension-2.0.vsix
 
 ## Overview
 Successfully rebuilt the RCA Agent VSCode extension with all visible emojis removed and TypeScript compilation errors resolved.
@@ -84,11 +84,11 @@ All user-facing emojis replaced with clear text alternatives:
 ## Build Artifacts
 
 ### VSIX Package Details
-- **File**: rca-agent-extension-1.2.0.vsix
+- **File**: rca-agent-extension-2.0.vsix
 - **Size**: 1.14 MB
 - **Files**: 294 total files
 - **JavaScript**: 236 files (compiled from TypeScript)
-- **Location**: `vscode-extension/rca-agent-extension-1.2.0.vsix`
+- **Location**: `vscode-extension/rca-agent-extension-2.0.vsix`
 
 ### Included Components
 - Compiled JavaScript in `out/` directory
@@ -112,7 +112,7 @@ All user-facing emojis replaced with clear text alternatives:
 
 ## Installation
 ```bash
-code --install-extension rca-agent-extension-1.2.0.vsix
+code --install-extension rca-agent-extension-2.0.vsix
 ```
 
 ## Next Steps

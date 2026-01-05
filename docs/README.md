@@ -98,7 +98,7 @@ npm test
 1. Open VS Code
 2. Press `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (Mac)
 3. Type "Extensions: Install from VSIX" and press Enter
-4. Navigate to and select `rca-agent-extension-0.1.0.vsix`
+4. Navigate to and select `rca-agent-extension-2.0.vsix`
 5. Click "Reload Now" when prompted
 
 **Option B: Build from Source**

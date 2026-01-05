@@ -556,7 +556,7 @@ vscode-extension/
 ├── compile-errors.txt
 ├── errors.log
 ├── remove-emojis.js
-└── rca-agent-extension-0.1.0.vsix
+└── rca-agent-extension-2.0.vsix
 ```
 
 ### VS Code Extension Settings

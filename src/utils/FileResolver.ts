@@ -225,6 +225,15 @@ export class FileResolver {
           alternatives: []
         };
       }
+
+      return {
+        path: catalogPath,
+        relativePath: PathUtils.relative(structure.root, catalogPath),
+        confidence: 0.40,
+        reason: 'Version catalog was detected in cached project structure, but the file is currently missing',
+        exists: false,
+        alternatives: []
+      };
     }
 
     // Priority 2: Root build.gradle
@@ -315,7 +324,7 @@ export class FileResolver {
         return {
           path: catalogPath,
           relativePath: PathUtils.relative(structure.root, catalogPath),
-          confidence: 0.85,
+          confidence: 0.90,
           reason: 'Version catalog manages dependencies centrally',
           exists: true,
           line,
@@ -568,9 +577,10 @@ export class FileResolver {
     context?: ResolutionContext
   ): Promise<FileResolutionResult> {
     let absolutePath: string;
+    const inputWasAbsolute = path.isAbsolute(genericPath);
     
     // Handle absolute paths (cross-platform)
-    if (path.isAbsolute(genericPath)) {
+    if (inputWasAbsolute) {
       absolutePath = genericPath;
     } else {
       absolutePath = path.join(this.projectRoot, genericPath);
@@ -581,6 +591,18 @@ export class FileResolver {
     
     const exists = await this.fileExists(absolutePath);
     const line = exists ? await this.findLineInFile(absolutePath, context) : undefined;
+
+    // For missing relative references, prefer a "not found" style result.
+    // This matches expected behavior in unit tests and avoids implying a real file path.
+    if (!exists && !inputWasAbsolute) {
+      return {
+        path: '',
+        relativePath: '',
+        confidence: 0,
+        reason: 'File reference provided but not found in project',
+        exists: false
+      };
+    }
     
     return {
       path: absolutePath,
@@ -744,6 +766,17 @@ export class FileResolver {
       
       if (context?.errorMessage) {
         const errorLower = context.errorMessage.toLowerCase();
+
+        // Extract Maven/Gradle coordinates: group:artifact:version
+        const coordMatch = errorLower.match(/([a-z0-9_.-]+):([a-z0-9_.-]+):([0-9][a-z0-9+_.-]*)/i);
+        if (coordMatch) {
+          const group = coordMatch[1];
+          const artifact = coordMatch[2];
+          exactSearchTerms.push(group);
+          exactSearchTerms.push(artifact);
+          exactSearchTerms.push(`${group}:${artifact}`);
+        }
+
         const versionMatch = errorLower.match(/[\d.]+/);
         if (versionMatch) {
           exactSearchTerms.push(versionMatch[0]);
@@ -928,13 +961,15 @@ export class FileResolver {
   // ==================== Helper Methods ====================
 
   private isGradleVersionReference(genericPath: string, context?: ResolutionContext): boolean {
-    const versionKeywords = ['version', 'agp', 'kotlin', 'gradle', 'plugin'];
+    // Avoid overly-broad triggers like "gradle" (would match *.gradle paths and
+    // gradle-related error types, incorrectly routing dependency/source resolutions).
+    const versionKeywords = ['version', 'agp', 'kotlin', 'plugin', 'libs.versions', 'versions.toml'];
     const lowerPath = genericPath.toLowerCase();
     const lowerContext = context?.context?.toLowerCase() || '';
-    const lowerError = context?.errorType?.toLowerCase() || '';
+    const lowerErrorMessage = context?.errorMessage?.toLowerCase() || '';
     
     return versionKeywords.some(kw => 
-      lowerPath.includes(kw) || lowerContext.includes(kw) || lowerError.includes(kw)
+      lowerPath.includes(kw) || lowerContext.includes(kw) || lowerErrorMessage.includes(kw)
     );
   }
 
@@ -1199,11 +1234,11 @@ export class FileResolver {
   }
 
   private isVersionContext(context?: ResolutionContext): boolean {
-    const versionKeywords = ['version', 'agp', 'kotlin', 'gradle'];
+    const versionKeywords = ['version', 'agp', 'kotlin', 'plugin', 'libs.versions', 'versions.toml'];
     const ctx = context?.context?.toLowerCase() || '';
-    const err = context?.errorType?.toLowerCase() || '';
+    const errMsg = context?.errorMessage?.toLowerCase() || '';
     
-    return versionKeywords.some(kw => ctx.includes(kw) || err.includes(kw));
+    return versionKeywords.some(kw => ctx.includes(kw) || errMsg.includes(kw));
   }
 
   private isDependencyContext(context?: ResolutionContext): boolean {
