@@ -9,7 +9,8 @@ exports.NAVIGATION_EXAMPLES = [
     {
         id: 'navigation_argument_type_mismatch',
         errorType: 'NAVIGATION_ROUTING',
-        error: "java.lang.IllegalArgumentException: Wrong argument type for 'userId' in argument bundle. Expected Int, found String.\n    at androidx.navigation.NavBackStackEntry.getArguments(NavBackStackEntry.kt:123)",
+        error: `java.lang.IllegalArgumentException: Wrong argument type for 'userId' in argument bundle. Expected Int, found String.
+    at androidx.navigation.NavBackStackEntry.getArguments(NavBackStackEntry.kt:123)`,
         diagnosis: {
             problem: 'Navigation argument type mismatch between route definition and usage',
             rootCause: 'NavHost defines argument as IntType but receiving String, or vice versa',
@@ -18,7 +19,28 @@ exports.NAVIGATION_EXAMPLES = [
         },
         solution: {
             summary: 'Fix argument type in NavHost definition to match actual usage',
-            specificFix: "File: Navigation.kt (or NavGraph.kt)\n\nBEFORE (line 25):\ncomposable(\"detail/{userId}\") { backStackEntry ->\n    val userId = backStackEntry.arguments?.getString(\"userId\") ?: \"\"\n    DetailScreen(userId)\n}\n\nAFTER:\ncomposable(\n    route = \"detail/{userId}\",\n    arguments = listOf(navArgument(\"userId\") { type = NavType.IntType })\n) { backStackEntry ->\n    val userId = backStackEntry.arguments?.getInt(\"userId\") ?: 0\n    DetailScreen(userId)\n}\n\nBEFORE (line 50 - calling code):\nnavController.navigate(\"detail/${user.id}\")  // id is Int\n\nAFTER:\nnavController.navigate(\"detail/${user.id}\")  // No change needed, Int toString() works",
+            specificFix: `File: Navigation.kt (or NavGraph.kt)
+
+BEFORE (line 25):
+composable("detail/{userId}") { backStackEntry ->
+    val userId = backStackEntry.arguments?.getString("userId") ?: ""
+    DetailScreen(userId)
+}
+
+AFTER:
+composable(
+    route = "detail/{userId}",
+    arguments = listOf(navArgument("userId") { type = NavType.IntType })
+) { backStackEntry ->
+    val userId = backStackEntry.arguments?.getInt("userId") ?: 0
+    DetailScreen(userId)
+}
+
+BEFORE (line 50 - calling code):
+navController.navigate("detail/\${user.id}")  // id is Int
+
+AFTER:
+navController.navigate("detail/\${user.id}")  // No change needed, Int toString() works`,
             fileIdentification: 'Navigation.kt',
             codeExamples: [
                 {
@@ -37,7 +59,8 @@ exports.NAVIGATION_EXAMPLES = [
     {
         id: 'navigation_missing_required_argument',
         errorType: 'NAVIGATION_ROUTING',
-        error: "java.lang.IllegalArgumentException: Required argument 'productId' is missing\n    at androidx.navigation.compose.NavHostKt.NavHost(NavHost.kt:156)",
+        error: `java.lang.IllegalArgumentException: Required argument 'productId' is missing
+    at androidx.navigation.compose.NavHostKt.NavHost(NavHost.kt:156)`,
         diagnosis: {
             problem: 'Navigation call missing required argument defined in route',
             rootCause: 'Route expects {productId} but navigate() call does not provide it',
@@ -46,7 +69,38 @@ exports.NAVIGATION_EXAMPLES = [
         },
         solution: {
             summary: 'Provide required argument in navigate() call or make argument optional',
-            specificFix: "Option 1: Provide the argument\n\nBEFORE (line 78):\nnavController.navigate(\"product\")  // Missing productId\n\nAFTER:\nnavController.navigate(\"product/${product.id}\")\n\n---\n\nOption 2: Make argument optional if not always needed\n\nBEFORE (NavHost definition):\ncomposable(\"product/{productId}\") { ... }\n\nAFTER:\ncomposable(\n    route = \"product?productId={productId}\",  // ? makes it optional\n    arguments = listOf(\n        navArgument(\"productId\") {\n            type = NavType.IntType\n            defaultValue = -1  // Default for optional\n        }\n    )\n) { backStackEntry ->\n    val productId = backStackEntry.arguments?.getInt(\"productId\") ?: -1\n    ProductScreen(productId)\n}\n\nThen call:\nnavController.navigate(\"product\")  // OK now\nnavController.navigate(\"product?productId=${id}\")  // Also OK",
+            specificFix: `Option 1: Provide the argument
+
+BEFORE (line 78):
+navController.navigate("product")  // Missing productId
+
+AFTER:
+navController.navigate("product/\${product.id}")
+
+---
+
+Option 2: Make argument optional if not always needed
+
+BEFORE (NavHost definition):
+composable("product/{productId}") { ... }
+
+AFTER:
+composable(
+    route = "product?productId={productId}",  // ? makes it optional
+    arguments = listOf(
+        navArgument("productId") {
+            type = NavType.IntType
+            defaultValue = -1  // Default for optional
+        }
+    )
+) { backStackEntry ->
+    val productId = backStackEntry.arguments?.getInt("productId") ?: -1
+    ProductScreen(productId)
+}
+
+Then call:
+navController.navigate("product")  // OK now
+navController.navigate("product?productId=\${id}")  // Also OK`,
             fileIdentification: 'Navigation.kt',
             codeExamples: [],
             verificationSteps: [
@@ -60,7 +114,8 @@ exports.NAVIGATION_EXAMPLES = [
     {
         id: 'navigation_nullable_argument_crash',
         errorType: 'NAVIGATION_ROUTING',
-        error: "java.lang.NullPointerException: Attempt to invoke virtual method 'int java.lang.Integer.intValue()' on a null object reference\n    at com.example.ui.DetailScreenKt.DetailScreen(DetailScreen.kt:42)",
+        error: `java.lang.NullPointerException: Attempt to invoke virtual method 'int java.lang.Integer.intValue()' on a null object reference
+    at com.example.ui.DetailScreenKt.DetailScreen(DetailScreen.kt:42)`,
         diagnosis: {
             problem: 'Nullable navigation argument not handled properly in destination',
             rootCause: 'Argument can be null but code assumes non-null, or argument not marked nullable in definition',
@@ -69,7 +124,35 @@ exports.NAVIGATION_EXAMPLES = [
         },
         solution: {
             summary: 'Mark argument as nullable and handle null case properly',
-            specificFix: "File: Navigation.kt\n\nBEFORE:\ncomposable(\n    route = \"detail/{itemId}\",\n    arguments = listOf(navArgument(\"itemId\") { type = NavType.IntType })\n) { backStackEntry ->\n    val itemId = backStackEntry.arguments?.getInt(\"itemId\")!!  // Crash if null\n    DetailScreen(itemId)\n}\n\nAFTER:\ncomposable(\n    route = \"detail?itemId={itemId}\",  // Optional argument\n    arguments = listOf(\n        navArgument(\"itemId\") {\n            type = NavType.IntType\n            nullable = true  // Mark as nullable\n            defaultValue = null\n        }\n    )\n) { backStackEntry ->\n    val itemId = backStackEntry.arguments?.getInt(\"itemId\")?.takeIf { it != -1 }\n    if (itemId != null) {\n        DetailScreen(itemId)\n    } else {\n        ErrorScreen(\"Invalid item ID\")\n    }\n}",
+            specificFix: `File: Navigation.kt
+
+BEFORE:
+composable(
+    route = "detail/{itemId}",
+    arguments = listOf(navArgument("itemId") { type = NavType.IntType })
+) { backStackEntry ->
+    val itemId = backStackEntry.arguments?.getInt("itemId")!!  // Crash if null
+    DetailScreen(itemId)
+}
+
+AFTER:
+composable(
+    route = "detail?itemId={itemId}",  // Optional argument
+    arguments = listOf(
+        navArgument("itemId") {
+            type = NavType.IntType
+            nullable = true  // Mark as nullable
+            defaultValue = null
+        }
+    )
+) { backStackEntry ->
+    val itemId = backStackEntry.arguments?.getInt("itemId")?.takeIf { it != -1 }
+    if (itemId != null) {
+        DetailScreen(itemId)
+    } else {
+        ErrorScreen("Invalid item ID")
+    }
+}`,
             fileIdentification: 'Navigation.kt',
             codeExamples: [],
             verificationSteps: [
@@ -83,7 +166,8 @@ exports.NAVIGATION_EXAMPLES = [
     {
         id: 'navigation_destination_not_found',
         errorType: 'NAVIGATION_ROUTING',
-        error: "java.lang.IllegalArgumentException: navigation destination settings is unknown to this NavController\n    at androidx.navigation.NavController.navigate(NavController.java:1625)",
+        error: `java.lang.IllegalArgumentException: navigation destination settings is unknown to this NavController
+    at androidx.navigation.NavController.navigate(NavController.java:1625)`,
         diagnosis: {
             problem: 'Navigation trying to navigate to undefined route',
             rootCause: 'Route name in navigate() call does not match any composable() route in NavHost',
@@ -92,7 +176,41 @@ exports.NAVIGATION_EXAMPLES = [
         },
         solution: {
             summary: 'Fix route name typo or add missing destination to NavHost',
-            specificFix: "Check route names match exactly (case-sensitive!)\n\nWRONG:\nnavController.navigate(\"Settings\")  // Capital S\n\nNavHost { \n    composable(\"settings\") { ... }  // Lowercase s\n}\n\nCORRECT:\nnavController.navigate(\"settings\")  // Match exactly\n\n---\n\nOr add missing destination:\n\nNavHost {\n    composable(\"home\") { HomeScreen() }\n    composable(\"profile\") { ProfileScreen() }\n    // ADD THIS:\n    composable(\"settings\") { SettingsScreen() }\n}\n\n---\n\nTIP: Use sealed class for type-safe routes:\n\nsealed class Screen(val route: String) {\n    object Home : Screen(\"home\")\n    object Profile : Screen(\"profile\")\n    object Settings : Screen(\"settings\")\n}\n\nThen use:\nnavController.navigate(Screen.Settings.route)  // Type-safe!",
+            specificFix: `Check route names match exactly (case-sensitive!)
+
+WRONG:
+navController.navigate("Settings")  // Capital S
+
+NavHost { 
+    composable("settings") { ... }  // Lowercase s
+}
+
+CORRECT:
+navController.navigate("settings")  // Match exactly
+
+---
+
+Or add missing destination:
+
+NavHost {
+    composable("home") { HomeScreen() }
+    composable("profile") { ProfileScreen() }
+    // ADD THIS:
+    composable("settings") { SettingsScreen() }
+}
+
+---
+
+TIP: Use sealed class for type-safe routes:
+
+sealed class Screen(val route: String) {
+    object Home : Screen("home")
+    object Profile : Screen("profile")
+    object Settings : Screen("settings")
+}
+
+Then use:
+navController.navigate(Screen.Settings.route)  // Type-safe!`,
             fileIdentification: 'Navigation.kt',
             codeExamples: [],
             verificationSteps: [
@@ -106,7 +224,8 @@ exports.NAVIGATION_EXAMPLES = [
     {
         id: 'navigation_deeplink_argument_parsing',
         errorType: 'NAVIGATION_ROUTING',
-        error: "java.lang.IllegalStateException: Deep link androidx.navigation.ActivityNavigator$Destination@abc123 does not have a matching argument for required argument userId\n    at androidx.navigation.NavController.onGraphCreated(NavController.java:752)",
+        error: `java.lang.IllegalStateException: Deep link androidx.navigation.ActivityNavigator$Destination@abc123 does not have a matching argument for required argument userId
+    at androidx.navigation.NavController.onGraphCreated(NavController.java:752)`,
         diagnosis: {
             problem: 'Deep link route pattern does not extract argument correctly',
             rootCause: 'Deep link URI pattern mismatch with argument definition, or argument not captured',
@@ -115,7 +234,40 @@ exports.NAVIGATION_EXAMPLES = [
         },
         solution: {
             summary: 'Fix deep link URI pattern to capture argument correctly',
-            specificFix: "File: Navigation.kt\n\nBEFORE:\ncomposable(\n    route = \"user/{userId}\",\n    arguments = listOf(navArgument(\"userId\") { type = NavType.IntType }),\n    deepLinks = listOf(\n        navDeepLink { uriPattern = \"myapp://user\" }  // Missing {userId}!\n    )\n) { ... }\n\nAFTER:\ncomposable(\n    route = \"user/{userId}\",\n    arguments = listOf(navArgument(\"userId\") { type = NavType.IntType }),\n    deepLinks = listOf(\n        navDeepLink { \n            uriPattern = \"myapp://user/{userId}\"  // Must include {userId}\n        }\n    )\n) { backStackEntry ->\n    val userId = backStackEntry.arguments?.getInt(\"userId\") ?: 0\n    UserScreen(userId)\n}\n\nAndroidManifest.xml must also declare intent filter:\n<activity android:name=\".MainActivity\">\n    <intent-filter>\n        <action android:name=\"android.intent.action.VIEW\" />\n        <category android:name=\"android.intent.category.DEFAULT\" />\n        <category android:name=\"android.intent.category.BROWSABLE\" />\n        <data android:scheme=\"myapp\" android:host=\"user\" />\n    </intent-filter>\n</activity>",
+            specificFix: `File: Navigation.kt
+
+BEFORE:
+composable(
+    route = "user/{userId}",
+    arguments = listOf(navArgument("userId") { type = NavType.IntType }),
+    deepLinks = listOf(
+        navDeepLink { uriPattern = "myapp://user" }  // Missing {userId}!
+    )
+) { ... }
+
+AFTER:
+composable(
+    route = "user/{userId}",
+    arguments = listOf(navArgument("userId") { type = NavType.IntType }),
+    deepLinks = listOf(
+        navDeepLink { 
+            uriPattern = "myapp://user/{userId}"  // Must include {userId}
+        }
+    )
+) { backStackEntry ->
+    val userId = backStackEntry.arguments?.getInt("userId") ?: 0
+    UserScreen(userId)
+}
+
+AndroidManifest.xml must also declare intent filter:
+<activity android:name=".MainActivity">
+    <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="myapp" android:host="user" />
+    </intent-filter>
+</activity>`,
             fileIdentification: 'Navigation.kt, AndroidManifest.xml',
             codeExamples: [],
             verificationSteps: [
@@ -127,3 +279,4 @@ exports.NAVIGATION_EXAMPLES = [
         }
     }
 ];
+//# sourceMappingURL=navigation-examples.js.map

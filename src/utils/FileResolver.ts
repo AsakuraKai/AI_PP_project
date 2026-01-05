@@ -110,6 +110,14 @@ export interface ProjectStructure {
   
   /** Gradle version */
   gradleVersion?: string;
+  
+  /** Phase 5: buildSrc convention support */
+  hasBuildSrc?: boolean;
+  buildSrcPath?: string;
+  
+  /** Phase 5: Detected build system features */
+  useKotlinDSL?: boolean; // Uses .kts files
+  useCompositeBuilds?: boolean; // Has includeBuild()
 }
 
 /**
@@ -589,7 +597,11 @@ export class FileResolver {
       root: this.projectRoot,
       hasVersionCatalog: false,
       isMultiModule: false,
-      modules: []
+      modules: [],
+      // Phase 5: Initialize new fields
+      hasBuildSrc: false,
+      useKotlinDSL: false,
+      useCompositeBuilds: false,
     };
 
     // Check for version catalog
@@ -599,18 +611,45 @@ export class FileResolver {
       structure.versionCatalogPath = versionCatalogPath;
     }
 
-    // Check for root build.gradle
-    const rootBuildGradle = path.join(this.projectRoot, 'build.gradle');
+    // Phase 5: Check for buildSrc convention
+    const buildSrcPath = path.join(this.projectRoot, 'buildSrc');
+    structure.hasBuildSrc = await this.fileExists(buildSrcPath);
+    if (structure.hasBuildSrc) {
+      structure.buildSrcPath = buildSrcPath;
+    }
+
+    // Check for root build.gradle (and .kts variant)
+    let rootBuildGradle = path.join(this.projectRoot, 'build.gradle');
     if (await this.fileExists(rootBuildGradle)) {
       structure.rootBuildGradle = rootBuildGradle;
+    } else {
+      // Phase 5: Try Kotlin DSL variant
+      const kotlinBuildGradle = path.join(this.projectRoot, 'build.gradle.kts');
+      if (await this.fileExists(kotlinBuildGradle)) {
+        structure.rootBuildGradle = kotlinBuildGradle;
+        structure.useKotlinDSL = true;
+      }
     }
 
     // Check for settings.gradle
-    const settingsGradle = path.join(this.projectRoot, 'settings.gradle');
+    let settingsGradle = path.join(this.projectRoot, 'settings.gradle');
     if (await this.fileExists(settingsGradle)) {
       structure.settingsGradle = settingsGradle;
       structure.modules = await this.parseModulesFromSettings(settingsGradle);
       structure.isMultiModule = structure.modules.length > 1;
+      
+      // Phase 5: Check for composite builds
+      structure.useCompositeBuilds = await this.hasCompositeBuildsinSettings(settingsGradle);
+    } else {
+      // Phase 5: Try Kotlin DSL variant
+      const kotlinSettingsGradle = path.join(this.projectRoot, 'settings.gradle.kts');
+      if (await this.fileExists(kotlinSettingsGradle)) {
+        structure.settingsGradle = kotlinSettingsGradle;
+        structure.useKotlinDSL = true;
+        structure.modules = await this.parseModulesFromSettings(kotlinSettingsGradle);
+        structure.isMultiModule = structure.modules.length > 1;
+        structure.useCompositeBuilds = await this.hasCompositeBuildsinSettings(kotlinSettingsGradle);
+      }
     }
 
     // Cache and return
@@ -933,6 +972,218 @@ export class FileResolver {
     const lowerPath = genericPath.toLowerCase();
     const lowerContext = context?.context?.toLowerCase() || '';
     const errorType = context?.errorType?.toLowerCase() || '';
+    
+    return lowerPath.includes('navigation') || 
+           lowerPath.includes('navgraph') ||
+           lowerPath.includes('nav_graph') ||
+           lowerContext.includes('navigation') ||
+           lowerContext.includes('navhost') ||
+           errorType.includes('navigation');
+  }
+  
+  // ========== Phase 5: Enhanced Build System Detection ==========
+  
+  /**
+   * Check if settings.gradle uses composite builds
+   * Phase 5: Support for includeBuild() detection
+   */
+  private async hasCompositeBuildsinSettings(settingsPath: string): Promise<boolean> {
+    try {
+      const content = await fs.readFile(settingsPath, 'utf-8');
+      // Look for includeBuild() calls
+      return /includeBuild\s*\(/.test(content);
+    } catch {
+      return false;
+    }
+  }
+  
+  /**
+   * Enhanced version catalog resolution with buildSrc fallback
+   * Phase 5: Check buildSrc conventions if version catalog not found
+   */
+  async resolveVersionDeclaration(
+    dependencyName: string,
+    context?: ResolutionContext
+  ): Promise<FileResolutionResult> {
+    const structure = await this.getProjectStructure();
+    
+    // Priority 1: Version catalog
+    if (structure.hasVersionCatalog && structure.versionCatalogPath) {
+      const line = await this.findDependencyInVersionCatalog(
+        structure.versionCatalogPath,
+        dependencyName
+      );
+      
+      if (line) {
+        return {
+          path: structure.versionCatalogPath,
+          relativePath: PathUtils.relative(structure.root, structure.versionCatalogPath),
+          confidence: 0.95,
+          reason: 'Version declared in version catalog',
+          exists: true,
+          line,
+        };
+      }
+    }
+    
+    // Priority 2: buildSrc convention
+    if (structure.hasBuildSrc && structure.buildSrcPath) {
+      const buildSrcVersionFiles = await this.findVersionFilesInBuildSrc(
+        structure.buildSrcPath,
+        dependencyName
+      );
+      
+      if (buildSrcVersionFiles.length > 0) {
+        const primaryFile = buildSrcVersionFiles[0];
+        return {
+          path: primaryFile.path,
+          relativePath: PathUtils.relative(structure.root, primaryFile.path),
+          confidence: 0.90,
+          reason: 'Version declared in buildSrc convention',
+          exists: true,
+          line: primaryFile.line,
+          alternatives: buildSrcVersionFiles.slice(1).map(f => ({
+            path: f.path,
+            relativePath: PathUtils.relative(structure.root, f.path),
+            confidence: 0.75,
+            reason: 'Alternative buildSrc version file',
+          })),
+        };
+      }
+    }
+    
+    // Fallback to standard resolution
+    return this.resolveGradleVersion(structure, context);
+  }
+  
+  /**
+   * Find dependency declaration in version catalog
+   * Phase 5: TOML parsing with section detection
+   */
+  private async findDependencyInVersionCatalog(
+    catalogPath: string,
+    dependencyName: string
+  ): Promise<number | undefined> {
+    try {
+      const content = await fs.readFile(catalogPath, 'utf-8');
+      const lines = content.split('\n');
+      
+      const searchTerms = [
+        dependencyName.toLowerCase(),
+        dependencyName.replace(/-/g, '.'),
+        dependencyName.replace(/-/g, '_'),
+      ];
+      
+      // Look in [versions], [libraries], [plugins] sections
+      let inRelevantSection = false;
+      
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].toLowerCase().trim();
+        
+        // Track sections
+        if (line.startsWith('[versions]') || 
+            line.startsWith('[libraries]') || 
+            line.startsWith('[plugins]')) {
+          inRelevantSection = true;
+          continue;
+        }
+        
+        if (line.startsWith('[') && inRelevantSection) {
+          inRelevantSection = false;
+        }
+        
+        // Search in relevant sections
+        if (inRelevantSection) {
+          for (const term of searchTerms) {
+            if (line.includes(term)) {
+              return i + 1; // 1-indexed
+            }
+          }
+        }
+      }
+    } catch {
+      // File read error
+    }
+    
+    return undefined;
+  }
+  
+  /**
+   * Find version files in buildSrc
+   * Phase 5: Support for Dependencies.kt and Versions.kt conventions
+   */
+  private async findVersionFilesInBuildSrc(
+    buildSrcPath: string,
+    dependencyName: string
+  ): Promise<Array<{ path: string; line?: number }>> {
+    const results: Array<{ path: string; line?: number }> = [];
+    
+    try {
+      // Common buildSrc convention files
+      const conventionFiles = [
+        'src/main/kotlin/Dependencies.kt',
+        'src/main/kotlin/Versions.kt',
+        'src/main/kotlin/Config.kt',
+        'src/main/java/Dependencies.java',
+        'src/main/java/Versions.java',
+      ];
+      
+      for (const conventionFile of conventionFiles) {
+        const fullPath = path.join(buildSrcPath, conventionFile);
+        if (await this.fileExists(fullPath)) {
+          const line = await this.findDependencyInKotlinFile(fullPath, dependencyName);
+          results.push({
+            path: fullPath,
+            line,
+          });
+        }
+      }
+    } catch {
+      // Error reading buildSrc
+    }
+    
+    return results;
+  }
+  
+  /**
+   * Find dependency declaration in Kotlin/Java file
+   * Phase 5: Parse const val and object declarations
+   */
+  private async findDependencyInKotlinFile(
+    filePath: string,
+    dependencyName: string
+  ): Promise<number | undefined> {
+    try {
+      const content = await fs.readFile(filePath, 'utf-8');
+      const lines = content.split('\n');
+      
+      const searchTerms = [
+        dependencyName.toLowerCase(),
+        dependencyName.replace(/-/g, '_').toUpperCase(), // ANDROIDX_CORE
+        dependencyName.replace(/-/g, ''), // androidxcore
+      ];
+      
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].toLowerCase();
+        
+        // Look for const val, val, or object property declarations
+        if (line.includes('const val') || 
+            line.includes('val ') || 
+            line.includes('var ')) {
+          for (const term of searchTerms) {
+            if (line.includes(term)) {
+              return i + 1;
+            }
+          }
+        }
+      }
+    } catch {
+      // File read error
+    }
+    
+    return undefined;
+  }
+}
     
     return lowerPath.includes('navigation') ||
            lowerPath.includes('navgraph') ||

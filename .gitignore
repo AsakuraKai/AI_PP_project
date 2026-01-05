@@ -59,10 +59,13 @@ desktop.ini
 logs/
 *.log
 
-# Temporary files
+# Temporary files and build outputs
 tmp/
 temp/
 *.tmp
+build-output.txt
+*-test-output.log
+test-results/
 
 # ChromaDB data (if running locally)
 chroma_data/

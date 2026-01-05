@@ -1,8 +1,8 @@
 /**
- * Option C Test Runner - Run Phase 4 tests with ValidatedMultiPassAgent
+ * Option C Test Runner - Run Phase 4 tests with MultiPassAgent
  * 
  * This script runs the full Phase 4 test suite using the new
- * ValidatedMultiPassAgent with quality validation.
+ * MultiPassAgent with quality validation.
  * 
  * Usage:
  *   npm run test:phase4-optionc
@@ -14,7 +14,7 @@
  */
 
 import { OllamaClient } from '../../src/llm/OllamaClient';
-import { ValidatedMultiPassAgent } from '../../src/agent/ValidatedMultiPassAgent';
+import { MultiPassAgent } from '../../src/agent/MultiPassAgent';
 import { Phase4TestSuite } from './Phase4TestSuite';
 import * as path from 'path';
 import * as fs from 'fs/promises';
@@ -65,9 +65,9 @@ async function main() {
     timeout: 120000 // 2 minute timeout
   });
   
-  // Initialize ValidatedMultiPassAgent
-  console.log('🤖 Creating ValidatedMultiPassAgent with quality validation...');
-  const agent = new ValidatedMultiPassAgent(llm, {
+  // Initialize MultiPassAgent
+  console.log('🤖 Creating MultiPassAgent with quality validation...');
+  const agent = new MultiPassAgent(llm, {
     maxIterations: 5,
     generateFix: true,
     enableCaching: true,

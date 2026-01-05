@@ -3,15 +3,6 @@
  * Few-Shot Examples Index (Updated - Phase 4 Improvements)
  * Exports all category-specific examples
  */
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EXAMPLES_BY_CATEGORY = exports.ALL_CATEGORY_EXAMPLES = exports.XML_LAYOUT_EXAMPLES = exports.COMPOSE_DEPRECATION_EXAMPLES = exports.KOTLIN_NPE_EXAMPLES = exports.NETWORK_CONNECTIVITY_EXAMPLES = exports.NAVIGATION_EXAMPLES = exports.PROGUARD_EXAMPLES = exports.BUILD_CACHE_EXAMPLES = exports.MANIFEST_PERMISSION_EXAMPLES = void 0;
 var manifest_examples_1 = require("./manifest-examples");
@@ -31,19 +22,28 @@ Object.defineProperty(exports, "COMPOSE_DEPRECATION_EXAMPLES", { enumerable: tru
 var xml_layout_examples_1 = require("./xml-layout-examples");
 Object.defineProperty(exports, "XML_LAYOUT_EXAMPLES", { enumerable: true, get: function () { return xml_layout_examples_1.XML_LAYOUT_EXAMPLES; } });
 // Re-export for convenience
-var manifest_examples_2 = require("./manifest-examples");
-var cache_examples_2 = require("./cache-examples");
-var proguard_examples_2 = require("./proguard-examples");
-var navigation_examples_2 = require("./navigation-examples");
-var network_examples_2 = require("./network-examples");
-var kotlin_npe_examples_2 = require("./kotlin-npe-examples");
-var compose_examples_2 = require("./compose-examples");
-var xml_layout_examples_2 = require("./xml-layout-examples");
+const manifest_examples_2 = require("./manifest-examples");
+const cache_examples_2 = require("./cache-examples");
+const proguard_examples_2 = require("./proguard-examples");
+const navigation_examples_2 = require("./navigation-examples");
+const network_examples_2 = require("./network-examples");
+const kotlin_npe_examples_2 = require("./kotlin-npe-examples");
+const compose_examples_2 = require("./compose-examples");
+const xml_layout_examples_2 = require("./xml-layout-examples");
 /**
  * All category-specific examples (43 total)
  * Updated: Added 8 new examples for Phase 4
  */
-exports.ALL_CATEGORY_EXAMPLES = __spreadArray(__spreadArray(__spreadArray(__spreadArray(__spreadArray(__spreadArray(__spreadArray(__spreadArray([], manifest_examples_2.MANIFEST_PERMISSION_EXAMPLES, true), cache_examples_2.BUILD_CACHE_EXAMPLES, true), proguard_examples_2.PROGUARD_EXAMPLES, true), navigation_examples_2.NAVIGATION_EXAMPLES, true), network_examples_2.NETWORK_CONNECTIVITY_EXAMPLES, true), kotlin_npe_examples_2.KOTLIN_NPE_EXAMPLES, true), compose_examples_2.COMPOSE_DEPRECATION_EXAMPLES, true), xml_layout_examples_2.XML_LAYOUT_EXAMPLES, true);
+exports.ALL_CATEGORY_EXAMPLES = [
+    ...manifest_examples_2.MANIFEST_PERMISSION_EXAMPLES, // 10 examples
+    ...cache_examples_2.BUILD_CACHE_EXAMPLES, // 5 examples
+    ...proguard_examples_2.PROGUARD_EXAMPLES, // 10 examples
+    ...navigation_examples_2.NAVIGATION_EXAMPLES, // 5 examples
+    ...network_examples_2.NETWORK_CONNECTIVITY_EXAMPLES, // 5 examples
+    ...kotlin_npe_examples_2.KOTLIN_NPE_EXAMPLES, // 3 examples (NEW - Phase 4)
+    ...compose_examples_2.COMPOSE_DEPRECATION_EXAMPLES, // 3 examples (NEW - Phase 4)
+    ...xml_layout_examples_2.XML_LAYOUT_EXAMPLES, // 2 examples (NEW - Phase 4)
+];
 /**
  * Examples by category for quick lookup
  * Keys match ErrorCategory enum values AND example errorType
@@ -70,3 +70,4 @@ exports.EXAMPLES_BY_CATEGORY = {
     'COMPOSE_DEPRECATION': compose_examples_2.COMPOSE_DEPRECATION_EXAMPLES,
     'XML_LAYOUT': xml_layout_examples_2.XML_LAYOUT_EXAMPLES,
 };
+//# sourceMappingURL=index.js.map

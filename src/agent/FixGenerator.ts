@@ -597,4 +597,237 @@ FIXED CODE (start with \`\`\`${request.error.language}):`;
       includeRelatedFiles: options?.includeRelatedFiles ?? false,
     };
   }
+  
+  // ========== Phase 5: Enhanced Multi-File Fix Support ==========
+  
+  /**
+   * Generate fixes for multiple related files
+   * Phase 5: Support common scenarios like Gradle + Kotlin changes
+   * 
+   * @param error - Parsed error
+   * @param rootCause - Root cause
+   * @param analysis - Additional analysis context
+   * @returns Array of fixes for all affected files
+   */
+  async generateMultiFileFix(
+    error: ParsedError,
+    rootCause: string,
+    analysis?: string
+  ): Promise<CodeFix[]> {
+    const fixes: CodeFix[] = [];
+    
+    try {
+      // Generate primary fix
+      const primaryFix = await this.generateFix(error, rootCause, analysis);
+      if (primaryFix) {
+        fixes.push(primaryFix);
+      }
+      
+      // Detect related files based on error type
+      const relatedFiles = await this.detectRelatedFiles(error, rootCause);
+      
+      // Generate fixes for related files
+      for (const relatedFile of relatedFiles) {
+        const relatedFix = await this.generateRelatedFix(
+          relatedFile,
+          error,
+          rootCause,
+          analysis
+        );
+        if (relatedFix) {
+          fixes.push(relatedFix);
+        }
+      }
+      
+      return fixes;
+      
+    } catch (err) {
+      console.error(`[FixGenerator] Multi-file fix generation failed:`, err);
+      return fixes; // Return whatever we have so far
+    }
+  }
+  
+  /**
+   * Detect related files that may need changes
+   * Phase 5: Smart detection based on error patterns
+   */
+  private async detectRelatedFiles(
+    error: ParsedError,
+    rootCause: string
+  ): Promise<Array<{ path: string; reason: string }>> {
+    const related: Array<{ path: string; reason: string }> = [];
+    const lowerCause = rootCause.toLowerCase();
+    
+    // Gradle dependency errors may require both build.gradle and version catalog
+    if (lowerCause.includes('dependency') || lowerCause.includes('gradle')) {
+      const versionCatalogPath = 'gradle/libs.versions.toml';
+      const resolved = await this.fileResolver.resolve(versionCatalogPath);
+      
+      if (resolved.exists && resolved.path !== error.filePath) {
+        related.push({
+          path: resolved.path,
+          reason: 'Version catalog may need dependency version update',
+        });
+      }
+    }
+    
+    // AGP version conflicts may require gradle-wrapper.properties
+    if (lowerCause.includes('agp') || lowerCause.includes('android gradle plugin')) {
+      const wrapperPath = 'gradle/wrapper/gradle-wrapper.properties';
+      const resolved = await this.fileResolver.resolve(wrapperPath);
+      
+      if (resolved.exists && resolved.path !== error.filePath) {
+        related.push({
+          path: resolved.path,
+          reason: 'Gradle wrapper version may need update for AGP compatibility',
+        });
+      }
+    }
+    
+    // Kotlin version changes may require gradle.properties
+    if (lowerCause.includes('kotlin')) {
+      const propertiesPath = 'gradle.properties';
+      const resolved = await this.fileResolver.resolve(propertiesPath);
+      
+      if (resolved.exists && resolved.path !== error.filePath) {
+        related.push({
+          path: resolved.path,
+          reason: 'Kotlin version property may need update',
+        });
+      }
+    }
+    
+    return related;
+  }
+  
+  /**
+   * Generate fix for a related file
+   * Phase 5: Context-aware fix generation
+   */
+  private async generateRelatedFix(
+    relatedFile: { path: string; reason: string },
+    primaryError: ParsedError,
+    rootCause: string,
+    analysis?: string
+  ): Promise<CodeFix | null> {
+    try {
+      console.log(`[FixGenerator] Generating related fix for ${relatedFile.path}...`);
+      
+      // Read the related file content
+      const content = await this.readCodeContext(relatedFile.path, 1, 50);
+      if (!content) {
+        console.warn(`[FixGenerator] Could not read related file: ${relatedFile.path}`);
+        return null;
+      }
+      
+      // Generate fix using LLM with context about why this file needs changes
+      const prompt = this.buildRelatedFixPrompt(
+        relatedFile,
+        content,
+        primaryError,
+        rootCause,
+        analysis
+      );
+      
+      const response = await this.llm.generate(prompt, {
+        temperature: 0.1,
+        maxTokens: 2000,
+      });
+      
+      // Parse the response to extract fixed code
+      const fixedCode = this.extractCodeFromLLMResponse(response.text);
+      if (!fixedCode) {
+        console.warn(`[FixGenerator] Could not extract fix from LLM response for ${relatedFile.path}`);
+        return null;
+      }
+      
+      // Create diff
+      const diff = this.diffFormatter.formatDiff(content, fixedCode, 'markdown');
+      
+      return {
+        filePath: relatedFile.path,
+        line: 1,
+        originalCode: content,
+        fixedCode,
+        diff,
+        explanation: relatedFile.reason,
+        confidence: 70, // Lower confidence for related files
+        syntaxValid: true, // Assume valid for now
+      };
+      
+    } catch (err) {
+      console.error(`[FixGenerator] Error generating related fix:`, err);
+      return null;
+    }
+  }
+  
+  /**
+   * Build prompt for generating related file fixes
+   * Phase 5: Specialized prompt for related file changes
+   */
+  private buildRelatedFixPrompt(
+    relatedFile: { path: string; reason: string },
+    currentContent: string,
+    primaryError: ParsedError,
+    rootCause: string,
+    analysis?: string
+  ): string {
+    return `You are fixing a related file that needs changes due to the primary error.
+
+PRIMARY ERROR:
+File: ${primaryError.filePath}
+Line: ${primaryError.line}
+Error: ${primaryError.message}
+
+ROOT CAUSE:
+${rootCause}
+
+RELATED FILE TO FIX:
+Path: ${relatedFile.path}
+Reason: ${relatedFile.reason}
+
+CURRENT CONTENT:
+\`\`\`
+${currentContent}
+\`\`\`
+
+${analysis ? `ADDITIONAL CONTEXT:\n${analysis}\n` : ''}
+
+Generate the fixed version of ${relatedFile.path} that addresses the related changes needed.
+Only output the corrected code, nothing else.`;
+  }
+  
+  /**
+   * Better error message generation for fix failures
+   * Phase 5: Actionable error messages
+   */
+  generateFixErrorMessage(error: ParsedError, failureReason: string): string {
+    const suggestions: string[] = [];
+    
+    if (failureReason.includes('file not found')) {
+      suggestions.push('• Verify the file path exists in your project');
+      suggestions.push('• Check if the file is in a different module');
+      suggestions.push('• Ensure the project structure matches expectations');
+    } else if (failureReason.includes('syntax')) {
+      suggestions.push('• The generated code may have syntax errors');
+      suggestions.push('• Try regenerating the fix with different context');
+      suggestions.push('• Manually review and adjust the suggested changes');
+    } else if (failureReason.includes('timeout')) {
+      suggestions.push('• LLM took too long to generate fix');
+      suggestions.push('• Try with a smaller context window');
+      suggestions.push('• Check your network connection to Ollama');
+    }
+    
+    return `Failed to generate fix for ${error.filePath}:${error.line}
+
+Reason: ${failureReason}
+
+Suggestions:
+${suggestions.join('\n')}
+
+You can try:
+1. Manually fix the error using the root cause analysis
+2. Reduce the context window size
+3. Check the error details for more specific guidance`;
+  }
 }

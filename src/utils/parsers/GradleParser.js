@@ -9,6 +9,7 @@
  * - Version conflicts
  *
  * Design Philosophy:
+ * - Extends BaseParser for shared utilities
  * - Extract actionable information for fixing
  * - Support both Groovy and Kotlin DSL
  * - Identify specific failure points
@@ -22,7 +23,8 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GradleParser = void 0;
-class GradleParser {
+const BaseParser_1 = require("./BaseParser");
+class GradleParser extends BaseParser_1.BaseParser {
     /**
      * Parse Gradle build error output
      *
@@ -33,8 +35,8 @@ class GradleParser {
         if (!errorText || typeof errorText !== 'string') {
             return null;
         }
-        // Trim and limit size
-        const text = errorText.trim().slice(0, 50000);
+        // Sanitize input
+        const text = this.sanitizeInput(errorText, 50000);
         // Try parsing different Gradle error types (order matters - most specific first)
         return (this.parseDependencyResolutionError(text) ||
             this.parseDependencyConflict(text) ||
@@ -381,24 +383,6 @@ class GradleParser {
                 errorType: 'Compilation error',
             },
         };
-    }
-    /**
-     * Extract build file path from error text
-     */
-    extractBuildFile(text) {
-        // Look for explicit build file references
-        const patterns = [
-            /(?:file|script)?\s*'([^']*build\.gradle(?:\.kts)?[^']*)'/i,
-            /((?:[\w/\\]+)?build\.gradle(?:\.kts)?)/i,
-        ];
-        for (const pattern of patterns) {
-            const match = text.match(pattern);
-            if (match) {
-                return match[1];
-            }
-        }
-        // Default to build.gradle
-        return 'build.gradle';
     }
     /**
      * Extract failure reason and details from error text

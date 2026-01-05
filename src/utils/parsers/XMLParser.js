@@ -13,6 +13,7 @@
  * - Invalid attribute value errors
  *
  * Design Philosophy:
+ * - Extends BaseParser for shared utilities
  * - XML-specific pattern matching
  * - Extract line numbers from stack traces
  * - Identify file names from error messages
@@ -27,10 +28,11 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.XMLParser = void 0;
+const BaseParser_1 = require("./BaseParser");
 /**
  * Parser for Android XML layout and manifest errors
  */
-class XMLParser {
+class XMLParser extends BaseParser_1.BaseParser {
     /**
      * Parse XML error text into structured format
      *
