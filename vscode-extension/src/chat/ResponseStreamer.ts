@@ -14,7 +14,7 @@
  */
 
 import * as vscode from 'vscode';
-import { RCAResult } from '../panel/types';
+import { RCAResult } from '../types';
 
 export interface CodeExample {
   file: string;

@@ -121,7 +121,8 @@ vsce package
 
 2. **Analyze it:**
    - Paste error in any file
-   - Press `Ctrl+Shift+R` (Windows/Linux) or `Cmd+Shift+R` (Mac)
+   - Open Command Palette (`Ctrl+Shift+P`)
+   - Select "RCA Agent: Analyze Error"
 
 3. **View results** in "RCA Agent" output panel (bottom → OUTPUT tab)
 
@@ -129,8 +130,9 @@ vsce package
 
 **Method 1: From Selection** (Fastest)
 1. Select error text in editor
-2. Press `Ctrl+Shift+R` (`Cmd+Shift+R` on Mac)
-3. Results in OUTPUT panel → "RCA Agent"
+2. Open Command Palette (`Ctrl+Shift+P`)
+3. Run "RCA Agent: Analyze Error"
+4. Results in OUTPUT panel → "RCA Agent"
 
 **Method 2: Command Palette**
 1. Press `Ctrl+Shift+P` (`Cmd+Shift+P` on Mac)
@@ -139,16 +141,9 @@ vsce package
 
 **Method 3: Webview Mode** (Best Visual Experience)
 1. Select error text
-2. Press `Ctrl+Shift+W` (`Cmd+Shift+W` on Mac)
-3. Interactive panel opens on right
-
-### Keyboard Shortcuts
-
-| Action | Windows/Linux | macOS |
-|--------|---------------|-------|
-| Analyze Error (Output) | `Ctrl+Shift+R` | `Cmd+Shift+R` |
-| Analyze Error (Webview) | `Ctrl+Shift+W` | `Cmd+Shift+W` |
-| Educational Mode | `Ctrl+Shift+E` | `Cmd+Shift+E` |
+2. Open Command Palette (`Ctrl+Shift+P`)
+3. Run "RCA Agent: Analyze Error"
+4. Interactive panel opens on right
 
 ### Common Commands
 ```bash

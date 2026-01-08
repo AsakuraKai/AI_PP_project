@@ -978,5 +978,5 @@ vscode.workspace.onDidChangeConfiguration((e) => {
 ---
 
 **Last Updated:** December 24, 2025  
-**Version:** 0.1.0
+**Version:** 2.0
 

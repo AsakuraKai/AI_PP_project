@@ -178,7 +178,7 @@ npm run compile
 # Press F5 in VS Code (opens new window with extension)
 
 # 3. Quick test commands:
-#    - Ctrl+Shift+R → Analyze Error
+#    - Ctrl+Shift+P → "RCA: Analyze Error"
 #    - Ctrl+Shift+P → "RCA: Toggle Educational Mode"
 #    - Ctrl+Shift+P → "RCA: Open Analysis Panel"
 
@@ -255,7 +255,7 @@ class MainActivity : AppCompatActivity() {
 
 // Copy error from logcat:
 // "lateinit property user has not been initialized at MainActivity.kt:45"
-// Press Ctrl+Shift+R → Analyze
+// Open Command Palette and select "RCA Agent: Analyze Error"
 ```
 
 **Jetpack Compose Error:**
@@ -269,7 +269,7 @@ fun MyScreen() {
 }
 
 // Copy error: "remember { ... } should be used"
-// Press Ctrl+Shift+R → Analyze
+// Open Command Palette and select "RCA Agent: Analyze Error"
 ```
 
 **Gradle Dependency Conflict:**
@@ -281,14 +281,14 @@ dependencies {
 }
 
 // Copy build error
-// Press Ctrl+Shift+R → Analyze
+// Open Command Palette and select "RCA Agent: Analyze Error"
 ```
 
 **3. Test Features**
 
 | Feature | How to Test |
 |---------|-------------|
-| Basic Analysis | Copy error → `Ctrl+Shift+R` → Check RCA quality |
+| Basic Analysis | Copy error → Use Command Palette → Check RCA quality |
 | Educational Mode | `Ctrl+Shift+P` → Toggle Educational → Check explanations |
 | Code Context | Verify agent reads correct file/line |
 | Fix Guidelines | Check if fixes are actionable |
@@ -335,7 +335,7 @@ dependencies {
 1. [ ] Start Ollama (ollama serve)
 2. [ ] Open Android project in VS Code
 3. [ ] Trigger 3 different error types
-4. [ ] Analyze each with Ctrl+Shift+R
+4. [ ] Analyze each using Command Palette
 5. [ ] Verify RCA quality (root cause + fixes)
 6. [ ] Test cache (re-analyze same error)
 7. [ ] Test educational mode
@@ -395,9 +395,9 @@ docker ps  # See if ChromaDB running
 - Cache hit ratio
 
 **Usability:**
-- Keyboard shortcuts working?
 - Panel UI responsive?
 - Educational mode helpful?
+- Command access easy?
 
 #### After Experiments
 

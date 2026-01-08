@@ -25,21 +25,27 @@ AI-powered debugging assistant that analyzes your Kotlin/Android errors and sugg
 - **TIP: Root Cause Identification**: AI-powered analysis identifies underlying issues, not just symptoms
 - ** Actionable Fix Guidelines**: Step-by-step instructions with code examples you can copy
 - **[LEARN] Educational Mode**: Beginner-friendly explanations with "What/Why/How" learning notes
-- **[DB] Learns from Your Errors**: Stores past analyses to provide faster, smarter solutions over time
+- **[DB] Smart Caching**: Instant results for repeated errors using ChromaDB (configurable)
+- **[TOOL] Intelligent Code Context**: Automatically reads relevant files, uses LSP for symbol resolution, searches workspace
+- **[DOC] Documentation Search**: Finds and displays relevant Android/Kotlin documentation for your error
 
 ### UI & Interaction
 - **[TARGET] Panel Interface**: Always-visible panel in activity bar for quick access
 - **[MANIFEST] Error Queue TreeView**: Visual list of detected errors with status indicators
 - ** Batch Processing**: Analyze all errors in queue with one click
+- **[PIN] Pin/Unpin Errors**: Keep important errors at the top of the queue
+- **[NAVIGATE] Error Navigation**: Jump to next/previous error with keyboard shortcuts
+- **[CLEAR] Queue Management**: Clear completed, remove individual errors, refresh queue
 - **TIP: Inline Quick Actions**: Click lightbulb on errors for instant analysis
 - **[METRICS] Real-time Progress**: Live iteration tracking with thought process display
-- ** History Tracking**: Full history of past analyses with reanalyze option
+- ** History Tracking**: Full history with reanalyze, export, delete, and copy actions
 
 ### Specialized Support
 - **[COMPOSE] Jetpack Compose**: Specialized handling for Compose recomposition and state errors
 - **[XML] XML Layouts**: Smart parsing of Android layout inflation errors
 - **[TOOL] Gradle Conflicts**: Visual dependency conflict detection with version recommendations
 - **[MANIFEST] Manifest Issues**: Permission and component configuration suggestions
+- **[MODULE] Multi-Module Projects**: Detects and analyzes errors across multiple app modules
 
 ### Accessibility & Performance
 - ** WCAG 2.1 AA Compliant**: Full keyboard navigation, screen reader support, ARIA labels
@@ -81,30 +87,42 @@ Comprehensive root cause analysis with code context and actionable fix guideline
    ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
    ```
 
-2. **ChromaDB** (Optional - for learning from past errors)
+2. **ChromaDB** (Optional - for caching and faster repeat analyses)
    ```bash
-   # Using Docker
+   # Using Docker (recommended)
    docker run -p 8000:8000 chromadb/chroma
    
    # Or using Python
    pip install chromadb
    chroma run --host localhost --port 8000
    ```
+   
+   **Benefits of ChromaDB:**
+   - Instant results for repeated errors (no LLM call needed)
+   - Learns from your feedback to improve future analyses
+   - Stores analyses with quality scores
+   - Can be disabled if you prefer fresh analyses each time
 
 ### Install Extension
 
 **Method 1: From VSIX (Recommended)**
-1. Download `rca-agent-0.1.0.vsix` from releases
+1. Download `rca-agent-2.0.vsix` from releases
 2. Open VS Code
 3. Press `Ctrl+Shift+P` (Cmd+Shift+P on Mac)
 4. Type "Extensions: Install from VSIX..."
 5. Select the downloaded `.vsix` file
 6. Reload VS Code
 
-**Method 2: From Marketplace** (Coming Soon)
-1. Open VS Code Extensions panel (`Ctrl+Shift+X`)
-2. Search for "RCA Agent"
-3. Click Install
+## ⌨️ Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+Shift+R` | Analyze selected error |
+| `Ctrl+Shift+P` → "RCA Agent..." | Access all commands |
+| `Tab` / `Shift+Tab` | Navigate panel elements |
+| `Enter` | Activate focused item |
+| `Delete` | Remove selected error/history |
+| `F2` | Reanalyze history item |
 
 ## [TARGET] Usage
 
@@ -128,36 +146,6 @@ Comprehensive root cause analysis with code context and actionable fix guideline
 2. **Run command:** Press `Ctrl+Shift+P` and type "RCA Agent: Analyze Error"
 3. View results in the panel
 
-### Keyboard Shortcuts
-
-**No default keybindings are set.** You can configure your own shortcuts:
-
-1. Open Command Palette: `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac)
-2. Type "Preferences: Open Keyboard Shortcuts"
-3. Search for "RCA Agent" or "rca-agent"
-4. Click the "+" icon next to any command to set your preferred shortcut
-
-**Available Commands:**
-- `rcaAgent.analyzeError` - Analyze error in editor
-- `rcaAgent.analyzeErrorWebview` - Analyze in webview panel
-- `rcaAgent.togglePanel` - Toggle RCA Agent panel
-- `rcaAgent.toggleEducationalMode` - Toggle educational mode
-- `rcaAgent.togglePerformanceMetrics` - Toggle performance metrics
-- `rca-agent.analyzeAll` - Analyze all errors in queue
-- `rca-agent.analyzeCurrentError` - Analyze error at cursor
-- `rca-agent.nextError` - Navigate to next error
-- `rca-agent.previousError` - Navigate to previous error
-- `rca-agent.cancelBatch` - Cancel batch analysis
-
-**Note:** Standard VS Code shortcuts still work within the panel:
-- `Tab`: Navigate between sections
-- `Enter`: Activate selected item
-- `Escape`: Close panel/cancel operations
-| Action | Windows/Linux | macOS |
-|--------|---------------|-------|
-| Toggle Educational Mode | `Ctrl+Shift+E` | `Cmd+Shift+E` |
-| Toggle Performance Metrics | `Ctrl+Shift+P` | `Cmd+Shift+P` |
-
 ### Educational Mode
 
 Enable educational mode for beginner-friendly explanations:
@@ -170,6 +158,37 @@ Educational mode provides:
 - **What**: Clear explanation of the error type
 - **Why**: Common causes and when it happens
 - **How**: Practical prevention strategies with code examples
+
+### History Management
+
+Access your analysis history in the RCA Agent panel:
+
+**Available Actions:**
+- **View**: Click any history item to view full analysis
+- **Reanalyze** (F2): Run fresh analysis with latest code changes
+- **Export**: Save analysis to markdown file
+- **Copy**: Copy analysis to clipboard
+- **Delete**: Remove individual items
+- **Clear All**: Remove entire history
+
+**Context Menu**: Right-click any history item for all actions.
+
+### Error Queue Management
+
+Manage detected errors efficiently:
+
+**Queue Actions:**
+- **Pin/Unpin**: Keep critical errors at the top (click pin icon)
+- **Remove**: Delete errors you don't want to analyze (Delete key)
+- **Clear Completed**: Remove all successfully analyzed errors
+- **Clear All**: Empty the entire queue
+- **Refresh**: Rescan workspace for new errors
+- **Navigate**: Use next/previous error commands
+
+**Batch Operations:**
+- **Analyze All**: Process entire queue sequentially
+- **Analyze Pending**: Only process unanyzed errors
+- **Cancel Batch**: Stop ongoing batch analysis
 
 ### Performance Metrics
 
@@ -186,6 +205,22 @@ Metrics include:
 - Cache hit rate
 - Token usage (prompt/completion)
 
+### Understanding Results
+
+**Confidence Score** (displayed with color-coded bar):
+- **High (80%+)**: Very reliable analysis, fix guidelines should work
+- **Medium (60-79%)**: Good analysis, may need minor adjustments
+- **Low (<60%)**: Review carefully, consider manual debugging
+
+**Quality Score** (from user feedback):
+- Improves over time as you mark analyses helpful/unhelpful
+- Used to prioritize cached results
+
+**Cache Indicator**:
+- **"From Cache"**: Instant result from previous analysis
+- Shows cache timestamp
+- Reanalyze if code has changed since cached
+
 ##  Configuration
 
 Access settings: `File > Preferences > Settings > RCA Agent`
@@ -198,6 +233,14 @@ Access settings: `File > Preferences > Settings > RCA Agent`
   
   // LLM model to use
   "rcaAgent.model": "hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest",
+  
+  // ChromaDB for caching (optional)
+  "rcaAgent.chromaUrl": "http://localhost:8000",
+  "rcaAgent.enableCache": true,
+  
+  // Analysis behavior
+  "rcaAgent.maxIterations": 5,
+  "rcaAgent.timeout": 120000,
   
   // Show performance metrics
   "rcaAgent.showPerformanceMetrics": false
@@ -229,6 +272,35 @@ Access settings: `File > Preferences > Settings > RCA Agent`
 }
 ```
 
+### Tool Configuration
+```json
+{
+  // Enable specific analysis tools
+  "rcaAgent.tools.enableReadFile": true,
+  "rcaAgent.tools.enableLSP": true,
+  "rcaAgent.tools.enableWorkspaceSearch": true,
+  "rcaAgent.tools.enableAndroidBuild": true,
+  
+  // Tool behavior
+  "rcaAgent.tools.maxFileSize": 1048576,  // 1MB max file read
+  "rcaAgent.tools.searchDepth": 5,        // Max workspace search depth
+}
+```
+
+### Export & Backup
+```json
+{
+  // Export settings
+  "rcaAgent.export.includeMetadata": true,
+  "rcaAgent.export.includeCodeContext": true,
+  "rcaAgent.export.format": "markdown",  // markdown or json
+  
+  // Auto-save history
+  "rcaAgent.history.autoSave": true,
+  "rcaAgent.history.maxItems": 100,
+}
+```
+
 ### Supported Models
 
 | Model | Size | Best For |
@@ -237,6 +309,42 @@ Access settings: `File > Preferences > Settings > RCA Agent`
 | `codellama:7b` | 3.8GB | Fast, good for quick analyses |
 | `qwen-coder:7b` | 4.2GB | Strong reasoning, slightly slower |
 | `deepseek-coder:6.7b` | 3.6GB | Compact, good for low-memory systems |
+
+## [CMD] Command Reference
+
+### Analysis Commands
+- `RCA Agent: Analyze Error` - Analyze selected error text
+- `RCA Agent: Analyze Error at Cursor` - Analyze error under cursor
+- `RCA Agent: Analyze with RCA Agent` - From lightbulb quick action
+
+### Queue Commands
+- `RCA Agent: Analyze All` - Batch analyze entire queue
+- `RCA Agent: Analyze Pending` - Only analyze unprocessed errors
+- `RCA Agent: Cancel Batch Analysis` - Stop batch operation
+- `Refresh Error Queue` - Rescan workspace
+- `Clear Error Queue` - Remove all errors
+- `Clear Completed Errors` - Remove analyzed errors
+- `Pin/Unpin Error` - Toggle error priority
+- `Go to Error Location` - Jump to error in code
+- `Go to Next/Previous Error` - Navigate error queue
+
+### History Commands
+- `Refresh History` - Reload analysis history
+- `Clear History` - Remove all history items
+- `Delete History Item` - Remove single item
+- `Reanalyze` - Run fresh analysis on past error
+- `Export Analysis` - Save to markdown file
+- `Copy Analysis to Clipboard` - Copy formatted result
+- `View Analysis` - Open full analysis details
+
+### Mode Toggles
+- `RCA Agent: Toggle Educational Mode` - Enable/disable learning notes
+- `RCA Agent: Toggle Performance Metrics` - Show/hide metrics
+- `RCA Agent: Toggle Panel` - Show/hide panel
+
+### Feedback Commands
+- `Mark as Helpful` - Improve analysis quality
+- `Mark as Unhelpful` - Report inaccurate analysis
 
 ## [BUG] Troubleshooting
 

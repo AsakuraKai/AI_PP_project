@@ -794,7 +794,7 @@ tests/fixtures/
 
 3. **❌ Version control strategy**
    - Could have used semantic versioning from start
-   - Lesson: Start with 0.1.0, increment meaningfully
+   - Lesson: Start with 2.0, increment meaningfully
 
 ---
 

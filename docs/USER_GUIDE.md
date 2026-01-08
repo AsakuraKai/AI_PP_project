@@ -58,11 +58,6 @@ Before using RCA Agent, you'll need:
 3. Type "Extensions: Install from VSIX..."
 4. Select the downloaded file
 
-**Method 2: From Marketplace** (when published)
-1. Open VS Code Extensions (`Ctrl+Shift+X`)
-2. Search for "RCA Agent"
-3. Click Install
-
 ### First Launch
 
 1. Open a Kotlin/Android project in VS Code
@@ -123,7 +118,6 @@ RCA Agent learns from your project:
 
 1. **Click the RCA Agent icon** in the Activity Bar (left sidebar)
 2. **Or** run command: "RCA Agent: Open Panel" (`Ctrl+Shift+P` to open command palette)
-3. **Or** set your own keyboard shortcut in VS Code Settings → Keyboard Shortcuts
 
 ### Panel Sections
 
@@ -215,40 +209,11 @@ Access settings via:
 **UI Preferences:**
 - `rcaAgent.theme`: Panel color scheme (auto/light/dark)
 - `rcaAgent.autoRefresh`: Auto-refresh error queue (default: true)
-- **Keyboard Shortcuts:** No defaults set - configure in Keyboard Shortcuts settings
 
 **ChromaDB (Optional):**
 - `rcaAgent.chromaDbUrl`: ChromaDB server URL (default: http://localhost:8000)
 - `rcaAgent.enableCaching`: Cache analyses (default: true)
 - `rcaAgent.cacheExpiry`: Cache duration in hours (default: 24)
-
-### Keyboard Shortcuts
-
-**No default keybindings are set.** You can configure your own shortcuts:
-
-1. Open VS Code Settings: `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac)
-2. Type "Preferences: Open Keyboard Shortcuts"
-3. Search for "RCA Agent" or "rca-agent" to find available commands
-4. Click the "+" icon next to any command to set your preferred shortcut
-
-**Available Commands to Bind:**
-- `rcaAgent.analyzeError` - Analyze error in editor
-- `rcaAgent.analyzeErrorWebview` - Analyze in webview panel
-- `rcaAgent.togglePanel` - Toggle RCA Agent panel
-- `rcaAgent.toggleEducationalMode` - Toggle educational mode
-- `rcaAgent.togglePerformanceMetrics` - Toggle performance metrics
-- `rca-agent.analyzeAll` - Analyze all errors in queue
-- `rca-agent.analyzeCurrentError` - Analyze error at cursor
-- `rca-agent.nextError` - Navigate to next error
-- `rca-agent.previousError` - Navigate to previous error
-- `rca-agent.cancelBatch` - Cancel batch analysis
-
-**Note:** Within the panel UI, standard navigation still works:
-- `Tab`: Navigate between sections
-- `Enter`: Activate selected item
-- `Escape`: Close panel/cancel operations
-- `↑/↓`: Navigate lists
-- `Space`: Select/deselect items
 
 ### Feature Flags
 
@@ -498,7 +463,6 @@ When reporting issues, include:
 - **Adjust temperature:** Lower (0.3-0.5) for consistent fixes, higher (0.7-0.9) for creative solutions
 - **Tune max tokens:** Increase for detailed analyses, decrease for quick answers
 - **Theme preferences:** Match your VS Code theme for better readability
-- **Keyboard shortcuts:** Customize in VS Code Keyboard Shortcuts settings
 
 ### 🔐 Privacy & Security
 

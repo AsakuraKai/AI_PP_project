@@ -10,24 +10,19 @@
  */
 
 import * as vscode from 'vscode';
-import { ErrorItem, AgentState } from '../panel/types';  // Use shared AgentState (Chunk 6 Consolidation)
-import { RCAResult as ExtensionRCAResult } from '../panel/types';
+import { ErrorItem, AgentState, RCAResult } from '../types';
 import { RCAResult as BackendRCAResult } from '../../../src/types';
 import { MultiPassAgent } from '../../../src/agent/MultiPassAgent';
 import { AgentStateStream } from '../../../src/agent/AgentStateStream';
 import { OllamaClient } from '../../../src/llm/OllamaClient';
 import { ErrorParser } from '../../../src/utils/ErrorParser';
 import { ChromaDBClient } from '../../../src/db/ChromaDBClient';
+import { NetworkTimeoutHandler } from './NetworkTimeoutHandler';
 
 /**
  * Progress callback for analysis updates (uses shared AgentState)
  */
 export type ProgressCallback = (progress: AgentState) => void;
-
-/**
- * Type alias for RCA results (using extension's type)
- */
-type RCAResult = ExtensionRCAResult;
 
 /**
  * Analysis service for RCA operations
@@ -46,9 +41,11 @@ export class AnalysisService {
   private _client?: OllamaClient;
   private _chromaDB?: ChromaDBClient;
   private _stateStream?: AgentStateStream;
+  private _timeoutHandler: NetworkTimeoutHandler;
   
   private constructor() {
     // Singleton
+    this._timeoutHandler = new NetworkTimeoutHandler();
   }
   
   static getInstance(): AnalysisService {
@@ -113,8 +110,18 @@ export class AnalysisService {
         await this.initialize();
       }
       
-      const isHealthy = await this._client!.isHealthy();
-      return { available: isHealthy };
+      // Use timeout handler for Ollama connection check
+      const result = await this._timeoutHandler.executeWithTimeout(
+        'ollama-connection-check',
+        async () => await this._client!.isHealthy(),
+        5000 // 5s timeout
+      );
+      
+      if (result.timedOut) {
+        return { available: false, error: 'Connection timed out' };
+      }
+      
+      return { available: result.success && (result.data ?? false) };
     } catch (error) {
       const err = error as Error;
       return { 
@@ -156,9 +163,13 @@ export class AnalysisService {
       await this.initialize();
     }
     
-    // Create cancellation token if not provided
+    // Always create an internal cancellation token so stopAnalysis() can reliably cancel.
+    // If the caller provides a token, link it to the internal one.
     const cancelTokenSource = new vscode.CancellationTokenSource();
-    const token = cancellationToken || cancelTokenSource.token;
+    const token = cancelTokenSource.token;
+    if (cancellationToken) {
+      cancellationToken.onCancellationRequested(() => cancelTokenSource.cancel());
+    }
     
     // Store current analysis
     this._currentAnalysis = {
@@ -239,24 +250,47 @@ export class AnalysisService {
         });
       });
       
-      // Handle cancellation
-      const cancelHandler = () => {
-        if (token.isCancellationRequested) {
-          this.stopAnalysis();
-          throw new Error('Analysis cancelled');
-        }
-      };
-      token.onCancellationRequested(cancelHandler);
+      // Cancellation: race the analysis against a cancellation promise.
+      // (MultiPassAgent doesn't accept a token; this prevents UI from waiting forever.)
+      const cancelPromise = new Promise<never>((_, reject) => {
+        token.onCancellationRequested(() => {
+          try {
+            this.stopAnalysis();
+          } finally {
+            reject(new Error('Analysis cancelled'));
+          }
+        });
+      });
+
+      // Run MultiPassAgent analysis with timeout protection
+      const analysisResult = await this._timeoutHandler.executeWithTimeout(
+        `analysis-${error.id}`,
+        async () => {
+          return await Promise.race([
+            this._agent!.analyze(parsed) as Promise<any>,
+            cancelPromise
+          ]);
+        },
+        30000, // 30s timeout
+        3      // 3 retries
+      );
       
-      // Run MultiPassAgent analysis
-      const result = await this._agent!.analyze(parsed);
+      if (analysisResult.timedOut) {
+        throw new Error('Analysis timed out after 30 seconds');
+      }
+      
+      if (!analysisResult.success) {
+        throw analysisResult.error || new Error('Analysis failed');
+      }
+      
+      const result = analysisResult.data!;
       
       // Search for similar errors in ChromaDB
       const similarErrors = await this._searchSimilarErrors(parsed);
       
       // Return backend result directly (types are compatible)
       console.log('[AnalysisService] Analysis complete:', result);
-      return result as any as ExtensionRCAResult;
+      return result;
       
     } catch (error) {
       console.error('[AnalysisService] Analysis failed:', error);

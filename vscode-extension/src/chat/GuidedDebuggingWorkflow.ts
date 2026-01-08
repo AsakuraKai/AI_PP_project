@@ -252,7 +252,8 @@ export class GuidedDebuggingWorkflow {
         message: this.state.error.message,
         filePath: this.state.error.file,
         line: this.state.error.line,
-        severity: 'high' as const,
+        type: 'runtime' as const,
+        severity: 'error' as const,
         status: 'pending' as const,
         timestamp: Date.now()
       };

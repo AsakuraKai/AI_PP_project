@@ -2,7 +2,7 @@
   "name": "rca-agent-extension",
   "displayName": "RCA Agent - Root Cause Analysis",
   "description": "AI-powered debugging assistant for Kotlin/Android",
-  "version": "2.0",
+  "version": "2.0.0",
   "publisher": "Kai",
   "repository": {
     "type": "git",
@@ -30,7 +30,7 @@
     "onCommand:rca-agent.previousError",
     "onView:rca-agent.mainPanel"
   ],
-  "main": "./out/extension.js",
+  "main": "./out/vscode-extension/src/extension.js",
   "contributes": {
     "viewsContainers": {
       "activitybar": [
@@ -78,6 +78,11 @@
       {
         "command": "rcaAgent.togglePerformanceMetrics",
         "title": "RCA Agent: Toggle Performance Metrics"
+      },
+      {
+        "command": "rcaAgent.checkUIStatus",
+        "title": "RCA Agent: Check UI Status",
+        "icon": "$(info)"
       },
       {
         "command": "rcaAgent.togglePanel",
@@ -150,6 +155,21 @@
         "icon": "$(trash)"
       },
       {
+        "command": "rca-agent.applyFix",
+        "title": "RCA Agent: Apply Fix",
+        "icon": "$(check)"
+      },
+      {
+        "command": "rca-agent.explainMore",
+        "title": "RCA Agent: Show Detailed Explanation",
+        "icon": "$(info)"
+      },
+      {
+        "command": "rca-agent.searchSimilar",
+        "title": "RCA Agent: Search Similar Issues",
+        "icon": "$(search)"
+      },
+      {
         "command": "rca-agent.reanalyzeHistoryItem",
         "title": "Reanalyze",
         "icon": "$(refresh)"
@@ -218,6 +238,21 @@
         "command": "rca-agent.viewPreviousAnalysis",
         "title": "RCA Agent: View Previous Analysis",
         "icon": "$(history)"
+      },
+      {
+        "command": "rca-agent.applyFix",
+        "title": "RCA Agent: Apply Fix",
+        "icon": "$(check)"
+      },
+      {
+        "command": "rca-agent.explainMore",
+        "title": "RCA Agent: Show Detailed Explanation",
+        "icon": "$(info)"
+      },
+      {
+        "command": "rca-agent.searchSimilar",
+        "title": "RCA Agent: Search Similar Issues",
+        "icon": "$(search)"
       },
       {
         "command": "rca-agent.searchImports",
