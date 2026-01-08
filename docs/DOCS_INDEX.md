@@ -1,9 +1,19 @@
 # 📚 Documentation Index
 
 > **Quick navigation to all RCA Agent documentation**  
-> **Last Updated:** January 5, 2026  
-> **Status:** Phase 4 Complete ✅ - Moving to Phase 5  
-> **Note:** Major consolidation complete - 8 root docs → 4 core files ✨
+> **Last Updated:** January 8, 2026  
+> **Status:** UI Removed - Backend Complete - Ready for Fresh Implementation ✅  
+> **Note:** All UI components removed - See new UI implementation guides below 🚀
+
+---
+
+## 🚨 IMPORTANT: UI Components Removed
+
+**All UI has been removed from the extension.** Backend services remain fully functional.
+
+**New Documentation**:
+- [RCA_UI_WIRING_GUIDE.md](./RCA_UI_WIRING_GUIDE.md) - Complete guide for reimplementing UI
+- [RCA_UI_REMOVAL_SUMMARY.md](./RCA_UI_REMOVAL_SUMMARY.md) - What was removed and why
 
 ---
 
@@ -11,22 +21,30 @@
 
 **New to the project?** Start here:
 1. [README.md](README.md) - Project overview and complete quick start guide
-2. [DEVLOG.md](DEVLOG.md) - Development journal with current status (weekly updates)
-3. [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) - Complete file tree and organization
-4. [architecture/extension/VSCODE_EXTENSION_GUIDE.md](architecture/extension/VSCODE_EXTENSION_GUIDE.md) - Extension installation and usage
+2. [RCA_UI_WIRING_GUIDE.md](./RCA_UI_WIRING_GUIDE.md) - **NEW:** UI implementation guide
+3. [RCA_UI_REMOVAL_SUMMARY.md](./RCA_UI_REMOVAL_SUMMARY.md) - **NEW:** Current state summary
+4. [DEVLOG.md](DEVLOG.md) - Development journal with current status (weekly updates)
+5. [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) - Complete file tree and organization
 
 ---
 
 ## 📖 Documentation by Category
+
+### 🚀 NEW: UI Implementation Guides
+
+| Document | Purpose | Size | Status |
+|----------|---------|------|--------|
+| [RCA_UI_WIRING_GUIDE.md](./RCA_UI_WIRING_GUIDE.md) | **Complete UI implementation guide** - component mapping, backend APIs, wiring instructions, phase-by-phase guide (11-17 days) | 45KB | ✅ Complete |
+| [RCA_UI_REMOVAL_SUMMARY.md](./RCA_UI_REMOVAL_SUMMARY.md) | **UI removal summary** - what was removed, what's preserved, how to use backend services | 8KB | ✅ Complete |
 
 ### 🏗️ Core Documentation (Root Level)
 
 | Document | Purpose | Lines | Status |
 |----------|---------|-------|--------|
 | [README.md](README.md) | Project overview, quick start, and setup guide | ~300 | ✅ Current |
-| [DEVLOG.md](DEVLOG.md) | **Consolidated:** Weekly journal + current status & phase progress | ~2,900+ | ✅ Updated daily |
-| [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) | Complete file tree and organization | ~700 | ✅ Current |
-| [DOCS_INDEX.md](DOCS_INDEX.md) | This file - Documentation navigation | ~250 | ✅ Current |
+| [DEVLOG.md](DEVLOG.md) | **Consolidated:** Weekly journal + current status & phase progress | ~2,900+ | ⚠️ Needs update |
+| [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) | Complete file tree and organization | ~700 | ⚠️ Needs update |
+| [DOCS_INDEX.md](DOCS_INDEX.md) | This file - Documentation navigation | ~300 | ✅ Updated |
 
 **Changes:**
 - ✅ **Merged STATUS.md into DEVLOG.md** - Current status now at top of devlog

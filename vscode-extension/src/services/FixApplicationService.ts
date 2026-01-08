@@ -6,7 +6,7 @@
  */
 
 import * as vscode from 'vscode';
-import { RCAResult } from '../panel/types';
+import { RCAResult } from '../types';
 import { ReadFileTool, WriteFileTool, EditFileTool } from '../tools/FileOperationTool';
 import { SingletonService } from './BaseService';
 
@@ -97,7 +97,7 @@ export class FixApplicationService {
 
     // Fallback: Return guideline as-is
     return {
-      file: result.filePath || 'unknown',
+      file: result.codeFix?.filePath || 'unknown',
       before: '',
       after: '',
       explanation: guideline
@@ -264,6 +264,20 @@ export class FixApplicationService {
       originalProvider.dispose();
       modifiedProvider.dispose();
     }
+  }
+
+  /**
+   * Convenience method: Show diff for file and content
+   */
+  async showDiff(file: string, originalContent: string, modifiedContent: string): Promise<void> {
+    const changes = this.calculateChanges(originalContent, modifiedContent);
+    const preview: DiffPreview = {
+      file,
+      originalContent,
+      modifiedContent,
+      changes
+    };
+    await this.showDiffInEditor(preview);
   }
 
   /**

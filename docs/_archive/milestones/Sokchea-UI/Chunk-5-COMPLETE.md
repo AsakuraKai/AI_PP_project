@@ -835,14 +835,14 @@ npm run lint
 # Package extension (creates .vsix file)
 vsce package
 
-# Output: rca-agent-0.1.0.vsix
+# Output: rca-agent-2.0.vsix
 ```
 
 ### Installation Testing
 
 ```bash
 # Install extension locally
-code --install-extension rca-agent-0.1.0.vsix
+code --install-extension rca-agent-2.0.vsix
 
 # Verify activation
 # 1. Open VS Code

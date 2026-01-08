@@ -1,5 +1,5 @@
 ﻿
-> rca-agent@0.1.0 test:phase4
+> rca-agent@2.0 test:phase4
 > ts-node scripts/phase4-test-runner.ts
 
 

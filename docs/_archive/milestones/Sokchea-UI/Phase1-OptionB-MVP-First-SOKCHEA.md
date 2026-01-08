@@ -933,7 +933,7 @@ function log(level: 'info' | 'warn' | 'error', message: string, data?: unknown) 
   "name": "rca-agent",
   "displayName": "RCA Agent - Root Cause Analysis",
   "description": "AI-powered debugging assistant for Kotlin/Android",
-  "version": "0.1.0",
+  "version": "2.0",
   "engines": {
     "vscode": "^1.80.0"
   },
@@ -2785,7 +2785,7 @@ AI-powered debugging assistant that analyzes your errors and suggests fixes.
 - 📚 Learns from your errors
 
 ## Installation
-1. Download `rca-agent-0.1.0.vsix`
+1. Download `rca-agent-2.0.vsix`
 2. Open VS Code
 3. Run: Extensions > Install from VSIX
 4. Reload VS Code
@@ -2829,10 +2829,10 @@ npm install -g vsce
 # Package extension
 vsce package
 
-# Output: rca-agent-0.1.0.vsix
+# Output: rca-agent-2.0.vsix
 
 # Test installation
-code --install-extension rca-agent-0.1.0.vsix
+code --install-extension rca-agent-2.0.vsix
 ```
 
 **Tests:** ✅ 10/10 PASSED (Documentation)

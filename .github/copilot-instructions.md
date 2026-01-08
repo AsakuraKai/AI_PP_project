@@ -1,1 +1,0 @@
-Focus on the user prompt and request. Do not stray out of scope.

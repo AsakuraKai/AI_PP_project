@@ -134,7 +134,8 @@ export class RCAChatParticipant {
       message: errorContext.errors[0]?.message || request.prompt,
       filePath: errorContext.errors[0]?.file || '',
       line: errorContext.errors[0]?.line || 0,
-      severity: 'high' as const,
+      type: 'runtime' as const,
+      severity: 'error' as const,
       status: 'pending' as const,
       timestamp: Date.now()
     };

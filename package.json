@@ -1,6 +1,6 @@
 {
   "name": "rca-agent",
-  "version": "0.1.0",
+  "version": "2.0",
   "description": "Root Cause Analysis Agent for Kotlin/Android Debugging",
   "main": "dist/index.js",
   "scripts": {

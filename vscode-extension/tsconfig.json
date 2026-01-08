@@ -12,5 +12,5 @@
     }
   },
   "include": ["src/**/*", "../src/**/*"],
-  "exclude": ["node_modules", ".vscode-test", "../node_modules", "../tests", "../scripts", "../examples"]
+  "exclude": ["node_modules", ".vscode-test", "../node_modules", "../tests", "../scripts", "../examples", "src/extension.backup.ts", "package.backup.json"]
 }
