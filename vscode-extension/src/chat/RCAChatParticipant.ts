@@ -320,7 +320,7 @@ export function registerChatParticipant(
   const rcaParticipant = new RCAChatParticipant(context);
   
   const participant = vscode.chat.createChatParticipant(
-    'rca-agent',
+    'rca-agent.participant',
     async (request, context, stream, token) => {
       await rcaParticipant.handleRequest(request, context, stream, token);
     }

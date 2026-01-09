@@ -3,12 +3,17 @@
  * Phase 2-3 Week 3 Implementation
  * 
  * Bridges backend FixGenerator with frontend chat commands
+ * P0 Fix #2: Now uses FixGenerator for intelligent fix generation
  */
 
 import * as vscode from 'vscode';
-import { RCAResult } from '../types';
+import { RCAResult, ParsedError } from '../types';
 import { ReadFileTool, WriteFileTool, EditFileTool } from '../tools/FileOperationTool';
 import { SingletonService } from './BaseService';
+import { FixGenerator, CodeFix } from '../../../src/agent/FixGenerator';
+import { OllamaClient } from '../../../src/llm/OllamaClient';
+import { NetworkTimeoutHandler } from './NetworkTimeoutHandler';
+import path from 'path';
 
 export interface Fix {
   file: string;
@@ -16,6 +21,22 @@ export interface Fix {
   before: string;
   after: string;
   explanation: string;
+}
+
+export interface PendingFix {
+  id: string;
+  fix: Fix;
+  timestamp: number;
+  confidence: number;
+  errorContext: string;
+}
+
+export interface AppliedFix {
+  id: string;
+  fix: Fix;
+  timestamp: number;
+  success: boolean;
+  error?: string;
 }
 
 export interface DiffPreview {
@@ -36,21 +57,166 @@ export class FixApplicationService {
   private readTool: ReadFileTool;
   private writeTool: WriteFileTool;
   private editTool: EditFileTool;
+  private fixGenerator: FixGenerator;
+  private ollamaClient: OllamaClient;
+  private timeoutHandler: NetworkTimeoutHandler;
+  
+  // Phase 3: Fix queue management
+  private pendingFixes: Map<string, PendingFix> = new Map();
+  private appliedFixes: Map<string, AppliedFix> = new Map();
 
   constructor() {
     this.readTool = new ReadFileTool();
     this.writeTool = new WriteFileTool();
     this.editTool = new EditFileTool();
+    this.timeoutHandler = new NetworkTimeoutHandler();
+    
+    // Initialize Ollama client from configuration
+    const config = vscode.workspace.getConfiguration('rcaAgent');
+    const ollamaUrl = config.get<string>('ollamaUrl', 'http://localhost:11434');
+    const model = config.get<string>('model', 'deepseek-r1');
+    
+    this.ollamaClient = new OllamaClient({
+      baseUrl: ollamaUrl,
+      model: model
+    });
+    
+    // Initialize FixGenerator with backend tools
+    const workspacePath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || process.cwd();
+    this.fixGenerator = new FixGenerator(
+      this.ollamaClient,
+      this.readTool as any, // Cast to any to allow backend ReadFileTool interface
+      workspacePath
+    );
   }
 
   /**
-   * Generate fix from RCA result
-   * This will call backend FixGenerator when integrated
+   * Generate fix from RCA result using intelligent FixGenerator
+   * P0 Fix #2: Now uses backend FixGenerator instead of templates
    */
   async generateFix(result: RCAResult): Promise<Fix[]> {
-    // TODO: Integrate with backend FixGenerator
-    // For now, parse fix guidelines into structured fixes
+    try {
+      // Use backend FixGenerator if we have codeFix available
+      if (result.codeFix) {
+        const backendFix = result.codeFix;
+        return [{
+          file: backendFix.filePath,
+          line: backendFix.line,
+          before: backendFix.originalCode,
+          after: backendFix.fixedCode,
+          explanation: backendFix.explanation
+        }];
+      }
+      
+      // If codeFix not in result, try to generate it from error info
+      // We need to convert RCAResult to ParsedError format
+      const parsedError = this.convertToParsedError(result);
+      if (!parsedError) {
+        // Fallback to parsing fix guidelines
+        return this.generateFixFromGuidelines(result);
+      }
+      
+      // Generate fix using FixGenerator with timeout protection
+      const fixResult = await this.timeoutHandler.executeWithTimeout(
+        `fix-generation-${Date.now()}`,
+        async () => {
+          return await this.fixGenerator.generateFix(
+            parsedError,
+            result.rootCause,
+            result.codeContext
+          );
+        },
+        60000, // 60s timeout for fix generation
+        2      // 2 retries
+      );
+      
+      if (fixResult.timedOut) {
+        console.warn('[FixApplicationService] Fix generation timed out, falling back to guidelines');
+        return this.generateFixFromGuidelines(result);
+      }
+      
+      if (!fixResult.success || !fixResult.data) {
+        console.warn('[FixApplicationService] FixGenerator returned null, falling back to guidelines');
+        return this.generateFixFromGuidelines(result);
+      }
+      
+      const codeFix = fixResult.data;
+      
+      // Convert backend CodeFix to Fix[]
+      const fixes: Fix[] = [{
+        file: codeFix.filePath,
+        line: codeFix.line,
+        before: codeFix.originalCode,
+        after: codeFix.fixedCode,
+        explanation: codeFix.explanation
+      }];
+      
+      // Add related file fixes if available
+      if (codeFix.relatedFiles && codeFix.relatedFiles.length > 0) {
+        codeFix.relatedFiles.forEach(relatedFix => {
+          fixes.push({
+            file: relatedFix.filePath,
+            line: relatedFix.line,
+            before: relatedFix.originalCode,
+            after: relatedFix.fixedCode,
+            explanation: relatedFix.explanation
+          });
+        });
+      }
+      
+      return fixes;
+      
+    } catch (error) {
+      console.error('[FixApplicationService] Error generating fix:', error);
+      // Fallback to template-based generation
+      return this.generateFixFromGuidelines(result);
+    }
+  }
+  
+  /**
+   * Convert RCAResult to ParsedError format for FixGenerator
+   */
+  private convertToParsedError(result: RCAResult): ParsedError | null {
+    // Try to extract file path and line from error message or context
+    // This is best-effort extraction
     
+    // Look for common patterns: "file.kt:123", "at file.java:45"
+    const filePattern = /(?:at\s+)?([a-zA-Z0-9_/\\.-]+\.[a-zA-Z]{2,4}):(\d+)/;
+    const match = result.error.match(filePattern);
+    
+    if (!match) {
+      console.warn('[FixApplicationService] Could not extract file path from error');
+      return null;
+    }
+    
+    const [, filePath, lineStr] = match;
+    const line = parseInt(lineStr, 10);
+    
+    // Determine language from file extension
+    const ext = path.extname(filePath).toLowerCase();
+    let language: 'kotlin' | 'java' | 'xml' | 'gradle' | 'proguard' = 'java';
+    
+    if (ext === '.kt' || ext === '.kts') {
+      language = 'kotlin';
+    } else if (ext === '.xml') {
+      language = 'xml';
+    } else if (ext === '.gradle') {
+      language = 'gradle';
+    }
+    
+    return {
+      type: 'unknown', // Could be extracted from error pattern
+      message: result.error,
+      filePath,
+      line,
+      language
+    };
+  }
+  
+  /**
+   * Fallback: Generate fix from guidelines (template-based)
+   */
+  private generateFixFromGuidelines(result: RCAResult): Fix[] {
     if (!result.fixGuidelines || result.fixGuidelines.length === 0) {
       return [];
     }
@@ -320,4 +486,99 @@ export class FixApplicationService {
       return false;
     }
   }
-}
+
+  // ============================================================================
+  // Phase 3: Fix Queue Management
+  // ============================================================================
+
+  /**
+   * Add fix to pending queue
+   */
+  addPendingFix(fix: Fix, errorContext: string, confidence: number = 0.8): string {
+    const id = `fix-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    this.pendingFixes.set(id, {
+      id,
+      fix,
+      timestamp: Date.now(),
+      confidence,
+      errorContext
+    });
+    return id;
+  }
+
+  /**
+   * Get all pending fixes
+   */
+  getPendingFixes(): PendingFix[] {
+    return Array.from(this.pendingFixes.values());
+  }
+
+  /**
+   * Get all applied fixes
+   */
+  getAppliedFixes(): AppliedFix[] {
+    return Array.from(this.appliedFixes.values());
+  }
+
+  /**
+   * Preview a fix by ID
+   */
+  async previewFix(fixId: string): Promise<DiffPreview | null> {
+    const pendingFix = this.pendingFixes.get(fixId);
+    if (!pendingFix) {
+      throw new Error('Fix not found in pending queue');
+    }
+
+    const previews = await this.generateDiffPreview([pendingFix.fix]);
+    return previews[0] || null;
+  }
+
+  /**
+   * Apply a fix by ID
+   */
+  async applyFixById(fixId: string): Promise<{ success: boolean; id?: string; file?: string; error?: string }> {
+    const pendingFix = this.pendingFixes.get(fixId);
+    if (!pendingFix) {
+      return { success: false, error: 'Fix not found in pending queue' };
+    }
+
+    try {
+      const result = await this.applyFixes([pendingFix.fix]);
+      
+      // Move from pending to applied
+      this.pendingFixes.delete(fixId);
+      const appliedId = `applied-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      this.appliedFixes.set(appliedId, {
+        id: appliedId,
+        fix: pendingFix.fix,
+        timestamp: Date.now(),
+        success: result.success,
+        error: result.errors.length > 0 ? result.errors.join('; ') : undefined
+      });
+
+      return {
+        success: result.success,
+        id: appliedId,
+        file: pendingFix.fix.file
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  /**
+   * Reject a fix (remove from pending)
+   */
+  async rejectFix(fixId: string): Promise<void> {
+    this.pendingFixes.delete(fixId);
+  }
+
+  /**
+   * Clear applied fixes history
+   */
+  async clearAppliedFixes(): Promise<void> {
+    this.appliedFixes.clear();
+  }}

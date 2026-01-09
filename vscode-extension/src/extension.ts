@@ -5,11 +5,19 @@ import * as vscode from 'vscode';
 import { AnalysisService } from './services/AnalysisService';
 import { FixApplicationService } from './services/FixApplicationService';
 
+// Webview Provider import (NEW - Phase 1)
+import { RCAWebviewProvider } from './webview/RCAWebviewProvider';
+
 // Chat Participant imports (KEPT - Not UI related)
 import { registerChatParticipant } from './chat/RCAChatParticipant';
 import { initializeTools } from './tools';
 import { ConversationalAgent } from './chat/ConversationalAgent';
 import { GuidedDebuggingWorkflow } from './chat/GuidedDebuggingWorkflow';
+import { 
+  applyFixCommand, 
+  explainMoreCommand, 
+  searchSimilarCommand 
+} from './chat/ChatActionCommands';
 
 // ============================================================================
 // NOTE: All UI components have been removed
@@ -47,6 +55,26 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   // Initialize backend services (KEPT - UI will use these)
   await initializeBackendServices(context);
   
+  // Register Webview Provider (NEW - Phase 1)
+  try {
+    log('info', 'Registering webview provider...');
+    const webviewProvider = new RCAWebviewProvider(context.extensionUri, context);
+    context.subscriptions.push(
+      vscode.window.registerWebviewViewProvider(
+        RCAWebviewProvider.viewType,
+        webviewProvider,
+        {
+          webviewOptions: {
+            retainContextWhenHidden: true
+          }
+        }
+      )
+    );
+    log('info', 'Webview provider registered successfully');
+  } catch (error) {
+    log('error', 'Failed to register webview provider', error);
+  }
+  
   // Initialize chat participant (KEPT - Not UI related)
   try {
     log('info', 'Registering chat participant...');
@@ -54,6 +82,19 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     log('info', 'Chat participant registered successfully');
   } catch (error) {
     log('error', 'Failed to register chat participant', error);
+  }
+  
+  // Register Chat Action Commands (P0 Fix #1)
+  try {
+    log('info', 'Registering chat action commands...');
+    context.subscriptions.push(
+      vscode.commands.registerCommand('rca-agent.applyFix', applyFixCommand),
+      vscode.commands.registerCommand('rca-agent.explainMore', explainMoreCommand),
+      vscode.commands.registerCommand('rca-agent.searchSimilar', searchSimilarCommand)
+    );
+    log('info', 'Chat action commands registered successfully');
+  } catch (error) {
+    log('error', 'Failed to register chat action commands', error);
   }
   
   // Initialize tools (KEPT - Used by chat participant)
