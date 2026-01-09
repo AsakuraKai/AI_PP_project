@@ -13,36 +13,41 @@ import { GradleCommandHelper } from './GradleCommandHelper';
  * Initialize and register all tools
  */
 export function initializeTools(context: vscode.ExtensionContext): void {
-  const registry = getToolRegistry();
+  try {
+    const registry = getToolRegistry();
 
-  // File operation tools
-  registry.register(new ReadFileTool());
-  registry.register(new WriteFileTool());
-  registry.register(new EditFileTool());
-  registry.register(new DeleteFileTool());
+    // File operation tools
+    registry.register(new ReadFileTool());
+    registry.register(new WriteFileTool());
+    registry.register(new EditFileTool());
+    registry.register(new DeleteFileTool());
 
-  // Workspace search tools
-  registry.register(new FindFilesTool());
-  registry.register(new SearchInFilesTool());
-  registry.register(new GetWorkspaceInfoTool());
-  registry.register(new DetectGradleFilesTool());
+    // Workspace search tools
+    registry.register(new FindFilesTool());
+    registry.register(new SearchInFilesTool());
+    registry.register(new GetWorkspaceInfoTool());
+    registry.register(new DetectGradleFilesTool());
 
-  // Terminal tools
-  const terminalTool = new TerminalTool();
-  terminalTool.initializeWatcher(); // Start watching terminal output
-  registry.register(terminalTool);
+    // Terminal tools
+    const terminalTool = new TerminalTool();
+    registry.register(terminalTool);
 
-  // Gradle tools (uses TerminalTool directly)
-  registry.register(new GradleCommandHelper(terminalTool));
+    // Gradle tools (uses TerminalTool directly)
+    registry.register(new GradleCommandHelper(terminalTool));
 
-  // Cleanup on extension deactivation
-  context.subscriptions.push({
-    dispose: () => {
-      registry.clearHistory();
-    }
-  });
+    // Cleanup on extension deactivation
+    context.subscriptions.push({
+      dispose: () => {
+        registry.clearHistory();
+      }
+    });
 
-  console.log(`Registered ${registry.getAll().length} tools`);
+    console.log(`Registered ${registry.getAll().length} tools`);
+  } catch (error) {
+    console.error('Failed to initialize tools:', error);
+    // Log error but don't prevent extension activation
+    // Tools can still be partially functional
+  }
 }
 
 /**

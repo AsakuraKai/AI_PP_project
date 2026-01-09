@@ -1,0 +1,1477 @@
+import * as vscode from 'vscode';
+import * as path from 'path';
+import { AnalysisService } from '../services/AnalysisService';
+import { FixApplicationService } from '../services/FixApplicationService';
+import { StateManager } from '../services/StateManager';
+import { ErrorQueueManager } from '../services/ErrorQueueManager';
+import { NetworkTimeoutHandler } from '../services/NetworkTimeoutHandler';
+
+export class RCAWebviewProvider implements vscode.WebviewViewProvider {
+    public static readonly viewType = 'rca-agent.mainView';
+    private _view?: vscode.WebviewView;
+    private readonly _extensionUri: vscode.Uri;
+    private readonly _extensionContext: vscode.ExtensionContext;
+    private readonly analysisService: AnalysisService;
+    private readonly fixApplicationService: FixApplicationService;
+    private readonly networkTimeoutHandler: NetworkTimeoutHandler;
+    private stateManager?: StateManager;
+    private errorQueueManager?: ErrorQueueManager;
+
+    constructor(extensionUri: vscode.Uri, extensionContext: vscode.ExtensionContext) {
+        this._extensionUri = extensionUri;
+        this._extensionContext = extensionContext;
+        this.analysisService = AnalysisService.getInstance();
+        this.fixApplicationService = FixApplicationService.getInstance();
+        this.networkTimeoutHandler = new NetworkTimeoutHandler();
+    }
+
+    public resolveWebviewView(
+        webviewView: vscode.WebviewView,
+        context: vscode.WebviewViewResolveContext,
+        _token: vscode.CancellationToken
+    ) {
+        this._view = webviewView;
+
+        webviewView.webview.options = {
+            enableScripts: true,
+            localResourceRoots: [this._extensionUri]
+        };
+
+        webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+
+        // Initialize Phase 2 services
+        this.stateManager = StateManager.getInstance(this._extensionContext);
+        this.errorQueueManager = ErrorQueueManager.getInstance(this._extensionContext);
+        
+        // Set up state change listeners
+        this.stateManager.onErrorQueueChange(() => this._handleErrorQueueChanged());
+        this.stateManager.onStateChange(() => this._handleStateChanged());
+        
+        // Phase 3: Set up history change listener
+        this.stateManager.onHistoryChange((history) => {
+            this._sendMessage({
+                command: 'historyUpdated',
+                history: history
+            });
+        });
+
+        // Handle messages from the webview
+        webviewView.webview.onDidReceiveMessage(async (message) => {
+            await this._handleMessage(message);
+        });
+
+        // Send initial state
+        this._sendInitialState();
+    }
+
+    private async _handleMessage(message: any) {
+        switch (message.command) {
+            // Dashboard commands
+            case 'getDashboardData':
+                await this._handleGetDashboardData();
+                break;
+            case 'analyzeAllErrors':
+                await this._handleAnalyzeAllErrors();
+                break;
+            case 'scanWorkspace':
+                await this._handleScanWorkspace();
+                break;
+            case 'openSettings':
+                await this._handleOpenSettings();
+                break;
+            
+            // Error Queue commands
+            case 'getErrorQueue':
+                await this._handleGetErrorQueue();
+                break;
+            case 'refreshErrorQueue':
+                await this._handleRefreshErrorQueue();
+                break;
+            case 'removeError':
+                await this._handleRemoveError(message.errorId);
+                break;
+            case 'pinError':
+                await this._handlePinError(message.errorId);
+                break;
+            case 'unpinError':
+                await this._handleUnpinError(message.errorId);
+                break;
+            case 'analyzeMultipleErrors':
+                await this._handleAnalyzeMultipleErrors(message.errorIds);
+                break;
+            case 'clearCompletedErrors':
+                await this._handleClearCompletedErrors();
+                break;
+            case 'clearAllErrors':
+                await this._handleClearAllErrors();
+                break;
+            case 'openErrorLocation':
+                await this._handleOpenErrorLocation(message.errorId);
+                break;
+            
+            // Analysis commands
+            case 'analyzeError':
+                await this._handleAnalyzeError(message.error);
+                break;
+            case 'startAnalysis':
+                await this._handleStartAnalysis(message.errorId, message.settings);
+                break;
+            case 'startManualAnalysis':
+                await this._handleStartManualAnalysis(message.errorText, message.settings);
+                break;
+            case 'cancelAnalysis':
+                await this._handleCancelAnalysis();
+                break;
+            case 'applyFix':
+                await this._handleApplyFix(message.fix);
+                break;
+            case 'exportResult':
+                await this._handleExportResult(message.result);
+                break;
+            
+            // Config commands
+            case 'updateConfig':
+                await this._handleUpdateConfig(message.key, message.value);
+                break;
+            case 'checkOllamaStatus':
+                await this._handleCheckOllamaStatus();
+                break;
+            
+            // Navigation
+            case 'navigate':
+                this._handleNavigate(message.route);
+                break;
+            
+            // ============================================================================
+            // Phase 3: History View Handlers
+            // ============================================================================
+            case 'getHistory':
+                await this._handleGetHistory(message.limit);
+                break;
+            case 'searchHistory':
+                await this._handleSearchHistory(message.query);
+                break;
+            case 'reanalyzeFromHistory':
+                await this._handleReanalyzeFromHistory(message.historyId);
+                break;
+            case 'deleteHistoryItem':
+                await this._handleDeleteHistoryItem(message.historyId);
+                break;
+            case 'clearHistory':
+                await this._handleClearHistory();
+                break;
+            case 'exportHistoryItem':
+                await this._handleExportHistoryItem(message.historyId);
+                break;
+            case 'exportAllHistory':
+                await this._handleExportAllHistory();
+                break;
+            case 'refreshHistory':
+                await this._handleRefreshHistory();
+                break;
+            
+            // ============================================================================
+            // Phase 3: Agent State View Handlers
+            // ============================================================================
+            case 'subscribeAgentState':
+                await this._handleSubscribeAgentState();
+                break;
+            case 'unsubscribeAgentState':
+                await this._handleUnsubscribeAgentState();
+                break;
+            case 'getToolMetrics':
+                await this._handleGetToolMetrics();
+                break;
+            
+            // ============================================================================
+            // Phase 3: Fix Manager View Handlers
+            // ============================================================================
+            case 'getPendingFixes':
+                await this._handleGetPendingFixes();
+                break;
+            case 'getAppliedFixes':
+                await this._handleGetAppliedFixes();
+                break;
+            case 'previewFix':
+                await this._handlePreviewFix(message.fixId);
+                break;
+            case 'applyFixById':
+                await this._handleApplyFixById(message.fixId);
+                break;
+            case 'rejectFix':
+                await this._handleRejectFix(message.fixId);
+                break;
+            case 'applyMultipleFixes':
+                await this._handleApplyMultipleFixes(message.fixIds);
+                break;
+            case 'rejectMultipleFixes':
+                await this._handleRejectMultipleFixes(message.fixIds);
+                break;
+            case 'clearAppliedFixes':
+                await this._handleClearAppliedFixes();
+                break;
+            
+            // ============================================================================
+            // Phase 3: Metrics View Handlers
+            // ============================================================================
+            case 'getMetrics':
+                await this._handleGetMetrics(message.timeRange);
+                break;
+            case 'exportMetrics':
+                await this._handleExportMetrics(message.timeRange);
+                break;
+            
+            default:
+                console.warn('Unknown command:', message.command);
+        }
+    }
+
+    private async _handleAnalyzeError(error: any) {
+        try {
+            this._sendMessage({
+                command: 'analysisStarted',
+                errorId: error.id,
+                maxIterations: 6
+            });
+
+            const result = await this.analysisService.analyzeError(
+                error,
+                (progress) => {
+                    this._sendMessage({
+                        command: 'analysisProgress',
+                        progress: progress
+                    });
+                }
+            );
+
+            this._sendMessage({
+                command: 'analysisComplete',
+                result: result
+            });
+        } catch (error: any) {
+            this._sendMessage({
+                command: 'analysisError',
+                error: error.message
+            });
+        }
+    }
+
+    private async _handleApplyFix(fix: any) {
+        try {
+            const result = await this.fixApplicationService.applyFixes([fix]);
+            this._sendMessage({
+                command: 'fixApplied',
+                data: { success: result.success }
+            });
+            vscode.window.showInformationMessage(`Fix applied: ${result.applied} succeeded, ${result.failed} failed`);
+        } catch (error: any) {
+            this._sendMessage({
+                command: 'fixApplied',
+                data: { success: false, error: error.message }
+            });
+            vscode.window.showErrorMessage(`Failed to apply fix: ${error.message}`);
+        }
+    }
+
+    private async _handleUpdateConfig(key: string, value: any) {
+        const config = vscode.workspace.getConfiguration('rcaAgent');
+        await config.update(key, value, vscode.ConfigurationTarget.Global);
+        this._sendMessage({
+            command: 'configUpdated',
+            data: { key, value }
+        });
+    }
+
+    private async _handleCheckOllamaStatus() {
+        try {
+            const config = vscode.workspace.getConfiguration('rcaAgent');
+            const ollamaUrl = config.get<string>('ollamaUrl', 'http://localhost:11434');
+            const model = config.get<string>('ollamaModel', 'llama3.2:latest');
+            
+            const startTime = Date.now();
+            const result = await this.networkTimeoutHandler.checkOllamaConnection(ollamaUrl);
+            const responseTime = result.duration;
+            
+            if (result.success && result.data) {
+                this._sendMessage({
+                    command: 'ollamaStatus',
+                    status: {
+                        connected: true,
+                        model: model,
+                        responseTime: Math.round(responseTime)
+                    }
+                });
+            } else {
+                this._sendMessage({
+                    command: 'ollamaStatus',
+                    status: {
+                        connected: false,
+                        error: result.error?.message || 'Connection failed'
+                    }
+                });
+            }
+        } catch (error: any) {
+            this._sendMessage({
+                command: 'ollamaStatus',
+                status: {
+                    connected: false,
+                    error: error.message || 'Unknown error'
+                }
+            });
+        }
+    }
+
+    private _handleNavigate(route: string) {
+        // Store current route in global state for persistence
+        this._sendMessage({
+            command: 'routeChanged',
+            data: { route }
+        });
+    }
+
+    private async _handleCancelAnalysis() {
+        try {
+            // Cancel analysis by stopping the state stream
+            // The AnalysisService doesn't have a direct cancel method,
+            // but we can notify the webview that cancellation was requested
+            this._sendMessage({
+                command: 'analysisCancelled',
+                data: {}
+            });
+            
+            vscode.window.showInformationMessage('Analysis cancellation requested');
+        } catch (error: any) {
+            console.error('Failed to cancel analysis:', error);
+        }
+    }
+
+    // ============================================================================
+    // Dashboard Handlers
+    // ============================================================================
+
+    private async _handleGetDashboardData() {
+        if (!this.stateManager || !this.errorQueueManager) {
+            return;
+        }
+
+        try {
+            const history = this.stateManager.getHistory(10);
+            const errorCount = this.errorQueueManager.getErrorCount();
+            
+            // Calculate stats from history
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const todayAnalyses = history.filter(h => 
+                new Date(h.timestamp).getTime() >= today.getTime()
+            );
+            
+            const completedAnalyses = history.filter(h => h.error.status === 'complete');
+            const successRate = completedAnalyses.length > 0 
+                ? completedAnalyses.filter(h => h.result.confidence && h.result.confidence > 0.7).length / completedAnalyses.length 
+                : 0;
+            
+            const avgTime = completedAnalyses.length > 0
+                ? completedAnalyses.reduce((sum, h) => sum + h.duration, 0) / completedAnalyses.length
+                : 0;
+
+            this._sendMessage({
+                command: 'dashboardData',
+                stats: {
+                    pendingErrors: errorCount,
+                    analyzesPerformed: todayAnalyses.length,
+                    successRate: Math.round(successRate * 100),
+                    averageTime: Math.round(avgTime / 1000) // Convert ms to seconds
+                },
+                activity: history.slice(0, 5).map(h => ({
+                    id: h.id,
+                    type: h.result.confidence && h.result.confidence > 0.7 ? 'success' : 'error',
+                    message: h.error.message.substring(0, 100),
+                    errorMessage: h.error.type,
+                    timestamp: h.timestamp
+                }))
+            });
+        } catch (error: any) {
+            console.error('Failed to get dashboard data:', error);
+        }
+    }
+
+    private async _handleAnalyzeAllErrors() {
+        if (!this.errorQueueManager) {
+            return;
+        }
+
+        try {
+            const errors = this.errorQueueManager.getAllErrors();
+            const pendingErrors = errors.filter(e => e.status === 'pending');
+            
+            vscode.window.showInformationMessage(
+                `Starting analysis for ${pendingErrors.length} pending errors...`
+            );
+
+            // Analyze each error sequentially
+            for (const error of pendingErrors) {
+                await this._handleAnalyzeError(error);
+            }
+        } catch (error: any) {
+            vscode.window.showErrorMessage(`Failed to analyze all errors: ${error.message}`);
+        }
+    }
+
+    private async _handleScanWorkspace() {
+        if (!this.errorQueueManager) {
+            return;
+        }
+
+        try {
+            vscode.window.showInformationMessage('Scanning workspace for errors...');
+            
+            // Trigger diagnostics refresh
+            await vscode.commands.executeCommand('workbench.action.problems.focus');
+            
+            // Refresh error queue (diagnostics will be auto-detected)
+            await this._handleRefreshErrorQueue();
+            
+            vscode.window.showInformationMessage('Workspace scan complete!');
+        } catch (error: any) {
+            vscode.window.showErrorMessage(`Failed to scan workspace: ${error.message}`);
+        }
+    }
+
+    private async _handleOpenSettings() {
+        await vscode.commands.executeCommand('workbench.action.openSettings', 'rcaAgent');
+    }
+
+    // ============================================================================
+    // Error Queue Handlers
+    // ============================================================================
+
+    private async _handleGetErrorQueue() {
+        if (!this.errorQueueManager) {
+            return;
+        }
+
+        try {
+            const errors = this.errorQueueManager.getAllErrors();
+            this._sendMessage({
+                command: 'errorQueueData',
+                errors: errors
+            });
+        } catch (error: any) {
+            console.error('Failed to get error queue:', error);
+        }
+    }
+
+    private async _handleRefreshErrorQueue() {
+        if (!this.errorQueueManager) {
+            return;
+        }
+
+        try {
+            // Re-scan diagnostics
+            const errors = this.errorQueueManager.getAllErrors();
+            this._sendMessage({
+                command: 'errorQueueData',
+                errors: errors
+            });
+        } catch (error: any) {
+            console.error('Failed to refresh error queue:', error);
+        }
+    }
+
+    private async _handleRemoveError(errorId: string) {
+        if (!this.stateManager) {
+            return;
+        }
+
+        try {
+            this.stateManager.removeError(errorId);
+            this._sendMessage({
+                command: 'errorRemoved',
+                errorId: errorId
+            });
+        } catch (error: any) {
+            console.error('Failed to remove error:', error);
+        }
+    }
+
+    private async _handlePinError(errorId: string) {
+        if (!this.errorQueueManager) {
+            return;
+        }
+
+        try {
+            this.errorQueueManager.pinError(errorId);
+            const errors = this.errorQueueManager.getAllErrors();
+            const error = errors.find(e => e.id === errorId);
+            if (error) {
+                this._sendMessage({
+                    command: 'errorUpdated',
+                    error: error
+                });
+            }
+        } catch (error: any) {
+            console.error('Failed to pin error:', error);
+        }
+    }
+
+    private async _handleUnpinError(errorId: string) {
+        if (!this.errorQueueManager) {
+            return;
+        }
+
+        try {
+            this.errorQueueManager.unpinError(errorId);
+            const errors = this.errorQueueManager.getAllErrors();
+            const error = errors.find(e => e.id === errorId);
+            if (error) {
+                this._sendMessage({
+                    command: 'errorUpdated',
+                    error: error
+                });
+            }
+        } catch (error: any) {
+            console.error('Failed to unpin error:', error);
+        }
+    }
+
+    private async _handleAnalyzeMultipleErrors(errorIds: string[]) {
+        if (!this.errorQueueManager) {
+            return;
+        }
+
+        try {
+            const errors = this.errorQueueManager.getAllErrors();
+            const selectedErrors = errors.filter(e => errorIds.includes(e.id));
+            
+            vscode.window.showInformationMessage(
+                `Starting analysis for ${selectedErrors.length} errors...`
+            );
+
+            // Analyze each error sequentially
+            for (const error of selectedErrors) {
+                await this._handleAnalyzeError(error);
+            }
+        } catch (error: any) {
+            vscode.window.showErrorMessage(`Failed to analyze errors: ${error.message}`);
+        }
+    }
+
+    private async _handleClearCompletedErrors() {
+        if (!this.errorQueueManager) {
+            return;
+        }
+
+        try {
+            await this.errorQueueManager.clearCompleted();
+            await this._handleRefreshErrorQueue();
+            vscode.window.showInformationMessage('Cleared completed errors');
+        } catch (error: any) {
+            vscode.window.showErrorMessage(`Failed to clear completed errors: ${error.message}`);
+        }
+    }
+
+    private async _handleClearAllErrors() {
+        if (!this.errorQueueManager) {
+            return;
+        }
+
+        try {
+            await this.errorQueueManager.clearQueue();
+            await this._handleRefreshErrorQueue();
+            vscode.window.showInformationMessage('Cleared all errors');
+        } catch (error: any) {
+            vscode.window.showErrorMessage(`Failed to clear errors: ${error.message}`);
+        }
+    }
+
+    private async _handleOpenErrorLocation(errorId: string) {
+        if (!this.errorQueueManager) {
+            return;
+        }
+
+        try {
+            const errors = this.errorQueueManager.getAllErrors();
+            const error = errors.find(e => e.id === errorId);
+            
+            if (!error) {
+                throw new Error('Error not found');
+            }
+
+            // Open the file at the error location
+            const doc = await vscode.workspace.openTextDocument(error.filePath);
+            const editor = await vscode.window.showTextDocument(doc);
+            
+            // Move cursor to error line
+            const position = new vscode.Position(error.line - 1, error.column || 0);
+            editor.selection = new vscode.Selection(position, position);
+            editor.revealRange(
+                new vscode.Range(position, position),
+                vscode.TextEditorRevealType.InCenter
+            );
+        } catch (error: any) {
+            vscode.window.showErrorMessage(`Failed to open error location: ${error.message}`);
+        }
+    }
+
+    // ============================================================================
+    // Analysis Handlers
+    // ============================================================================
+
+    private async _handleStartAnalysis(errorId: string, settings: any) {
+        if (!this.stateManager) {
+            return;
+        }
+
+        try {
+            const errors = this.errorQueueManager?.getAllErrors() || [];
+            const error = errors.find(e => e.id === errorId);
+            
+            if (!error) {
+                throw new Error('Error not found in queue');
+            }
+
+            await this._handleAnalyzeError(error);
+        } catch (error: any) {
+            this._sendMessage({
+                command: 'analysisError',
+                data: { message: error.message }
+            });
+        }
+    }
+
+    private async _handleStartManualAnalysis(errorText: string, settings: any) {
+        try {
+            const errorData = JSON.parse(errorText);
+            const error = {
+                id: `manual-${Date.now()}`,
+                message: errorData.message,
+                filePath: errorData.filePath || 'unknown',
+                line: errorData.line || 0,
+                type: 'runtime',
+                status: 'pending',
+                timestamp: Date.now(),
+                ...errorData
+            };
+
+            await this._handleAnalyzeError(error);
+        } catch (error: any) {
+            this._sendMessage({
+                command: 'analysisError',
+                data: { message: error.message }
+            });
+        }
+    }
+
+    private async _handleExportResult(result: any) {
+        try {
+            const fileName = `rca-analysis-${Date.now()}.json`;
+            const content = JSON.stringify(result, null, 2);
+            
+            const uri = await vscode.window.showSaveDialog({
+                defaultUri: vscode.Uri.file(fileName),
+                filters: { 'JSON': ['json'] }
+            });
+
+            if (uri) {
+                await vscode.workspace.fs.writeFile(uri, Buffer.from(content));
+                vscode.window.showInformationMessage('Analysis result exported successfully!');
+            }
+        } catch (error: any) {
+            vscode.window.showErrorMessage(`Failed to export result: ${error.message}`);
+        }
+    }
+
+    // ============================================================================
+    // State Change Handlers
+    // ============================================================================
+
+    private _handleErrorQueueChanged() {
+        // Notify webview of queue changes
+        this._handleGetErrorQueue();
+        this._handleGetDashboardData();
+    }
+
+    private _handleStateChanged() {
+        // Notify webview of state changes
+        this._handleGetDashboardData();
+    }
+
+    // ============================================================================
+    // Phase 3: History View Handlers
+    // ============================================================================
+
+    private async _handleGetHistory(limit?: number) {
+        if (!this.stateManager) {
+            return;
+        }
+
+        try {
+            const history = this.stateManager.getHistory(limit || 100);
+            this._sendMessage({
+                command: 'historyData',
+                history: history
+            });
+        } catch (error: any) {
+            console.error('Failed to get history:', error);
+            this._sendMessage({
+                command: 'error',
+                message: `Failed to get history: ${error.message}`
+            });
+        }
+    }
+
+    private async _handleSearchHistory(query: string) {
+        if (!this.stateManager) {
+            return;
+        }
+
+        try {
+            const results = this.stateManager.searchHistory(query);
+            this._sendMessage({
+                command: 'searchHistoryResults',
+                results: results
+            });
+        } catch (error: any) {
+            console.error('Failed to search history:', error);
+            this._sendMessage({
+                command: 'error',
+                message: `Failed to search history: ${error.message}`
+            });
+        }
+    }
+
+    private async _handleReanalyzeFromHistory(historyId: string) {
+        if (!this.stateManager) {
+            return;
+        }
+
+        try {
+            const history = this.stateManager.getHistory();
+            const item = history.find(h => h.id === historyId);
+            
+            if (!item) {
+                throw new Error('History item not found');
+            }
+
+            vscode.window.showInformationMessage(`Re-analyzing error: ${item.error.message.substring(0, 50)}...`);
+            
+            // Re-analyze the error
+            await this._handleAnalyzeError(item.error);
+        } catch (error: any) {
+            console.error('Failed to re-analyze from history:', error);
+            vscode.window.showErrorMessage(`Failed to re-analyze: ${error.message}`);
+        }
+    }
+
+    private async _handleDeleteHistoryItem(historyId: string) {
+        if (!this.stateManager) {
+            return;
+        }
+
+        try {
+            this.stateManager.removeFromHistory(historyId);
+            this._sendMessage({
+                command: 'historyItemDeleted',
+                id: historyId
+            });
+        } catch (error: any) {
+            console.error('Failed to delete history item:', error);
+            this._sendMessage({
+                command: 'error',
+                message: `Failed to delete history item: ${error.message}`
+            });
+        }
+    }
+
+    private async _handleClearHistory() {
+        if (!this.stateManager) {
+            return;
+        }
+
+        try {
+            this.stateManager.clearHistory();
+            this._sendMessage({
+                command: 'historyCleared'
+            });
+            vscode.window.showInformationMessage('History cleared successfully');
+        } catch (error: any) {
+            console.error('Failed to clear history:', error);
+            vscode.window.showErrorMessage(`Failed to clear history: ${error.message}`);
+        }
+    }
+
+    private async _handleExportHistoryItem(historyId: string) {
+        if (!this.stateManager) {
+            return;
+        }
+
+        try {
+            const history = this.stateManager.getHistory();
+            const item = history.find(h => h.id === historyId);
+            
+            if (!item) {
+                throw new Error('History item not found');
+            }
+
+            const markdown = this._generateHistoryMarkdown(item);
+            const fileName = `rca-history-${historyId}-${Date.now()}.md`;
+            
+            const uri = await vscode.window.showSaveDialog({
+                defaultUri: vscode.Uri.file(fileName),
+                filters: { 'Markdown': ['md'] }
+            });
+
+            if (uri) {
+                await vscode.workspace.fs.writeFile(uri, Buffer.from(markdown));
+                vscode.window.showInformationMessage('History item exported successfully!');
+            }
+        } catch (error: any) {
+            console.error('Failed to export history item:', error);
+            vscode.window.showErrorMessage(`Failed to export: ${error.message}`);
+        }
+    }
+
+    private async _handleExportAllHistory() {
+        if (!this.stateManager) {
+            return;
+        }
+
+        try {
+            const history = this.stateManager.getHistory();
+            const markdown = this._generateAllHistoryMarkdown(history);
+            const fileName = `rca-history-all-${Date.now()}.md`;
+            
+            const uri = await vscode.window.showSaveDialog({
+                defaultUri: vscode.Uri.file(fileName),
+                filters: { 'Markdown': ['md'] }
+            });
+
+            if (uri) {
+                await vscode.workspace.fs.writeFile(uri, Buffer.from(markdown));
+                vscode.window.showInformationMessage('History exported successfully!');
+            }
+        } catch (error: any) {
+            console.error('Failed to export history:', error);
+            vscode.window.showErrorMessage(`Failed to export: ${error.message}`);
+        }
+    }
+
+    private async _handleRefreshHistory() {
+        await this._handleGetHistory();
+    }
+
+    // ============================================================================
+    // Phase 3: Agent State View Handlers
+    // ============================================================================
+
+    private agentStateSubscription: vscode.Disposable | null = null;
+
+    private async _handleSubscribeAgentState() {
+        try {
+            const stateStream = this.analysisService.getStateStream();
+            
+            if (!stateStream) {
+                this._sendMessage({
+                    command: 'agentStateUpdate',
+                    state: null
+                });
+                return;
+            }
+
+            // Send current state immediately
+            this._sendMessage({
+                command: 'agentStateUpdate',
+                state: this.analysisService.getCurrentState()
+            });
+
+            // Subscribe to state updates
+            stateStream.on('iteration', (data: any) => {
+                this._sendMessage({
+                    command: 'agentIterationUpdate',
+                    iteration: data.iteration,
+                    maxIterations: data.maxIterations,
+                    progress: data.progress
+                });
+            });
+
+            stateStream.on('thought', (thought: string) => {
+                this._sendMessage({
+                    command: 'agentThoughtUpdate',
+                    thought: thought
+                });
+            });
+
+            stateStream.on('action', (data: any) => {
+                this._sendMessage({
+                    command: 'agentActionUpdate',
+                    tool: data.tool,
+                    params: data.params,
+                    timestamp: Date.now()
+                });
+            });
+
+            stateStream.on('observation', (data: any) => {
+                this._sendMessage({
+                    command: 'agentObservationUpdate',
+                    result: data.result,
+                    tool: data.tool,
+                    isFinal: data.isFinal
+                });
+            });
+
+            stateStream.on('hypothesis', (data: any) => {
+                this._sendMessage({
+                    command: 'agentHypothesisUpdate',
+                    hypothesis: data.hypothesis,
+                    confidence: data.confidence
+                });
+            });
+
+            stateStream.on('phase', (phase: string) => {
+                this._sendMessage({
+                    command: 'agentPhaseUpdate',
+                    phase: phase
+                });
+            });
+
+            stateStream.on('complete', () => {
+                this._sendMessage({
+                    command: 'agentComplete'
+                });
+            });
+
+            stateStream.on('error', (error: any) => {
+                this._sendMessage({
+                    command: 'agentError',
+                    error: error.message
+                });
+            });
+
+        } catch (error: any) {
+            console.error('Failed to subscribe to agent state:', error);
+        }
+    }
+
+    private async _handleUnsubscribeAgentState() {
+        if (this.agentStateSubscription) {
+            this.agentStateSubscription.dispose();
+            this.agentStateSubscription = null;
+        }
+    }
+
+    private async _handleGetToolMetrics() {
+        try {
+            // Tool metrics would come from PerformanceTracker if available
+            // For now, send empty data
+            this._sendMessage({
+                command: 'toolMetricsData',
+                metrics: []
+            });
+        } catch (error: any) {
+            console.error('Failed to get tool metrics:', error);
+        }
+    }
+
+    // ============================================================================
+    // Phase 3: Fix Manager View Handlers
+    // ============================================================================
+
+    private async _handleGetPendingFixes() {
+        try {
+            const fixes = this.fixApplicationService.getPendingFixes();
+            this._sendMessage({
+                command: 'pendingFixesData',
+                fixes: fixes
+            });
+        } catch (error: any) {
+            console.error('Failed to get pending fixes:', error);
+            this._sendMessage({
+                command: 'error',
+                message: `Failed to get pending fixes: ${error.message}`
+            });
+        }
+    }
+
+    private async _handleGetAppliedFixes() {
+        try {
+            const fixes = this.fixApplicationService.getAppliedFixes();
+            this._sendMessage({
+                command: 'appliedFixesData',
+                fixes: fixes
+            });
+        } catch (error: any) {
+            console.error('Failed to get applied fixes:', error);
+            this._sendMessage({
+                command: 'error',
+                message: `Failed to get applied fixes: ${error.message}`
+            });
+        }
+    }
+
+    private async _handlePreviewFix(fixId: string) {
+        try {
+            const diff = await this.fixApplicationService.previewFix(fixId);
+            this._sendMessage({
+                command: 'diffPreviewData',
+                diff: diff
+            });
+        } catch (error: any) {
+            console.error('Failed to preview fix:', error);
+            this._sendMessage({
+                command: 'error',
+                message: `Failed to preview fix: ${error.message}`
+            });
+        }
+    }
+
+    private async _handleApplyFixById(fixId: string) {
+        try {
+            const result = await this.fixApplicationService.applyFixById(fixId);
+            
+            if (result.success) {
+                this._sendMessage({
+                    command: 'fixApplied',
+                    fixId: fixId,
+                    id: result.id,
+                    file: result.file
+                });
+                vscode.window.showInformationMessage(`Fix applied successfully to ${result.file}`);
+            } else {
+                this._sendMessage({
+                    command: 'fixApplyError',
+                    fixId: fixId,
+                    error: result.error || 'Unknown error'
+                });
+                vscode.window.showErrorMessage(`Failed to apply fix: ${result.error}`);
+            }
+        } catch (error: any) {
+            console.error('Failed to apply fix:', error);
+            this._sendMessage({
+                command: 'fixApplyError',
+                fixId: fixId,
+                error: error.message
+            });
+            vscode.window.showErrorMessage(`Failed to apply fix: ${error.message}`);
+        }
+    }
+
+    private async _handleRejectFix(fixId: string) {
+        try {
+            await this.fixApplicationService.rejectFix(fixId);
+            this._sendMessage({
+                command: 'fixRejected',
+                fixId: fixId
+            });
+        } catch (error: any) {
+            console.error('Failed to reject fix:', error);
+            this._sendMessage({
+                command: 'error',
+                message: `Failed to reject fix: ${error.message}`
+            });
+        }
+    }
+
+    private async _handleApplyMultipleFixes(fixIds: string[]) {
+        try {
+            let successCount = 0;
+            let failCount = 0;
+
+            for (const fixId of fixIds) {
+                try {
+                    const result = await this.fixApplicationService.applyFixById(fixId);
+                    if (result.success) {
+                        successCount++;
+                        this._sendMessage({
+                            command: 'fixApplied',
+                            fixId: fixId,
+                            id: result.id,
+                            file: result.file
+                        });
+                    } else {
+                        failCount++;
+                        this._sendMessage({
+                            command: 'fixApplyError',
+                            fixId: fixId,
+                            error: result.error || 'Unknown error'
+                        });
+                    }
+                } catch (error: any) {
+                    failCount++;
+                    this._sendMessage({
+                        command: 'fixApplyError',
+                        fixId: fixId,
+                        error: error.message
+                    });
+                }
+            }
+
+            vscode.window.showInformationMessage(
+                `Applied ${successCount} fixes successfully. ${failCount} failed.`
+            );
+        } catch (error: any) {
+            console.error('Failed to apply multiple fixes:', error);
+            vscode.window.showErrorMessage(`Failed to apply fixes: ${error.message}`);
+        }
+    }
+
+    private async _handleRejectMultipleFixes(fixIds: string[]) {
+        try {
+            for (const fixId of fixIds) {
+                await this.fixApplicationService.rejectFix(fixId);
+                this._sendMessage({
+                    command: 'fixRejected',
+                    fixId: fixId
+                });
+            }
+            vscode.window.showInformationMessage(`Rejected ${fixIds.length} fixes`);
+        } catch (error: any) {
+            console.error('Failed to reject multiple fixes:', error);
+            vscode.window.showErrorMessage(`Failed to reject fixes: ${error.message}`);
+        }
+    }
+
+    private async _handleClearAppliedFixes() {
+        try {
+            await this.fixApplicationService.clearAppliedFixes();
+            this._sendMessage({
+                command: 'fixesCleared'
+            });
+            vscode.window.showInformationMessage('Applied fixes history cleared');
+        } catch (error: any) {
+            console.error('Failed to clear applied fixes:', error);
+            vscode.window.showErrorMessage(`Failed to clear fixes: ${error.message}`);
+        }
+    }
+
+    // ============================================================================
+    // Phase 3: Metrics View Handlers
+    // ============================================================================
+
+    private async _handleGetMetrics(timeRange: string = '7d') {
+        if (!this.stateManager) {
+            return;
+        }
+
+        try {
+            const history = this.stateManager.getHistory();
+            const timeRangeMs = this._getTimeRangeMs(timeRange);
+            const cutoffTime = Date.now() - timeRangeMs;
+            
+            // Filter history by time range
+            const filteredHistory = timeRange === 'all' 
+                ? history 
+                : history.filter(h => h.timestamp >= cutoffTime);
+
+            // Calculate metrics
+            const totalAnalyses = filteredHistory.length;
+            const successfulAnalyses = filteredHistory.filter(h => 
+                h.result?.confidence && h.result.confidence > 0.7
+            ).length;
+            const failedAnalyses = totalAnalyses - successfulAnalyses;
+            
+            const avgConfidence = totalAnalyses > 0
+                ? filteredHistory.reduce((sum, h) => sum + (h.result?.confidence || 0), 0) / totalAnalyses
+                : 0;
+            
+            const avgTime = totalAnalyses > 0
+                ? filteredHistory.reduce((sum, h) => sum + h.duration, 0) / totalAnalyses
+                : 0;
+            
+            const totalTime = filteredHistory.reduce((sum, h) => sum + h.duration, 0);
+
+            // Calculate chart data
+            const successRateChart = this._calculateSuccessRate(filteredHistory);
+            const analysisTimeChart = this._calculateAnalysisTime(filteredHistory);
+            const errorTypesData = this._calculateErrorTypes(filteredHistory);
+
+            this._sendMessage({
+                command: 'metricsData',
+                metrics: {
+                    summary: {
+                        totalAnalyses,
+                        successfulAnalyses,
+                        failedAnalyses,
+                        avgConfidence: Math.round(avgConfidence * 100) / 100,
+                        avgTime: Math.round(avgTime),
+                        totalTime: Math.round(totalTime)
+                    },
+                    charts: {
+                        successRate: successRateChart,
+                        analysisTime: analysisTimeChart,
+                        errorTypes: errorTypesData
+                    }
+                }
+            });
+        } catch (error: any) {
+            console.error('Failed to get metrics:', error);
+            this._sendMessage({
+                command: 'error',
+                message: `Failed to get metrics: ${error.message}`
+            });
+        }
+    }
+
+    private async _handleExportMetrics(timeRange: string = '7d') {
+        if (!this.stateManager) {
+            return;
+        }
+
+        try {
+            const history = this.stateManager.getHistory();
+            const timeRangeMs = this._getTimeRangeMs(timeRange);
+            const cutoffTime = Date.now() - timeRangeMs;
+            
+            const filteredHistory = timeRange === 'all' 
+                ? history 
+                : history.filter(h => h.timestamp >= cutoffTime);
+
+            const markdown = this._generateMetricsMarkdown(filteredHistory, timeRange);
+            const fileName = `rca-metrics-${timeRange}-${Date.now()}.md`;
+            
+            const uri = await vscode.window.showSaveDialog({
+                defaultUri: vscode.Uri.file(fileName),
+                filters: { 'Markdown': ['md'] }
+            });
+
+            if (uri) {
+                await vscode.workspace.fs.writeFile(uri, Buffer.from(markdown));
+                vscode.window.showInformationMessage('Metrics exported successfully!');
+            }
+        } catch (error: any) {
+            console.error('Failed to export metrics:', error);
+            vscode.window.showErrorMessage(`Failed to export metrics: ${error.message}`);
+        }
+    }
+
+    // ============================================================================
+    // Helper Functions
+    // ============================================================================
+
+    private _generateHistoryMarkdown(item: any): string {
+        return `# RCA Analysis Report
+
+**ID**: ${item.id}
+**Timestamp**: ${new Date(item.timestamp).toLocaleString()}
+**Status**: ${item.error.status}
+**Duration**: ${Math.round(item.duration / 1000)}s
+**Confidence**: ${((item.result?.confidence || 0) * 100).toFixed(1)}%
+
+## Error Details
+
+**File**: ${item.error.filePath}:${item.error.line}
+**Type**: ${item.error.type}
+**Message**: 
+\`\`\`
+${item.error.message}
+\`\`\`
+
+## Root Cause Analysis
+
+${item.result?.rootCause || 'No root cause identified'}
+
+## Fix Suggestion
+
+${item.result?.fixSuggestion ? '```\n' + item.result.fixSuggestion + '\n```' : 'No fix suggested'}
+
+## Additional Context
+
+${item.result?.context || 'N/A'}
+
+---
+*Generated by RCA Agent on ${new Date().toLocaleString()}*
+`;
+    }
+
+    private _generateAllHistoryMarkdown(history: any[]): string {
+        let markdown = `# RCA Analysis History\n\n`;
+        markdown += `**Total Analyses**: ${history.length}\n`;
+        markdown += `**Export Date**: ${new Date().toLocaleString()}\n\n`;
+        markdown += `---\n\n`;
+        
+        for (const item of history) {
+            markdown += `## Analysis: ${item.id}\n\n`;
+            markdown += `- **Date**: ${new Date(item.timestamp).toLocaleString()}\n`;
+            markdown += `- **File**: ${item.error.filePath}:${item.error.line}\n`;
+            markdown += `- **Error**: ${item.error.message.substring(0, 100)}...\n`;
+            markdown += `- **Confidence**: ${((item.result?.confidence || 0) * 100).toFixed(1)}%\n`;
+            markdown += `- **Duration**: ${Math.round(item.duration / 1000)}s\n\n`;
+            markdown += `---\n\n`;
+        }
+        
+        markdown += `\n*Generated by RCA Agent*\n`;
+        return markdown;
+    }
+
+    private _generateMetricsMarkdown(history: any[], timeRange: string): string {
+        const totalAnalyses = history.length;
+        const successfulAnalyses = history.filter(h => 
+            h.result?.confidence && h.result.confidence > 0.7
+        ).length;
+        const failedAnalyses = totalAnalyses - successfulAnalyses;
+        
+        const avgConfidence = totalAnalyses > 0
+            ? history.reduce((sum, h) => sum + (h.result?.confidence || 0), 0) / totalAnalyses
+            : 0;
+        
+        const avgTime = totalAnalyses > 0
+            ? history.reduce((sum, h) => sum + h.duration, 0) / totalAnalyses
+            : 0;
+
+        return `# RCA Metrics Report
+
+**Time Range**: ${timeRange}
+**Export Date**: ${new Date().toLocaleString()}
+
+## Summary
+
+- **Total Analyses**: ${totalAnalyses}
+- **Successful**: ${successfulAnalyses} (${((successfulAnalyses / totalAnalyses) * 100).toFixed(1)}%)
+- **Failed**: ${failedAnalyses} (${((failedAnalyses / totalAnalyses) * 100).toFixed(1)}%)
+- **Average Confidence**: ${(avgConfidence * 100).toFixed(1)}%
+- **Average Time**: ${Math.round(avgTime / 1000)}s
+
+## Analysis Details
+
+${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.message.substring(0, 80)}... (${((h.result?.confidence || 0) * 100).toFixed(1)}%)`).join('\n')}
+
+---
+*Generated by RCA Agent*
+`;
+    }
+
+    private _getTimeRangeMs(range: string): number {
+        switch (range) {
+            case '7d': return 7 * 24 * 60 * 60 * 1000;
+            case '30d': return 30 * 24 * 60 * 60 * 1000;
+            case 'all': return Number.MAX_SAFE_INTEGER;
+            default: return 7 * 24 * 60 * 60 * 1000;
+        }
+    }
+
+    private _calculateSuccessRate(history: any[]): any {
+        // Group by day and calculate success rate
+        const dailyStats = new Map<string, { total: number; success: number }>();
+        
+        for (const item of history) {
+            const date = new Date(item.timestamp).toISOString().split('T')[0];
+            if (!dailyStats.has(date)) {
+                dailyStats.set(date, { total: 0, success: 0 });
+            }
+            const stats = dailyStats.get(date)!;
+            stats.total++;
+            if (item.result?.confidence && item.result.confidence > 0.7) {
+                stats.success++;
+            }
+        }
+
+        const labels = Array.from(dailyStats.keys()).sort();
+        const data = labels.map(date => {
+            const stats = dailyStats.get(date)!;
+            return (stats.success / stats.total) * 100;
+        });
+
+        return { labels, data };
+    }
+
+    private _calculateAnalysisTime(history: any[]): any {
+        // Group by day and calculate average analysis time
+        const dailyTimes = new Map<string, number[]>();
+        
+        for (const item of history) {
+            const date = new Date(item.timestamp).toISOString().split('T')[0];
+            if (!dailyTimes.has(date)) {
+                dailyTimes.set(date, []);
+            }
+            dailyTimes.get(date)!.push(item.duration);
+        }
+
+        const labels = Array.from(dailyTimes.keys()).sort();
+        const data = labels.map(date => {
+            const times = dailyTimes.get(date)!;
+            const avg = times.reduce((sum, t) => sum + t, 0) / times.length;
+            return Math.round(avg / 1000); // Convert to seconds
+        });
+
+        return { labels, data };
+    }
+
+    private _calculateErrorTypes(history: any[]): any[] {
+        const typeCounts = new Map<string, number>();
+        
+        for (const item of history) {
+            const type = item.error.type || 'unknown';
+            typeCounts.set(type, (typeCounts.get(type) || 0) + 1);
+        }
+
+        return Array.from(typeCounts.entries()).map(([type, count]) => ({
+            type,
+            count,
+            percentage: (count / history.length) * 100
+        }));
+    }
+
+    private _sendInitialState() {
+        const config = vscode.workspace.getConfiguration('rcaAgent');
+        this._sendMessage({
+            command: 'init',
+            data: {
+                config: {
+                    model: config.get('model', 'deepseek-r1'),
+                    ollamaUrl: config.get('ollamaUrl', 'http://localhost:11434'),
+                    theme: vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Dark ? 'dark' : 'light',
+                    educationalMode: config.get('educationalMode', false),
+                    realtimeDetection: config.get('realtimeDetection', false)
+                }
+            }
+        });
+    }
+
+    private _sendMessage(message: any) {
+        if (this._view) {
+            this._view.webview.postMessage(message);
+        }
+    }
+
+    private _getHtmlForWebview(webview: vscode.Webview): string {
+        const fs = require('fs');
+        const webviewPath = path.join(this._extensionUri.fsPath, 'webview', 'dist');
+        const indexPath = path.join(webviewPath, 'index.html');
+        
+        // Read the built index.html
+        let html = fs.readFileSync(indexPath, 'utf8');
+        
+        // Add cache-busting timestamp
+        const timestamp = Date.now();
+        
+        // Replace asset paths with webview URIs
+        html = html.replace(
+            /href="\/assets\/(.*?)"/g,
+            (match: string, filename: string) => {
+                const assetUri = webview.asWebviewUri(
+                    vscode.Uri.file(path.join(webviewPath, 'assets', filename))
+                );
+                return `href="${assetUri}?v=${timestamp}"`;
+            }
+        );
+        
+        html = html.replace(
+            /src="\/assets\/(.*?)"/g,
+            (match: string, filename: string) => {
+                const assetUri = webview.asWebviewUri(
+                    vscode.Uri.file(path.join(webviewPath, 'assets', filename))
+                );
+                return `src="${assetUri}?v=${timestamp}"`;
+            }
+        );
+        
+        // Update CSP
+        const csp = `default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src ${webview.cspSource}; img-src ${webview.cspSource} https:;`;
+        html = html.replace(
+            /<meta charset="UTF-8" \/>/,
+            `<meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="${csp}">`
+        );
+        
+        return html;
+    }
+}

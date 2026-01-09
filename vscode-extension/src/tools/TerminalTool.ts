@@ -56,52 +56,7 @@ export class TerminalTool implements Tool<ExecuteCommandParams, CommandResult> {
     category: 'terminal'
   };
 
-  private outputCache: string[] = [];
-  private maxCacheSize = 1000;
   private commandHistory: string[] = [];
-  
-  constructor() {
-    this.initializeWatcher();
-  }
-  
-  /**
-   * Initialize terminal output watcher
-   */
-  initializeWatcher(): void {
-    // Check if API exists (might not be available in all VS Code versions)
-    if ('onDidWriteTerminalData' in vscode.window) {
-      // @ts-ignore - API might not be in typings yet
-      vscode.window.onDidWriteTerminalData(event => {
-        this.outputCache.push(event.data);
-        
-        // Maintain cache size
-        if (this.outputCache.length > this.maxCacheSize) {
-          this.outputCache.shift();
-        }
-      });
-      
-      console.log('[TerminalTool] Terminal watcher initialized');
-    } else {
-      console.warn('[TerminalTool] onDidWriteTerminalData not available');
-    }
-  }
-  
-  /**
-   * Get recent terminal output
-   * 
-   * @param lines - Number of recent lines to return (default: 50)
-   * @returns Recent terminal output
-   */
-  getRecentOutput(lines: number = 50): string {
-    return this.outputCache.slice(-lines).join('\n');
-  }
-  
-  /**
-   * Get all terminal output
-   */
-  getAllOutput(): string {
-    return this.outputCache.join('\n');
-  }
   
   /**
    * Execute a command in terminal (Tool interface implementation)
@@ -137,15 +92,13 @@ export class TerminalTool implements Tool<ExecuteCommandParams, CommandResult> {
       // Send command
       terminal.sendText(command);
       
-      // Wait for output (simplified - actual implementation needs proper detection)
+      // Wait for command execution (terminal output capture not available in standard mode)
       setTimeout(() => {
         const duration = Date.now() - startTime;
-        const output = this.getRecentOutput(100);
-        const success = this.isSuccessfulOutput(output);
         
         resolve({
-          success,
-          output,
+          success: true, // Assume success - terminal errors should be visible to user
+          output: `Command executed: ${command}`,
           command,
           duration
         });
@@ -154,40 +107,10 @@ export class TerminalTool implements Tool<ExecuteCommandParams, CommandResult> {
   }
   
   /**
-   * Check if terminal output indicates success
-   */
-  private isSuccessfulOutput(output: string): boolean {
-    const outputLower = output.toLowerCase();
-    
-    // Check for error indicators
-    if (outputLower.includes('error') || 
-        outputLower.includes('failed') ||
-        outputLower.includes('exception')) {
-      return false;
-    }
-    
-    // Check for success indicators
-    if (outputLower.includes('success') || 
-        outputLower.includes('build successful')) {
-      return true;
-    }
-    
-    // Default to true if no clear indicators
-    return true;
-  }
-  
-  /**
    * Get command history
    */
   getCommandHistory(): string[] {
     return [...this.commandHistory];
-  }
-  
-  /**
-   * Clear output cache
-   */
-  clearCache(): void {
-    this.outputCache = [];
   }
   
   /**

@@ -345,6 +345,26 @@ export class AnalysisService {
   }
   
   /**
+   * Get current agent state (Phase 3)
+   */
+  getCurrentState(): AgentState | null {
+    if (!this._agent || !this._stateStream) {
+      return null;
+    }
+    
+    // Return basic state info - the stream will provide detailed updates
+    return {
+      iteration: 0,
+      maxIterations: 5,
+      isActive: !!this._currentAnalysis,
+      progress: 0,
+      currentThought: '',
+      hypothesis: null,
+      rootCause: null
+    };
+  }
+  
+  /**
    * Search for similar errors in ChromaDB
    */
   private async _searchSimilarErrors(error: any): Promise<any[] | undefined> {

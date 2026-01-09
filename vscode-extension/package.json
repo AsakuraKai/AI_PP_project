@@ -25,6 +25,24 @@
   ],
   "main": "./out/vscode-extension/src/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "rca-agent",
+          "title": "RCA Agent",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "rca-agent": [
+        {
+          "type": "webview",
+          "id": "rca-agent.mainView",
+          "name": "RCA Agent"
+        }
+      ]
+    },
     "chatParticipants": [
       {
         "id": "rca-agent.participant",
@@ -49,6 +67,21 @@
       {
         "command": "rcaAgent.clearConversations",
         "title": "RCA Agent: Clear Conversation History"
+      },
+      {
+        "command": "rca-agent.applyFix",
+        "title": "RCA: Apply Suggested Fix",
+        "category": "RCA Agent"
+      },
+      {
+        "command": "rca-agent.explainMore",
+        "title": "RCA: Explain More",
+        "category": "RCA Agent"
+      },
+      {
+        "command": "rca-agent.searchSimilar",
+        "title": "RCA: Search Similar Errors",
+        "category": "RCA Agent"
       }
     ],
     "configuration": {

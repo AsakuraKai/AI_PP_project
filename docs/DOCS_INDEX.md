@@ -1,7 +1,7 @@
 # 📚 Documentation Index
 
 > **Quick navigation to all RCA Agent documentation**  
-> **Last Updated:** January 8, 2026  
+> **Last Updated:** January 9, 2026 (Documentation Consolidation)  
 > **Status:** UI Removed - Backend Complete - Ready for Fresh Implementation ✅  
 > **Note:** All UI components removed - See new UI implementation guides below 🚀
 
@@ -11,8 +11,10 @@
 
 **All UI has been removed from the extension.** Backend services remain fully functional.
 
-**New Documentation**:
-- [RCA_UI_WIRING_GUIDE.md](./RCA_UI_WIRING_GUIDE.md) - Complete guide for reimplementing UI
+**New UI Design Documentation** (January 9, 2026):
+- [RCA_UI_FIGMA_PLAN.md](./RCA_UI_FIGMA_PLAN.md) - **NEW:** Visual design, views, and implementation plan
+- [RCA_UI_ROADMAP.md](./RCA_UI_ROADMAP.md) - **NEW:** 4-week implementation roadmap
+- [RCA_UI_WIRING_GUIDE.md](./RCA_UI_WIRING_GUIDE.md) - Complete backend API mapping
 - [RCA_UI_REMOVAL_SUMMARY.md](./RCA_UI_REMOVAL_SUMMARY.md) - What was removed and why
 
 ---
@@ -21,32 +23,39 @@
 
 **New to the project?** Start here:
 1. [README.md](README.md) - Project overview and complete quick start guide
-2. [RCA_UI_WIRING_GUIDE.md](./RCA_UI_WIRING_GUIDE.md) - **NEW:** UI implementation guide
-3. [RCA_UI_REMOVAL_SUMMARY.md](./RCA_UI_REMOVAL_SUMMARY.md) - **NEW:** Current state summary
-4. [DEVLOG.md](DEVLOG.md) - Development journal with current status (weekly updates)
-5. [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) - Complete file tree and organization
+2. [RCA_UI_FIGMA_PLAN.md](./RCA_UI_FIGMA_PLAN.md) - **NEW:** Figma-inspired UI design
+3. [RCA_UI_ROADMAP.md](./RCA_UI_ROADMAP.md) - **NEW:** Implementation roadmap (4 weeks)
+4. [RCA_UI_WIRING_GUIDE.md](./RCA_UI_WIRING_GUIDE.md) - Backend API mapping
+5. [DEVLOG.md](DEVLOG.md) - Development journal with current status
 
 ---
 
 ## 📖 Documentation by Category
 
-### 🚀 NEW: UI Implementation Guides
+### 🎨 NEW: UI Design & Implementation (Jan 9, 2026)
 
 | Document | Purpose | Size | Status |
 |----------|---------|------|--------|
-| [RCA_UI_WIRING_GUIDE.md](./RCA_UI_WIRING_GUIDE.md) | **Complete UI implementation guide** - component mapping, backend APIs, wiring instructions, phase-by-phase guide (11-17 days) | 45KB | ✅ Complete |
-| [RCA_UI_REMOVAL_SUMMARY.md](./RCA_UI_REMOVAL_SUMMARY.md) | **UI removal summary** - what was removed, what's preserved, how to use backend services | 8KB | ✅ Complete |
+| [RCA_UI_FIGMA_PLAN.md](./RCA_UI_FIGMA_PLAN.md) | **Visual design plan** - Figma-inspired layout, 7 views, color system, mockups | 18KB | ✅ New |
+| [RCA_UI_ROADMAP.md](./RCA_UI_ROADMAP.md) | **4-week implementation roadmap** - timeline, milestones, success criteria | 8KB | ✅ New |
+| [RCA_UI_WIRING_GUIDE.md](./RCA_UI_WIRING_GUIDE.md) | **Backend API mapping** - services, commands, message protocol, wiring instructions | 45KB | ✅ Updated |
+| [RCA_UI_REMOVAL_SUMMARY.md](./RCA_UI_REMOVAL_SUMMARY.md) | **Removal summary** - what was removed, what's preserved, why | 8KB | ✅ Complete |
 
 ### 🏗️ Core Documentation (Root Level)
 
-| Document | Purpose | Lines | Status |
-|----------|---------|-------|--------|
-| [README.md](README.md) | Project overview, quick start, and setup guide | ~300 | ✅ Current |
-| [DEVLOG.md](DEVLOG.md) | **Consolidated:** Weekly journal + current status & phase progress | ~2,900+ | ⚠️ Needs update |
-| [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) | Complete file tree and organization | ~700 | ⚠️ Needs update |
-| [DOCS_INDEX.md](DOCS_INDEX.md) | This file - Documentation navigation | ~300 | ✅ Updated |
+| Document | Purpose | Status |
+|----------|---------|--------|
+| [README.md](README.md) | Project overview, quick start, and setup guide | ✅ Current |
+| [DEVLOG.md](DEVLOG.md) | Weekly development journal + current status & phase progress | ✅ Current |
+| [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) | **CONSOLIDATED:** Complete file tree, statistics, build info | ✅ Updated Jan 9 |
+| [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) | Developer reference for extending RCA Agent | ✅ Current |
+| [USER_GUIDE.md](USER_GUIDE.md) | User guide for using RCA Agent | ✅ Current |
+| [LEARNINGS.md](LEARNINGS.md) | Project insights and lessons learned | ✅ Current |
+| [DOCS_INDEX.md](DOCS_INDEX.md) | This file - Documentation navigation | ✅ Updated Jan 9 |
 
-**Changes:**
+**Recent Changes:**
+- ✅ **Consolidated PROJECT_STRUCTURE.md** - Merged PROJECT_FILE_STRUCTURE.md and PROJECT_STRUCTURE_STATS.md
+- ✅ **Archived UNWIRED_UI_COMPONENTS.md** → _archive/ (obsolete - UI removed)
 - ✅ **Merged STATUS.md into DEVLOG.md** - Current status now at top of devlog
 - ✅ **Moved EDUCATIONAL_MODE.md** → architecture/
 - ✅ **Moved VSCODE_EXTENSION_GUIDE.md** → architecture/extension/
@@ -278,13 +287,27 @@ When adding new documentation:
 
 ---
 
-**Last Updated:** January 5, 2026  
+**Last Updated:** January 9, 2026  
 **Maintained By:** Kai (Backend Developer)  
-**Next Update:** After Phase 5 completion
+**Next Update:** After fresh UI implementation
 
 ---
 
 ## 📝 Recent Changes
+
+### January 9, 2026 - Project Structure Consolidation 🎯
+**File Structure Simplification:**
+- ✅ **Consolidated PROJECT_STRUCTURE.md** - Merged PROJECT_FILE_STRUCTURE.md (874 lines) and PROJECT_STRUCTURE_STATS.md (63 lines) into single comprehensive document
+- ✅ **Archived UNWIRED_UI_COMPONENTS.md** → _archive/ (obsolete - all UI was removed, see RCA_UI_WIRING_GUIDE.md instead)
+- ✅ **Enhanced PROJECT_STRUCTURE.md** - Now includes file statistics, detailed structure tree, component explanations, and build instructions
+- ✅ **Reduced structure documentation from 3 to 1 file** (67% reduction)
+
+**Results:**
+- Single source of truth for project structure
+- Complete statistics integrated (1,861 files, 286 directories)
+- Detailed component breakdowns
+- Build and development workflow instructions
+- No information lost, better organization
 
 ### January 5, 2026 - Major Consolidation Round 2 🎯
 **Root-Level Simplification:**
