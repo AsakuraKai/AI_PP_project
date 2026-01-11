@@ -94,20 +94,38 @@ export function useDashboardData() {
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       const message = event.data;
+      console.log('[RCA Frontend - Dashboard] Received message:', message);
       
       switch (message.command) {
         case 'dashboardData':
-          setStats(message.stats);
-          setRecentActivity(message.activity);
+          if (message.stats) {
+            console.log('[RCA Frontend - Dashboard] Stats:', message.stats);
+            setStats(message.stats);
+          }
+          if (message.activity) {
+            console.log('[RCA Frontend - Dashboard] Activity:', message.activity);
+            setRecentActivity(message.activity);
+          }
           setLoading(false);
           break;
           
         case 'ollamaStatus':
-          setOllamaStatus(message.status);
+          if (message.status) {
+            console.log('[RCA Frontend - Dashboard] Ollama status:', message.status);
+            setOllamaStatus({
+              connected: message.status.connected || false,
+              model: message.status.model,
+              responseTime: message.status.responseTime,
+              error: message.status.error
+            });
+          }
           break;
           
         case 'activityUpdate':
-          setRecentActivity(prev => [message.activity, ...prev].slice(0, 5));
+          if (message.activity) {
+            console.log('[RCA Frontend - Dashboard] Activity update:', message.activity);
+            setRecentActivity(prev => [message.activity, ...prev].slice(0, 5));
+          }
           break;
       }
     };

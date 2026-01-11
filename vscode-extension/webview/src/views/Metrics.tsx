@@ -393,7 +393,7 @@ export function Metrics() {
           )}
         </>
       )}
-    </div>
+    </main>
   );
 }
 

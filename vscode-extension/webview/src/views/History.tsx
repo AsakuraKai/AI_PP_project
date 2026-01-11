@@ -199,26 +199,26 @@ export function History() {
             announce(`Filtering by ${value} status`, 'polite');
           }}
         >
-          <SelectTrigger className="w-[180px] bg-zinc-950 border-zinc-800 focus-ring" aria-label="Filter by status">
+          <SelectTrigger className="w-[180px] !bg-zinc-900 border-zinc-700 text-zinc-100 hover:bg-zinc-800 transition-colors focus-ring" aria-label="Filter by status">
             <Filter className="h-4 w-4 mr-2" aria-hidden="true" />
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="success">Successful Only</SelectItem>
-            <SelectItem value="failed">Failed Only</SelectItem>
+          <SelectContent className="bg-zinc-900 border-zinc-700">
+            <SelectItem value="all" className="text-zinc-100 hover:bg-zinc-800 focus:bg-zinc-800">All Status</SelectItem>
+            <SelectItem value="success" className="text-zinc-100 hover:bg-zinc-800 focus:bg-zinc-800">Successful Only</SelectItem>
+            <SelectItem value="failed" className="text-zinc-100 hover:bg-zinc-800 focus:bg-zinc-800">Failed Only</SelectItem>
           </SelectContent>
         </Select>
         
         {/* Sort By */}
         <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-          <SelectTrigger className="w-[180px] bg-zinc-950 border-zinc-800 focus-ring" aria-label="Sort by">
+          <SelectTrigger className="w-[180px] !bg-zinc-900 border-zinc-700 text-zinc-100 hover:bg-zinc-800 transition-colors focus-ring" aria-label="Sort by">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="timestamp">Sort by Date</SelectItem>
-            <SelectItem value="confidence">Sort by Confidence</SelectItem>
-            <SelectItem value="duration">Sort by Duration</SelectItem>
+          <SelectContent className="bg-zinc-900 border-zinc-700">
+            <SelectItem value="timestamp" className="text-zinc-100 hover:bg-zinc-800 focus:bg-zinc-800">Sort by Date</SelectItem>
+            <SelectItem value="confidence" className="text-zinc-100 hover:bg-zinc-800 focus:bg-zinc-800">Sort by Confidence</SelectItem>
+            <SelectItem value="duration" className="text-zinc-100 hover:bg-zinc-800 focus:bg-zinc-800">Sort by Duration</SelectItem>
           </SelectContent>
         </Select>
         

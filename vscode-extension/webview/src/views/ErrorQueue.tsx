@@ -102,29 +102,29 @@ export function ErrorQueue() {
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value as FilterStatus)}
-          className="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 hover:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500"
           aria-label="Filter errors by status"
         >
-          <option value="all">All Status</option>
-          <option value="pending">Pending</option>
-          <option value="analyzing">Analyzing</option>
-          <option value="complete">Complete</option>
-          <option value="failed">Failed</option>
+          <option value="all" className="bg-zinc-900 text-zinc-100">All Status</option>
+          <option value="pending" className="bg-zinc-900 text-zinc-100">Pending</option>
+          <option value="analyzing" className="bg-zinc-900 text-zinc-100">Analyzing</option>
+          <option value="complete" className="bg-zinc-900 text-zinc-100">Complete</option>
+          <option value="failed" className="bg-zinc-900 text-zinc-100">Failed</option>
         </select>
         
         {/* Type Filter */}
         <select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value as FilterType)}
-          className="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 hover:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500"
           aria-label="Filter errors by type"
         >
-          <option value="all">All Types</option>
-          <option value="runtime">Runtime</option>
-          <option value="build">Build</option>
-          <option value="lint">Lint</option>
-          <option value="syntax">Syntax</option>
-          <option value="warning">Warning</option>
+          <option value="all" className="bg-zinc-900 text-zinc-100">All Types</option>
+          <option value="runtime" className="bg-zinc-900 text-zinc-100">Runtime</option>
+          <option value="build" className="bg-zinc-900 text-zinc-100">Build</option>
+          <option value="lint" className="bg-zinc-900 text-zinc-100">Lint</option>
+          <option value="syntax" className="bg-zinc-900 text-zinc-100">Syntax</option>
+          <option value="warning" className="bg-zinc-900 text-zinc-100">Warning</option>
         </select>
         
         {/* Bulk Actions */}

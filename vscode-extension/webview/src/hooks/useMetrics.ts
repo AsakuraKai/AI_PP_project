@@ -113,8 +113,8 @@ export function useMetrics() {
     return () => window.removeEventListener('message', handleMessage);
   }, []);
   
-  // Transform data for charts
-  const successRateChartData: ChartData | null = metricsData ? {
+  // Transform data for charts with defensive checks
+  const successRateChartData: ChartData | null = (metricsData?.successRate?.byDay) ? {
     labels: metricsData.successRate.byDay.map(d => d.date),
     datasets: [{
       label: 'Success Rate (%)',
@@ -123,7 +123,7 @@ export function useMetrics() {
     }]
   } : null;
   
-  const analysisTimeChartData: ChartData | null = metricsData ? {
+  const analysisTimeChartData: ChartData | null = (metricsData?.analysisTime?.byDay) ? {
     labels: metricsData.analysisTime.byDay.map(d => d.date),
     datasets: [{
       label: 'Avg Time (ms)',
@@ -132,7 +132,7 @@ export function useMetrics() {
     }]
   } : null;
   
-  const errorTypeChartData: ChartData | null = metricsData ? {
+  const errorTypeChartData: ChartData | null = (metricsData?.errorTypes) ? {
     labels: metricsData.errorTypes.map(e => e.type),
     datasets: [{
       label: 'Count',
@@ -141,8 +141,8 @@ export function useMetrics() {
     }]
   } : null;
   
-  // Calculate summary stats
-  const summaryStats = metricsData ? {
+  // Calculate summary stats with defensive checks
+  const summaryStats = (metricsData?.successRate?.byDay && metricsData?.analysisTime && metricsData?.errorTypes && metricsData?.learningMetrics && metricsData?.modelPerformance) ? {
     totalAnalyses: metricsData.successRate.byDay.reduce((sum, d) => sum + d.success + d.failed, 0),
     overallSuccessRate: Math.round(metricsData.successRate.overall * 100),
     avgAnalysisTime: Math.round(metricsData.analysisTime.average),

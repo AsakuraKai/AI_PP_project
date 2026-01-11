@@ -80,19 +80,24 @@ export function handleListKeyboard(
 /**
  * Create accessible button props
  */
-export function createButtonProps(label: string, onClick: () => void) {
-  return {
-    onClick,
-    onKeyDown: (e: React.KeyboardEvent) => {
-      if (e.key === Keys.ENTER || e.key === Keys.SPACE) {
-        e.preventDefault();
-        onClick();
-      }
-    },
+export function createButtonProps(label: string, onClick?: () => void) {
+  const props: any = {
     role: 'button',
     tabIndex: 0,
     'aria-label': label,
   };
+  
+  if (onClick) {
+    props.onClick = onClick;
+    props.onKeyDown = (e: React.KeyboardEvent) => {
+      if (e.key === Keys.ENTER || e.key === Keys.SPACE) {
+        e.preventDefault();
+        onClick();
+      }
+    };
+  }
+  
+  return props;
 }
 
 /**
