@@ -58,22 +58,22 @@ export function FixManager() {
     selectAll,
     deselectAll
   } = useFixManager();
-  
+
   const [expandedFixes, setExpandedFixes] = useState<Set<string>>(new Set());
   const [activeTab, setActiveTab] = useState('pending');
-  
+
   // Announce tab changes
   useEffect(() => {
     announce(`Viewing ${activeTab} fixes`, 'polite');
   }, [activeTab]);
-  
+
   // Announce selection changes
   useEffect(() => {
     if (selectedFixes.size > 0) {
       announce(`${selectedFixes.size} fixes selected`, 'polite');
     }
   }, [selectedFixes.size]);
-  
+
   const toggleExpand = (fixId: string) => {
     setExpandedFixes(prev => {
       const next = new Set(prev);
@@ -87,10 +87,10 @@ export function FixManager() {
       return next;
     });
   };
-  
+
   const hasSelection = selectedFixes.size > 0;
   const allSelected = selectedFixes.size === pendingFixes.length && pendingFixes.length > 0;
-  
+
   return (
     <main className="p-8 space-y-6" role="main" aria-label="Fix Manager">
       {/* Header */}
@@ -136,7 +136,7 @@ export function FixManager() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-zinc-900 border-zinc-800">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -148,7 +148,7 @@ export function FixManager() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-zinc-900 border-zinc-800">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -160,7 +160,7 @@ export function FixManager() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-zinc-900 border-zinc-800">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -175,7 +175,7 @@ export function FixManager() {
           </>
         )}
       </div>
-      
+
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="bg-zinc-900 border border-zinc-800" role="tablist" aria-label="Fix categories">
@@ -186,7 +186,7 @@ export function FixManager() {
             Applied ({stats.applied + stats.failed})
           </TabsTrigger>
         </TabsList>
-        
+
         {/* Pending Fixes Tab */}
         <TabsContent value="pending" className="space-y-4 mt-4" role="tabpanel">
           {/* Bulk Actions */}
@@ -213,7 +213,7 @@ export function FixManager() {
                       {hasSelection ? `${stats.selected} selected` : 'Select all'}
                     </span>
                   </div>
-                  
+
                   {hasSelection && (
                     <div className="flex gap-2" role="group" aria-label="Bulk actions">
                       <Button
@@ -247,7 +247,7 @@ export function FixManager() {
               </CardContent>
             </Card>
           )}
-          
+
           {/* Pending Fixes List */}
           {loading ? (
             <div className="flex items-center justify-center py-12">
@@ -268,7 +268,7 @@ export function FixManager() {
               {pendingFixes.map(fix => {
                 const isExpanded = expandedFixes.has(fix.id);
                 const isSelected = selectedFixes.has(fix.id);
-                
+
                 return (
                   <Card
                     key={fix.id}
@@ -285,7 +285,7 @@ export function FixManager() {
                           onCheckedChange={() => toggleSelection(fix.id)}
                           className="mt-1"
                         />
-                        
+
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-2">
                             <Button
@@ -309,15 +309,15 @@ export function FixManager() {
                               </Badge>
                             )}
                           </div>
-                          
+
                           <h3 className="font-medium text-zinc-200 mb-1 truncate">
                             {fix.file}
                             {fix.line && `:${fix.line}`}
                           </h3>
                           <p className="text-sm text-zinc-400 break-words">{fix.explanation}</p>
                         </div>
-                        
-                        <div className="flex gap-1 shrink-0">  
+
+                        <div className="flex gap-1 shrink-0">
                           <Button
                             size="sm"
                             onClick={() => applyFix(fix.id)}
@@ -338,7 +338,7 @@ export function FixManager() {
                         </div>
                       </div>
                     </CardHeader>
-                    
+
                     {isExpanded && (
                       <CardContent className="p-4 pt-0 border-t border-zinc-800 mt-3">
                         <div className="space-y-3">
@@ -349,7 +349,7 @@ export function FixManager() {
                               <code className="text-red-300">{fix.before}</code>
                             </pre>
                           </div>
-                          
+
                           {/* After Code */}
                           <div>
                             <h4 className="text-sm font-medium text-zinc-400 mb-2">After:</h4>
@@ -357,7 +357,7 @@ export function FixManager() {
                               <code className="text-green-300">{fix.after}</code>
                             </pre>
                           </div>
-                          
+
                           {/* Preview Diff Button */}
                           <Button
                             variant="outline"
@@ -377,7 +377,7 @@ export function FixManager() {
             </div>
           )}
         </TabsContent>
-        
+
         {/* Applied Fixes Tab */}
         <TabsContent value="applied" className="space-y-4 mt-4">
           {/* Clear Button */}
@@ -394,7 +394,7 @@ export function FixManager() {
               </Button>
             </div>
           )}
-          
+
           {/* Applied Fixes List */}
           {appliedFixes.length === 0 ? (
             <Card className="bg-zinc-900 border-zinc-800">
@@ -424,7 +424,7 @@ export function FixManager() {
                         ) : (
                           <XCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
                         )}
-                        
+
                         <div>
                           <h3 className="font-medium text-zinc-200 mb-1">{fix.file}</h3>
                           <p className="text-sm text-zinc-400">
@@ -437,7 +437,7 @@ export function FixManager() {
                           )}
                         </div>
                       </div>
-                      
+
                       <Badge variant={fix.success ? 'default' : 'destructive'}>
                         {fix.success ? 'Success' : 'Failed'}
                       </Badge>
@@ -449,7 +449,7 @@ export function FixManager() {
           )}
         </TabsContent>
       </Tabs>
-      
+
       {/* Diff Preview Modal (if needed) */}
       {diffPreview && (
         <Card className="bg-zinc-900 border-zinc-800 mt-6">

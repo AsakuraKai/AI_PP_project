@@ -1,59 +1,78 @@
 # RCA Agent: Local-First AI Debugging Assistant
 
 > **Personal Learning Project** - Building a local AI debugging assistant for Kotlin/Android development.  
-> **Current Status:** Production Ready! ✅ Phase 1-7 Complete | Phase 4 Polish Complete | Ready for Public Release!
+> **Current Status:** Phase 4 Real-World Testing 🚀 | Backend Complete ✅ | Chat Interface Complete ✅
 
 ---
 
 ## 🎉 Latest Updates (January 2026)
 
-### ✅ Phase 4 Complete: Polish & Launch (NEWLY COMPLETED!)
-- **All 7 views** enhanced with comprehensive accessibility (WCAG 2.1 AA)
-- **Full keyboard navigation** with arrow keys, Home/End, Tab support
-- **Screen reader support** with ARIA labels and live regions
-- **Loading skeletons** for all async operations (8+ variants)
-- **Empty states** with helpful guidance
-- **55 comprehensive tests** across 4 test suites
-- **Reusable accessibility library** (431 lines)
-- **Complete testing infrastructure** with Jest + React Testing Library
+### ✅ Phase 1: Backend Infrastructure (COMPLETE - Dec 25, 2025)
+- **26+ error parsers** with 100% parsing accuracy
+- **MinimalReactAgent** with ReAct reasoning and tool execution
+- **Knowledge bases** covering 156 AGP versions + 52 Kotlin versions
+- **ChromaDB integration** for semantic search and caching
+- **878/878 tests passing** with 99% code coverage
+- **Status:** Production-ready backend
 
-### ✅ Phase 6 Complete: UI/UX Polish
-- Enhanced error messages with contextual help and recovery suggestions
-- Improved tooltips and empty state guidance
-- Better markdown rendering with syntax highlighting
-- Interactive elements (clickable paths, inline fixes)
-- Progress indicators with ETAs
-- Settings panel with feature toggles
-- Local telemetry for usage tracking
+### ✅ Phase 2-3: Chat Participant + Intelligence (COMPLETE - Jan 1, 2026)
+- **Conversational interface** via `@rca-agent` chat participant
+- **Context-aware analysis** from files, diagnostics, and terminal output
+- **Action buttons** for Apply Fix, Explain More, and Search Similar
+- **2,900+ LOC** of production chat interface code
+- **10.35s average response time** (88% faster than 90s target)
+- **Status:** Ready for real-world testing
 
-### ✅ Phase 7 Complete: Documentation & Sharing
-- **NEW:** [User Guide](docs/USER_GUIDE.md) - Complete guide for end users
-- **NEW:** [Developer Guide](docs/DEVELOPER_GUIDE.md) - Architecture and extension guide
-- **NEW:** [Learnings Document](docs/LEARNINGS.md) - Key insights from 13 weeks of development
-- All documentation updated and ready for public release
+### 🚀 Phase 4: Real-World Testing (IN PROGRESS - Week 4 Complete)
+**Week 1-2 (COMPLETE):** Testing infrastructure
+- Phase4TestSuite with 10 diverse test cases
+- 7 standardized metrics for evaluation
+- Automated test runner with health checks
+- Test fixtures for 7 major error types
 
-### 📊 Project Stats
-- **13 weeks** of development (Dec 2025 - Jan 2026)
-- **~17,800 LOC** (excluding tests) - *+1,800 from Phase 4*
-- **871/881 tests passing** (99% pass rate) - *+55 new tests*
-- **WCAG 2.1 AA compliant** - Full accessibility support
-- **61% baseline accuracy** with DeepSeek-R1-Distill-Qwen-7B
-- **11.7s average latency** (74% faster than initial baseline)
-- **Production ready** with comprehensive documentation
+**Week 3-4 (COMPLETE):** Interactive debugging features
+- ConversationalAgent (540 LOC) for multi-turn debugging
+- GuidedDebuggingWorkflow (550 LOC) for step-by-step guidance
+- Full LLM integration with persistence and VS Code commands
+- 16 comprehensive integration tests
+
+**Week 5+ (CURRENT):** Baseline testing and improvements
+- Running baseline tests to collect real-world metrics
+- Analyzing failure patterns and edge cases
+- Target: 85%+ usability rating, 8/10 tests passing
+
+### 📊 Current Project Stats
+- **15+ weeks** of development (Dec 2025 - Jan 2026)
+- **~15,000 total LOC** (~12,000 production + ~3,000 tests)
+- **1,111/1,120 tests passing** (99% pass rate)
+- **99% code coverage** across all modules
+- **10.35s average response time** (88% faster than target)
+- **Phase 4 testing** in progress with comprehensive real-world validation
 
 ---
 
-## 🧹 Recent Consolidation (January 2026)
+## 🏗️ Current Architecture
 
-This project recently underwent comprehensive deduplication and cleanup:
-- ✅ **All 15 consolidation chunks completed**
-- ✅ **1,100+ lines of duplicate code removed**
-- ✅ **15-20% code reduction achieved**
-- ✅ **17 deprecated test files archived** to `scripts/_deprecated_*/`
-- ✅ **300+ compiled artifacts removed** from git tracking
-- ✅ **Zero breaking changes** - all functionality preserved
+The project is built with a modular, production-ready architecture:
 
-**See:** [Week 4 Cleanup Report](docs/WEEK4_CLEANUP_COMPLETE.md) for details.
+### Backend Core (`src/`)
+- **Agent System** - MinimalReactAgent with ReAct reasoning, multi-pass analysis
+- **Error Parsers** - 26+ parsers for Kotlin, Gradle, Compose, XML, Manifest errors
+- **Tools** - ReadFile, LSP, AndroidBuild, Manifest, Docs tools
+- **Knowledge Bases** - 156 AGP + 52 Kotlin versions with semantic search
+- **Caching** - ChromaDB-backed semantic caching and RCA storage
+- **Streaming** - Real-time agent state updates with EventEmitter
+
+### VS Code Extension (`vscode-extension/`)
+- **Chat Participant** - Conversational `@rca-agent` interface
+- **Webview Panel** - React-based analysis dashboard
+- **Commands** - Error analysis, educational mode, settings
+- **Context Integration** - Files, diagnostics, terminal output
+
+### Testing Infrastructure (`tests/`)
+- **Unit Tests** - 878 backend unit tests with 99% coverage
+- **Integration Tests** - 16 chat workflow and interactive debugging tests
+- **Real-World Tests** - Phase4TestSuite with 10 diverse Android scenarios
 
 ---
 
@@ -61,35 +80,16 @@ This project recently underwent comprehensive deduplication and cleanup:
 
 All project documentation is organized in the `docs/` folder:
 
-### **🎯 NEW: User & Developer Guides**
-- **[📖 User Guide](docs/USER_GUIDE.md)** - Complete guide for installing and using RCA Agent
-- **[🛠️ Developer Guide](docs/DEVELOPER_GUIDE.md)** - Architecture, extending, and contributing
-- **[💡 Key Learnings](docs/LEARNINGS.md)** - Insights from 13 weeks of building an AI debugging tool
+### Core Documentation
+- **[Development Log (DEVLOG)](docs/DEVLOG.md)** - Weekly progress journal with detailed status updates
+- **[Project Structure](docs/PROJECT_STRUCTURE.md)** - Complete file organization and statistics
+- **[Developer Guide](docs/DEVELOPER_GUIDE.md)** - Architecture and extension guide
+- **[User Guide](docs/USER_GUIDE.md)** - Installation and usage guide
 
-### Quick Reference
-- **[Project Overview & Setup](docs/README.md)** - What this is, hardware requirements, getting started
-- **[Development Log (DEVLOG)](docs/DEVLOG.md)** - Weekly progress journal with all implementation details
-- **[Roadmap](docs/Roadmap.md)** - Complete phase-by-phase implementation plan
-- **[Current Status Report](docs/CHUNK-2-STATUS-REPORT.md)** - Latest chunk completion status
-- **[Project Structure](docs/PROJECT_STRUCTURE.md)** - File organization and statistics
-
-### Milestone Documentation
-- [Chunk 1.1-1.3 Complete](docs/_archive/milestones/Chunk-1.1-1.3-COMPLETE.md) - LLM Client, Parser, Agent (Dec 17-18)
-- [Chunk 1.4 Complete](docs/_archive/milestones/Chunk-1.4-COMPLETE.md) - File Reading Tool (Dec 18)
-- [Chunk 1.5 Complete](docs/_archive/milestones/Chunk-1.5-COMPLETE.md) - MVP Testing (Dec 18)
-- [Chunk 2.1 Complete](docs/_archive/milestones/Chunk-2.1-COMPLETE.md) - Full Error Parser (Dec 18)
-- [Chunk 2.2-2.3 Complete](docs/_archive/milestones/Chunk-2.2-2.3-COMPLETE.md) - Tools & Prompts (Dec 18)
-- [Chunk 2.4 Complete](docs/_archive/milestones/Chunk-2.4-COMPLETE.md) - Agent Integration ✅ (Dec 19)
-- [Chunk 2 Summary Complete](docs/_archive/milestones/Chunk-2-COMPLETE-Summary.md) - Complete Chunk 2 Overview ✅ (Dec 18-19)
-- [Chunk 3.1 Complete](docs/_archive/milestones/Chunk-3.1-COMPLETE.md) - ChromaDB Setup ✅ (Dec 19)
-- [Chunk 3.2 Complete](docs/_archive/milestones/Chunk-3.2-COMPLETE.md) - Embedding & Search ✅ (Dec 19)
-- [Chunk 3.3 Complete](docs/_archive/milestones/Chunk-3.3-COMPLETE.md) - Caching System ✅ (Dec 19)
-- [Chunk 3.4 Complete](docs/_archive/milestones/Chunk-3.4-COMPLETE.md) - User Feedback System ✅ (Dec 19)
-- [Chunk 4.1 Complete](docs/_archive/milestones/Chunk-4.1-COMPLETE.md) - Jetpack Compose Parser ✅ (Dec 19)
-- [Chunk 4.2 Complete](docs/_archive/milestones/Chunk-4.2-COMPLETE.md) - XML Layout Parser ✅ (Dec 19)
-- [Chunk 4.3 Complete](docs/_archive/milestones/Chunk-4.3-COMPLETE.md) - Gradle Build Analyzer ✅ (Dec 19)
-- [Chunk 4.4-4.5 Complete](docs/_archive/milestones/Chunk-4.4-4.5-COMPLETE.md) - Manifest & Docs + Testing ✅ (Dec 19)
-- [Chunk 5.1 Complete](docs/_archive/milestones/Kai-Backend/Chunk-5.1-COMPLETE.md) - Agent State Streaming ✅ (Dec 18, 2025)
+### Additional Resources
+- **[Learnings](docs/LEARNINGS.md)** - Key insights from 15+ weeks of development
+- **[Roadmap](docs/Roadmap.md)** - Phase-by-phase implementation plan
+- **[Milestone Archive](docs/_archive/milestones/)** - Historical completion reports
 
 ---
 
@@ -105,40 +105,45 @@ All project documentation is organized in the `docs/` folder:
 # Install dependencies
 npm install
 
+# Build the project
+npm run build
+
 # Run tests
 npm test
 
-# Run accuracy tests (requires Ollama)
-npm run test:accuracy
+# Run Phase 4 real-world tests (requires Ollama)
+npm run test:phase4
 ```
 
 ### Current Implementation Status
 
-**✅ Completed (Weeks 1-12/13):**
-- **Chunks 1.1-1.5:** MVP Backend (OllamaClient, Parser, Agent, ReadFileTool, Testing)
-- **Chunks 2.1-2.4:** Core Tools Backend (Full parser, LSP tools, PromptEngine, Integration)
-- **Chunks 3.1-3.4:** Database Backend (ChromaDB, Embedding, Caching, User Feedback)
-- **Chunks 4.1-4.3:** Android Parsers (Compose, XML, Gradle) ✅
-- **Chunks 4.4-4.5:** Android Tools & Testing (Manifest, Docs, 20 test cases) ✅
-- **Chunk 5.1:** Agent State Streaming (Real-time UI updates, EventEmitter, DocumentSynthesizer) ✅
-- 33 source files (~9,600 lines)
-- 816 tests passing, 10 pre-existing Android failures
-- 95%+ code coverage
-- 18+ error types supported (Kotlin, Gradle, Compose, XML, Manifest)
-- 5 tools implemented (ReadFile, LSP, AndroidBuild, Manifest, Docs)
-- 20 real Android test cases (35% baseline accuracy, optimizing to 70%)
-- Dynamic tool execution with ToolRegistry
-- Few-shot prompting with PromptEngine
-- ChromaDB for RCA storage and semantic search
-- User feedback system with quality management
-- Real-time agent state streaming with 6 event types
-- Markdown RCA report generation with code highlighting
-- Fully integrated agent with backward compatibility
+**✅ Phase 1: Backend (COMPLETE - Dec 25, 2025)**
+- 26+ error parsers (Kotlin, Gradle, Compose, XML, Manifest)
+- MinimalReactAgent with ReAct reasoning and tool execution
+- 5 specialized tools (ReadFile, LSP, AndroidBuild, Manifest, Docs)
+- ChromaDB integration for caching and semantic search
+- Knowledge bases: 156 AGP + 52 Kotlin versions
+- 878/878 tests passing, 99% coverage
 
-**🎯 Next Up (Week 13-14):**
-- Chunk 5.2: Educational Agent (learning notes, beginner explanations)
-- Chunk 5.3: Performance Optimization (parallel tools, profiling)
-- Continue Android parser optimization (reach 70% accuracy)
+**✅ Phase 2-3: Chat Interface (COMPLETE - Jan 1, 2026)**
+- Conversational `@rca-agent` chat participant
+- Context-aware analysis from files, diagnostics, terminal
+- Action buttons (Apply Fix, Explain More, Search Similar)
+- Real-time agent state streaming
+- 2,900+ LOC of production code
+- 10.35s average response time
+
+**🚀 Phase 4: Real-World Testing (IN PROGRESS - Week 4 Complete)**
+- Week 1-2: Testing infrastructure with Phase4TestSuite
+- Week 3-4: Interactive debugging (ConversationalAgent, GuidedDebugging)
+- Week 5+: Baseline testing and iterative improvements
+- Target: 85%+ usability, 8/10 tests passing
+
+**🔮 Phase 5: Advanced Features (FUTURE)**
+- Educational Agent with learning notes
+- Performance optimization (parallel tools, profiling)
+- Real-time error detection
+- Multi-language support
 
 ---
 
@@ -297,15 +302,15 @@ dependencies {
 
 **3. Test Features**
 
-| Feature | How to Test |
-|---------|-------------|
-| Basic Analysis | Copy error → Use Command Palette → Check RCA quality |
+| Feature          | How to Test                                              |
+| ---------------- | -------------------------------------------------------- |
+| Basic Analysis   | Copy error → Use Command Palette → Check RCA quality     |
 | Educational Mode | `Ctrl+Shift+P` → Toggle Educational → Check explanations |
-| Code Context | Verify agent reads correct file/line |
-| Fix Guidelines | Check if fixes are actionable |
-| Feedback System | Click 👍/👎 → Verify stored in ChromaDB |
-| Cache | Analyze same error twice → 2nd should be instant |
-| Panel UI | `Ctrl+Shift+P` → Open Panel → Check real-time updates |
+| Code Context     | Verify agent reads correct file/line                     |
+| Fix Guidelines   | Check if fixes are actionable                            |
+| Feedback System  | Click 👍/👎 → Verify stored in ChromaDB                    |
+| Cache            | Analyze same error twice → 2nd should be instant         |
+| Panel UI         | `Ctrl+Shift+P` → Open Panel → Check real-time updates    |
 
 **4. Test Different Error Categories**
 
@@ -425,15 +430,18 @@ docker ps  # See if ChromaDB running
 
 ## 📊 Project Stats
 
-| Metric | Value |
-|--------|-------|
-| Total Source Files | 33 files |
-| Total Tests | 816 passing (10 pre-existing failures) |
-| Code Coverage | 95%+ |
-| Build Time | ~16s |
-| Lines of Code | ~9,600 |
-| Documentation | ~16,000 lines |
-| Android Accuracy | 35% (baseline, optimizing to 70%) |
+| Metric               | Value                                        |
+| -------------------- | -------------------------------------------- |
+| **Development Time** | 15+ weeks (Dec 2025 - Jan 2026)              |
+| **Total LOC**        | ~15,000 (~12,000 production + ~3,000 tests)  |
+| **Test Results**     | 1,111/1,120 passing (99% pass rate)          |
+| **Code Coverage**    | 99% across all modules                       |
+| **Build Time**       | ~16s                                         |
+| **Response Time**    | 10.35s avg (88% faster than 90s target)      |
+| **Error Parsers**    | 26+ (Kotlin, Gradle, Compose, XML, Manifest) |
+| **Tools**            | 5 specialized tools                          |
+| **Knowledge Base**   | 156 AGP + 52 Kotlin versions                 |
+| **Current Phase**    | Phase 4 Real-World Testing                   |
 
 ---
 

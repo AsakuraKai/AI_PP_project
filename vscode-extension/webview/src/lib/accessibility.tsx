@@ -39,7 +39,7 @@ export function handleListKeyboard(
   }
 ) {
   const { currentIndex, itemCount, onNavigate, onSelect, wrap = true } = options;
-  
+
   switch (event.key) {
     case Keys.ARROW_DOWN:
       event.preventDefault();
@@ -49,7 +49,7 @@ export function handleListKeyboard(
         onNavigate(0);
       }
       break;
-      
+
     case Keys.ARROW_UP:
       event.preventDefault();
       if (currentIndex > 0) {
@@ -58,17 +58,17 @@ export function handleListKeyboard(
         onNavigate(itemCount - 1);
       }
       break;
-      
+
     case Keys.HOME:
       event.preventDefault();
       onNavigate(0);
       break;
-      
+
     case Keys.END:
       event.preventDefault();
       onNavigate(itemCount - 1);
       break;
-      
+
     case Keys.ENTER:
     case Keys.SPACE:
       event.preventDefault();
@@ -86,7 +86,7 @@ export function createButtonProps(label: string, onClick?: () => void) {
     tabIndex: 0,
     'aria-label': label,
   };
-  
+
   if (onClick) {
     props.onClick = onClick;
     props.onKeyDown = (e: React.KeyboardEvent) => {
@@ -96,7 +96,7 @@ export function createButtonProps(label: string, onClick?: () => void) {
       }
     };
   }
-  
+
   return props;
 }
 
@@ -113,9 +113,9 @@ export function createLiveRegion(
   region.setAttribute('aria-atomic', 'true');
   region.className = 'sr-only'; // Screen reader only
   region.textContent = message;
-  
+
   document.body.appendChild(region);
-  
+
   // Remove after announcement
   setTimeout(() => {
     document.body.removeChild(region);
@@ -138,17 +138,17 @@ export function announce(
 export function useFocusTrap(containerRef: React.RefObject<HTMLElement>) {
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key !== Keys.TAB) return;
-    
+
     const container = containerRef.current;
     if (!container) return;
-    
+
     const focusableElements = container.querySelectorAll<HTMLElement>(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
-    
+
     const firstElement = focusableElements[0];
     const lastElement = focusableElements[focusableElements.length - 1];
-    
+
     // Shift + Tab on first element → focus last
     if (event.shiftKey && document.activeElement === firstElement) {
       event.preventDefault();
@@ -160,7 +160,7 @@ export function useFocusTrap(containerRef: React.RefObject<HTMLElement>) {
       firstElement?.focus();
     }
   };
-  
+
   return handleKeyDown;
 }
 
@@ -226,7 +226,7 @@ export function createStatusProps(
     warning: 'Warning',
     info: 'Information',
   };
-  
+
   return {
     role: 'status',
     'aria-label': `${ariaLabels[status]}: ${label}`,
@@ -238,7 +238,7 @@ export function createStatusProps(
  */
 export function createProgressProps(current: number, total: number, label?: string) {
   const percentage = Math.round((current / total) * 100);
-  
+
   return {
     role: 'progressbar',
     'aria-valuenow': current,

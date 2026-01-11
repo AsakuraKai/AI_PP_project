@@ -405,15 +405,16 @@ export class FixApplicationService {
    */
   async showDiffInEditor(preview: DiffPreview): Promise<void> {
     // Create virtual documents for diff
-    const originalUri = vscode.Uri.parse(`rca-diff-original:${preview.file}`);
-    const modifiedUri = vscode.Uri.parse(`rca-diff-modified:${preview.file}`);
+    // Using valid URI scheme names (alphanumeric only, no hyphens)
+    const originalUri = vscode.Uri.parse(`rcadifforiginal:${preview.file}`);
+    const modifiedUri = vscode.Uri.parse(`rcadiffmodified:${preview.file}`);
 
     // Register content providers
-    const originalProvider = vscode.workspace.registerTextDocumentContentProvider('rca-diff-original', {
+    const originalProvider = vscode.workspace.registerTextDocumentContentProvider('rcadifforiginal', {
       provideTextDocumentContent: () => preview.originalContent
     });
 
-    const modifiedProvider = vscode.workspace.registerTextDocumentContentProvider('rca-diff-modified', {
+    const modifiedProvider = vscode.workspace.registerTextDocumentContentProvider('rcadiffmodified', {
       provideTextDocumentContent: () => preview.modifiedContent
     });
 

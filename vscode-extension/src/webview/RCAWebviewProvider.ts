@@ -14,8 +14,8 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     private readonly analysisService: AnalysisService;
     private readonly fixApplicationService: FixApplicationService;
     private readonly networkTimeoutHandler: NetworkTimeoutHandler;
-    private stateManager?: StateManager;
-    private errorQueueManager?: ErrorQueueManager;
+    private readonly stateManager: StateManager;
+    private readonly errorQueueManager: ErrorQueueManager;
 
     constructor(extensionUri: vscode.Uri, extensionContext: vscode.ExtensionContext) {
         this._extensionUri = extensionUri;
@@ -23,6 +23,8 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
         this.analysisService = AnalysisService.getInstance();
         this.fixApplicationService = FixApplicationService.getInstance();
         this.networkTimeoutHandler = new NetworkTimeoutHandler();
+        this.stateManager = StateManager.getInstance(extensionContext);
+        this.errorQueueManager = ErrorQueueManager.getInstance(extensionContext);
     }
 
     public resolveWebviewView(
@@ -39,14 +41,10 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-        // Initialize Phase 2 services
-        this.stateManager = StateManager.getInstance(this._extensionContext);
-        this.errorQueueManager = ErrorQueueManager.getInstance(this._extensionContext);
-        
         // Set up state change listeners
         this.stateManager.onErrorQueueChange(() => this._handleErrorQueueChanged());
         this.stateManager.onStateChange(() => this._handleStateChanged());
-        
+
         // Phase 3: Set up history change listener
         this.stateManager.onHistoryChange((history) => {
             this._sendMessage({
@@ -62,6 +60,10 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
 
         // Send initial state
         this._sendInitialState();
+
+        // Send initial error queue data (non-blocking)
+        this._handleGetErrorQueue();
+        this._handleGetDashboardData();
     }
 
     private async _handleMessage(message: any) {
@@ -79,7 +81,7 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
             case 'openSettings':
                 await this._handleOpenSettings();
                 break;
-            
+
             // Error Queue commands
             case 'getErrorQueue':
                 await this._handleGetErrorQueue();
@@ -108,7 +110,7 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
             case 'openErrorLocation':
                 await this._handleOpenErrorLocation(message.errorId);
                 break;
-            
+
             // Analysis commands
             case 'analyzeError':
                 await this._handleAnalyzeError(message.error);
@@ -128,7 +130,7 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
             case 'exportResult':
                 await this._handleExportResult(message.result);
                 break;
-            
+
             // Config commands
             case 'updateConfig':
                 await this._handleUpdateConfig(message.key, message.value);
@@ -136,12 +138,12 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
             case 'checkOllamaStatus':
                 await this._handleCheckOllamaStatus();
                 break;
-            
+
             // Navigation
             case 'navigate':
                 this._handleNavigate(message.route);
                 break;
-            
+
             // ============================================================================
             // Phase 3: History View Handlers
             // ============================================================================
@@ -169,7 +171,7 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
             case 'refreshHistory':
                 await this._handleRefreshHistory();
                 break;
-            
+
             // ============================================================================
             // Phase 3: Agent State View Handlers
             // ============================================================================
@@ -182,7 +184,7 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
             case 'getToolMetrics':
                 await this._handleGetToolMetrics();
                 break;
-            
+
             // ============================================================================
             // Phase 3: Fix Manager View Handlers
             // ============================================================================
@@ -210,7 +212,7 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
             case 'clearAppliedFixes':
                 await this._handleClearAppliedFixes();
                 break;
-            
+
             // ============================================================================
             // Phase 3: Metrics View Handlers
             // ============================================================================
@@ -220,7 +222,7 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
             case 'exportMetrics':
                 await this._handleExportMetrics(message.timeRange);
                 break;
-            
+
             default:
                 console.warn('Unknown command:', message.command);
         }
@@ -274,50 +276,51 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     }
 
     private async _handleUpdateConfig(key: string, value: any) {
+        console.log(`[RCA Backend] Updating config: ${key} = ${value}`);
         const config = vscode.workspace.getConfiguration('rcaAgent');
         await config.update(key, value, vscode.ConfigurationTarget.Global);
         this._sendMessage({
             command: 'configUpdated',
             data: { key, value }
         });
+        console.log(`[RCA Backend] Config updated successfully: ${key}`);
     }
 
     private async _handleCheckOllamaStatus() {
+        console.log('[RCA Backend] Checking Ollama status...');
         try {
             const config = vscode.workspace.getConfiguration('rcaAgent');
             const ollamaUrl = config.get<string>('ollamaUrl', 'http://localhost:11434');
-            const model = config.get<string>('ollamaModel', 'llama3.2:latest');
-            
+            const model = config.get<string>('model', 'deepseek-r1');
+
             const startTime = Date.now();
             const result = await this.networkTimeoutHandler.checkOllamaConnection(ollamaUrl);
             const responseTime = result.duration;
-            
-            if (result.success && result.data) {
-                this._sendMessage({
-                    command: 'ollamaStatus',
-                    status: {
-                        connected: true,
-                        model: model,
-                        responseTime: Math.round(responseTime)
-                    }
-                });
-            } else {
-                this._sendMessage({
-                    command: 'ollamaStatus',
-                    status: {
-                        connected: false,
-                        error: result.error?.message || 'Connection failed'
-                    }
-                });
-            }
+
+            const statusMessage = {
+                command: 'ollamaStatus',
+                status: result.success && result.data ? {
+                    connected: true,
+                    model: model,
+                    responseTime: Math.round(responseTime)
+                } : {
+                    connected: false,
+                    error: result.error?.message || 'Connection failed'
+                }
+            };
+
+            console.log('[RCA Backend] Ollama status result:', statusMessage);
+            this._sendMessage(statusMessage);
         } catch (error: any) {
-            this._sendMessage({
+            const errorMessage = {
                 command: 'ollamaStatus',
                 status: {
                     connected: false,
                     error: error.message || 'Unknown error'
                 }
-            });
+            };
+            console.error('[RCA Backend] Ollama status check error:', errorMessage);
+            this._sendMessage(errorMessage);
         }
     }
 
@@ -338,7 +341,7 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
                 command: 'analysisCancelled',
                 data: {}
             });
-            
+
             vscode.window.showInformationMessage('Analysis cancellation requested');
         } catch (error: any) {
             console.error('Failed to cancel analysis:', error);
@@ -350,26 +353,22 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     // ============================================================================
 
     private async _handleGetDashboardData() {
-        if (!this.stateManager || !this.errorQueueManager) {
-            return;
-        }
-
         try {
             const history = this.stateManager.getHistory(10);
             const errorCount = this.errorQueueManager.getErrorCount();
-            
+
             // Calculate stats from history
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            const todayAnalyses = history.filter(h => 
+            const todayAnalyses = history.filter(h =>
                 new Date(h.timestamp).getTime() >= today.getTime()
             );
-            
+
             const completedAnalyses = history.filter(h => h.error.status === 'complete');
-            const successRate = completedAnalyses.length > 0 
-                ? completedAnalyses.filter(h => h.result.confidence && h.result.confidence > 0.7).length / completedAnalyses.length 
+            const successRate = completedAnalyses.length > 0
+                ? completedAnalyses.filter(h => h.result.confidence && h.result.confidence > 0.7).length / completedAnalyses.length
                 : 0;
-            
+
             const avgTime = completedAnalyses.length > 0
                 ? completedAnalyses.reduce((sum, h) => sum + h.duration, 0) / completedAnalyses.length
                 : 0;
@@ -396,14 +395,10 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     }
 
     private async _handleAnalyzeAllErrors() {
-        if (!this.errorQueueManager) {
-            return;
-        }
-
         try {
             const errors = this.errorQueueManager.getAllErrors();
             const pendingErrors = errors.filter(e => e.status === 'pending');
-            
+
             vscode.window.showInformationMessage(
                 `Starting analysis for ${pendingErrors.length} pending errors...`
             );
@@ -418,20 +413,14 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     }
 
     private async _handleScanWorkspace() {
-        if (!this.errorQueueManager) {
-            return;
-        }
-
         try {
             vscode.window.showInformationMessage('Scanning workspace for errors...');
-            
-            // Trigger diagnostics refresh
-            await vscode.commands.executeCommand('workbench.action.problems.focus');
-            
-            // Refresh error queue (diagnostics will be auto-detected)
+
+            // Perform error detection
+            await this.errorQueueManager.detectErrors();
+
+            // Refresh the error queue display
             await this._handleRefreshErrorQueue();
-            
-            vscode.window.showInformationMessage('Workspace scan complete!');
         } catch (error: any) {
             vscode.window.showErrorMessage(`Failed to scan workspace: ${error.message}`);
         }
@@ -446,10 +435,6 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     // ============================================================================
 
     private async _handleGetErrorQueue() {
-        if (!this.errorQueueManager) {
-            return;
-        }
-
         try {
             const errors = this.errorQueueManager.getAllErrors();
             this._sendMessage({
@@ -462,10 +447,6 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     }
 
     private async _handleRefreshErrorQueue() {
-        if (!this.errorQueueManager) {
-            return;
-        }
-
         try {
             // Re-scan diagnostics
             const errors = this.errorQueueManager.getAllErrors();
@@ -479,10 +460,6 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     }
 
     private async _handleRemoveError(errorId: string) {
-        if (!this.stateManager) {
-            return;
-        }
-
         try {
             this.stateManager.removeError(errorId);
             this._sendMessage({
@@ -495,10 +472,6 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     }
 
     private async _handlePinError(errorId: string) {
-        if (!this.errorQueueManager) {
-            return;
-        }
-
         try {
             this.errorQueueManager.pinError(errorId);
             const errors = this.errorQueueManager.getAllErrors();
@@ -515,10 +488,6 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     }
 
     private async _handleUnpinError(errorId: string) {
-        if (!this.errorQueueManager) {
-            return;
-        }
-
         try {
             this.errorQueueManager.unpinError(errorId);
             const errors = this.errorQueueManager.getAllErrors();
@@ -535,14 +504,10 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     }
 
     private async _handleAnalyzeMultipleErrors(errorIds: string[]) {
-        if (!this.errorQueueManager) {
-            return;
-        }
-
         try {
             const errors = this.errorQueueManager.getAllErrors();
             const selectedErrors = errors.filter(e => errorIds.includes(e.id));
-            
+
             vscode.window.showInformationMessage(
                 `Starting analysis for ${selectedErrors.length} errors...`
             );
@@ -557,10 +522,6 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     }
 
     private async _handleClearCompletedErrors() {
-        if (!this.errorQueueManager) {
-            return;
-        }
-
         try {
             await this.errorQueueManager.clearCompleted();
             await this._handleRefreshErrorQueue();
@@ -571,10 +532,6 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     }
 
     private async _handleClearAllErrors() {
-        if (!this.errorQueueManager) {
-            return;
-        }
-
         try {
             await this.errorQueueManager.clearQueue();
             await this._handleRefreshErrorQueue();
@@ -585,14 +542,10 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     }
 
     private async _handleOpenErrorLocation(errorId: string) {
-        if (!this.errorQueueManager) {
-            return;
-        }
-
         try {
             const errors = this.errorQueueManager.getAllErrors();
             const error = errors.find(e => e.id === errorId);
-            
+
             if (!error) {
                 throw new Error('Error not found');
             }
@@ -600,7 +553,7 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
             // Open the file at the error location
             const doc = await vscode.workspace.openTextDocument(error.filePath);
             const editor = await vscode.window.showTextDocument(doc);
-            
+
             // Move cursor to error line
             const position = new vscode.Position(error.line - 1, error.column || 0);
             editor.selection = new vscode.Selection(position, position);
@@ -618,14 +571,10 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     // ============================================================================
 
     private async _handleStartAnalysis(errorId: string, settings: any) {
-        if (!this.stateManager) {
-            return;
-        }
-
         try {
-            const errors = this.errorQueueManager?.getAllErrors() || [];
+            const errors = this.errorQueueManager.getAllErrors();
             const error = errors.find(e => e.id === errorId);
-            
+
             if (!error) {
                 throw new Error('Error not found in queue');
             }
@@ -666,7 +615,7 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
         try {
             const fileName = `rca-analysis-${Date.now()}.json`;
             const content = JSON.stringify(result, null, 2);
-            
+
             const uri = await vscode.window.showSaveDialog({
                 defaultUri: vscode.Uri.file(fileName),
                 filters: { 'JSON': ['json'] }
@@ -701,10 +650,6 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     // ============================================================================
 
     private async _handleGetHistory(limit?: number) {
-        if (!this.stateManager) {
-            return;
-        }
-
         try {
             const history = this.stateManager.getHistory(limit || 100);
             this._sendMessage({
@@ -721,10 +666,6 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     }
 
     private async _handleSearchHistory(query: string) {
-        if (!this.stateManager) {
-            return;
-        }
-
         try {
             const results = this.stateManager.searchHistory(query);
             this._sendMessage({
@@ -741,20 +682,16 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     }
 
     private async _handleReanalyzeFromHistory(historyId: string) {
-        if (!this.stateManager) {
-            return;
-        }
-
         try {
             const history = this.stateManager.getHistory();
             const item = history.find(h => h.id === historyId);
-            
+
             if (!item) {
                 throw new Error('History item not found');
             }
 
             vscode.window.showInformationMessage(`Re-analyzing error: ${item.error.message.substring(0, 50)}...`);
-            
+
             // Re-analyze the error
             await this._handleAnalyzeError(item.error);
         } catch (error: any) {
@@ -764,10 +701,6 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     }
 
     private async _handleDeleteHistoryItem(historyId: string) {
-        if (!this.stateManager) {
-            return;
-        }
-
         try {
             this.stateManager.removeFromHistory(historyId);
             this._sendMessage({
@@ -784,10 +717,6 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     }
 
     private async _handleClearHistory() {
-        if (!this.stateManager) {
-            return;
-        }
-
         try {
             this.stateManager.clearHistory();
             this._sendMessage({
@@ -801,21 +730,17 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     }
 
     private async _handleExportHistoryItem(historyId: string) {
-        if (!this.stateManager) {
-            return;
-        }
-
         try {
             const history = this.stateManager.getHistory();
             const item = history.find(h => h.id === historyId);
-            
+
             if (!item) {
                 throw new Error('History item not found');
             }
 
             const markdown = this._generateHistoryMarkdown(item);
             const fileName = `rca-history-${historyId}-${Date.now()}.md`;
-            
+
             const uri = await vscode.window.showSaveDialog({
                 defaultUri: vscode.Uri.file(fileName),
                 filters: { 'Markdown': ['md'] }
@@ -832,15 +757,11 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     }
 
     private async _handleExportAllHistory() {
-        if (!this.stateManager) {
-            return;
-        }
-
         try {
             const history = this.stateManager.getHistory();
             const markdown = this._generateAllHistoryMarkdown(history);
             const fileName = `rca-history-all-${Date.now()}.md`;
-            
+
             const uri = await vscode.window.showSaveDialog({
                 defaultUri: vscode.Uri.file(fileName),
                 filters: { 'Markdown': ['md'] }
@@ -869,7 +790,7 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     private async _handleSubscribeAgentState() {
         try {
             const stateStream = this.analysisService.getStateStream();
-            
+
             if (!stateStream) {
                 this._sendMessage({
                     command: 'agentStateUpdate',
@@ -1011,6 +932,13 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     private async _handlePreviewFix(fixId: string) {
         try {
             const diff = await this.fixApplicationService.previewFix(fixId);
+            if (!diff) {
+                this._sendMessage({
+                    command: 'error',
+                    message: 'Unable to generate diff preview'
+                });
+                return;
+            }
             this._sendMessage({
                 command: 'diffPreviewData',
                 diff: diff
@@ -1027,7 +955,7 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     private async _handleApplyFixById(fixId: string) {
         try {
             const result = await this.fixApplicationService.applyFixById(fixId);
-            
+
             if (result.success) {
                 this._sendMessage({
                     command: 'fixApplied',
@@ -1148,57 +1076,62 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     // ============================================================================
 
     private async _handleGetMetrics(timeRange: string = '7d') {
-        if (!this.stateManager) {
-            return;
-        }
-
         try {
             const history = this.stateManager.getHistory();
             const timeRangeMs = this._getTimeRangeMs(timeRange);
             const cutoffTime = Date.now() - timeRangeMs;
-            
+
             // Filter history by time range
-            const filteredHistory = timeRange === 'all' 
-                ? history 
+            const filteredHistory = timeRange === 'all'
+                ? history
                 : history.filter(h => h.timestamp >= cutoffTime);
 
             // Calculate metrics
             const totalAnalyses = filteredHistory.length;
-            const successfulAnalyses = filteredHistory.filter(h => 
+            const successfulAnalyses = filteredHistory.filter(h =>
                 h.result?.confidence && h.result.confidence > 0.7
             ).length;
             const failedAnalyses = totalAnalyses - successfulAnalyses;
-            
+
             const avgConfidence = totalAnalyses > 0
                 ? filteredHistory.reduce((sum, h) => sum + (h.result?.confidence || 0), 0) / totalAnalyses
                 : 0;
-            
+
             const avgTime = totalAnalyses > 0
                 ? filteredHistory.reduce((sum, h) => sum + h.duration, 0) / totalAnalyses
                 : 0;
-            
+
             const totalTime = filteredHistory.reduce((sum, h) => sum + h.duration, 0);
 
-            // Calculate chart data
-            const successRateChart = this._calculateSuccessRate(filteredHistory);
-            const analysisTimeChart = this._calculateAnalysisTime(filteredHistory);
-            const errorTypesData = this._calculateErrorTypes(filteredHistory);
+            // Calculate detailed metrics matching frontend expectations
+            const successRateByDay = this._calculateSuccessRateByDay(filteredHistory);
+            const analysisTimeByDay = this._calculateAnalysisTimeByDay(filteredHistory);
+            const errorTypesData = this._calculateErrorTypesDetailed(filteredHistory);
 
             this._sendMessage({
                 command: 'metricsData',
                 metrics: {
-                    summary: {
-                        totalAnalyses,
-                        successfulAnalyses,
-                        failedAnalyses,
-                        avgConfidence: Math.round(avgConfidence * 100) / 100,
-                        avgTime: Math.round(avgTime),
-                        totalTime: Math.round(totalTime)
+                    successRate: {
+                        overall: totalAnalyses > 0 ? successfulAnalyses / totalAnalyses : 0,
+                        byDay: successRateByDay
                     },
-                    charts: {
-                        successRate: successRateChart,
-                        analysisTime: analysisTimeChart,
-                        errorTypes: errorTypesData
+                    analysisTime: {
+                        average: avgTime,
+                        median: this._calculateMedian(filteredHistory.map(h => h.duration)),
+                        byDay: analysisTimeByDay
+                    },
+                    errorTypes: errorTypesData,
+                    modelPerformance: {
+                        model: 'deepseek-r1',
+                        totalAnalyses,
+                        successRate: totalAnalyses > 0 ? successfulAnalyses / totalAnalyses : 0,
+                        avgTime,
+                        avgConfidence
+                    },
+                    learningMetrics: {
+                        totalLearnings: filteredHistory.length,
+                        cacheHitRate: this.analysisService.getCacheStats().hitRate,
+                        avgConfidenceImprovement: this._calculateConfidenceImprovement(filteredHistory)
                     }
                 }
             });
@@ -1212,22 +1145,18 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     }
 
     private async _handleExportMetrics(timeRange: string = '7d') {
-        if (!this.stateManager) {
-            return;
-        }
-
         try {
             const history = this.stateManager.getHistory();
             const timeRangeMs = this._getTimeRangeMs(timeRange);
             const cutoffTime = Date.now() - timeRangeMs;
-            
-            const filteredHistory = timeRange === 'all' 
-                ? history 
+
+            const filteredHistory = timeRange === 'all'
+                ? history
                 : history.filter(h => h.timestamp >= cutoffTime);
 
             const markdown = this._generateMetricsMarkdown(filteredHistory, timeRange);
             const fileName = `rca-metrics-${timeRange}-${Date.now()}.md`;
-            
+
             const uri = await vscode.window.showSaveDialog({
                 defaultUri: vscode.Uri.file(fileName),
                 filters: { 'Markdown': ['md'] }
@@ -1287,7 +1216,7 @@ ${item.result?.context || 'N/A'}
         markdown += `**Total Analyses**: ${history.length}\n`;
         markdown += `**Export Date**: ${new Date().toLocaleString()}\n\n`;
         markdown += `---\n\n`;
-        
+
         for (const item of history) {
             markdown += `## Analysis: ${item.id}\n\n`;
             markdown += `- **Date**: ${new Date(item.timestamp).toLocaleString()}\n`;
@@ -1297,22 +1226,22 @@ ${item.result?.context || 'N/A'}
             markdown += `- **Duration**: ${Math.round(item.duration / 1000)}s\n\n`;
             markdown += `---\n\n`;
         }
-        
+
         markdown += `\n*Generated by RCA Agent*\n`;
         return markdown;
     }
 
     private _generateMetricsMarkdown(history: any[], timeRange: string): string {
         const totalAnalyses = history.length;
-        const successfulAnalyses = history.filter(h => 
+        const successfulAnalyses = history.filter(h =>
             h.result?.confidence && h.result.confidence > 0.7
         ).length;
         const failedAnalyses = totalAnalyses - successfulAnalyses;
-        
+
         const avgConfidence = totalAnalyses > 0
             ? history.reduce((sum, h) => sum + (h.result?.confidence || 0), 0) / totalAnalyses
             : 0;
-        
+
         const avgTime = totalAnalyses > 0
             ? history.reduce((sum, h) => sum + h.duration, 0) / totalAnalyses
             : 0;
@@ -1348,35 +1277,53 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
         }
     }
 
-    private _calculateSuccessRate(history: any[]): any {
+    private _calculateConfidenceImprovement(history: any[]): number {
+        if (history.length < 2) {
+            return 0;
+        }
+
+        // Calculate average confidence for first half vs second half
+        const midpoint = Math.floor(history.length / 2);
+        const firstHalf = history.slice(0, midpoint);
+        const secondHalf = history.slice(midpoint);
+
+        const avgFirst = firstHalf.reduce((sum, h) => sum + (h.result?.confidence || 0), 0) / firstHalf.length;
+        const avgSecond = secondHalf.reduce((sum, h) => sum + (h.result?.confidence || 0), 0) / secondHalf.length;
+
+        return avgSecond - avgFirst;
+    }
+
+    private _calculateSuccessRateByDay(history: any[]): Array<{ date: string; success: number; failed: number; rate: number }> {
         // Group by day and calculate success rate
-        const dailyStats = new Map<string, { total: number; success: number }>();
-        
+        const dailyStats = new Map<string, { success: number; failed: number }>();
+
         for (const item of history) {
             const date = new Date(item.timestamp).toISOString().split('T')[0];
             if (!dailyStats.has(date)) {
-                dailyStats.set(date, { total: 0, success: 0 });
+                dailyStats.set(date, { success: 0, failed: 0 });
             }
             const stats = dailyStats.get(date)!;
-            stats.total++;
             if (item.result?.confidence && item.result.confidence > 0.7) {
                 stats.success++;
+            } else {
+                stats.failed++;
             }
         }
 
-        const labels = Array.from(dailyStats.keys()).sort();
-        const data = labels.map(date => {
-            const stats = dailyStats.get(date)!;
-            return (stats.success / stats.total) * 100;
-        });
-
-        return { labels, data };
+        return Array.from(dailyStats.entries())
+            .sort(([a], [b]) => a.localeCompare(b))
+            .map(([date, stats]) => ({
+                date,
+                success: stats.success,
+                failed: stats.failed,
+                rate: stats.success / (stats.success + stats.failed)
+            }));
     }
 
-    private _calculateAnalysisTime(history: any[]): any {
+    private _calculateAnalysisTimeByDay(history: any[]): Array<{ date: string; avgTime: number }> {
         // Group by day and calculate average analysis time
         const dailyTimes = new Map<string, number[]>();
-        
+
         for (const item of history) {
             const date = new Date(item.timestamp).toISOString().split('T')[0];
             if (!dailyTimes.has(date)) {
@@ -1385,34 +1332,75 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
             dailyTimes.get(date)!.push(item.duration);
         }
 
-        const labels = Array.from(dailyTimes.keys()).sort();
-        const data = labels.map(date => {
-            const times = dailyTimes.get(date)!;
-            const avg = times.reduce((sum, t) => sum + t, 0) / times.length;
-            return Math.round(avg / 1000); // Convert to seconds
-        });
+        return Array.from(dailyTimes.entries())
+            .sort(([a], [b]) => a.localeCompare(b))
+            .map(([date, times]) => ({
+                date,
+                avgTime: Math.round(times.reduce((sum, t) => sum + t, 0) / times.length)
+            }));
+    }
 
-        return { labels, data };
+    private _calculateErrorTypesDetailed(history: any[]): Array<{ type: string; count: number; successRate: number }> {
+        const typeStats = new Map<string, { count: number; successful: number }>();
+
+        for (const item of history) {
+            const type = item.error?.type || 'unknown';
+            if (!typeStats.has(type)) {
+                typeStats.set(type, { count: 0, successful: 0 });
+            }
+            const stats = typeStats.get(type)!;
+            stats.count++;
+            if (item.result?.confidence && item.result.confidence > 0.7) {
+                stats.successful++;
+            }
+        }
+
+        return Array.from(typeStats.entries())
+            .map(([type, stats]) => ({
+                type,
+                count: stats.count,
+                successRate: stats.count > 0 ? stats.successful / stats.count : 0
+            }))
+            .sort((a, b) => b.count - a.count);
+    }
+
+    private _calculateMedian(values: number[]): number {
+        if (values.length === 0) return 0;
+        const sorted = [...values].sort((a, b) => a - b);
+        const mid = Math.floor(sorted.length / 2);
+        return sorted.length % 2 === 0
+            ? (sorted[mid - 1] + sorted[mid]) / 2
+            : sorted[mid];
+    }
+
+    // Legacy methods for backward compatibility (kept but unused)
+    private _calculateSuccessRate(history: any[]): any {
+        const byDay = this._calculateSuccessRateByDay(history);
+        return {
+            labels: byDay.map(d => d.date),
+            data: byDay.map(d => d.rate * 100)
+        };
+    }
+
+    private _calculateAnalysisTime(history: any[]): any {
+        const byDay = this._calculateAnalysisTimeByDay(history);
+        return {
+            labels: byDay.map(d => d.date),
+            data: byDay.map(d => Math.round(d.avgTime / 1000))
+        };
     }
 
     private _calculateErrorTypes(history: any[]): any[] {
-        const typeCounts = new Map<string, number>();
-        
-        for (const item of history) {
-            const type = item.error.type || 'unknown';
-            typeCounts.set(type, (typeCounts.get(type) || 0) + 1);
-        }
-
-        return Array.from(typeCounts.entries()).map(([type, count]) => ({
-            type,
-            count,
-            percentage: (count / history.length) * 100
+        return this._calculateErrorTypesDetailed(history).map(item => ({
+            type: item.type,
+            count: item.count,
+            percentage: (item.count / history.length) * 100
         }));
     }
 
     private _sendInitialState() {
         const config = vscode.workspace.getConfiguration('rcaAgent');
-        this._sendMessage({
+        const initData = {
             command: 'init',
             data: {
                 config: {
@@ -1423,7 +1411,9 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
                     realtimeDetection: config.get('realtimeDetection', false)
                 }
             }
-        });
+        };
+        console.log('[RCA Backend] Sending initial state:', initData);
+        this._sendMessage(initData);
     }
 
     private _sendMessage(message: any) {
@@ -1436,13 +1426,13 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
         const fs = require('fs');
         const webviewPath = path.join(this._extensionUri.fsPath, 'webview', 'dist');
         const indexPath = path.join(webviewPath, 'index.html');
-        
+
         // Read the built index.html
         let html = fs.readFileSync(indexPath, 'utf8');
-        
+
         // Add cache-busting timestamp
         const timestamp = Date.now();
-        
+
         // Replace asset paths with webview URIs
         html = html.replace(
             /href="\/assets\/(.*?)"/g,
@@ -1453,7 +1443,7 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
                 return `href="${assetUri}?v=${timestamp}"`;
             }
         );
-        
+
         html = html.replace(
             /src="\/assets\/(.*?)"/g,
             (match: string, filename: string) => {
@@ -1463,7 +1453,7 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
                 return `src="${assetUri}?v=${timestamp}"`;
             }
         );
-        
+
         // Update CSP
         const csp = `default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src ${webview.cspSource}; img-src ${webview.cspSource} https:;`;
         html = html.replace(
@@ -1471,7 +1461,7 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
             `<meta charset="UTF-8" />
     <meta http-equiv="Content-Security-Policy" content="${csp}">`
         );
-        
+
         return html;
     }
 }

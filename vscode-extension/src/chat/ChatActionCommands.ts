@@ -12,6 +12,8 @@
 
 import * as vscode from 'vscode';
 import { RCAResult } from '../types';
+import { AnalysisService } from '../services/AnalysisService';
+import { FixApplicationService } from '../services/FixApplicationService';
 
 /**
  * Apply suggested fix from RCA analysis
@@ -88,8 +90,14 @@ export async function applyFixCommand(result: RCAResult): Promise<void> {
       'Got it'
     );
 
-    // TODO: Integrate with FixApplicationService for automated fix application
-    // For now, we position the user at the error location with the fix guideline
+    // Track applied fix using FixApplicationService
+    try {
+      const fixService = FixApplicationService.getInstance();
+      // Generate fixes from the result to track them
+      await fixService.generateFix(result);
+    } catch (error) {
+      console.warn('[ChatActionCommands] Fix tracking failed:', error);
+    }
 
   } catch (error) {
     console.error('Failed to apply fix:', error);
@@ -138,17 +146,62 @@ export async function searchSimilarCommand(result: RCAResult): Promise<void> {
       return;
     }
 
-    // TODO: Integrate with history service to find similar errors
-    // For now, show a placeholder message
-    const message = `Searching for errors similar to:\n"${result.error}"`;
+    const analysisService = AnalysisService.getInstance();
+    const errorMessage = result.error;
     
-    vscode.window.showInformationMessage(
-      message,
-      'View in History'
-    ).then(action => {
-      if (action === 'View in History') {
-        // TODO: Open history view with filter applied
-        vscode.window.showInformationMessage('History view integration coming soon.');
+    // Show progress while searching
+    await vscode.window.withProgress({
+      location: vscode.ProgressLocation.Notification,
+      title: 'Searching for similar errors...',
+      cancellable: false
+    }, async () => {
+      // Search using ChromaDB
+      const similarErrors = await analysisService.searchSimilarErrors(errorMessage, 10);
+      
+      if (similarErrors.length === 0) {
+        vscode.window.showInformationMessage('No similar errors found in history.');
+        return;
+      }
+      
+      // Show results in quick pick
+      const items = similarErrors.map((error, index) => ({
+        label: `$(bug) ${error.error_type || 'Error'}`,
+        description: error.error_message?.substring(0, 60) + '...',
+        detail: `Root cause: ${error.root_cause?.substring(0, 100)}...`,
+        error
+      }));
+      
+      const selected = await vscode.window.showQuickPick(items, {
+        placeHolder: `Found ${similarErrors.length} similar error(s)`,
+        title: 'Similar Errors'
+      });
+      
+      if (selected) {
+        // Show detailed view of selected error
+        const panel = vscode.window.createWebviewPanel(
+          'similarError',
+          'Similar Error Details',
+          vscode.ViewColumn.Beside,
+          {}
+        );
+        
+        panel.webview.html = `
+          <!DOCTYPE html>
+          <html>
+          <body style="padding: 20px; font-family: sans-serif; background: #1e1e1e; color: #d4d4d4;">
+            <h2>Similar Error Found</h2>
+            <p><strong>Type:</strong> ${selected.error.error_type}</p>
+            <p><strong>Message:</strong> ${selected.error.error_message}</p>
+            <h3>Root Cause</h3>
+            <p>${selected.error.root_cause}</p>
+            <h3>Fix Guidelines</h3>
+            <ul>
+              ${selected.error.fix_guidelines?.map((g: string) => `<li>${g}</li>`).join('') || '<li>No guidelines available</li>'}
+            </ul>
+            <p><strong>Confidence:</strong> ${Math.round((selected.error.confidence || 0) * 100)}%</p>
+          </body>
+          </html>
+        `;
       }
     });
 

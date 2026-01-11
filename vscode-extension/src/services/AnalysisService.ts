@@ -17,6 +17,7 @@ import { AgentStateStream } from '../../../src/agent/AgentStateStream';
 import { OllamaClient } from '../../../src/llm/OllamaClient';
 import { ErrorParser } from '../../../src/utils/ErrorParser';
 import { ChromaDBClient } from '../../../src/db/ChromaDBClient';
+import { RCACache } from '../../../src/cache/RCACache';
 import { NetworkTimeoutHandler } from './NetworkTimeoutHandler';
 
 /**
@@ -40,6 +41,7 @@ export class AnalysisService {
   private _parser?: ErrorParser;
   private _client?: OllamaClient;
   private _chromaDB?: ChromaDBClient;
+  private _cache?: RCACache;
   private _stateStream?: AgentStateStream;
   private _timeoutHandler: NetworkTimeoutHandler;
   
@@ -83,6 +85,13 @@ export class AnalysisService {
         this._chromaDB = undefined;
         // Extension will work without ChromaDB cache - this is expected if ChromaDB isn't set up
       }
+      
+      // Initialize RCACache
+      this._cache = new RCACache({
+        ttl: config.get<number>('cacheTtl', 24 * 60 * 60 * 1000), // 24 hours
+        maxEntries: config.get<number>('maxCacheEntries', 1000)
+      });
+      console.log('[AnalysisService] RCACache initialized successfully');
       
       // Initialize MultiPassAgent with config
       this._agent = new MultiPassAgent(this._client, {
@@ -149,6 +158,41 @@ export class AnalysisService {
   }
   
   /**
+   * Get cache statistics for Metrics view
+   */
+  getCacheStats() {
+    if (!this._cache) {
+      return { hitRate: 0, size: 0, totalHits: 0, totalMisses: 0 };
+    }
+    return this._cache.getStats();
+  }
+  
+  /**
+   * Search for similar errors using ChromaDB
+   */
+  async searchSimilarErrors(errorMessage: string, limit: number = 5): Promise<any[]> {
+    if (!this._chromaDB) {
+      console.warn('[AnalysisService] ChromaDB not available for similarity search');
+      return [];
+    }
+    
+    try {
+      const results = await this._chromaDB.searchSimilar(errorMessage, limit, 0.5);
+      return results;
+    } catch (error) {
+      console.error('[AnalysisService] Similarity search failed:', error);
+      return [];
+    }
+  }
+  
+  /**
+   * Get ChromaDB instance for direct access
+   */
+  getChromaDB(): ChromaDBClient | undefined {
+    return this._chromaDB;
+  }
+  
+  /**
    * Analyze an error
    */
   async analyzeError(
@@ -185,11 +229,34 @@ export class AnalysisService {
         throw new Error(`Ollama server unavailable: ${connection.error}`);
       }
       
-      // Parse error text
-      const parsed = this._parser!.parse(error.message, error.filePath);
+      // Parse error text - if error already has structured data, use it
+      let parsed = this._parser!.parse(error.message, error.filePath);
+      
+      // If parsing fails but we have structured error data from ErrorItem, construct ParsedError
+      if (!parsed && error.message && error.filePath && error.line) {
+        console.log('[AnalysisService] Parser failed, using structured ErrorItem data');
+        
+        // Convert string[] stackTrace to StackFrame[] if available
+        const stackFrames = error.stackTrace?.map((frame: string, index: number) => ({
+          file: error.filePath,
+          line: error.line + index,
+          function: frame
+        })) || [];
+        
+        parsed = {
+          type: error.type || 'runtime',
+          message: error.message,
+          filePath: error.filePath,
+          line: error.line,
+          language: this._detectLanguage(error.filePath),
+          column: error.column,
+          stackTrace: stackFrames,
+          metadata: error.metadata
+        };
+      }
       
       if (!parsed) {
-        throw new Error('Failed to parse error message');
+        throw new Error(`Failed to parse error message: ${error.message.substring(0, 100)}`);
       }
       
       // Set up AgentStateStream event listeners for real-time progress
