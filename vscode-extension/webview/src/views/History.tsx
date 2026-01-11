@@ -60,14 +60,14 @@ export function History() {
     exportToMarkdown,
     exportAllToMarkdown
   } = useHistory();
-  
+
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const [focusedIndex, setFocusedIndex] = useState<number>(0);
   const itemRefs = useRef<Map<string, HTMLDivElement>>(new Map());
-  
+
   // Flatten items for keyboard navigation
   const allItems = Object.values(groupedByDate).flat();
-  
+
   const toggleExpand = (itemId: string) => {
     setExpandedItems(prev => {
       const next = new Set(prev);
@@ -77,26 +77,26 @@ export function History() {
       } else {
         next.add(itemId);
       }
-      
+
       // Announce state change
       announce(wasExpanded ? 'Item collapsed' : 'Item expanded', 'polite');
-      
+
       return next;
     });
   };
-  
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
     setSearchQuery(query);
-    
+
     // Debounce search
     const timeoutId = setTimeout(() => {
       searchHistory(query);
     }, 300);
-    
+
     return () => clearTimeout(timeoutId);
   };
-  
+
   const handleItemKeyboard = (e: React.KeyboardEvent, itemId: string, index: number) => {
     handleListKeyboard(e, {
       currentIndex: index,
@@ -111,29 +111,29 @@ export function History() {
       wrap: false
     });
   };
-  
+
   // Announce stats changes
   useEffect(() => {
     if (!loading && stats.total > 0) {
       announce(`Loaded ${stats.total} analyses with ${stats.successful} successful`, 'polite');
     }
   }, [loading, stats.total, stats.successful]);
-  
+
   const groupOrder = ['Today', 'Yesterday', 'This Week', 'This Month'];
   const sortedGroups = Object.keys(groupedByDate).sort((a, b) => {
     const aIndex = groupOrder.indexOf(a);
     const bIndex = groupOrder.indexOf(b);
-    
+
     if (aIndex !== -1 && bIndex !== -1) {
       return aIndex - bIndex;
     }
     if (aIndex !== -1) return -1;
     if (bIndex !== -1) return 1;
-    
+
     // For month names, sort chronologically (most recent first)
     return b.localeCompare(a);
   });
-  
+
   return (
     <main className="p-8 space-y-6" role="main" aria-label="Analysis History">
       {/* Header */}
@@ -172,7 +172,7 @@ export function History() {
           </Button>
         </div>
       </div>
-      
+
       {/* Filters and Search */}
       <div className="flex flex-wrap items-center gap-3 bg-zinc-900 border border-zinc-800 rounded-lg p-4" role="search">
         {/* Search */}
@@ -190,10 +190,10 @@ export function History() {
             />
           </div>
         </div>
-        
+
         {/* Status Filter */}
-        <Select 
-          value={filterStatus} 
+        <Select
+          value={filterStatus}
           onValueChange={(value) => {
             setFilterStatus(value as FilterStatus);
             announce(`Filtering by ${value} status`, 'polite');
@@ -209,7 +209,7 @@ export function History() {
             <SelectItem value="failed" className="text-zinc-100 hover:bg-zinc-800 focus:bg-zinc-800">Failed Only</SelectItem>
           </SelectContent>
         </Select>
-        
+
         {/* Sort By */}
         <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
           <SelectTrigger className="w-[180px] !bg-zinc-900 border-zinc-700 text-zinc-100 hover:bg-zinc-800 transition-colors focus-ring" aria-label="Sort by">
@@ -221,7 +221,7 @@ export function History() {
             <SelectItem value="duration" className="text-zinc-100 hover:bg-zinc-800 focus:bg-zinc-800">Sort by Duration</SelectItem>
           </SelectContent>
         </Select>
-        
+
         {/* Sort Order */}
         <Button
           {...createButtonProps(`Sort order: ${sortOrder === 'asc' ? 'Ascending' : 'Descending'}`)}
@@ -233,7 +233,7 @@ export function History() {
           <span aria-hidden="true">{sortOrder === 'asc' ? '↑' : '↓'}</span>
           <span>{sortOrder === 'asc' ? 'Ascending' : 'Descending'}</span>
         </Button>
-        
+
         {/* Clear History */}
         <Button
           {...createButtonProps('Clear all history')}
@@ -252,7 +252,7 @@ export function History() {
           <span>Clear All</span>
         </Button>
       </div>
-      
+
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4" role="region" aria-label="Statistics summary">
         {loading ? (
@@ -275,7 +275,7 @@ export function History() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-zinc-900 border-zinc-800">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -289,7 +289,7 @@ export function History() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-zinc-900 border-zinc-800">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -301,7 +301,7 @@ export function History() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-zinc-900 border-zinc-800">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -316,7 +316,7 @@ export function History() {
           </>
         )}
       </div>
-      
+
       {/* Timeline */}
       {loading ? (
         <div className="space-y-6" role="status" aria-label="Loading history">
@@ -343,12 +343,12 @@ export function History() {
           action={
             searchQuery
               ? {
-                  label: 'Clear Search',
-                  onClick: () => {
-                    setSearchQuery('');
-                    searchHistory('');
-                  }
+                label: 'Clear Search',
+                onClick: () => {
+                  setSearchQuery('');
+                  searchHistory('');
                 }
+              }
               : undefined
           }
         />
@@ -370,9 +370,9 @@ export function History() {
                     hour: '2-digit',
                     minute: '2-digit'
                   });
-                  
+
                   const globalIndex = allItems.findIndex(i => i.id === item.id);
-                  
+
                   return (
                     <Card
                       key={item.id}
@@ -421,7 +421,7 @@ export function History() {
                               {item.error.line && `:${item.error.line}`}
                             </p>
                           </div>
-                          
+
                           <div className="flex gap-1 flex-shrink-0" role="group" aria-label="Item actions">
                             <Button
                               {...createButtonProps('Re-analyze this error')}
@@ -467,7 +467,7 @@ export function History() {
                           </div>
                         </div>
                       </CardHeader>
-                      
+
                       {isExpanded && (
                         <CardContent className="p-4 pt-0 border-t border-zinc-800 mt-3">
                           <div className="space-y-4">
@@ -476,7 +476,7 @@ export function History() {
                               <h4 className="text-sm font-medium text-zinc-400 mb-2">Root Cause</h4>
                               <p className="text-zinc-200">{item.result.rootCause}</p>
                             </div>
-                            
+
                             {/* Analysis Details */}
                             {item.result.analysis && (
                               <div>
@@ -486,7 +486,7 @@ export function History() {
                                 </p>
                               </div>
                             )}
-                            
+
                             {/* Stack Trace (if available) */}
                             {item.error.stackTrace && (
                               <div>
@@ -496,7 +496,7 @@ export function History() {
                                 </pre>
                               </div>
                             )}
-                            
+
                             {/* Fixes */}
                             {item.result.fixes && item.result.fixes.length > 0 && (
                               <div>

@@ -120,6 +120,21 @@
           "type": "string",
           "default": "./chroma",
           "description": "ChromaDB data directory path for caching analyses"
+        },
+        "rcaAgent.autoDetectErrors": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically detect and queue errors from VS Code diagnostics"
+        },
+        "rcaAgent.educationalMode": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable educational mode with detailed explanations"
+        },
+        "rcaAgent.realtimeDetection": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable real-time error detection"
         }
       }
     }

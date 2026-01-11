@@ -26,14 +26,14 @@ export function SettingsSection({ collapsed }: SettingsSectionProps) {
     const handleMessage = (event: MessageEvent) => {
       const message = event.data;
       console.log('[RCA Frontend - SettingsSection] Received message:', message);
-      
+
       if (message.command === 'init' && message.data?.config) {
         console.log('[RCA Frontend - SettingsSection] Init config:', message.data.config);
         setModel(message.data.config.model || 'deepseek-r1');
         setEducationalMode(message.data.config.educationalMode || false);
         setRealtimeDetection(message.data.config.realtimeDetection || false);
       }
-      
+
       if (message.command === 'ollamaStatus' && message.status) {
         console.log('[RCA Frontend - SettingsSection] Ollama status:', message.status);
         setOllamaStatus({
@@ -42,7 +42,7 @@ export function SettingsSection({ collapsed }: SettingsSectionProps) {
           error: message.status.error
         });
       }
-      
+
       if (message.command === 'configUpdated' && message.data) {
         const { key, value } = message.data;
         console.log(`[RCA Frontend - SettingsSection] Config updated: ${key} = ${value}`);
@@ -51,7 +51,7 @@ export function SettingsSection({ collapsed }: SettingsSectionProps) {
         if (key === 'realtimeDetection') setRealtimeDetection(value);
       }
     };
-    
+
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
   }, []);
@@ -94,9 +94,8 @@ export function SettingsSection({ collapsed }: SettingsSectionProps) {
           <Settings size={20} />
         </button>
         <div
-          className={`w-2 h-2 rounded-full ${
-            ollamaStatus?.available ? 'bg-green-500' : 'bg-red-500'
-          }`}
+          className={`w-2 h-2 rounded-full ${ollamaStatus?.available ? 'bg-green-500' : 'bg-red-500'
+            }`}
           title={ollamaStatus?.available ? 'Ollama Connected' : 'Ollama Disconnected'}
         />
       </div>

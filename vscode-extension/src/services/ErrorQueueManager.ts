@@ -20,33 +20,61 @@ export class ErrorQueueManager {
   private static _instance: ErrorQueueManager;
   private _stateManager: StateManager;
   private _diagnosticSubscription?: vscode.Disposable;
-  
+
   // Event emitter for queue changes (alias for compatibility)
   private _onQueueChange = new vscode.EventEmitter<ErrorItem[]>();
   readonly onQueueChange = this._onQueueChange.event;
   readonly onErrorQueueChange = this._onQueueChange.event; // Alias
-  
+
   private constructor(context: vscode.ExtensionContext) {
     this._stateManager = StateManager.getInstance(context);
-    
+
     // Forward state manager events
     this._stateManager.onErrorQueueChange(queue => {
       this._onQueueChange.fire(queue);
     });
-    
+
     // Subscribe to VS Code diagnostics for automatic error detection
     this._diagnosticSubscription = vscode.languages.onDidChangeDiagnostics(
       this._handleDiagnosticChanges.bind(this)
     );
+
+    // Perform initial scan of existing diagnostics
+    this._performInitialScan();
   }
-  
+
+  /**
+   * Perform initial scan of existing diagnostics
+   */
+  private _performInitialScan(): void {
+    const config = vscode.workspace.getConfiguration('rcaAgent');
+    const autoDetect = config.get<boolean>('autoDetectErrors', true);
+
+    if (!autoDetect) {
+      return;
+    }
+
+    // Get all existing diagnostics
+    const allDiagnostics = vscode.languages.getDiagnostics();
+    console.log(`[ErrorQueueManager] Initial scan found ${allDiagnostics.length} diagnostic sources`);
+
+    for (const [uri, diagnostics] of allDiagnostics) {
+      const errors = diagnostics.filter(d => d.severity === vscode.DiagnosticSeverity.Error);
+      if (errors.length > 0) {
+        this._processDiagnostics(uri);
+      }
+    }
+
+    console.log(`[ErrorQueueManager] Initial scan complete, ${this.getErrorCount()} errors in queue`);
+  }
+
   static getInstance(context: vscode.ExtensionContext): ErrorQueueManager {
     if (!ErrorQueueManager._instance) {
       ErrorQueueManager._instance = new ErrorQueueManager(context);
     }
     return ErrorQueueManager._instance;
   }
-  
+
   /**
    * Handle diagnostic changes from VS Code
    */
@@ -54,23 +82,23 @@ export class ErrorQueueManager {
     // Only process if auto-detection is enabled
     const config = vscode.workspace.getConfiguration('rcaAgent');
     const autoDetect = config.get<boolean>('autoDetectErrors', true);
-    
+
     if (!autoDetect) {
       return;
     }
-    
+
     for (const uri of event.uris) {
       this._processDiagnostics(uri);
     }
   }
-  
+
   /**
    * Process diagnostics for a file
    */
   private _processDiagnostics(uri: vscode.Uri): void {
     const diagnostics = vscode.languages.getDiagnostics(uri);
     const errors = diagnostics.filter(d => d.severity === vscode.DiagnosticSeverity.Error);
-    
+
     for (const diagnostic of errors) {
       const errorItem: ErrorItem = {
         id: this._generateId(uri, diagnostic),
@@ -88,11 +116,11 @@ export class ErrorQueueManager {
           code: diagnostic.code
         }
       };
-      
+
       this.addError(errorItem);
     }
   }
-  
+
   /**
    * Generate unique ID for error
    */
@@ -100,14 +128,14 @@ export class ErrorQueueManager {
     const hash = `${uri.fsPath}-${diagnostic.range.start.line}-${diagnostic.message}`;
     return Buffer.from(hash).toString('base64').slice(0, 16);
   }
-  
+
   /**
    * Infer error type from diagnostic
    */
   private _inferErrorType(diagnostic: vscode.Diagnostic): ErrorItem['type'] {
     const message = diagnostic.message.toLowerCase();
     const source = diagnostic.source?.toLowerCase() || '';
-    
+
     if (source.includes('typescript') || source.includes('eslint')) {
       return 'lint';
     }
@@ -117,103 +145,103 @@ export class ErrorQueueManager {
     if (diagnostic.severity === vscode.DiagnosticSeverity.Warning) {
       return 'warning';
     }
-    
+
     return 'runtime';
   }
-  
+
   // ===== Queue Operations =====
-  
+
   /**
    * Get all errors in queue
    */
   getQueue(): ErrorItem[] {
     return this._stateManager.getErrorQueue();
   }
-  
+
   /**
    * Get all errors (alias for compatibility)
    */
   getAllErrors(): ErrorItem[] {
     return this.getQueue();
   }
-  
+
   /**
    * Get errors (alias)
    */
   getErrors(): ErrorItem[] {
     return this.getQueue();
   }
-  
+
   /**
    * Get error count
    */
   getErrorCount(): number {
     return this.getQueue().length;
   }
-  
+
   /**
    * Add error to queue
    */
   async addError(error: ErrorItem): Promise<void> {
     await this._stateManager.addError(error);
   }
-  
+
   /**
    * Remove error from queue
    */
   async removeError(id: string): Promise<void> {
     await this._stateManager.removeError(id);
   }
-  
+
   /**
    * Update error status
    */
   async updateStatus(id: string, status: ErrorItem['status']): Promise<void> {
     await this._stateManager.updateErrorStatus(id, status);
   }
-  
+
   /**
    * Clear all errors
    */
   async clearQueue(): Promise<void> {
     await this._stateManager.clearErrorQueue();
   }
-  
+
   /**
    * Clear completed errors
    */
   async clearCompleted(): Promise<void> {
     const queue = this.getQueue();
     const completed = queue.filter(e => e.status === 'complete' || e.status === 'failed');
-    
+
     for (const error of completed) {
       await this.removeError(error.id);
     }
   }
-  
+
   // ===== Filtering and Sorting =====
-  
+
   /**
    * Get errors by status
    */
   getErrorsByStatus(status: ErrorItem['status']): ErrorItem[] {
     return this._stateManager.getErrorsByStatus(status);
   }
-  
+
   /**
    * Get errors by type
    */
   getErrorsByType(type: ErrorItem['type']): ErrorItem[] {
     return this.getQueue().filter(e => e.type === type);
   }
-  
+
   /**
    * Get errors by file
    */
   getErrorsByFile(filePath: string): ErrorItem[] {
     return this.getQueue().filter(e => e.filePath === filePath);
   }
-  
+
   /**
    * Search errors
    */
@@ -224,7 +252,7 @@ export class ErrorQueueManager {
       error.filePath.toLowerCase().includes(lowerQuery)
     );
   }
-  
+
   /**
    * Sort errors
    */
@@ -233,10 +261,10 @@ export class ErrorQueueManager {
     order: 'asc' | 'desc' = 'desc'
   ): ErrorItem[] {
     const errors = [...this.getQueue()];
-    
+
     errors.sort((a, b) => {
       let comparison = 0;
-      
+
       switch (sortBy) {
         case 'timestamp':
           comparison = a.timestamp - b.timestamp;
@@ -252,15 +280,15 @@ export class ErrorQueueManager {
           comparison = severityOrder[a.severity] - severityOrder[b.severity];
           break;
       }
-      
+
       return order === 'asc' ? comparison : -comparison;
     });
-    
+
     return errors;
   }
-  
+
   // ===== Pinning =====
-  
+
   /**
    * Pin an error (mark as important)
    */
@@ -271,7 +299,7 @@ export class ErrorQueueManager {
       await this._stateManager.updateError(id, error);
     }
   }
-  
+
   /**
    * Unpin an error
    */
@@ -282,16 +310,16 @@ export class ErrorQueueManager {
       await this._stateManager.updateError(id, error);
     }
   }
-  
+
   /**
    * Get pinned errors
    */
   getPinnedErrors(): ErrorItem[] {
     return this.getQueue().filter(e => e.metadata?.pinned === true);
   }
-  
+
   // ===== Manual Detection =====
-  
+
   /**
    * Manually scan workspace for errors
    */
@@ -300,19 +328,19 @@ export class ErrorQueueManager {
     if (!workspaceFolders) {
       return;
     }
-    
+
     // Get all diagnostics
     const allDiagnostics = vscode.languages.getDiagnostics();
-    
+
     for (const [uri, diagnostics] of allDiagnostics) {
       this._processDiagnostics(uri);
     }
-    
+
     vscode.window.showInformationMessage(
       `Detected ${this.getErrorCount()} errors in workspace`
     );
   }
-  
+
   /**
    * Open error location in editor
    */
@@ -321,11 +349,11 @@ export class ErrorQueueManager {
     if (!error) {
       return;
     }
-    
+
     try {
       const document = await vscode.workspace.openTextDocument(error.filePath);
       const editor = await vscode.window.showTextDocument(document);
-      
+
       // Move cursor to error location
       const position = new vscode.Position(error.line - 1, error.column || 0);
       editor.selection = new vscode.Selection(position, position);
@@ -337,7 +365,7 @@ export class ErrorQueueManager {
       vscode.window.showErrorMessage(`Could not open file: ${error.filePath}`);
     }
   }
-  
+
   /**
    * Dispose resources
    */

@@ -48,7 +48,15 @@ export interface FileContext {
   language: string;
 }
 
+import { TerminalTool } from '../tools/TerminalTool';
+
 export class ContextCollector {
+  private terminalTool: TerminalTool;
+  
+  constructor() {
+    this.terminalTool = new TerminalTool();
+  }
+  
   /**
    * Collect all relevant context for RCA analysis
    */
@@ -121,14 +129,14 @@ export class ContextCollector {
   
   /**
    * Collect terminal output context
-   * 
-   * Note: Terminal output will be captured by TerminalTool
-   * This is a placeholder for now
    */
   private async collectTerminalContext(): Promise<TerminalContext> {
-    // TODO: Integrate with TerminalTool when implemented
+    // Get recent terminal command history
+    const history = this.terminalTool.getCommandHistory();
+    const recentOutput = history.slice(-10).join('\n'); // Last 10 commands
+    
     return {
-      recentOutput: ''
+      recentOutput
     };
   }
   

@@ -52,12 +52,12 @@ export function ErrorQueue() {
     openErrorLocation,
     stats
   } = useErrorQueue();
-  
+
   const [focusedIndex, setFocusedIndex] = useState(0);
-  
+
   const hasSelection = selectedIds.size > 0;
   const allSelected = selectedIds.size === errors.length && errors.length > 0;
-  
+
   return (
     <div className="p-8 space-y-6" role="main" aria-label="Error Queue">
       {/* Header */}
@@ -80,7 +80,7 @@ export function ErrorQueue() {
           <span>Refresh</span>
         </Button>
       </div>
-      
+
       {/* Filters and Actions */}
       <div className="flex flex-wrap items-center gap-3 bg-zinc-900 border border-zinc-800 rounded-lg p-4" role="region" aria-label="Error filters and actions">
         {/* Search */}
@@ -97,7 +97,7 @@ export function ErrorQueue() {
             />
           </div>
         </div>
-        
+
         {/* Status Filter */}
         <select
           value={filterStatus}
@@ -111,7 +111,7 @@ export function ErrorQueue() {
           <option value="complete" className="bg-zinc-900 text-zinc-100">Complete</option>
           <option value="failed" className="bg-zinc-900 text-zinc-100">Failed</option>
         </select>
-        
+
         {/* Type Filter */}
         <select
           value={filterType}
@@ -126,7 +126,7 @@ export function ErrorQueue() {
           <option value="syntax" className="bg-zinc-900 text-zinc-100">Syntax</option>
           <option value="warning" className="bg-zinc-900 text-zinc-100">Warning</option>
         </select>
-        
+
         {/* Bulk Actions */}
         {hasSelection ? (
           <div className="flex items-center gap-2">
@@ -171,7 +171,7 @@ export function ErrorQueue() {
           </div>
         )}
       </div>
-      
+
       {/* Error List */}
       {loading ? (
         <div className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
@@ -218,7 +218,7 @@ export function ErrorQueue() {
             <div className="col-span-2" role="columnheader">File</div>
             <div className="col-span-1" role="columnheader">Actions</div>
           </div>
-          
+
           {/* Error Rows */}
           <div className="divide-y divide-zinc-800" role="rowgroup">
             {errors.map((error, index) => (
@@ -246,7 +246,7 @@ export function ErrorQueue() {
           </div>
         </div>
       )}
-      
+
       {/* Footer Stats */}
       {errors.length > 0 && (
         <div className="text-sm text-zinc-500 text-center">
@@ -271,17 +271,17 @@ interface ErrorRowProps {
 
 function ErrorRow({ error, selected, focused, onToggleSelection, onAnalyze, onRemove, onPin, onOpen, onKeyDown }: ErrorRowProps) {
   const [showActions, setShowActions] = useState(false);
-  
+
   const statusConfig = {
     pending: { icon: Clock, color: 'text-zinc-400', bg: 'bg-zinc-800', label: 'Pending' },
     analyzing: { icon: RefreshCw, color: 'text-amber-400', bg: 'bg-amber-500/10', label: 'Analyzing' },
     complete: { icon: Check, color: 'text-green-400', bg: 'bg-green-500/10', label: 'Complete' },
     failed: { icon: X, color: 'text-red-400', bg: 'bg-red-500/10', label: 'Failed' }
   };
-  
+
   const config = statusConfig[error.status as keyof typeof statusConfig];
   const StatusIcon = config.icon;
-  
+
   return (
     <div
       className={cn(
@@ -310,7 +310,7 @@ function ErrorRow({ error, selected, focused, onToggleSelection, onAnalyze, onRe
           <Pin className="h-3 w-3 ml-2 text-amber-400" aria-label="Pinned" />
         )}
       </div>
-      
+
       {/* Status */}
       <div className="col-span-1 flex items-center" role="cell">
         <div className={cn('flex items-center gap-2 px-2 py-1 rounded', config.bg)} role="status" aria-label={config.label}>
@@ -318,19 +318,19 @@ function ErrorRow({ error, selected, focused, onToggleSelection, onAnalyze, onRe
           <span className="sr-only">{config.label}</span>
         </div>
       </div>
-      
+
       {/* Type */}
       <div className="col-span-2 flex items-center" role="cell">
         <Badge variant="outline" className="capitalize" aria-label={`Error type: ${error.type}`}>
           {error.type}
         </Badge>
       </div>
-      
+
       {/* Message */}
       <div className="col-span-5 flex items-center" role="cell">
         <p className="text-sm text-zinc-200 truncate">{error.message}</p>
       </div>
-      
+
       {/* File */}
       <div className="col-span-2 flex items-center" role="cell">
         <button
@@ -342,7 +342,7 @@ function ErrorRow({ error, selected, focused, onToggleSelection, onAnalyze, onRe
           <span className="truncate">{getFileName(error.filePath)}:{error.line}</span>
         </button>
       </div>
-      
+
       {/* Actions */}
       <div className="col-span-1 flex items-center justify-end" role="cell">
         {(showActions || selected) && (

@@ -49,19 +49,19 @@ export function Metrics() {
     refreshMetrics,
     exportMetrics
   } = useMetrics();
-  
+
   // Announce metrics updates
   useEffect(() => {
     if (!loading && summaryStats) {
       announce(`Metrics loaded: ${summaryStats.totalAnalyses} analyses, ${summaryStats.overallSuccessRate}% success rate`, 'polite');
     }
   }, [loading, summaryStats]);
-  
+
   const formatTime = (ms: number) => {
     if (ms < 1000) return `${ms}ms`;
     return `${(ms / 1000).toFixed(2)}s`;
   };
-  
+
   return (
     <main className="p-8 space-y-6" role="main" aria-label="Performance Metrics">
       {/* Header */}
@@ -115,7 +115,7 @@ export function Metrics() {
           </Button>
         </div>
       </div>
-      
+
       {loading && !metricsData ? (
         <div className="space-y-4" role="status" aria-label="Loading metrics">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -149,7 +149,7 @@ export function Metrics() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-zinc-900 border-zinc-800">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -169,7 +169,7 @@ export function Metrics() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-zinc-900 border-zinc-800">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -183,7 +183,7 @@ export function Metrics() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-zinc-900 border-zinc-800">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -197,7 +197,7 @@ export function Metrics() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-zinc-900 border-zinc-800">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -209,7 +209,7 @@ export function Metrics() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-zinc-900 border-zinc-800">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -222,7 +222,7 @@ export function Metrics() {
               </CardContent>
             </Card>
           </div>
-          
+
           {/* Success Rate Chart */}
           {successRateChartData && (
             <Card className="bg-zinc-900 border-zinc-800">
@@ -241,7 +241,7 @@ export function Metrics() {
               </CardContent>
             </Card>
           )}
-          
+
           {/* Analysis Time Chart */}
           {analysisTimeChartData && (
             <Card className="bg-zinc-900 border-zinc-800">
@@ -261,7 +261,7 @@ export function Metrics() {
               </CardContent>
             </Card>
           )}
-          
+
           {/* Error Type Distribution */}
           {metricsData && metricsData.errorTypes.length > 0 && (
             <Card className="bg-zinc-900 border-zinc-800">
@@ -297,8 +297,8 @@ export function Metrics() {
                               errorType.successRate >= 0.8
                                 ? 'bg-green-950 text-green-300'
                                 : errorType.successRate >= 0.5
-                                ? 'bg-yellow-950 text-yellow-300'
-                                : 'bg-red-950 text-red-300'
+                                  ? 'bg-yellow-950 text-yellow-300'
+                                  : 'bg-red-950 text-red-300'
                             )}
                           >
                             {Math.round(errorType.successRate * 100)}% success rate
@@ -311,7 +311,7 @@ export function Metrics() {
               </CardContent>
             </Card>
           )}
-          
+
           {/* Model Performance */}
           {metricsData && (
             <Card className="bg-zinc-900 border-zinc-800">
@@ -333,7 +333,7 @@ export function Metrics() {
                       <span className="font-medium">{metricsData.modelPerformance.totalAnalyses}</span>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <div className="flex items-center justify-between p-3 bg-zinc-950 rounded border border-zinc-800">
                       <span className="text-sm text-zinc-400">Success Rate</span>
@@ -357,7 +357,7 @@ export function Metrics() {
               </CardContent>
             </Card>
           )}
-          
+
           {/* Learning Metrics */}
           {metricsData && (
             <Card className="bg-zinc-900 border-zinc-800">
@@ -408,11 +408,11 @@ function SimpleLineChart({ data, height, color }: {
     x: (index / (data.labels.length - 1)) * 100,
     y: ((maxValue - value) / maxValue) * 100
   }));
-  
+
   const pathData = points
     .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`)
     .join(' ');
-  
+
   return (
     <div className="space-y-4">
       <div className="relative bg-zinc-950 rounded border border-zinc-800 p-4" style={{ height: `${height}px` }}>
@@ -449,7 +449,7 @@ function SimpleBarChart({ data, height, color, formatValue }: {
   formatValue?: (value: number) => string;
 }) {
   const maxValue = Math.max(...data.datasets[0].data);
-  
+
   return (
     <div className="space-y-4">
       <div className="flex items-end gap-2 justify-between" style={{ height: `${height}px` }}>
