@@ -8,9 +8,21 @@
     "noUnusedParameters": false,
     "baseUrl": ".",
     "paths": {
-      "@backend/*": ["../src/*"]
+      "@backend/*": [
+        "../src/*"
+      ]
     }
   },
-  "include": ["src/**/*", "../src/**/*"],
-  "exclude": ["node_modules", ".vscode-test", "../node_modules", "../tests", "../scripts", "../examples", "src/extension.backup.ts", "package.backup.json"]
+  "include": [
+    "src/**/*",
+    "../src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    ".vscode-test",
+    "../node_modules",
+    "../tests",
+    "../scripts",
+    "../examples"
+  ]
 }

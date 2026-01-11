@@ -63,7 +63,7 @@ export async function applyFixCommand(result: RCAResult): Promise<void> {
 
     // Get the file to edit
     let targetUri: vscode.Uri | undefined;
-    
+
     // Try to use active editor
     const activeEditor = vscode.window.activeTextEditor;
     if (activeEditor) {
@@ -148,7 +148,7 @@ export async function searchSimilarCommand(result: RCAResult): Promise<void> {
 
     const analysisService = AnalysisService.getInstance();
     const errorMessage = result.error;
-    
+
     // Show progress while searching
     await vscode.window.withProgress({
       location: vscode.ProgressLocation.Notification,
@@ -157,12 +157,12 @@ export async function searchSimilarCommand(result: RCAResult): Promise<void> {
     }, async () => {
       // Search using ChromaDB
       const similarErrors = await analysisService.searchSimilarErrors(errorMessage, 10);
-      
+
       if (similarErrors.length === 0) {
         vscode.window.showInformationMessage('No similar errors found in history.');
         return;
       }
-      
+
       // Show results in quick pick
       const items = similarErrors.map((error, index) => ({
         label: `$(bug) ${error.error_type || 'Error'}`,
@@ -170,12 +170,12 @@ export async function searchSimilarCommand(result: RCAResult): Promise<void> {
         detail: `Root cause: ${error.root_cause?.substring(0, 100)}...`,
         error
       }));
-      
+
       const selected = await vscode.window.showQuickPick(items, {
         placeHolder: `Found ${similarErrors.length} similar error(s)`,
         title: 'Similar Errors'
       });
-      
+
       if (selected) {
         // Show detailed view of selected error
         const panel = vscode.window.createWebviewPanel(
@@ -184,7 +184,7 @@ export async function searchSimilarCommand(result: RCAResult): Promise<void> {
           vscode.ViewColumn.Beside,
           {}
         );
-        
+
         panel.webview.html = `
           <!DOCTYPE html>
           <html>

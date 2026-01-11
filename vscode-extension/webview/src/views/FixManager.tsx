@@ -196,9 +196,9 @@ export function FixManager() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <Checkbox
-                      checked={hasSelection && !allSelected ? "indeterminate" : allSelected}
+                      checked={allSelected}
                       onCheckedChange={() => {
-                        if (allSelected || hasSelection) {
+                        if (allSelected) {
                           deselectAll();
                           announce('All fixes deselected', 'polite');
                         } else {
@@ -310,14 +310,14 @@ export function FixManager() {
                             )}
                           </div>
 
-                          <h3 className="font-medium text-zinc-200 mb-1 truncate">
+                          <h3 className="font-medium text-zinc-200 mb-1">
                             {fix.file}
                             {fix.line && `:${fix.line}`}
                           </h3>
-                          <p className="text-sm text-zinc-400 break-words">{fix.explanation}</p>
+                          <p className="text-sm text-zinc-400">{fix.explanation}</p>
                         </div>
 
-                        <div className="flex gap-1 shrink-0">
+                        <div className="flex gap-1 flex-shrink-0">
                           <Button
                             size="sm"
                             onClick={() => applyFix(fix.id)}
