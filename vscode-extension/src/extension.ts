@@ -4,6 +4,8 @@ import * as vscode from 'vscode';
 // Backend service imports (KEPT - UI will wire to these)
 import { AnalysisService } from './services/AnalysisService';
 import { FixApplicationService } from './services/FixApplicationService';
+import { ErrorQueueManager } from './services/ErrorQueueManager';
+import { StateManager } from './services/StateManager';
 
 // Webview Provider import (NEW - Phase 1)
 import { RCAWebviewProvider } from './webview/RCAWebviewProvider';
@@ -13,10 +15,10 @@ import { registerChatParticipant } from './chat/RCAChatParticipant';
 import { initializeTools } from './tools';
 import { ConversationalAgent } from './chat/ConversationalAgent';
 import { GuidedDebuggingWorkflow } from './chat/GuidedDebuggingWorkflow';
-import { 
-  applyFixCommand, 
-  explainMoreCommand, 
-  searchSimilarCommand 
+import {
+  applyFixCommand,
+  explainMoreCommand,
+  searchSimilarCommand
 } from './chat/ChatActionCommands';
 
 // ============================================================================
@@ -29,10 +31,13 @@ import {
 let outputChannel: vscode.OutputChannel;
 let debugChannel: vscode.OutputChannel;
 let extensionContext: vscode.ExtensionContext;
+let statusBarItem: vscode.StatusBarItem;
 
 // Backend service instances (KEPT - UI will use these)
 let analysisService: AnalysisService | undefined;
 let fixApplicationService: FixApplicationService | undefined;
+let errorQueueManager: ErrorQueueManager | undefined;
+let stateManager: StateManager | undefined;
 
 // Chat/workflow instances (KEPT - Not UI related)
 let conversationalAgent: ConversationalAgent | undefined;
@@ -44,17 +49,33 @@ let guidedWorkflow: GuidedDebuggingWorkflow | undefined;
  */
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
   extensionContext = context;
-  
+
   // Initialize output channels
   outputChannel = vscode.window.createOutputChannel('RCA Agent');
   debugChannel = vscode.window.createOutputChannel('RCA Agent Debug');
   context.subscriptions.push(outputChannel, debugChannel);
-  
+
   log('info', 'RCA Agent extension activated - UI removed, backend services available');
-  
+
+  // Initialize state manager and error queue (MUST be before backend services)
+  stateManager = StateManager.getInstance(context);
+  errorQueueManager = ErrorQueueManager.getInstance(context);
+  log('info', 'StateManager and ErrorQueueManager initialized - error detection active');
+
+  // Create status bar item for error count
+  statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+  statusBarItem.command = 'rca-agent.showErrorQueue';
+  context.subscriptions.push(statusBarItem);
+  updateStatusBar();
+
+  // Update status bar when error queue changes
+  errorQueueManager.onErrorQueueChange(() => {
+    updateStatusBar();
+  });
+
   // Initialize backend services (KEPT - UI will use these)
   await initializeBackendServices(context);
-  
+
   // Register Webview Provider (NEW - Phase 1)
   try {
     log('info', 'Registering webview provider...');
@@ -74,7 +95,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   } catch (error) {
     log('error', 'Failed to register webview provider', error);
   }
-  
+
   // Initialize chat participant (KEPT - Not UI related)
   try {
     log('info', 'Registering chat participant...');
@@ -83,7 +104,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   } catch (error) {
     log('error', 'Failed to register chat participant', error);
   }
-  
+
   // Register Chat Action Commands (P0 Fix #1)
   try {
     log('info', 'Registering chat action commands...');
@@ -96,7 +117,42 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   } catch (error) {
     log('error', 'Failed to register chat action commands', error);
   }
-  
+
+  // Register Error Detection Commands
+  try {
+    log('info', 'Registering error detection commands...');
+    context.subscriptions.push(
+      vscode.commands.registerCommand('rca-agent.detectErrors', async () => {
+        if (errorQueueManager) {
+          await errorQueueManager.detectErrors();
+          const errorCount = errorQueueManager.getErrorCount();
+          vscode.window.showInformationMessage(`RCA Agent: Detected ${errorCount} errors in workspace`);
+        }
+      }),
+      vscode.commands.registerCommand('rca-agent.showErrorQueue', async () => {
+        if (errorQueueManager) {
+          const errors = errorQueueManager.getAllErrors();
+          const errorCount = errors.length;
+          if (errorCount === 0) {
+            vscode.window.showInformationMessage('RCA Agent: No errors detected. Try opening files with errors or running a build.');
+          } else {
+            const pending = errorQueueManager.getErrorsByStatus('pending').length;
+            const analyzing = errorQueueManager.getErrorsByStatus('analyzing').length;
+            const complete = errorQueueManager.getErrorsByStatus('complete').length;
+            const failed = errorQueueManager.getErrorsByStatus('failed').length;
+            vscode.window.showInformationMessage(
+              `RCA Agent: ${errorCount} errors in queue\n` +
+              `Pending: ${pending}, Analyzing: ${analyzing}, Complete: ${complete}, Failed: ${failed}`
+            );
+          }
+        }
+      })
+    );
+    log('info', 'Error detection commands registered successfully');
+  } catch (error) {
+    log('error', 'Failed to register error detection commands', error);
+  }
+
   // Initialize tools (KEPT - Used by chat participant)
   try {
     log('info', 'Initializing tools...');
@@ -105,46 +161,58 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   } catch (error) {
     log('error', 'Failed to initialize tools', error);
   }
-  
+
   // Initialize conversational agent and guided workflow (KEPT)
   try {
     conversationalAgent = new ConversationalAgent(analysisService, context);
     guidedWorkflow = new GuidedDebuggingWorkflow();
-    
+
     // Register conversational debugging commands
     context.subscriptions.push(
       vscode.commands.registerCommand('rcaAgent.startConversation', async () => {
         vscode.window.showInformationMessage('Conversational debugging will be available after UI implementation.');
       })
     );
-    
+
     context.subscriptions.push(
       vscode.commands.registerCommand('rcaAgent.startGuidedDebugging', async () => {
         vscode.window.showInformationMessage('Guided debugging will be available after UI implementation.');
       })
     );
-    
+
     context.subscriptions.push(
       vscode.commands.registerCommand('rcaAgent.exportConversation', async () => {
         vscode.window.showInformationMessage('Conversation export will be available after UI implementation.');
       })
     );
-    
+
     context.subscriptions.push(
       vscode.commands.registerCommand('rcaAgent.clearConversations', async () => {
         vscode.window.showInformationMessage('Clear conversations will be available after UI implementation.');
       })
     );
-    
+
     log('info', 'Conversational agent and guided workflow initialized');
   } catch (error) {
     log('error', 'Failed to initialize conversational features', error);
   }
-  
-  log('info', 'RCA Agent activated - Backend services ready');
-  vscode.window.showInformationMessage(
-    'RCA Agent activated! Backend services available. UI components removed - see docs/RCA_UI_WIRING_GUIDE.md for implementation guide.'
-  );
+
+  // Show activation summary with error detection status
+  const errorCount = errorQueueManager?.getErrorCount() || 0;
+  const config = vscode.workspace.getConfiguration('rcaAgent');
+  const autoDetect = config.get<boolean>('autoDetectErrors', true);
+
+  log('info', `RCA Agent activated - Backend services ready. Detected ${errorCount} errors. Auto-detection: ${autoDetect ? 'enabled' : 'disabled'}`);
+
+  if (autoDetect && errorCount > 0) {
+    vscode.window.showInformationMessage(
+      `RCA Agent: Detected ${errorCount} error${errorCount > 1 ? 's' : ''} in workspace. Open RCA panel to view.`
+    );
+  } else if (!autoDetect) {
+    vscode.window.showWarningMessage(
+      'RCA Agent: Auto-detection is disabled. Enable "rcaAgent.autoDetectErrors" in settings or run "RCA Agent: Detect Errors" command.'
+    );
+  }
 }
 
 /**
@@ -154,16 +222,16 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 async function initializeBackendServices(context: vscode.ExtensionContext): Promise<void> {
   try {
     log('info', 'Initializing backend services...');
-    
+
     // Initialize AnalysisService (singleton)
     analysisService = AnalysisService.getInstance();
     await analysisService.initialize();
     log('info', 'AnalysisService initialized successfully');
-    
+
     // Initialize FixApplicationService
     fixApplicationService = new FixApplicationService();
     log('info', 'FixApplicationService initialized successfully');
-    
+
     log('info', 'Backend services initialization complete');
   } catch (error) {
     const err = error as Error;
@@ -175,9 +243,35 @@ async function initializeBackendServices(context: vscode.ExtensionContext): Prom
 }
 
 /**
+ * Update status bar with current error count
+ */
+function updateStatusBar(): void {
+  if (!statusBarItem || !errorQueueManager) {
+    return;
+  }
+
+  const errorCount = errorQueueManager.getErrorCount();
+  const pending = errorQueueManager.getErrorsByStatus('pending').length;
+  const analyzing = errorQueueManager.getErrorsByStatus('analyzing').length;
+
+  if (errorCount === 0) {
+    statusBarItem.text = '$(check) RCA: No errors';
+    statusBarItem.tooltip = 'No errors detected in workspace';
+    statusBarItem.backgroundColor = undefined;
+  } else {
+    statusBarItem.text = `$(error) RCA: ${errorCount} error${errorCount > 1 ? 's' : ''}`;
+    statusBarItem.tooltip = `${pending} pending, ${analyzing} analyzing\nClick to show error queue`;
+    statusBarItem.backgroundColor = new vscode.ThemeColor('statusBarItem.errorBackground');
+  }
+
+  statusBarItem.show();
+}
+
+/**
  * Called when extension is deactivated
  */
 export function deactivate(): void {
+  statusBarItem?.dispose();
   log('info', 'RCA Agent extension deactivated');
 }
 
@@ -187,14 +281,14 @@ export function deactivate(): void {
 function log(level: 'info' | 'warn' | 'error', message: string, data?: any): void {
   const timestamp = new Date().toISOString();
   const logMessage = `[${timestamp}] [${level.toUpperCase()}] ${message}`;
-  
+
   if (outputChannel) {
     outputChannel.appendLine(logMessage);
     if (data) {
       outputChannel.appendLine(JSON.stringify(data, null, 2));
     }
   }
-  
+
   if (level === 'error') {
     console.error(logMessage, data);
   } else if (level === 'warn') {
@@ -202,7 +296,7 @@ function log(level: 'info' | 'warn' | 'error', message: string, data?: any): voi
   } else {
     console.log(logMessage, data);
   }
-  
+
   // Also log to debug channel for detailed debugging
   if (debugChannel) {
     debugChannel.appendLine(logMessage);
@@ -219,6 +313,14 @@ export function getAnalysisService(): AnalysisService | undefined {
 
 export function getFixApplicationService(): FixApplicationService | undefined {
   return fixApplicationService;
+}
+
+export function getErrorQueueManager(): ErrorQueueManager | undefined {
+  return errorQueueManager;
+}
+
+export function getStateManager(): StateManager | undefined {
+  return stateManager;
 }
 
 export function getExtensionContext(): vscode.ExtensionContext {

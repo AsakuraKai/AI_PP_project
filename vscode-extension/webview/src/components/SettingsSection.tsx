@@ -16,7 +16,7 @@ interface OllamaStatus {
 
 export function SettingsSection({ collapsed }: SettingsSectionProps) {
   const { postMessage } = useVSCode();
-  const [model, setModel] = useState('deepseek-r1');
+  const [model, setModel] = useState('hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest');
   const [ollamaStatus, setOllamaStatus] = useState<OllamaStatus>({ available: false });
   const [educationalMode, setEducationalMode] = useState(false);
   const [realtimeDetection, setRealtimeDetection] = useState(false);
@@ -29,7 +29,7 @@ export function SettingsSection({ collapsed }: SettingsSectionProps) {
 
       if (message.command === 'init' && message.data?.config) {
         console.log('[RCA Frontend - SettingsSection] Init config:', message.data.config);
-        setModel(message.data.config.model || 'deepseek-r1');
+        setModel(message.data.config.model || 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest');
         setEducationalMode(message.data.config.educationalMode || false);
         setRealtimeDetection(message.data.config.realtimeDetection || false);
       }
@@ -117,7 +117,7 @@ export function SettingsSection({ collapsed }: SettingsSectionProps) {
             <SelectValue placeholder="Select model" />
           </SelectTrigger>
           <SelectContent className="bg-zinc-900 border-zinc-800">
-            <SelectItem value="deepseek-r1" className="text-zinc-50">DeepSeek-R1</SelectItem>
+            <SelectItem value="hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest" className="text-zinc-50">DeepSeek-R1 Distill Qwen 7B</SelectItem>
             <SelectItem value="llama3" className="text-zinc-50">Llama 3</SelectItem>
             <SelectItem value="qwen2.5-coder" className="text-zinc-50">Qwen 2.5 Coder</SelectItem>
             <SelectItem value="codellama" className="text-zinc-50">Code Llama</SelectItem>

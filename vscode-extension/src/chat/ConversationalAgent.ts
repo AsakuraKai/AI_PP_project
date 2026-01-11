@@ -14,6 +14,7 @@
 import * as vscode from 'vscode';
 import { AnalysisService } from '../services/AnalysisService';
 import { ChatPromptEngine } from './ChatPromptEngine';
+import { OllamaClient } from '../../../src/llm/OllamaClient';
 
 /**
  * Represents a single message in the conversation
@@ -83,12 +84,30 @@ export class ConversationalAgent {
   private analysisService: AnalysisService;
   private promptEngine: ChatPromptEngine;
   private context: vscode.ExtensionContext;
+  private llmClient?: OllamaClient;
   private readonly maxHistoryLength = 20; // Keep last 20 messages
   
   constructor(analysisService?: AnalysisService, context?: vscode.ExtensionContext) {
     this.analysisService = analysisService || AnalysisService.getInstance();
     this.promptEngine = new ChatPromptEngine();
     this.context = context!; // Will be set if provided
+    this.initializeLLM();
+  }
+  
+  /**
+   * Initialize Ollama LLM client for conversational responses
+   */
+  private async initializeLLM(): Promise<void> {
+    try {
+      const config = vscode.workspace.getConfiguration('rcaAgent');
+      const ollamaUrl = config.get<string>('ollamaUrl', 'http://localhost:11434');
+      const model = config.get<string>('model', 'deepseek-r1');
+      
+      this.llmClient = new OllamaClient({ baseUrl: ollamaUrl, model });
+      console.log('[ConversationalAgent] LLM client initialized');
+    } catch (error) {
+      console.error('[ConversationalAgent] Failed to initialize LLM:', error);
+    }
   }
   
   /**
@@ -302,7 +321,7 @@ RESPONSE STYLE:
     if (context.userPreferences?.explanationLevel === 'beginner') {
       prompt += '\n\nUSER PREFERENCE: Explain in simple terms (beginner level)';
     } else if (context.userPreferences?.explanationLevel === 'expert') {
-      prompt += '\n\nUSER PREFERENCE: Provide technical deep-dive (expert level)';
+      prompt += '\n\nUSER PREFERENCE: Provide detailed technical information (expert level)';
     }
     
     if (context.fixStatus?.suggested && !context.fixStatus?.applied) {

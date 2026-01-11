@@ -52,11 +52,11 @@ import { TerminalTool } from '../tools/TerminalTool';
 
 export class ContextCollector {
   private terminalTool: TerminalTool;
-  
+
   constructor() {
     this.terminalTool = new TerminalTool();
   }
-  
+
   /**
    * Collect all relevant context for RCA analysis
    */
@@ -65,35 +65,35 @@ export class ContextCollector {
     const errors = await this.collectErrors(intent);
     const terminal = await this.collectTerminalContext();
     const files = await this.collectRelevantFiles(intent);
-    
+
     return { workspace, errors, terminal, files };
   }
-  
+
   /**
    * Collect workspace structure information
    */
   private async collectWorkspaceContext(): Promise<WorkspaceContext> {
     const root = vscode.workspace.workspaceFolders?.[0].uri.fsPath || '';
-    
+
     // Find gradle files
     const gradleFiles = await vscode.workspace.findFiles(
       '{build.gradle,build.gradle.kts,settings.gradle,settings.gradle.kts,gradle/libs.versions.toml}',
       '**/node_modules/**'
     );
-    
+
     // Find kotlin files (limit to 100 for performance)
     const kotlinFiles = await vscode.workspace.findFiles(
       '**/*.kt',
       '**/node_modules/**',
       100
     );
-    
+
     // Find all build-related files
     const buildFiles = await vscode.workspace.findFiles(
       '{gradle.properties,local.properties,gradlew,gradlew.bat}',
       '**/node_modules/**'
     );
-    
+
     return {
       root,
       gradleFiles: gradleFiles.map(f => f.fsPath),
@@ -101,13 +101,13 @@ export class ContextCollector {
       buildFiles: buildFiles.map(f => f.fsPath)
     };
   }
-  
+
   /**
    * Collect error information from VS Code diagnostics
    */
   private async collectErrors(intent: ChatIntent): Promise<ErrorInfo[]> {
     const errors: ErrorInfo[] = [];
-    
+
     // Get errors from diagnostics
     for (const [uri, diagnostics] of vscode.languages.getDiagnostics()) {
       for (const diagnostic of diagnostics) {
@@ -122,11 +122,11 @@ export class ContextCollector {
         }
       }
     }
-    
+
     // Limit to 50 most relevant errors to avoid overwhelming the LLM
     return errors.slice(0, 50);
   }
-  
+
   /**
    * Collect terminal output context
    */
@@ -134,18 +134,18 @@ export class ContextCollector {
     // Get recent terminal command history
     const history = this.terminalTool.getCommandHistory();
     const recentOutput = history.slice(-10).join('\n'); // Last 10 commands
-    
+
     return {
       recentOutput
     };
   }
-  
+
   /**
    * Collect relevant file contents
    */
   private async collectRelevantFiles(intent: ChatIntent): Promise<FileContext[]> {
     const files: FileContext[] = [];
-    
+
     // If analyzing error, get the error file
     if (intent.errorContext) {
       const editor = vscode.window.activeTextEditor;
@@ -157,7 +157,7 @@ export class ContextCollector {
         });
       }
     }
-    
+
     return files;
   }
 }

@@ -53,14 +53,14 @@ export interface DiffPreview {
 @SingletonService
 export class FixApplicationService {
   static getInstance: () => FixApplicationService;
-  
+
   private readTool: ReadFileTool;
   private writeTool: WriteFileTool;
   private editTool: EditFileTool;
   private fixGenerator: FixGenerator;
   private ollamaClient: OllamaClient;
   private timeoutHandler: NetworkTimeoutHandler;
-  
+
   // Phase 3: Fix queue management
   private pendingFixes: Map<string, PendingFix> = new Map();
   private appliedFixes: Map<string, AppliedFix> = new Map();
@@ -70,17 +70,17 @@ export class FixApplicationService {
     this.writeTool = new WriteFileTool();
     this.editTool = new EditFileTool();
     this.timeoutHandler = new NetworkTimeoutHandler();
-    
+
     // Initialize Ollama client from configuration
     const config = vscode.workspace.getConfiguration('rcaAgent');
     const ollamaUrl = config.get<string>('ollamaUrl', 'http://localhost:11434');
-    const model = config.get<string>('model', 'deepseek-r1');
-    
+    const model = config.get<string>('model', 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest');
+
     this.ollamaClient = new OllamaClient({
       baseUrl: ollamaUrl,
       model: model
     });
-    
+
     // Initialize FixGenerator with backend tools
     const workspacePath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || process.cwd();
     this.fixGenerator = new FixGenerator(
@@ -107,7 +107,7 @@ export class FixApplicationService {
           explanation: backendFix.explanation
         }];
       }
-      
+
       // If codeFix not in result, try to generate it from error info
       // We need to convert RCAResult to ParsedError format
       const parsedError = this.convertToParsedError(result);
@@ -115,7 +115,7 @@ export class FixApplicationService {
         // Fallback to parsing fix guidelines
         return this.generateFixFromGuidelines(result);
       }
-      
+
       // Generate fix using FixGenerator with timeout protection
       const fixResult = await this.timeoutHandler.executeWithTimeout(
         `fix-generation-${Date.now()}`,
@@ -129,19 +129,19 @@ export class FixApplicationService {
         60000, // 60s timeout for fix generation
         2      // 2 retries
       );
-      
+
       if (fixResult.timedOut) {
         console.warn('[FixApplicationService] Fix generation timed out, falling back to guidelines');
         return this.generateFixFromGuidelines(result);
       }
-      
+
       if (!fixResult.success || !fixResult.data) {
         console.warn('[FixApplicationService] FixGenerator returned null, falling back to guidelines');
         return this.generateFixFromGuidelines(result);
       }
-      
+
       const codeFix = fixResult.data;
-      
+
       // Convert backend CodeFix to Fix[]
       const fixes: Fix[] = [{
         file: codeFix.filePath,
@@ -150,7 +150,7 @@ export class FixApplicationService {
         after: codeFix.fixedCode,
         explanation: codeFix.explanation
       }];
-      
+
       // Add related file fixes if available
       if (codeFix.relatedFiles && codeFix.relatedFiles.length > 0) {
         codeFix.relatedFiles.forEach(relatedFix => {
@@ -163,39 +163,39 @@ export class FixApplicationService {
           });
         });
       }
-      
+
       return fixes;
-      
+
     } catch (error) {
       console.error('[FixApplicationService] Error generating fix:', error);
       // Fallback to template-based generation
       return this.generateFixFromGuidelines(result);
     }
   }
-  
+
   /**
    * Convert RCAResult to ParsedError format for FixGenerator
    */
   private convertToParsedError(result: RCAResult): ParsedError | null {
     // Try to extract file path and line from error message or context
     // This is best-effort extraction
-    
+
     // Look for common patterns: "file.kt:123", "at file.java:45"
     const filePattern = /(?:at\s+)?([a-zA-Z0-9_/\\.-]+\.[a-zA-Z]{2,4}):(\d+)/;
     const match = result.error.match(filePattern);
-    
+
     if (!match) {
       console.warn('[FixApplicationService] Could not extract file path from error');
       return null;
     }
-    
+
     const [, filePath, lineStr] = match;
     const line = parseInt(lineStr, 10);
-    
+
     // Determine language from file extension
     const ext = path.extname(filePath).toLowerCase();
     let language: 'kotlin' | 'java' | 'xml' | 'gradle' | 'proguard' = 'java';
-    
+
     if (ext === '.kt' || ext === '.kts') {
       language = 'kotlin';
     } else if (ext === '.xml') {
@@ -203,7 +203,7 @@ export class FixApplicationService {
     } else if (ext === '.gradle') {
       language = 'gradle';
     }
-    
+
     return {
       type: 'unknown', // Could be extracted from error pattern
       message: result.error,
@@ -212,7 +212,7 @@ export class FixApplicationService {
       language
     };
   }
-  
+
   /**
    * Fallback: Generate fix from guidelines (template-based)
    */
@@ -223,7 +223,7 @@ export class FixApplicationService {
 
     // Extract file paths and code changes from guidelines
     const fixes: Fix[] = [];
-    
+
     for (const guideline of result.fixGuidelines) {
       const fix = this.parseGuideline(guideline, result);
       if (fix) {
@@ -241,7 +241,7 @@ export class FixApplicationService {
     // Pattern: "Update [file]:[line] from [before] to [after]"
     // Pattern: "Change [code] to [new_code] in [file]"
     // Pattern: "Add [code] to [file]:[line]"
-    
+
     const patterns = [
       /(?:update|change)\s+(.+?):(\d+)\s+from\s+["'](.+?)["']\s+to\s+["'](.+?)["']/i,
       /(?:update|change)\s+(.+?)\s+line\s+(\d+):\s+(.+?)\s+→\s+(.+)/i,
@@ -280,10 +280,10 @@ export class FixApplicationService {
       try {
         // Read current file content
         const currentContent = await this.readTool.execute({ path: fix.file });
-        
+
         // Generate modified content
         const modifiedContent = this.applyFixToContent(currentContent, fix);
-        
+
         // Calculate changes
         const changes = this.calculateChanges(currentContent, modifiedContent);
 
@@ -306,7 +306,7 @@ export class FixApplicationService {
    */
   private applyFixToContent(content: string, fix: Fix): string {
     const lines = content.split('\n');
-    
+
     if (fix.line && fix.line > 0 && fix.line <= lines.length) {
       // Replace specific line
       const lineIndex = fix.line - 1;
@@ -378,7 +378,7 @@ export class FixApplicationService {
           // Read, modify, write entire file
           const content = await this.readTool.execute({ path: fix.file });
           const modified = content.replace(fix.before, fix.after);
-          
+
           await this.writeTool.execute({
             path: fix.file,
             content: modified
@@ -545,7 +545,7 @@ export class FixApplicationService {
 
     try {
       const result = await this.applyFixes([pendingFix.fix]);
-      
+
       // Move from pending to applied
       this.pendingFixes.delete(fixId);
       const appliedId = `applied-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -582,4 +582,5 @@ export class FixApplicationService {
    */
   async clearAppliedFixes(): Promise<void> {
     this.appliedFixes.clear();
-  }}
+  }
+}

@@ -23,6 +23,9 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
         this.analysisService = AnalysisService.getInstance();
         this.fixApplicationService = FixApplicationService.getInstance();
         this.networkTimeoutHandler = new NetworkTimeoutHandler();
+
+        // Use existing singletons that were initialized in extension.ts
+        // This ensures error detection is already active before webview opens
         this.stateManager = StateManager.getInstance(extensionContext);
         this.errorQueueManager = ErrorQueueManager.getInstance(extensionContext);
     }
@@ -291,7 +294,7 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
         try {
             const config = vscode.workspace.getConfiguration('rcaAgent');
             const ollamaUrl = config.get<string>('ollamaUrl', 'http://localhost:11434');
-            const model = config.get<string>('model', 'deepseek-r1');
+            const model = config.get<string>('model', 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest');
 
             const startTime = Date.now();
             const result = await this.networkTimeoutHandler.checkOllamaConnection(ollamaUrl);
@@ -334,17 +337,19 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
 
     private async _handleCancelAnalysis() {
         try {
-            // Cancel analysis by stopping the state stream
-            // The AnalysisService doesn't have a direct cancel method,
-            // but we can notify the webview that cancellation was requested
+            // Stop the analysis service
+            this.analysisService.stopAnalysis();
+            
+            // Notify the webview that analysis was cancelled
             this._sendMessage({
                 command: 'analysisCancelled',
-                data: {}
+                message: 'Analysis cancelled by user'
             });
 
-            vscode.window.showInformationMessage('Analysis cancellation requested');
+            vscode.window.showInformationMessage('Analysis cancelled');
         } catch (error: any) {
             console.error('Failed to cancel analysis:', error);
+            vscode.window.showErrorMessage('Failed to cancel analysis: ' + error.message);
         }
     }
 
@@ -1122,7 +1127,7 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
                     },
                     errorTypes: errorTypesData,
                     modelPerformance: {
-                        model: 'deepseek-r1',
+                        model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest',
                         totalAnalyses,
                         successRate: totalAnalyses > 0 ? successfulAnalyses / totalAnalyses : 0,
                         avgTime,
@@ -1404,7 +1409,7 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
             command: 'init',
             data: {
                 config: {
-                    model: config.get('model', 'deepseek-r1'),
+                    model: config.get('model', 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest'),
                     ollamaUrl: config.get('ollamaUrl', 'http://localhost:11434'),
                     theme: vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Dark ? 'dark' : 'light',
                     educationalMode: config.get('educationalMode', false),
