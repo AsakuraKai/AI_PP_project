@@ -100,7 +100,22 @@ export function FixManager() {
           <p className="text-zinc-400" role="status" aria-live="polite">
             {stats.pending} pending • {stats.applied} applied • {stats.failed} failed
           </p>
-        </div> role="region" aria-label="Fix statistics">
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={refreshFixes}
+          disabled={loading}
+          className="gap-2 focus-ring"
+          aria-label="Refresh fixes"
+        >
+          <RefreshCw className={cn('h-4 w-4', loading && 'animate-spin')} aria-hidden="true" />
+          Refresh
+        </Button>
+      </div>
+
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4" role="region" aria-label="Fix statistics">
         {loading ? (
           <>
             <StatsCardSkeleton />
@@ -151,41 +166,23 @@ export function FixManager() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-zinc-400">Avg Confidence</p>
-                    <p className="text-2xl font-semibold mt-1" aria-label={`${stats.avgConfidence} average confidence`}>{stats.avgConfidence}</p>
+                    <p className="text-2xl font-semibold mt-1" aria-label={`${stats.avgConfidence}% average confidence`}>{stats.avgConfidence}%</p>
                   </div>
                   <AlertCircle className="h-8 w-8 text-purple-600" aria-hidden="true" />
                 </div>
               </CardContent>
             </Card>
           </>
-        )} <p className="text-sm text-zinc-400">Failed</p>
-                <p className="text-2xl font-semibold mt-1">{stats.failed}</p>
-              </div>
-              <XCircle className="h-8 w-8 text-red-600" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-zinc-900 border-zinc-800">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-zinc-400">Avg Confide role="tablist" aria-label="Fix categories">
-          <TabsTrigger value="pending" className="focus-ring" aria-label={`Pending fixes: ${stats.pending}`}>
-            Pending ({stats.pending})
-          </TabsTrigger>
-          <TabsTrigger value="applied" className="focus-ring" aria-label={`Applied fixes: ${stats.applied + stats.failed}`}
-          </CardContent>
-        </Card>
+        )}
       </div>
       
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="bg-zinc-900 border border-zinc-800">
-          <TabsTrigger value="pending">
+        <TabsList className="bg-zinc-900 border border-zinc-800" role="tablist" aria-label="Fix categories">
+          <TabsTrigger value="pending" className="focus-ring" aria-label={`Pending fixes: ${stats.pending}`}>
             Pending ({stats.pending})
           </TabsTrigger>
-          <TabsTrigger value="applied">
+          <TabsTrigger value="applied" className="focus-ring" aria-label={`Applied fixes: ${stats.applied + stats.failed}`}>
             Applied ({stats.applied + stats.failed})
           </TabsTrigger>
         </TabsList>
@@ -199,9 +196,9 @@ export function FixManager() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <Checkbox
-                      checked={allSelected}
+                      checked={hasSelection && !allSelected ? "indeterminate" : allSelected}
                       onCheckedChange={() => {
-                        if (allSelected) {
+                        if (allSelected || hasSelection) {
                           deselectAll();
                           announce('All fixes deselected', 'polite');
                         } else {
@@ -220,19 +217,18 @@ export function FixManager() {
                   {hasSelection && (
                     <div className="flex gap-2" role="group" aria-label="Bulk actions">
                       <Button
-                        {...createButtonProps(`Apply ${stats.selected} selected fixes`)}
                         size="sm"
                         onClick={() => {
                           applySelectedFixes();
                           announce(`Applying ${stats.selected} fixes`, 'assertive');
                         }}
                         className="gap-2 bg-green-700 hover:bg-green-600 focus-ring"
+                        aria-label={`Apply ${stats.selected} selected fixes`}
                       >
                         <Check className="h-4 w-4" aria-hidden="true" />
                         <span>Apply Selected ({stats.selected})</span>
                       </Button>
                       <Button
-                        {...createButtonProps(`Reject ${stats.selected} selected fixes`)}
                         variant="outline"
                         size="sm"
                         onClick={() => {
@@ -240,6 +236,7 @@ export function FixManager() {
                           announce(`Rejected ${stats.selected} fixes`, 'assertive');
                         }}
                         className="gap-2 text-red-400 hover:text-red-300 hover:bg-red-950/50 focus-ring"
+                        aria-label={`Reject ${stats.selected} selected fixes`}
                       >
                         <X className="h-4 w-4" aria-hidden="true" />
                         <span>Reject Selected</span>
@@ -313,14 +310,14 @@ export function FixManager() {
                             )}
                           </div>
                           
-                          <h3 className="font-medium text-zinc-200 mb-1">
+                          <h3 className="font-medium text-zinc-200 mb-1 truncate">
                             {fix.file}
                             {fix.line && `:${fix.line}`}
                           </h3>
-                          <p className="text-sm text-zinc-400">{fix.explanation}</p>
+                          <p className="text-sm text-zinc-400 break-words">{fix.explanation}</p>
                         </div>
                         
-                        <div className="flex gap-1 flex-shrink-0">
+                        <div className="flex gap-1 shrink-0">  
                           <Button
                             size="sm"
                             onClick={() => applyFix(fix.id)}
@@ -488,6 +485,6 @@ export function FixManager() {
           </CardContent>
         </Card>
       )}
-    </div>
+    </main>
   );
 }
