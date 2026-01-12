@@ -44,18 +44,18 @@ export type AnalysisState = 'empty' | 'analyzing' | 'complete' | 'error';
 
 export function useAnalysis() {
   const { postMessage } = useVSCode();
-  
+
   const [state, setState] = useState<AnalysisState>('empty');
   const [progress, setProgress] = useState<AnalysisProgress | null>(null);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentErrorId, setCurrentErrorId] = useState<string | null>(null);
-  
+
   // Listen for analysis updates
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       const message = event.data;
-      
+
       switch (message.command) {
         case 'analysisStarted':
           setState('analyzing');
@@ -68,23 +68,23 @@ export function useAnalysis() {
           setError(null);
           setCurrentErrorId(message.errorId);
           break;
-          
+
         case 'analysisProgress':
           setProgress(message.progress);
           break;
-          
+
         case 'analysisComplete':
           setState('complete');
           setResult(message.result);
           setProgress(null);
           break;
-          
+
         case 'analysisError':
           setState('error');
           setError(message.error);
           setProgress(null);
           break;
-          
+
         case 'analysisCancelled':
           setState('empty');
           setProgress(null);
@@ -92,33 +92,33 @@ export function useAnalysis() {
           break;
       }
     };
-    
+
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
   }, []);
-  
+
   const startAnalysis = useCallback((errorId: string, settings?: any) => {
     postMessage('startAnalysis', { errorId, settings });
   }, [postMessage]);
-  
+
   const startManualAnalysis = useCallback((errorText: string, settings?: any) => {
     postMessage('startManualAnalysis', { errorText, settings });
   }, [postMessage]);
-  
+
   const cancelAnalysis = useCallback(() => {
     postMessage('cancelAnalysis');
   }, [postMessage]);
-  
+
   const applyFix = useCallback((fixId: string) => {
     postMessage('applyFixById', { fixId });
   }, [postMessage]);
-  
+
   const exportResult = useCallback(() => {
     if (result) {
       postMessage('exportResult', { result });
     }
   }, [postMessage, result]);
-  
+
   const reset = useCallback(() => {
     setState('empty');
     setProgress(null);
@@ -126,7 +126,7 @@ export function useAnalysis() {
     setError(null);
     setCurrentErrorId(null);
   }, []);
-  
+
   return {
     state,
     progress,

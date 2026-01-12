@@ -46,57 +46,57 @@ export interface DiffPreview {
 
 export function useFixManager() {
   const { postMessage } = useVSCode();
-  
+
   const [pendingFixes, setPendingFixes] = useState<PendingFix[]>([]);
   const [appliedFixes, setAppliedFixes] = useState<AppliedFix[]>([]);
   const [diffPreview, setDiffPreview] = useState<DiffPreview | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedFixes, setSelectedFixes] = useState<Set<string>>(new Set());
-  
+
   // Callbacks
   const loadPendingFixes = useCallback(() => {
     postMessage('getPendingFixes');
   }, [postMessage]);
-  
+
   const loadAppliedFixes = useCallback(() => {
     postMessage('getAppliedFixes');
   }, [postMessage]);
-  
+
   const refreshFixes = useCallback(() => {
     setLoading(true);
     loadPendingFixes();
     loadAppliedFixes();
   }, [loadPendingFixes, loadAppliedFixes]);
-  
+
   const previewFix = useCallback((fixId: string) => {
     postMessage('previewFix', { fixId });
   }, [postMessage]);
-  
+
   const applyFix = useCallback((fixId: string) => {
     postMessage('applyFixById', { fixId });
   }, [postMessage]);
-  
+
   const rejectFix = useCallback((fixId: string) => {
     postMessage('rejectFix', { fixId });
   }, [postMessage]);
-  
+
   const applySelectedFixes = useCallback(() => {
     if (selectedFixes.size === 0) return;
     postMessage('applyMultipleFixes', { fixIds: Array.from(selectedFixes) });
   }, [postMessage, selectedFixes]);
-  
+
   const rejectSelectedFixes = useCallback(() => {
     if (selectedFixes.size === 0) return;
     postMessage('rejectMultipleFixes', { fixIds: Array.from(selectedFixes) });
     setSelectedFixes(new Set());
   }, [postMessage, selectedFixes]);
-  
+
   const clearAppliedFixes = useCallback(() => {
     if (confirm('Clear all applied fixes history?')) {
       postMessage('clearAppliedFixes');
     }
   }, [postMessage]);
-  
+
   const toggleSelection = useCallback((fixId: string) => {
     setSelectedFixes(prev => {
       const next = new Set(prev);
@@ -108,48 +108,48 @@ export function useFixManager() {
       return next;
     });
   }, []);
-  
+
   const selectAll = useCallback(() => {
     setSelectedFixes(new Set(pendingFixes.map(f => f.id)));
   }, [pendingFixes]);
-  
+
   const deselectAll = useCallback(() => {
     setSelectedFixes(new Set());
   }, []);
-  
+
   // Load fixes on mount
   useEffect(() => {
     loadPendingFixes();
     loadAppliedFixes();
-    
+
     // Refresh every 30 seconds
     const interval = setInterval(() => {
       loadPendingFixes();
       loadAppliedFixes();
     }, 30000);
-    
+
     return () => clearInterval(interval);
   }, [loadPendingFixes, loadAppliedFixes]);
-  
+
   // Listen for updates from extension
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       const message = event.data;
-      
+
       switch (message.command) {
         case 'pendingFixesData':
           setPendingFixes(message.fixes || []);
           setLoading(false);
           break;
-          
+
         case 'appliedFixesData':
           setAppliedFixes(message.fixes || []);
           break;
-          
+
         case 'diffPreviewData':
           setDiffPreview(message.diff);
           break;
-          
+
         case 'fixApplied':
           // Remove from pending
           setPendingFixes(prev => prev.filter(f => f.id !== message.fixId));
@@ -171,7 +171,7 @@ export function useFixManager() {
             return next;
           });
           break;
-          
+
         case 'fixRejected':
           setPendingFixes(prev => prev.filter(f => f.id !== message.fixId));
           setSelectedFixes(prev => {
@@ -180,7 +180,7 @@ export function useFixManager() {
             return next;
           });
           break;
-          
+
         case 'fixApplyError':
           setAppliedFixes(prev => [
             {
@@ -194,21 +194,21 @@ export function useFixManager() {
             ...prev
           ]);
           break;
-          
+
         case 'fixesCleared':
           setAppliedFixes([]);
           break;
-          
+
         case 'newFixGenerated':
           setPendingFixes(prev => [message.fix, ...prev]);
           break;
       }
     };
-    
+
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
   }, []);
-  
+
   // Calculate stats
   const stats = {
     pending: pendingFixes.length,
@@ -217,11 +217,11 @@ export function useFixManager() {
     selected: selectedFixes.size,
     avgConfidence: pendingFixes.length > 0
       ? Math.round(
-          pendingFixes.reduce((sum, f) => sum + (f.confidence || 0), 0) / pendingFixes.length * 100
-        ) / 100
+        pendingFixes.reduce((sum, f) => sum + (f.confidence || 0), 0) / pendingFixes.length * 100
+      ) / 100
       : 0
   };
-  
+
   return {
     pendingFixes,
     appliedFixes,
