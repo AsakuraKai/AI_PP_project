@@ -110,9 +110,12 @@ export class StateManager {
     if (!exists) {
       this._errorQueue.push(error);
       await this._saveState();
+      console.log(`[StateManager] Added error to queue: ${error.message.substring(0, 50)}... (Total: ${this._errorQueue.length})`);
       this._onErrorQueueChange.fire(this._errorQueue);
+      console.log(`[StateManager] Fired onErrorQueueChange event with ${this._errorQueue.length} errors`);
       this._onStateChange.fire(this.getState());
-      console.log(`[StateManager] Added error: ${error.message}`);
+    } else {
+      console.log(`[StateManager] Error already exists, skipping: ${error.message.substring(0, 50)}...`);
     }
   }
   

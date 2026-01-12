@@ -70,23 +70,29 @@ export function useErrorQueue() {
     const handleMessage = (event: MessageEvent) => {
       const message = event.data;
       
+      console.log('[useErrorQueue] Received message:', message.command, message);
+      
       switch (message.command) {
         case 'errorQueueData':
-          setErrors(message.errors);
+          console.log('[useErrorQueue] Setting errors:', message.errors?.length || 0, 'errors');
+          setErrors(message.errors || []);
           setLoading(false);
           break;
           
         case 'errorUpdated':
+          console.log('[useErrorQueue] Error updated:', message.error?.id);
           setErrors(prev =>
             prev.map(e => e.id === message.error.id ? message.error : e)
           );
           break;
           
         case 'errorAdded':
+          console.log('[useErrorQueue] Error added:', message.error?.id);
           setErrors(prev => [...prev, message.error]);
           break;
           
         case 'errorRemoved':
+          console.log('[useErrorQueue] Error removed:', message.errorId);
           setErrors(prev => prev.filter(e => e.id !== message.errorId));
           setSelectedIds(prev => {
             const next = new Set(prev);
@@ -97,6 +103,7 @@ export function useErrorQueue() {
       }
     };
     
+    console.log('[useErrorQueue] Setting up message listener');
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
   }, []);

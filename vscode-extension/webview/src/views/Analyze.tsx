@@ -293,9 +293,11 @@ export function Analyze() {
               <Badge variant="outline" className="text-purple-400" aria-label={`Confidence: ${Math.round(result.confidence * 100)} percent`}>
                 Confidence: {Math.round(result.confidence * 100)}%
               </Badge>
-              <Badge variant="outline" aria-label={`${result.fixes.length} fixes suggested`}>
-                {result.fixes.length} fixes suggested
-              </Badge>
+              {result.fixes.length > 0 && (
+                <Badge variant="outline" aria-label={`${result.fixes.length} fixes suggested`}>
+                  {result.fixes.length} fixes suggested
+                </Badge>
+              )}
             </div>
           </div>
           

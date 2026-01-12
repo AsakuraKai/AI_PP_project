@@ -110,12 +110,12 @@ export function useAnalysis() {
   }, [postMessage]);
   
   const applyFix = useCallback((fixId: string) => {
-    postMessage('applyFix', { fixId });
+    postMessage('applyFixById', { fixId });
   }, [postMessage]);
   
   const exportResult = useCallback(() => {
     if (result) {
-      postMessage('exportAnalysis', { result });
+      postMessage('exportResult', { result });
     }
   }, [postMessage, result]);
   

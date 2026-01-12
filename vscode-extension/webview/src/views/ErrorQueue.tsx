@@ -22,6 +22,7 @@ import { Check, Clock, FileText, Pin, Play, RefreshCw, Search, Trash2, X, AlertC
 import { useErrorQueue, type FilterStatus, type FilterType } from '../hooks/useErrorQueue';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
+import { Checkbox } from '../components/ui/checkbox';
 import { TableRowSkeleton } from '../components/ui/skeleton';
 import { EmptyState } from '../components/EmptyState';
 import { handleListKeyboard } from '../lib/accessibility';
@@ -204,11 +205,9 @@ export function ErrorQueue() {
           {/* Table Header */}
           <div className="grid grid-cols-12 gap-4 p-4 border-b border-zinc-800 bg-zinc-900/50 text-sm font-medium text-zinc-400" role="row">
             <div className="col-span-1 flex items-center" role="columnheader">
-              <input
-                type="checkbox"
+              <Checkbox
                 checked={allSelected}
-                onChange={() => allSelected ? deselectAll() : selectAll()}
-                className="rounded border-zinc-700 bg-zinc-800"
+                onCheckedChange={() => allSelected ? deselectAll() : selectAll()}
                 aria-label={allSelected ? 'Deselect all errors' : 'Select all errors'}
               />
             </div>
@@ -299,11 +298,9 @@ function ErrorRow({ error, selected, focused, onToggleSelection, onAnalyze, onRe
     >
       {/* Checkbox */}
       <div className="col-span-1 flex items-center" role="cell">
-        <input
-          type="checkbox"
+        <Checkbox
           checked={selected}
-          onChange={onToggleSelection}
-          className="rounded border-zinc-700 bg-zinc-800"
+          onCheckedChange={onToggleSelection}
           aria-label={`Select error: ${error.message}`}
         />
         {error.metadata?.pinned && (
