@@ -151,9 +151,11 @@ export class MultiPassAgent extends MinimalReactAgent {
         });
 
         const parsed = this.parseHypothesisResponse(response.text, i);
-        if (parsed) {
+        if (parsed && parsed.id && parsed.rootCause) {
           hypotheses.push(parsed);
           console.log(`  → Hypothesis ${i + 1}: ${parsed.rootCause.substring(0, 80)}...`);
+        } else {
+          console.warn(`⚠️ Skipping malformed hypothesis ${i + 1}`);
         }
       } catch (error) {
         console.warn(`⚠️ Failed to generate hypothesis ${i + 1}:`, error);
@@ -288,10 +290,12 @@ OUTPUT ONLY VALID JSON:`;
           toolsUsed: evidenceResult.toolsUsed || [],
         });
 
-        console.log(`  → Hypothesis ${hypothesis.id}: confidence ${((hypothesis.confidence + evidenceScore) / 2 * 100).toFixed(0)}%`);
+        const hypothesisId = hypothesis?.id || 'unknown';
+        console.log(`  → Hypothesis ${hypothesisId}: confidence ${((hypothesis.confidence + evidenceScore) / 2 * 100).toFixed(0)}%`);
 
       } catch (error) {
-        console.warn(`⚠️ Failed to validate hypothesis ${hypothesis.id}:`, error);
+        const hypothesisId = hypothesis?.id || 'unknown';
+        console.warn(`⚠️ Failed to validate hypothesis ${hypothesisId}:`, error);
         validatedHypotheses.push(hypothesis);
       }
     }
@@ -375,6 +379,19 @@ OUTPUT ONLY VALID JSON:`;
    * Select best hypothesis based on confidence and evidence
    */
   private selectBestHypothesis(hypotheses: Hypothesis[]): RCAResult {
+    // Handle empty hypotheses
+    if (!hypotheses || hypotheses.length === 0) {
+      console.warn('⚠️ No hypotheses available to select from');
+      return {
+        error: '',
+        rootCause: 'Unable to generate hypotheses for analysis',
+        fixGuidelines: ['Review error logs manually', 'Check for similar issues in documentation'],
+        confidence: 0,
+        toolsUsed: [],
+        codeContext: 'No hypotheses were generated',
+      };
+    }
+
     // Sort by confidence
     const sorted = [...hypotheses].sort((a, b) => b.confidence - a.confidence);
     const best = sorted[0];
@@ -387,7 +404,7 @@ OUTPUT ONLY VALID JSON:`;
       fixGuidelines: best.fixGuidelines,
       confidence: best.confidence,
       toolsUsed: best.toolsUsed,
-      codeContext: `Evidence: ${best.evidence.join('; ')}\nContradictions: ${best.contradictions.join('; ') || 'None'}`,
+      codeContext: `Evidence: ${best.evidence?.join('; ') || 'None'}\nContradictions: ${best.contradictions?.join('; ') || 'None'}`,
     };
   }
 

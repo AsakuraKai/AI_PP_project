@@ -51,17 +51,17 @@ export interface ConversationContext {
     file: string;
     line: number;
   };
-  
+
   // Files the conversation is about
   relevantFiles: string[];
-  
+
   // Whether a fix has been suggested/applied
   fixStatus?: {
     suggested: boolean;
     applied: boolean;
     fixDescription?: string;
   };
-  
+
   // User's stated preferences during conversation
   userPreferences?: {
     explanationLevel?: 'beginner' | 'intermediate' | 'expert';
@@ -86,14 +86,14 @@ export class ConversationalAgent {
   private context: vscode.ExtensionContext;
   private llmClient?: OllamaClient;
   private readonly maxHistoryLength = 20; // Keep last 20 messages
-  
+
   constructor(analysisService?: AnalysisService, context?: vscode.ExtensionContext) {
     this.analysisService = analysisService || AnalysisService.getInstance();
     this.promptEngine = new ChatPromptEngine();
     this.context = context!; // Will be set if provided
     this.initializeLLM();
   }
-  
+
   /**
    * Initialize Ollama LLM client for conversational responses
    */
@@ -102,20 +102,20 @@ export class ConversationalAgent {
       const config = vscode.workspace.getConfiguration('rcaAgent');
       const ollamaUrl = config.get<string>('ollamaUrl', 'http://localhost:11434');
       const model = config.get<string>('model', 'deepseek-r1');
-      
+
       this.llmClient = new OllamaClient({ baseUrl: ollamaUrl, model });
       console.log('[ConversationalAgent] LLM client initialized');
     } catch (error) {
       console.error('[ConversationalAgent] Failed to initialize LLM:', error);
     }
   }
-  
+
   /**
    * Start a new conversation session
    */
   startNewSession(context?: Partial<ConversationContext>): string {
     const sessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
+
     const session: ConversationSession = {
       id: sessionId,
       startTime: Date.now(),
@@ -126,13 +126,13 @@ export class ConversationalAgent {
       },
       lastUpdated: Date.now()
     };
-    
+
     this.sessions.set(sessionId, session);
     this.currentSessionId = sessionId;
-    
+
     return sessionId;
   }
-  
+
   /**
    * Resume an existing conversation session
    */
@@ -143,7 +143,7 @@ export class ConversationalAgent {
     }
     return false;
   }
-  
+
   /**
    * Get current active session
    */
@@ -151,7 +151,7 @@ export class ConversationalAgent {
     if (!this.currentSessionId) return null;
     return this.sessions.get(this.currentSessionId) || null;
   }
-  
+
   /**
    * Main chat method - handles user messages and generates responses
    * 
@@ -169,7 +169,7 @@ export class ConversationalAgent {
       const sessionId = this.startNewSession();
       session = this.sessions.get(sessionId)!;
     }
-    
+
     // Add user message to history
     const userMessage: ChatMessage = {
       role: 'user',
@@ -177,10 +177,10 @@ export class ConversationalAgent {
       timestamp: Date.now()
     };
     session.messages.push(userMessage);
-    
+
     // Detect if this is a follow-up question
     const isFollowUp = this.isFollowUpQuestion(message, session);
-    
+
     // Build context-aware prompt
     const prompt = this.buildContextualPrompt(
       message,
@@ -188,10 +188,10 @@ export class ConversationalAgent {
       isFollowUp,
       additionalContext
     );
-    
+
     // Generate response using LLM with history
     const response = await this.generateResponse(prompt, session);
-    
+
     // Add assistant response to history
     const assistantMessage: ChatMessage = {
       role: 'assistant',
@@ -199,20 +199,20 @@ export class ConversationalAgent {
       timestamp: Date.now()
     };
     session.messages.push(assistantMessage);
-    
+
     // Update session
     session.lastUpdated = Date.now();
     this.trimHistoryIfNeeded(session);
-    
+
     return response;
   }
-  
+
   /**
    * Detect if message is a follow-up question based on context
    */
   private isFollowUpQuestion(message: string, session: ConversationSession): boolean {
     const lowerMessage = message.toLowerCase();
-    
+
     // Check for explicit follow-up indicators
     const followUpIndicators = [
       'why',
@@ -229,15 +229,15 @@ export class ConversationalAgent {
       'the error',
       'the fix'
     ];
-    
+
     // Has indicators AND previous messages exist
     if (session.messages.length > 0) {
       return followUpIndicators.some(indicator => lowerMessage.includes(indicator));
     }
-    
+
     return false;
   }
-  
+
   /**
    * Build a context-aware prompt that includes conversation history
    */
@@ -248,23 +248,23 @@ export class ConversationalAgent {
     additionalContext?: any
   ): string {
     let prompt = '';
-    
+
     // System prompt
     prompt += this.getSystemPrompt(session.context);
     prompt += '\n\n';
-    
+
     // Conversation history (last N messages for context)
     if (session.messages.length > 1) {
       prompt += '=== Conversation History ===\n';
-      
+
       const recentMessages = session.messages.slice(-6); // Last 6 messages
       for (const msg of recentMessages) {
         prompt += `${msg.role.toUpperCase()}: ${msg.content}\n`;
       }
-      
+
       prompt += '\n';
     }
-    
+
     // Current context
     if (session.context.currentError) {
       prompt += '=== Current Error Context ===\n';
@@ -272,7 +272,7 @@ export class ConversationalAgent {
       prompt += `Line: ${session.context.currentError.line}\n`;
       prompt += `Error: ${session.context.currentError.message}\n\n`;
     }
-    
+
     // Fix status
     if (session.context.fixStatus) {
       prompt += '=== Fix Status ===\n';
@@ -283,20 +283,20 @@ export class ConversationalAgent {
       }
       prompt += '\n';
     }
-    
+
     // Current user message
     if (isFollowUp) {
       prompt += `=== Follow-up Question ===\n`;
       prompt += `The user is asking a follow-up question about the previous discussion.\n`;
       prompt += `Make sure your answer relates to the context above.\n\n`;
     }
-    
+
     prompt += `USER: ${currentMessage}\n\n`;
     prompt += `ASSISTANT: `;
-    
+
     return prompt;
   }
-  
+
   /**
    * Get system prompt based on conversation context
    */
@@ -316,21 +316,21 @@ RESPONSE STYLE:
 - Clear and concise explanations
 - Use markdown formatting (headings, code blocks, lists)
 - Break down complex topics into simple steps`;
-    
+
     // Add context-specific instructions
     if (context.userPreferences?.explanationLevel === 'beginner') {
       prompt += '\n\nUSER PREFERENCE: Explain in simple terms (beginner level)';
     } else if (context.userPreferences?.explanationLevel === 'expert') {
       prompt += '\n\nUSER PREFERENCE: Provide detailed technical information (expert level)';
     }
-    
+
     if (context.fixStatus?.suggested && !context.fixStatus?.applied) {
       prompt += '\n\nNOTE: A fix has been suggested but not yet applied. User may be asking about the fix.';
     }
-    
+
     return prompt;
   }
-  
+
   /**
    * Generate response using LLM with full conversation context
    */
@@ -347,7 +347,7 @@ RESPONSE STYLE:
       return `I encountered an error processing your message: ${error.message}. Please try again.`;
     }
   }
-  
+
   /**
    * Trim conversation history if it exceeds max length
    */
@@ -360,7 +360,7 @@ RESPONSE STYLE:
       session.messages = [firstMessage, ...recentMessages];
     }
   }
-  
+
   /**
    * Update conversation context (e.g., when error changes or fix is applied)
    */
@@ -373,14 +373,14 @@ RESPONSE STYLE:
       };
     }
   }
-  
+
   /**
    * Get all active sessions
    */
   getAllSessions(): ConversationSession[] {
     return Array.from(this.sessions.values());
   }
-  
+
   /**
    * Clear old sessions (cleanup)
    */
@@ -392,47 +392,47 @@ RESPONSE STYLE:
       }
     }
   }
-  
+
   /**
    * Export conversation to markdown for sharing/documentation
    */
   exportToMarkdown(sessionId?: string): string {
-    const session = sessionId 
+    const session = sessionId
       ? this.sessions.get(sessionId)
       : this.getCurrentSession();
-      
+
     if (!session) {
       return '# No conversation found';
     }
-    
+
     let markdown = `# RCA Agent Conversation\n\n`;
     markdown += `**Session ID:** ${session.id}\n`;
     markdown += `**Start Time:** ${new Date(session.startTime).toLocaleString()}\n`;
     markdown += `**Duration:** ${Math.round((session.lastUpdated - session.startTime) / 1000 / 60)} minutes\n\n`;
-    
+
     if (session.context.currentError) {
       markdown += `## Context\n\n`;
       markdown += `**Error:** ${session.context.currentError.message}\n`;
       markdown += `**File:** ${session.context.currentError.file}:${session.context.currentError.line}\n\n`;
     }
-    
+
     markdown += `## Conversation\n\n`;
-    
+
     for (const message of session.messages) {
       if (message.role === 'user') {
         markdown += `### 👤 User\n\n`;
       } else {
         markdown += `### 🤖 RCA Agent\n\n`;
       }
-      
+
       markdown += `${message.content}\n\n`;
       markdown += `*${new Date(message.timestamp).toLocaleTimeString()}*\n\n`;
       markdown += `---\n\n`;
     }
-    
+
     return markdown;
   }
-  
+
   /**
    * Load sessions from persisted storage (for persistence across restarts)
    */
@@ -441,32 +441,32 @@ RESPONSE STYLE:
     if (!sessionsData && this.context) {
       sessionsData = this.context.globalState.get('conversationSessions', []);
     }
-    
+
     if (!Array.isArray(sessionsData)) {
       return;
     }
-    
+
     for (const sessionData of sessionsData) {
       if (sessionData && sessionData.id) {
         this.sessions.set(sessionData.id, sessionData as ConversationSession);
       }
     }
   }
-  
+
   /**
    * Get current session ID
    */
   getCurrentSessionId(): string | null {
     return this.currentSessionId;
   }
-  
+
   /**
    * Get all sessions (for persistence)
    */
   getSessions(): ConversationSession[] {
     return Array.from(this.sessions.values());
   }
-  
+
   /**
    * Clear all sessions
    */

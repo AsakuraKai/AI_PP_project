@@ -73,7 +73,7 @@ export function useFixManager() {
   }, [postMessage]);
   
   const applyFix = useCallback((fixId: string) => {
-    postMessage('applyFix', { fixId });
+    postMessage('applyFixById', { fixId });
   }, [postMessage]);
   
   const rejectFix = useCallback((fixId: string) => {

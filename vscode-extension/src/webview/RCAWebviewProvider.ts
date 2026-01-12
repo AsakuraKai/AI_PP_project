@@ -65,6 +65,7 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
         this._sendInitialState();
 
         // Send initial error queue data (non-blocking)
+        console.log('[RCAWebviewProvider] Webview resolved, sending initial data...');
         this._handleGetErrorQueue();
         this._handleGetDashboardData();
     }
@@ -249,9 +250,12 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
                 }
             );
 
+            // Transform backend result to webview-compatible format
+            const webviewResult = this._normalizeResultForWebview(result);
+
             this._sendMessage({
                 command: 'analysisComplete',
-                result: result
+                result: webviewResult
             });
         } catch (error: any) {
             this._sendMessage({
@@ -339,7 +343,7 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
         try {
             // Stop the analysis service
             this.analysisService.stopAnalysis();
-            
+
             // Notify the webview that analysis was cancelled
             this._sendMessage({
                 command: 'analysisCancelled',
@@ -442,12 +446,14 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     private async _handleGetErrorQueue() {
         try {
             const errors = this.errorQueueManager.getAllErrors();
+            console.log(`[RCAWebviewProvider] Sending errorQueueData with ${errors.length} errors to webview`);
+            console.log(`[RCAWebviewProvider] Sample errors:`, errors.slice(0, 2).map(e => ({ id: e.id, message: e.message.substring(0, 30), file: e.filePath })));
             this._sendMessage({
                 command: 'errorQueueData',
                 errors: errors
             });
         } catch (error: any) {
-            console.error('Failed to get error queue:', error);
+            console.error('[RCAWebviewProvider] Failed to get error queue:', error);
         }
     }
 
@@ -547,28 +553,8 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     }
 
     private async _handleOpenErrorLocation(errorId: string) {
-        try {
-            const errors = this.errorQueueManager.getAllErrors();
-            const error = errors.find(e => e.id === errorId);
-
-            if (!error) {
-                throw new Error('Error not found');
-            }
-
-            // Open the file at the error location
-            const doc = await vscode.workspace.openTextDocument(error.filePath);
-            const editor = await vscode.window.showTextDocument(doc);
-
-            // Move cursor to error line
-            const position = new vscode.Position(error.line - 1, error.column || 0);
-            editor.selection = new vscode.Selection(position, position);
-            editor.revealRange(
-                new vscode.Range(position, position),
-                vscode.TextEditorRevealType.InCenter
-            );
-        } catch (error: any) {
-            vscode.window.showErrorMessage(`Failed to open error location: ${error.message}`);
-        }
+        // Use existing ErrorQueueManager method which handles file resolution
+        await this.errorQueueManager.openErrorLocation(errorId);
     }
 
     // ============================================================================
@@ -641,6 +627,8 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
 
     private _handleErrorQueueChanged() {
         // Notify webview of queue changes
+        const errorCount = this.errorQueueManager.getErrorCount();
+        console.log(`[RCAWebviewProvider] Error queue changed, sending ${errorCount} errors to webview`);
         this._handleGetErrorQueue();
         this._handleGetDashboardData();
     }
@@ -1423,7 +1411,10 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
 
     private _sendMessage(message: any) {
         if (this._view) {
+            console.log('[RCAWebviewProvider] Sending message to webview:', message.command, message);
             this._view.webview.postMessage(message);
+        } else {
+            console.warn('[RCAWebviewProvider] Cannot send message - webview not available:', message.command);
         }
     }
 
@@ -1468,5 +1459,27 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
         );
 
         return html;
+    }
+
+    /**
+     * Normalize backend RCAResult to webview-compatible format
+     * Ensures all expected properties exist to avoid runtime errors
+     */
+    private _normalizeResultForWebview(result: import('../../../src/types').RCAResult): any {
+        return {
+            ...result,
+            // Map fixGuidelines to fixes array if not already present
+            fixes: result.codeFix ? [{
+                id: 'fix-1',
+                filePath: result.codeFix.filePath,
+                description: result.codeFix.explanation || 'Apply suggested fix',
+                diff: result.codeFix.diff || '',
+                confidence: result.confidence
+            }] : [],
+            // Extract hypothesis from rootCause if not present
+            hypothesis: result.rootCause || 'No hypothesis available',
+            // Map fixGuidelines to reasoning steps if not present
+            reasoning: result.fixGuidelines || []
+        };
     }
 }
