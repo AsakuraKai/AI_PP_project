@@ -13,29 +13,29 @@
 - Ensure ToolOrchestrator selects tools correctly
 
 ## Tool Status
-| Tool Name | File Found | Implemented | Interface Valid | Registered | Notes |
-|-----------|------------|-------------|-----------------|------------|-------|
-| **Backend Tools** |
-| ReadFileTool | ✅ | ✅ | ✅ | ✅ | Registered in MinimalReactAgent |
-| VersionLookupTool | ✅ | ✅ | ✅ | ✅ | Registered in MinimalReactAgent |
-| LSPTool | ✅ | ✅ | ✅ | ✅ | Registered in MinimalReactAgent |
-| SemanticCodeSearchTool | ✅ | ✅ | ✅ | ⏳ | Advanced tool, not yet registered |
-| DependencyGraphTool | ✅ | ✅ | ✅ | ⏳ | Advanced tool, not yet registered |
-| HistoricalPatternTool | ✅ | ✅ | ✅ | ⏳ | Advanced tool, not yet registered |
-| AndroidBuildTool | ✅ | ✅ | N/A | N/A | Helper utility, not a direct tool |
-| AndroidDocsSearchTool | ✅ | ✅ | N/A | N/A | Helper utility, used internally |
-| ManifestAnalyzerTool | ✅ | ✅ | N/A | N/A | Helper utility, used internally |
-| **Extension Tools** |
-| ReadFileTool | ✅ | ✅ | ✅ | ✅ | |
-| WriteFileTool | ✅ | ✅ | ✅ | ✅ | |
-| EditFileTool | ✅ | ✅ | ✅ | ✅ | |
-| DeleteFileTool | ✅ | ✅ | ✅ | ✅ | |
-| FindFilesTool | ✅ | ✅ | ✅ | ✅ | |
-| SearchInFilesTool | ✅ | ✅ | ✅ | ✅ | |
-| GetWorkspaceInfoTool | ✅ | ✅ | ✅ | ✅ | |
-| DetectGradleFilesTool | ✅ | ✅ | ✅ | ✅ | |
-| TerminalTool | ✅ | ✅ | ✅ | ✅ | |
-| GradleCommandHelper | ✅ | ✅ | ✅ | ✅ | |
+| Tool Name              | File Found | Implemented | Interface Valid | Registered | Notes                             |
+| ---------------------- | ---------- | ----------- | --------------- | ---------- | --------------------------------- |
+| **Backend Tools**      |
+| ReadFileTool           | ✅          | ✅           | ✅               | ✅          | Registered in MinimalReactAgent   |
+| VersionLookupTool      | ✅          | ✅           | ✅               | ✅          | Registered in MinimalReactAgent   |
+| LSPTool                | ✅          | ✅           | ✅               | ✅          | Registered in MinimalReactAgent   |
+| SemanticCodeSearchTool | ✅          | ✅           | ✅               | ⏳          | Advanced tool, not yet registered |
+| DependencyGraphTool    | ✅          | ✅           | ✅               | ⏳          | Advanced tool, not yet registered |
+| HistoricalPatternTool  | ✅          | ✅           | ✅               | ⏳          | Advanced tool, not yet registered |
+| AndroidBuildTool       | ✅          | ✅           | N/A             | N/A        | Helper utility, not a direct tool |
+| AndroidDocsSearchTool  | ✅          | ✅           | N/A             | N/A        | Helper utility, used internally   |
+| ManifestAnalyzerTool   | ✅          | ✅           | N/A             | N/A        | Helper utility, used internally   |
+| **Extension Tools**    |
+| ReadFileTool           | ✅          | ✅           | ✅               | ✅          |                                   |
+| WriteFileTool          | ✅          | ✅           | ✅               | ✅          |                                   |
+| EditFileTool           | ✅          | ✅           | ✅               | ✅          |                                   |
+| DeleteFileTool         | ✅          | ✅           | ✅               | ✅          |                                   |
+| FindFilesTool          | ✅          | ✅           | ✅               | ✅          |                                   |
+| SearchInFilesTool      | ✅          | ✅           | ✅               | ✅          |                                   |
+| GetWorkspaceInfoTool   | ✅          | ✅           | ✅               | ✅          |                                   |
+| DetectGradleFilesTool  | ✅          | ✅           | ✅               | ✅          |                                   |
+| TerminalTool           | ✅          | ✅           | ✅               | ✅          |                                   |
+| GradleCommandHelper    | ✅          | ✅           | ✅               | ✅          |                                   |
 
 ## Progress Log
 
