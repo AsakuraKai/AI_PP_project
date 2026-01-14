@@ -90,7 +90,7 @@ export class ManifestAnalyzerTool {
       // Pattern for "Attribute application@allowBackup value=..."
       const atAttributeMatch = output.match(/Attribute\s+\w+@(\w+)\s+value=/i);
       
-      let metadata: any = {};
+      const metadata: any = {};
       
       if (attributeMatch) {
         metadata.conflictType = 'attribute';

@@ -22,6 +22,10 @@ import { OllamaClient } from '../src/llm/OllamaClient';
 import { ErrorParser } from '../src/utils/ErrorParser';
 import { MinimalReactAgent } from '../src/agent/MinimalReactAgent';
 import { getTestById } from '../tests/fixtures/performance-test-dataset';
+import { testDataset } from '../tests/fixtures/test-dataset';
+import { androidTestDataset } from '../tests/fixtures/android-test-dataset';
+import { PERFORMANCE_TEST_CASES } from '../tests/fixtures/performance-test-dataset';
+import { extendedTestDataset } from '../tests/fixtures/extended-test-dataset';
 
 // ========================================
 // VALIDATION TESTS
@@ -36,7 +40,7 @@ interface ValidationResult {
 
 async function validateOllamaServer(): Promise<ValidationResult> {
   const startTime = Date.now();
-  
+
   try {
     const client = new OllamaClient({
       baseUrl: 'http://localhost:11434',
@@ -46,7 +50,7 @@ async function validateOllamaServer(): Promise<ValidationResult> {
 
     // Test basic connectivity
     await client.generate('Test', { maxTokens: 10 });
-    
+
     return {
       test: 'Ollama Server Connectivity',
       status: 'pass',
@@ -65,7 +69,7 @@ async function validateOllamaServer(): Promise<ValidationResult> {
 
 async function validateErrorParser(): Promise<ValidationResult> {
   const startTime = Date.now();
-  
+
   try {
     const testError = `
 kotlin.UninitializedPropertyAccessException: lateinit property viewModel has not been initialized
@@ -102,22 +106,36 @@ kotlin.UninitializedPropertyAccessException: lateinit property viewModel has not
 
 async function validateTestDataset(): Promise<ValidationResult> {
   const startTime = Date.now();
-  
+
   try {
+    // Load all datasets
+    const kotlinCount = testDataset.length;
+    const androidCount = androidTestDataset.length;
+    const performanceCount = PERFORMANCE_TEST_CASES.length;
+    const extendedCount = extendedTestDataset.length;
+    const totalCount = kotlinCount + androidCount + performanceCount + extendedCount;
+
+    // Verify a sample test case loads correctly
     const testCase = getTestById('KT-001');
-    
     if (!testCase) {
       throw new Error('Test case KT-001 not found in dataset');
     }
-
     if (!testCase.error || testCase.error.length === 0) {
       throw new Error('Test case has empty error string');
     }
 
+    // Print detailed stats
+    console.log('\n   📦 Dataset Statistics:');
+    console.log(`      Kotlin:      ${kotlinCount} cases`);
+    console.log(`      Android:     ${androidCount} cases`);
+    console.log(`      Performance: ${performanceCount} cases`);
+    console.log(`      Extended:    ${extendedCount} cases`);
+    console.log(`      Total:       ${totalCount} cases\n`);
+
     return {
       test: 'Test Dataset',
       status: 'pass',
-      message: `Test dataset loaded successfully (found KT-001: ${testCase.name})`,
+      message: `All datasets loaded successfully (${totalCount} total test cases)`,
       duration: Date.now() - startTime,
     };
   } catch (error) {
@@ -132,7 +150,7 @@ async function validateTestDataset(): Promise<ValidationResult> {
 
 async function validateAgentAnalysis(): Promise<ValidationResult> {
   const startTime = Date.now();
-  
+
   try {
     // Get simple test case
     const testCase = getTestById('KT-001');
@@ -143,7 +161,7 @@ async function validateAgentAnalysis(): Promise<ValidationResult> {
     // Parse error
     const parser = ErrorParser.getInstance();
     const parsedError = parser.parse(testCase.error);
-    
+
     if (!parsedError) {
       throw new Error('Failed to parse test error');
     }
@@ -194,7 +212,7 @@ async function validateAgentAnalysis(): Promise<ValidationResult> {
 async function main(): Promise<void> {
   console.log('\n[SEARCH] Validating Performance Testing Setup\n');
   console.log('='.repeat(80));
-  
+
   const results: ValidationResult[] = [];
 
   // Test 1: Ollama Server
@@ -252,7 +270,7 @@ async function main(): Promise<void> {
 function printResult(result: ValidationResult): void {
   const icon = result.status === 'pass' ? '[OK]' : '[X]';
   const durationStr = result.duration ? ` (${(result.duration / 1000).toFixed(2)}s)` : '';
-  
+
   console.log(`   ${icon} ${result.test}${durationStr}`);
   console.log(`      ${result.message}`);
 }

@@ -86,7 +86,7 @@ describe('EducationalAgent', () => {
       // Check structure of learning notes
       expect(result.learningNotes![0]).toContain('🎓 **What is this error?**');
       expect(result.learningNotes![1]).toContain('[SEARCH] **Why did this happen?**');
-      expect(result.learningNotes![2]).toContain('[PREVENT] **How to prevent this:**');
+      expect(result.learningNotes![2]).toContain('[SHIELD] **How to prevent this:**');
     });
 
     it('should include beginner-friendly explanations', async () => {
