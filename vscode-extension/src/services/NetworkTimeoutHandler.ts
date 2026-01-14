@@ -38,7 +38,8 @@ export class NetworkTimeoutHandler extends BaseService {
   private loadTimeoutConfig(): TimeoutConfig {
     return {
       connectionTimeout: this.getConfig<number>('connectionTimeout', 5000),
-      analysisTimeout: this.getConfig<number>('analysisTimeout', 30000),
+      // LLM responses regularly exceed 30s; give a higher default while remaining user-configurable
+      analysisTimeout: this.getConfig<number>('analysisTimeout', 90000),
       totalTimeout: this.getConfig<number>('totalTimeout', 180000),
       retryAttempts: this.getConfig<number>('retryAttempts', 3),
       retryDelay: this.getConfig<number>('retryDelay', 1000),

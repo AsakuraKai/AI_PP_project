@@ -234,6 +234,7 @@ export class AnalysisService {
       startTime: Date.now(),
       cancelToken: cancelTokenSource
     };
+    const operationId = `analysis-${error.id}`;
 
     try {
       // Check Ollama connection first
@@ -268,8 +269,21 @@ export class AnalysisService {
         };
       }
 
+      // Final fallback: if parsing still failed, construct a minimal parsed error so analysis can proceed.
       if (!parsed) {
-        throw new Error(`Failed to parse error message: ${error.message.substring(0, 100)}`);
+        parsed = {
+          type: error.type || 'runtime',
+          message: error.message,
+          filePath: error.filePath,
+          line: error.line,
+          language: this._detectLanguage(error.filePath) || 'typescript',
+          column: error.column,
+          stackTrace: [],
+          metadata: {
+            fallback: true
+          }
+        };
+        console.warn('[AnalysisService] Using minimal fallback parser for unrecognized error message');
       }
 
       // Set up AgentStateStream event listeners for real-time progress
@@ -342,21 +356,36 @@ export class AnalysisService {
         });
       });
 
-      // Run MultiPassAgent analysis with timeout protection
-      const analysisResult = await this._timeoutHandler.executeWithTimeout(
-        `analysis-${error.id}`,
+      // Run MultiPassAgent analysis with timeout protection (configurable via rcaAgent.network settings)
+      const analysisResult = await this._timeoutHandler.executeAnalysis(
+        operationId,
         async () => {
           return await Promise.race([
             this._agent!.analyze(parsed) as Promise<any>,
             cancelPromise
           ]);
         },
-        30000, // 30s timeout
-        3      // 3 retries
+        (status) => {
+          // Surface timeout warnings as progress updates so the UI reflects why we stopped
+          onProgress({
+            iteration: currentIteration,
+            maxIterations,
+            progress: (currentIteration / maxIterations) * 100,
+            currentThought: status,
+            recentActions: [],
+            recentObservations: [],
+            elapsed: Date.now() - startTime,
+            isActive: true
+          });
+        }
       );
 
       if (analysisResult.timedOut) {
-        throw new Error('Analysis timed out after 30 seconds');
+        const message = this._timeoutHandler.getTimeoutErrorMessage(
+          analysisResult.error || new Error('Analysis timed out'),
+          'run'
+        );
+        throw new Error(message);
       }
 
       if (!analysisResult.success) {
@@ -447,6 +476,7 @@ export class AnalysisService {
   stopAnalysis(): void {
     if (this._currentAnalysis) {
       console.log('[AnalysisService] Stopping analysis:', this._currentAnalysis.errorId);
+      this._timeoutHandler.cancelOperation(`analysis-${this._currentAnalysis.errorId}`);
       this._currentAnalysis.cancelToken.cancel();
       this._currentAnalysis = undefined;
     }
