@@ -78,7 +78,7 @@ export class TestRunnerCore {
    * Initialize LLM and agent
    */
   async initialize(): Promise<void> {
-    console.log('🤖 Initializing Ollama LLM...');
+    console.log('[INIT] Initializing Ollama LLM...');
     this.llmClient = new OllamaClient({
       model: this.config.model!,
       temperature: this.config.temperature,
@@ -96,25 +96,25 @@ export class TestRunnerCore {
     // Initialize tools
     console.log('[BUILD]  Initializing tools...');
     const toolRegistry = ToolRegistry.getInstance();
-    
+
     // Register ReadFileTool
     toolRegistry.register(
       'read_file',
       new ReadFileTool(),
       z.object({ filePath: z.string(), line: z.number(), contextLines: z.number().optional() })
     );
-    
+
     // Register VersionLookupTool
     toolRegistry.register(
       'version_lookup',
       new VersionLookupTool(),
       z.object({ tool: z.enum(['agp', 'kotlin', 'gradle']), queryType: z.enum(['exists', 'latest-stable', 'latest-any', 'compatible', 'suggest']), version: z.string().optional() })
     );
-    
+
     console.log('   [OK] Tools registered');
 
     // Initialize agent
-    console.log('🤖 Initializing RCA Agent...');
+    console.log('[INIT] Initializing RCA Agent...');
     this.agent = new MinimalReactAgent(this.llmClient, {
       maxIterations: this.config.maxIterations,
       tools: toolRegistry,

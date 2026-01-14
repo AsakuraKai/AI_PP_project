@@ -1,4 +1,4 @@
-# RCA Agent - User Guide
+﻿# RCA Agent - User Guide
 
 **Version:** 2.0.0  
 **Last Updated:** December 27, 2025
@@ -385,7 +385,7 @@ Have an idea? We'd love to hear it!
 - [TARGET] Error queue with auto-detection
 - [METRICS] Real-time analysis progress
 - TIP: Lightbulb quick actions
-- ⌨️ Complete keyboard navigation
+- [KEYBOARD] Complete keyboard navigation
 - [COMPOSE] Theme support (dark/light/high-contrast)
 -  Full accessibility (WCAG 2.1 AA)
 - ^ Performance monitoring

@@ -71,7 +71,7 @@ async function runBatchTests(config: BatchConfig = {}): Promise<void> {
   for (const test of testsToRun) {
     try {
       console.log(`\n${'='.repeat(80)}`);
-      console.log(`▶ Starting Test ${test.id}: ${test.name}`);
+      console.log(`[START] Starting Test ${test.id}: ${test.name}`);
       console.log('='.repeat(80));
 
       await test.fn();

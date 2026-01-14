@@ -1,19 +1,19 @@
-# Project Status - December 31, 2025 ✅
+﻿# Project Status - December 31, 2025 [DONE]
 
-**Current Phase:** ✅ **PHASES 2-5 COMPLETE & PRODUCTION READY**  
-**Status:** ✅ Ready for Immediate Deployment with Continuous Learning  
+**Current Phase:** [DONE] **PHASES 2-5 COMPLETE & PRODUCTION READY**  
+**Status:** [DONE] Ready for Immediate Deployment with Continuous Learning  
 **Quality Achievement:** 80-94% (exceeded 65-70% target by +15-24%)  
 **Latest Validation:** December 31, 2025, 19:00 UTC (FINAL)  
-**ChromaDB Status:** ✅ Fully populated with 74 examples  
-**Learning System:** ✅ Fully operational with adaptive improvements
+**ChromaDB Status:** [DONE] Fully populated with 74 examples  
+**Learning System:** [DONE] Fully operational with adaptive improvements
 
 ---
 
-## ✅ Phase 3–5 Implementation Status (COMPLETED)
+## [DONE] Phase 3–5 Implementation Status (COMPLETED)
 
 This repo now includes the complete Phase 3 (Progressive Prompting), Phase 4 (Custom Modelfile), and Phase 5 (Continuous Learning) implementations.
 
-### ✅ Phase 3: Progressive Prompting (Implemented)
+### [DONE] Phase 3: Progressive Prompting (Implemented)
 
 **Goal:** Faster responses for simple errors by attempting a lightweight, one-shot conclusion before falling back to the full ReAct loop.
 
@@ -44,7 +44,7 @@ const agent = new MinimalReactAgent(llm, {
 
 ---
 
-### ✅ Phase 4: Custom Modelfile (Added)
+### [DONE] Phase 4: Custom Modelfile (Added)
 
 **Goal:** Bake strict JSON/system rules into an Ollama custom model to reduce prompt-token overhead and improve consistency.
 
@@ -68,7 +68,7 @@ The runtime `OllamaClient` now supports `AI_PP_OLLAMA_MODEL` / `OLLAMA_MODEL` ov
 
 ---
 
-### ✅ Phase 5: Continuous Learning & Model Adaptation (Implemented)
+### [DONE] Phase 5: Continuous Learning & Model Adaptation (Implemented)
 
 **Goal:** Automatically improve RCA quality over time through adaptive learning, pattern recognition, and fine-tuning preparation.
 
@@ -161,37 +161,37 @@ const productionConfig = {
 
 ---
 
-## 🎉 PHASE 5 COMPLETION SUMMARY
+## [SUCCESS] PHASE 5 COMPLETION SUMMARY
 
-**Phase 5 Implementation:** ✅ COMPLETE (December 31, 2025)  
-**Status:** ✅ PRODUCTION READY  
+**Phase 5 Implementation:** [DONE] COMPLETE (December 31, 2025)  
+**Status:** [DONE] PRODUCTION READY  
 **Components Added:** 3 new files, 1,688 lines of code  
 **Capability:** Continuous learning with adaptive improvements
 
-### Phase 5 Components Operational ✅
+### Phase 5 Components Operational [DONE]
 
-1. **AdaptiveLearning** (465 lines) - ✅ Pattern recognition & adaptation
+1. **AdaptiveLearning** (465 lines) - [DONE] Pattern recognition & adaptation
    - Groups RCAs by error type
    - Calculates success rates and confidence thresholds
    - Generates 3 types of adaptation strategies (confidence adjustment, pattern reinforcement, example curation)
    - Tracks learning metrics over time
    - **Output:** 8+ error patterns, 12+ strategies per run
 
-2. **LearningPipeline** (574 lines) - ✅ Automated training data curation
+2. **LearningPipeline** (574 lines) - [DONE] Automated training data curation
    - 4-stage workflow: Collect → Analyze → Curate → Validate
    - Filters high-quality RCAs (≥0.7 quality, user validated)
    - Balances error type distribution (max 50 per type)
    - Exports in JSON/JSONL formats
    - **Output:** 127+ training examples per run
 
-3. **ModelAdapter** (649 lines) - ✅ Fine-tuning data preparation
+3. **ModelAdapter** (649 lines) - [DONE] Fine-tuning data preparation
    - Supports 4 formats: Ollama, OpenAI, Anthropic, Generic
    - Auto-splits datasets: 80% train, 10% validation, 10% test
    - Generates custom Ollama Modelfiles
    - Validates dataset quality
    - **Output:** Ready-to-use training datasets
 
-### Key Features ✅
+### Key Features [DONE]
 
 - **Adaptive Pattern Recognition**: Identifies error types needing attention
 - **Quality-Gated Curation**: Only validated, high-quality examples used
@@ -200,7 +200,7 @@ const productionConfig = {
 - **Strategy Generation**: Prioritized improvement actions based on data
 - **Learning Metrics**: Success rate trends, top improvements, areas needing attention
 
-### Production Configuration ✅
+### Production Configuration [DONE]
 
 ```typescript
 const productionConfig = {
@@ -223,7 +223,7 @@ const productionConfig = {
 };
 ```
 
-### Usage Example ✅
+### Usage Example [DONE]
 
 ```typescript
 // Complete learning cycle
@@ -240,7 +240,7 @@ const dataset = adapter.exportDataset(adapter.convertExamples(examples));
 // Output: train.jsonl, validation.jsonl, test.jsonl
 ```
 
-### Expected Impact ✅
+### Expected Impact [DONE]
 
 - **Automatic Improvement**: System learns from feedback without manual intervention
 - **Quality Growth**: 127+ training examples from 74 validated RCAs
@@ -251,54 +251,54 @@ const dataset = adapter.exportDataset(adapter.convertExamples(examples));
 
 ---
 
-## 🎉 PHASE 2 COMPLETION SUMMARY
+## [SUCCESS] PHASE 2 COMPLETION SUMMARY
 
-**Phase 2 Implementation:** ✅ COMPLETE (4 hours)  
-**Phase 2 Validation:** ✅ PASSED (1 hour)  
-**ChromaDB Population:** ✅ COMPLETE (74 examples)  
+**Phase 2 Implementation:** [DONE] COMPLETE (4 hours)  
+**Phase 2 Validation:** [DONE] PASSED (1 hour)  
+**ChromaDB Population:** [DONE] COMPLETE (74 examples)  
 **Components Added:** 6 new files, 2,180 lines of code  
 **Quality Improvement:** +30-44% over Phase 1 baseline
 
-### Test Results - ALL PASSED ✅ (FINAL)
+### Test Results - ALL PASSED [DONE] (FINAL)
 
 | Test | Duration | Quality Score | Status |
 |------|----------|---------------|--------|
-| **Multi-Pass Reasoning** | 21.8s | **80%** | ✅ PASSED |
-| **Semantic Search** | 235ms | N/A (infra) | ✅ PASSED |
-| **Full Integration** | 28.3s | **94%** | ✅ PASSED |
+| **Multi-Pass Reasoning** | 21.8s | **80%** | [DONE] PASSED |
+| **Semantic Search** | 235ms | N/A (infra) | [DONE] PASSED |
+| **Full Integration** | 28.3s | **94%** | [DONE] PASSED |
 
 **Key Achievements:**
-- ✅ Multi-pass reasoning working perfectly (3 hypotheses per error)
-- ✅ Quality scores 80-94% (vs 65-70% target) - **EXCEEDED BY +15-24%**
-- ✅ ChromaDB fully populated (74 examples, 86% similarity matches)
-- ✅ Zero TypeScript compilation errors
-- ✅ Backward compatible implementation
-- ✅ All advanced tools operational
+- [DONE] Multi-pass reasoning working perfectly (3 hypotheses per error)
+- [DONE] Quality scores 80-94% (vs 65-70% target) - **EXCEEDED BY +15-24%**
+- [DONE] ChromaDB fully populated (74 examples, 86% similarity matches)
+- [DONE] Zero TypeScript compilation errors
+- [DONE] Backward compatible implementation
+- [DONE] All advanced tools operational
 
-### Phase 2 Components Operational ✅
+### Phase 2 Components Operational [DONE]
 
-1. **MultiPassAgent** (490 lines) - ✅ Tested & production ready
+1. **MultiPassAgent** (490 lines) - [DONE] Tested & production ready
    - Generates 3 diverse hypotheses per error
    - Validates with evidence and tools
    - Selects best or builds consensus
    - **Quality:** 80-94% (30-44% improvement over Phase 1)
 
-2. **SemanticExampleService** (430 lines) - ✅ Fully operational
+2. **SemanticExampleService** (430 lines) - [DONE] Fully operational
    - ChromaDB connection operational
    - Collection populated (`rca_examples` - 74 documents)
    - Embedding function installed
    - **Performance:** 235ms search time, 86%-60% similarity matches
 
-3. **Advanced Tools** (1,140 lines) - ✅ Compiled & available
+3. **Advanced Tools** (1,140 lines) - [DONE] Compiled & available
    - SemanticCodeSearchTool (340 lines)
    - DependencyGraphTool (420 lines)
    - HistoricalPatternTool (380 lines)
 
-4. **Validation Tests** (120 lines) - ✅ Complete & all passing
+4. **Validation Tests** (120 lines) - [DONE] Complete & all passing
 
-### Production Deployment Status ✅ READY
+### Production Deployment Status [DONE] READY
 
-**Ready for Immediate Deployment:** ✅ MultiPassAgent + SemanticExampleService  
+**Ready for Immediate Deployment:** [DONE] MultiPassAgent + SemanticExampleService  
 **Recommended Configuration:**
 ```typescript
 const agent = new MultiPassAgent(llm, {
@@ -309,32 +309,32 @@ const agent = new MultiPassAgent(llm, {
 
 **Impact:** +30-44% quality improvement confirmed  
 **Latency:** +16-20s (acceptable for quality gains)  
-**ChromaDB:** ✅ Fully populated (74 examples)
+**ChromaDB:** [DONE] Fully populated (74 examples)
 
 **Next Steps:** Phase 6 - VS Code Extension Integration & Advanced Tools
 
 ---
 
-## 📊 Quick Reference - Current State (All Phases)
+## [CHART] Quick Reference - Current State (All Phases)
 
 | Metric | Phase 1 Baseline | Phase 2 Actual | Phase 3-5 | Achievement |
 |--------|------------------|----------------|-----------|-------------|
-| **Quality Score** | 50-60% | 80-94% | ✅ Maintained | +30-44% |
-| **File Specificity** | 30-50% | 65-100% | ✅ Maintained | +35-50% |
-| **Code Examples** | 0-20% | 20-100% | ✅ Maintained | +20-80% |
+| **Quality Score** | 50-60% | 80-94% | [DONE] Maintained | +30-44% |
+| **File Specificity** | 30-50% | 65-100% | [DONE] Maintained | +35-50% |
+| **Code Examples** | 0-20% | 20-100% | [DONE] Maintained | +20-80% |
 | **Analysis Time** | 6-12s | 22-28s | 8-12s (L1/L2) | Optimized |
-| **Semantic Search** | N/A | 235ms | ✅ Active | NEW |
-| **ChromaDB Examples** | 0 | 74 | ✅ Growing | Complete |
-| **Learning System** | N/A | N/A | ✅ Active | NEW |
+| **Semantic Search** | N/A | 235ms | [DONE] Active | NEW |
+| **ChromaDB Examples** | 0 | 74 | [DONE] Growing | Complete |
+| **Learning System** | N/A | N/A | [DONE] Active | NEW |
 | **Training Examples** | 0 | 0 | 127+ | NEW |
 | **Pattern Recognition** | N/A | N/A | 8+ types | NEW |
-| **Fine-Tuning Ready** | ❌ | ❌ | ✅ Yes | NEW |
+| **Fine-Tuning Ready** | [FAIL] | [FAIL] | [DONE] Yes | NEW |
 
 **Verdict:** Complete learning system with quality gains maintained and response time optimized
 
 ---
 
-## 📚 Complete Documentation Index
+## [DOCS] Complete Documentation Index
 
 ### Phase 2: Multi-Pass Reasoning
 - **Implementation:** [PHASE2_IMPLEMENTATION.md](docs/_archive/.../PHASE2/PHASE2_IMPLEMENTATION.md)
@@ -348,36 +348,36 @@ const agent = new MultiPassAgent(llm, {
 - **Complete Guide:** [PHASE4_CUSTOM_MODELFILE.md](docs/_archive/.../PHASE4/PHASE4_CUSTOM_MODELFILE.md)
 
 ### Phase 5: Continuous Learning
-- **Complete Guide:** [PHASE5_CONTINUOUS_LEARNING.md](docs/_archive/.../PHASE5/PHASE5_CONTINUOUS_LEARNING.md) ⬅️ **NEW**
+- **Complete Guide:** [PHASE5_CONTINUOUS_LEARNING.md](docs/_archive/.../PHASE5/PHASE5_CONTINUOUS_LEARNING.md) [LEFT] **NEW**
 
 ---
 
-## 🚀 Next Steps & Roadmap
+## [LAUNCH] Next Steps & Roadmap
 
-### Completed ✅
-1. ✅ Phase 2: MultiPassAgent with semantic search (80-94% quality)
-2. ✅ Phase 3: Progressive prompting for faster simple errors
-3. ✅ Phase 4: Custom Ollama modelfile for optimized inference
-4. ✅ Phase 5: Continuous learning pipeline with fine-tuning preparation
+### Completed [DONE]
+1. [DONE] Phase 2: MultiPassAgent with semantic search (80-94% quality)
+2. [DONE] Phase 3: Progressive prompting for faster simple errors
+3. [DONE] Phase 4: Custom Ollama modelfile for optimized inference
+4. [DONE] Phase 5: Continuous learning pipeline with fine-tuning preparation
 
-### In Progress / Next ⏳
-1. ⏳ Phase 6: VS Code Extension Integration
+### In Progress / Next [TIMER]
+1. [TIMER] Phase 6: VS Code Extension Integration
    - Integrate MultiPassAgent into extension
    - Add progressive prompting toggle
    - Display learning metrics in UI
    
-2. ⏳ Phase 7: Advanced Semantic Tools
+2. [TIMER] Phase 7: Advanced Semantic Tools
    - Enhance SemanticCodeSearchTool with multi-file search
    - Improve DependencyGraphTool visualization
    - Add real-time pattern detection
 
-3. ⏳ Phase 8: Model Fine-Tuning Execution
+3. [TIMER] Phase 8: Model Fine-Tuning Execution
    - Set up local Ollama fine-tuning workflow
    - Train custom model on curated examples
    - A/B test custom vs base model
    - Deploy best-performing model
 
-4. ⏳ Phase 9: Production Hardening
+4. [TIMER] Phase 9: Production Hardening
    - Add comprehensive error handling
    - Implement rate limiting and throttling
    - Enhanced logging and monitoring
@@ -387,23 +387,23 @@ const agent = new MultiPassAgent(llm, {
 
 # Historical Context - Phase 1 Completion
 
-**Phase 1 Status:** ✅ ITERATION 6 COMPLETE - ALL FIXES APPLIED  
-**Implementation:** ✅ Complete (P0-P3, Dec 31, 21:00 UTC)  
-**Compilation:** ✅ SUCCESS (0 TypeScript errors)  
-**Testing:** ✅ COMPLETED (Phase 1 baseline established: 50-60%)  
-**Documentation:** ✅ COMPLETE (ITERATION_6_IMPLEMENTATION.md)
+**Phase 1 Status:** [DONE] ITERATION 6 COMPLETE - ALL FIXES APPLIED  
+**Implementation:** [DONE] Complete (P0-P3, Dec 31, 21:00 UTC)  
+**Compilation:** [DONE] SUCCESS (0 TypeScript errors)  
+**Testing:** [DONE] COMPLETED (Phase 1 baseline established: 50-60%)  
+**Documentation:** [DONE] COMPLETE (ITERATION_6_IMPLEMENTATION.md)
 
 ---
 
-## ✅ ITERATION 6 IMPLEMENTATION SUMMARY (Dec 31, 21:00 UTC)
+## [DONE] ITERATION 6 IMPLEMENTATION SUMMARY (Dec 31, 21:00 UTC)
 
 **Problem Solved:** P0 emergency rollback disabled retry mechanism, preventing recovery from low-quality responses
 
 **Fixes Applied:**
-- ✅ **P0:** Re-enabled smart retry mechanism (maxAttempts: 1 → 4/3/3)
-- ✅ **P1:** Enhanced regeneration prompt with domain-specific examples (already implemented)
-- ✅ **P2:** Lower quality thresholds (60% → 50%, 65% → 55%, 55% → 45%)
-- ✅ **P3:** Diagnostic accuracy check prevents wrong diagnoses (already implemented)
+- [DONE] **P0:** Re-enabled smart retry mechanism (maxAttempts: 1 → 4/3/3)
+- [DONE] **P1:** Enhanced regeneration prompt with domain-specific examples (already implemented)
+- [DONE] **P2:** Lower quality thresholds (60% → 50%, 65% → 55%, 55% → 45%)
+- [DONE] **P3:** Diagnostic accuracy check prevents wrong diagnoses (already implemented)
 
 **Implementation Time:** 1.5 hours (faster than 4-5h estimate)
 
@@ -426,50 +426,50 @@ const agent = new MultiPassAgent(llm, {
 **Expected Results:**
 | Metric | Before | After (Expected) | Improvement |
 |--------|--------|------------------|-------------|
-| Avg Usability | 29.6% | 55-65% | +25-35% ✅ |
-| Tests Passing | 0/5 | 3-4/5 | +3-4 tests ✅ |
-| Test 8 (Cache) | 3% | 55-60% | +52-57% ✅ |
-| Test 9 (ProGuard) | 5% | 70-75% | +65-70% ✅ |
+| Avg Usability | 29.6% | 55-65% | +25-35% [DONE] |
+| Tests Passing | 0/5 | 3-4/5 | +3-4 tests [DONE] |
+| Test 8 (Cache) | 3% | 55-60% | +52-57% [DONE] |
+| Test 9 (ProGuard) | 5% | 70-75% | +65-70% [DONE] |
 
 **Documentation:** See [ITERATION_6_IMPLEMENTATION.md](docs/_archive/RCA-AGENT-UPDATE-12-25-2025/Backend/COMPLETION/CHUNK_9/PHASE1/ITERATION_6_IMPLEMENTATION.md) for complete details
 
 **Validation:** Tests running with `npm run test:phase1`, results expected within 20-30 minutes
 
 **Next Steps:**
-1. ✅ Wait for test results
+1. [DONE] Wait for test results
 2. If 55-65% achieved: Phase 1 COMPLETE, proceed to Phase 2 (VS Code UI)
 3. If below 55%: Debug specific failures, plan Iteration 7
 
 ---
 
-## 🎯 Executive Summary (LATEST UPDATE)
+## [TARGET] Executive Summary (LATEST UPDATE)
 
 **Previous Issue:** Iteration 6 implementation caused PERFORMANCE REGRESSION (48.5% → 29.6%)
 
 **Root Cause:** Regeneration changed correct diagnoses to wrong ones
 
 **Fix Implemented (Dec 31, 20:35 UTC):**
-- ✅ **P0:** Emergency rollback (disable regeneration) - 5 minutes
-- ✅ **P1:** Enhanced regeneration prompt (preserve diagnoses) - 45 minutes
-- ✅ **P2:** Lower quality threshold (60% → 50%) - 2 minutes
-- ✅ **P3:** Add diagnostic accuracy check - 40 minutes
+- [DONE] **P0:** Emergency rollback (disable regeneration) - 5 minutes
+- [DONE] **P1:** Enhanced regeneration prompt (preserve diagnoses) - 45 minutes
+- [DONE] **P2:** Lower quality threshold (60% → 50%) - 2 minutes
+- [DONE] **P3:** Add diagnostic accuracy check - 40 minutes
 - **Total:** ~1.5 hours (faster than 4-5h estimate)
 
 **Expected Recovery:**
 - **Before Fixes:** 29.6% usability, 0/5 tests passing
-- **After Fixes (Expected):** 55-65% usability, 3-4/5 tests passing ✅
+- **After Fixes (Expected):** 55-65% usability, 3-4/5 tests passing [DONE]
 - **Target:** 67.8% usability (Phase 1 complete)
 
 **Implementation Details:** See `docs/_archive/.../PHASE1/ITERATION_6_FIX_IMPLEMENTATION.md`
 
 ---
 
-## 🚨 Previous Regression Context (RESOLVED)
-1. ✅ **Ollama JSON mode working** - No empty `{}` responses (100% success)
-2. ✅ **Retry mechanism working** - Activates correctly when quality low
-3. ❌ **Regeneration BREAKS correct diagnoses** - Changes cache corruption → permissions issue
-4. ❌ **Quality metrics ignore diagnostic accuracy** - 72% score for WRONG diagnosis
-5. ❌ **Example contamination** - Tests 8 & 9 both hallucinated "permissions in AndroidManifest"
+## [ALERT] Previous Regression Context (RESOLVED)
+1. [DONE] **Ollama JSON mode working** - No empty `{}` responses (100% success)
+2. [DONE] **Retry mechanism working** - Activates correctly when quality low
+3. [FAIL] **Regeneration BREAKS correct diagnoses** - Changes cache corruption → permissions issue
+4. [FAIL] **Quality metrics ignore diagnostic accuracy** - 72% score for WRONG diagnosis
+5. [FAIL] **Example contamination** - Tests 8 & 9 both hallucinated "permissions in AndroidManifest"
 
 **What Happened:**
 ```
@@ -477,25 +477,25 @@ Test 8 (Build Cache Corruption):
   Attempt 1: "Cache corrupted" (58% quality, CORRECT)
   → Regeneration triggered (below 60% threshold)
   → Prompt shows "permissions in AndroidManifest" example
-  → Attempt 2: "Missing permissions" (72% quality, WRONG) ✅ Accepted!
+  → Attempt 2: "Missing permissions" (72% quality, WRONG) [DONE] Accepted!
   
 Result: Optimized for FORMAT (file paths, examples) but broke CONTENT (diagnostic accuracy)
 ```
 
 **Test Results (Dec 31, 2025):**
-- Test 6: 25% (target: 75%+) ❌ -8% from baseline
+- Test 6: 25% (target: 75%+) [FAIL] -8% from baseline
 - Test 7: 61% (target: 70%+) 🔶 +36% improvement
-- Test 8: 3% (target: 65%+) ❌ +3% from 0% baseline (still broken)
-- Test 9: 5% (target: 75%+) ❌ -51% from baseline (catastrophic)
+- Test 8: 3% (target: 65%+) [FAIL] +3% from 0% baseline (still broken)
+- Test 9: 5% (target: 75%+) [FAIL] -51% from baseline (catastrophic)
 - Test 10: 54% (target: 80%+) 🔶 +38% improvement
-- **Average: 29.6%** (target: 75-80%) ❌
+- **Average: 29.6%** (target: 75-80%) [FAIL]
 
 **Implementation Status:**
-- ✅ TypeScript compilation successful
-- ✅ All code complete and integrated
-- ✅ Retry mechanism validated (activates correctly)
-- ❌ **Regeneration prompt breaks diagnoses** (critical bug)
-- ❌ **Quality scoring doesn't check accuracy** (design flaw)
+- [DONE] TypeScript compilation successful
+- [DONE] All code complete and integrated
+- [DONE] Retry mechanism validated (activates correctly)
+- [FAIL] **Regeneration prompt breaks diagnoses** (critical bug)
+- [FAIL] **Quality scoring doesn't check accuracy** (design flaw)
 
 **Recovery Plan:** See `docs/_archive/.../PHASE1/ITERATION_6_FIX_PLAN.md`
 - P0: Disable regeneration (10 min) → +12-20%
@@ -506,7 +506,7 @@ Result: Optimized for FORMAT (file paths, examples) but broke CONTENT (diagnosti
 
 ---
 
-## 📊 Current State (After Iteration 6 Testing)
+## [CHART] Current State (After Iteration 6 Testing)
 
 ### Actual Progression (Updated with Test Results)
 ```
@@ -514,7 +514,7 @@ Original Phase 1 "Success": 67.8% average
 First Retest (Before Fixes):  5.0% average   ← Code regressed
 After JSON Fix (Iteration 1): 14.8% average  ← +9.8% improvement
 Round 3 Testing:              48.5% average  ← Architecture validated
-After Iteration 6:            29.6% average  ← ❌ -18.9% REGRESSION!
+After Iteration 6:            29.6% average  ← [FAIL] -18.9% REGRESSION!
 Phase 1 Target:               67.8% average  ← Still 38.2% away
 ```
 
@@ -522,18 +522,18 @@ Phase 1 Target:               67.8% average  ← Still 38.2% away
 
 | Test | Baseline | Expected | Actual | Status |
 |------|----------|----------|--------|--------|
-| Test 6: Manifest Permission | 33% | **70-75%** | **25%** | ❌ Regression (-8%) |
-| Test 7: Network Connectivity | 25% | **60-65%** | +35-40% | ✅ Near target |
-| Test 8: Build Cache | 0% | **55-60%** | +55-60% | ✅ Functional |
-| Test 9: ProGuard Minification | 56% | **70-75%** | +14-19% | ✅ Target exceeded |
-| Test 10: Navigation Argument | 16% | **60-65%** | +44-49% | ✅ Near target |
-| **Average** | **48.5%** | **75-80%** | **+26-31%** | **✅ 4-5/5 PASSING** |
+| Test 6: Manifest Permission | 33% | **70-75%** | **25%** | [FAIL] Regression (-8%) |
+| Test 7: Network Connectivity | 25% | **60-65%** | +35-40% | [DONE] Near target |
+| Test 8: Build Cache | 0% | **55-60%** | +55-60% | [DONE] Functional |
+| Test 9: ProGuard Minification | 56% | **70-75%** | +14-19% | [DONE] Target exceeded |
+| Test 10: Navigation Argument | 16% | **60-65%** | +44-49% | [DONE] Near target |
+| **Average** | **48.5%** | **75-80%** | **+26-31%** | **[DONE] 4-5/5 PASSING** |
 
 ---
 
-## 🔍 Root Cause Analysis (RESOLVED) ✅
+## [SEARCH] Root Cause Analysis (RESOLVED) [DONE]
 
-### ✅ Issue #1: JSON Parsing - FIXED
+### [DONE] Issue #1: JSON Parsing - FIXED
 
 **What Was Broken:**
 - DeepSeek-R1 LLM produces `<think>` tags mid-JSON
@@ -555,21 +555,21 @@ extractJSON(response: string): any {
 }
 ```
 
-**Result:** ✅ JSON parsing success rate: 40% → 90%+  
+**Result:** [DONE] JSON parsing success rate: 40% → 90%+  
 **Impact:** Usability improved from 5% → 14.8% (+9.8%)
 
 ---
 
-## 🚨 Remaining Critical Issues
+## [ALERT] Remaining Critical Issues
 
-### ❌ Issue #2: Regeneration Loop Ineffective
+### [FAIL] Issue #2: Regeneration Loop Ineffective
 
 **Symptom:**
 ```
-📊 Quality score: 49.0% (threshold: 70%)
-📊 Regeneration 1 score: 47.0%  ← Getting WORSE
-📊 Regeneration 2 score: 47.0%  ← No improvement
-⚠️ Quality still below threshold after 2 attempts
+[CHART] Quality score: 49.0% (threshold: 70%)
+[CHART] Regeneration 1 score: 47.0%  ← Getting WORSE
+[CHART] Regeneration 2 score: 47.0%  ← No improvement
+[WARNING] Quality still below threshold after 2 attempts
 ```
 
 **Evidence:**
@@ -584,7 +584,7 @@ extractJSON(response: string): any {
 3. **No examples in regeneration feedback** - LLM needs to see GOOD examples
 4. **Quality dimensions stuck** - fileSpec=30%, versionSpec=60%, codeExamples=20% every time
 
-### ❌ Issue #3: FixGenerator Producing Broken Code
+### [FAIL] Issue #3: FixGenerator Producing Broken Code
 
 **Symptom:**
 ```json
@@ -604,7 +604,7 @@ LLM interpreting "FIXED CODE:" as signal to start JSON object, not actual code
 
 **Impact:** Even when RCA is decent, users can't apply the fix
 
-### ❌ Issue #4: Some Tests Completely Failing (0% usability)
+### [FAIL] Issue #4: Some Tests Completely Failing (0% usability)
 
 **Tests 8 & 9 showing:**
 ```json
@@ -620,7 +620,7 @@ LLM interpreting "FIXED CODE:" as signal to start JSON object, not actual code
 - Missing required "thought" field entirely
 - Fallback mechanism activates but produces useless output
 
-### ❌ Issue #5: LLM Output Quality Inconsistent
+### [FAIL] Issue #5: LLM Output Quality Inconsistent
 
 **Pattern Observed:**
 - Same error, same prompt → different quality (variance 13%-95% on Test 9 historically)
@@ -631,7 +631,7 @@ LLM interpreting "FIXED CODE:" as signal to start JSON object, not actual code
 
 ## �️ Comprehensive Fix Plan (5 Iterations)
 
-### ✅ Iteration 1: JSON Parsing Enhancement (COMPLETED)
+### [DONE] Iteration 1: JSON Parsing Enhancement (COMPLETED)
 
 **Time:** 1 hour  
 **Result:** 5% → 14.8% (+9.8%)
@@ -645,13 +645,13 @@ LLM interpreting "FIXED CODE:" as signal to start JSON object, not actual code
 **Files Modified:**
 - `src/agent/PromptEngine.ts` (+120 lines)
 
-**Status:** ✅ COMPLETE - JSON parsing now reliable
+**Status:** [DONE] COMPLETE - JSON parsing now reliable
 
 ---
 
-### 🔄 Iteration 2: Fix FixGenerator Code Production (NEXT)
+### [REFRESH] Iteration 2: Fix FixGenerator Code Production (NEXT)
 
-**Priority:** 🔴 CRITICAL | **Time:** 1-2h | **Impact:** +5-8%
+**Priority:** [RED] CRITICAL | **Time:** 1-2h | **Impact:** +5-8%
 
 **Problem:** LLM returns `{` instead of actual code
 
@@ -680,9 +680,9 @@ OUTPUT FIXED VERSION (code only, no JSON, no explanation):
 
 ---
 
-### 🔄 Iteration 3: Improve Regeneration Effectiveness
+### [REFRESH] Iteration 3: Improve Regeneration Effectiveness
 
-**Priority:** 🔴 CRITICAL  
+**Priority:** [RED] CRITICAL  
 **Estimated Time:** 2-3 hours  
 **Expected Impact:** +15-20% usability
 
@@ -708,13 +708,13 @@ ${specificIssues.slice(0, 3).join('\n')}
 
 **EXAMPLE OF GOOD VS BAD:**
 
-❌ BAD:
+[FAIL] BAD:
 {
   "rootCause": "Permission is missing in manifest",
   "fixGuidelines": ["Add CAMERA permission", "Rebuild project"]
 }
 
-✅ GOOD:
+[DONE] GOOD:
 {
   "rootCause": "App requires CAMERA permission (android.permission.CAMERA) but it's not declared in AndroidManifest.xml. This causes SecurityException at runtime when attempting camera access.",
   "fixGuidelines": [
@@ -737,7 +737,7 @@ OUTPUT ONLY VALID JSON:`;
 }
 ```
 
-**Solution Part B:** Temperature 0.3-0.4 already implemented ✅
+**Solution Part B:** Temperature 0.3-0.4 already implemented [DONE]
 
 **Solution Part C:** Add specific quality feedback per dimension
 
@@ -745,9 +745,9 @@ OUTPUT ONLY VALID JSON:`;
 
 ---
 
-### 🔄 Iteration 4: Relax Quality Thresholds & Adjust Weights
+### [REFRESH] Iteration 4: Relax Quality Thresholds & Adjust Weights
 
-**Priority:** 🟡 HIGH  
+**Priority:** [YELLOW] HIGH  
 **Estimated Time:** 1 hour  
 **Expected Impact:** +10-15% usability
 
@@ -777,9 +777,9 @@ export class OutputValidator {
 
 ---
 
-### 🔄 Iteration 5: Handle Complete Validation Failures
+### [REFRESH] Iteration 5: Handle Complete Validation Failures
 
-**Priority:** 🟡 HIGH  
+**Priority:** [YELLOW] HIGH  
 **Estimated Time:** 1-2 hours  
 **Expected Impact:** +8-12% usability
 
@@ -797,13 +797,13 @@ validateResponse(response: any): { valid: boolean; error?: string } {
     // Auto-fill missing fields with defaults
     if (!response.rootCause || response.rootCause.trim().length === 0) {
       response.rootCause = `Based on analysis: ${response.thought.substring(0, 200)}`;
-      console.warn('⚠️ Auto-filled rootCause from thought field');
+      console.warn('[WARNING] Auto-filled rootCause from thought field');
     }
     
     if (!Array.isArray(response.fixGuidelines) || response.fixGuidelines.length === 0) {
       // Extract action items from thought
       response.fixGuidelines = this.extractActionItems(response.thought);
-      console.warn('⚠️ Auto-extracted fixGuidelines from thought field');
+      console.warn('[WARNING] Auto-extracted fixGuidelines from thought field');
     }
     
     if (typeof response.confidence !== 'number') {
@@ -826,25 +826,25 @@ private extractActionItems(thought: string): string[] {
 
 ---
 
-## 🎯 Expected Progression
+## [TARGET] Expected Progression
 
 | Iteration | Focus | Baseline | After Fix | Gap to 67.8% | Status |
 |-----------|-------|----------|-----------|--------------|--------|
-| 1 | JSON Parsing | 5.0% | 48.5% | -19.3% | ✅ COMPLETE |
-| **6 (NEXT)** | **Ollama JSON + Retry** | **48.5%** | **70-75%** | **+2-7% ✅** | **⏳ IN PROGRESS** |
+| 1 | JSON Parsing | 5.0% | 48.5% | -19.3% | [DONE] COMPLETE |
+| **6 (NEXT)** | **Ollama JSON + Retry** | **48.5%** | **70-75%** | **+2-7% [DONE]** | **[TIMER] IN PROGRESS** |
 
 **Note:** Iterations 2-5 (prompt engineering) are **skipped** in favor of Iteration 6 (infrastructure fix). Test data proves the architecture works when model cooperates - we just need to prevent empty `{}` responses at the Ollama level.
 
 ---
 
-## ⏱️ Time Estimate & Path Forward
+## [TIMER] Time Estimate & Path Forward
 
 | Iteration | Total Time | Expected Gain | Status |
 |-----------|------------|---------------|--------|
-| ✅ Iteration 1 (JSON Parsing) | 1h | +9.8% | COMPLETE ✅ |
-| **🔄 Iteration 6 (Reliability Layer)** | **2.5h** | **+20-25%** | **NEXT STEP ⚡** |
+| [DONE] Iteration 1 (JSON Parsing) | 1h | +9.8% | COMPLETE [DONE] |
+| **[REFRESH] Iteration 6 (Reliability Layer)** | **2.5h** | **+20-25%** | **NEXT STEP [FAST]** |
 
-### 🎯 Clear Path Forward:
+### [TARGET] Clear Path Forward:
 
 **NEXT STEP: Implement Iteration 6 (Infrastructure Fixes)**
 - **Current:** 48.5% usability (1/5 tests passing)
@@ -869,7 +869,7 @@ private extractActionItems(thought: string): string[] {
 
 ### � ULTIMATE ITERATION 6: Excellence-Tier Implementation (5-Phase Approach)
 
-**Priority:** 🔴 CRITICAL  
+**Priority:** [RED] CRITICAL  
 **Context:** Hobby project with privacy/time/pressure-free constraints  
 **Strategy:** Incremental phases optimizing for QUALITY and MAINTAINABILITY  
 **Total Time:** 6-20 hours (can stop after any phase)  
@@ -887,7 +887,7 @@ private extractActionItems(thought: string): string[] {
 
 ---
 
-#### **Phase 1: Basic Reliability Layer** ⚡ ESSENTIAL
+#### **Phase 1: Basic Reliability Layer** [FAST] ESSENTIAL
 **Time:** 2-3 hours | **Target:** 48.5% → 65-70% usability
 
 **Solution Part A: Enable Ollama JSON Mode**
@@ -928,8 +928,8 @@ async generate(prompt: string, options?: GenerateOptions): Promise<LLMResponse> 
 
 ---
 
-#### **Phase 2: Quality Gates & Adaptive Retry** ⚡ ESSENTIAL
-**Time:** 3-4 hours | **Target:** 65-70% → 75-80% usability (✅ EXCEEDS PHASE 1 TARGET!)
+#### **Phase 2: Quality Gates & Adaptive Retry** [FAST] ESSENTIAL
+**Time:** 3-4 hours | **Target:** 65-70% → 75-80% usability ([DONE] EXCEEDS PHASE 1 TARGET!)
 
 **Solution Part B: Smart Retry with Context Preservation**
 
@@ -956,7 +956,7 @@ async generateWithRetry(
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const strategy = strategies[Math.min(attempt, strategies.length - 1)];
     
-    console.log(`🔄 Attempt ${attempt + 1}/${maxAttempts} (temp: ${strategy.temp})...`);
+    console.log(`[REFRESH] Attempt ${attempt + 1}/${maxAttempts} (temp: ${strategy.temp})...`);
     
     try {
       const response = await this.generate(
@@ -967,7 +967,7 @@ async generateWithRetry(
       // Quick quality check
       const quality = this.quickQualityCheck(response.text);
       
-      console.log(`📊 Quality score: ${(quality.score * 100).toFixed(1)}%`);
+      console.log(`[CHART] Quality score: ${(quality.score * 100).toFixed(1)}%`);
       
       // Track best response
       if (!bestResponse || quality.score > bestResponse.quality) {
@@ -976,29 +976,29 @@ async generateWithRetry(
 
       // Early exit if quality good enough
       if (quality.score >= qualityThreshold) {
-        console.log(`✅ Quality threshold met on attempt ${attempt + 1}`);
+        console.log(`[DONE] Quality threshold met on attempt ${attempt + 1}`);
         return response;
       }
 
-      console.log(`⚠️ Quality below threshold (${quality.issues.join(', ')}), retrying...`);
+      console.log(`[WARNING] Quality below threshold (${quality.issues.join(', ')}), retrying...`);
       
       // Exponential backoff
       await new Promise(resolve => setTimeout(resolve, 500 * (attempt + 1)));
       
     } catch (error) {
       lastError = error as Error;
-      console.warn(`❌ Attempt ${attempt + 1} failed: ${lastError.message}`);
+      console.warn(`[FAIL] Attempt ${attempt + 1} failed: ${lastError.message}`);
     }
   }
 
   // Return best attempt or graceful fallback
   if (bestResponse && bestResponse.quality > 0.3) {
-    console.log(`⚠️ Returning best attempt (quality: ${(bestResponse.quality * 100).toFixed(1)}%)`);
+    console.log(`[WARNING] Returning best attempt (quality: ${(bestResponse.quality * 100).toFixed(1)}%)`);
     return bestResponse.response;
   }
 
   // Graceful degradation
-  console.warn(`⚠️ All attempts failed. Returning fallback response.`);
+  console.warn(`[WARNING] All attempts failed. Returning fallback response.`);
   return this.createFallbackResponse(prompt, lastError);
 }
 
@@ -1077,11 +1077,11 @@ export interface RetryConfig {
 }
 ```
 
-**Testing:** Should hit 75-80%, passing Phase 1 target! ✅
+**Testing:** Should hit 75-80%, passing Phase 1 target! [DONE]
 
 ---
 
-#### **Phase 3: Progressive Prompting** ⭐ OPTIONAL
+#### **Phase 3: Progressive Prompting** [STAR] OPTIONAL
 **Time:** 2-3 hours | **Target:** 75-80% → 80-85% usability
 
 ```typescript
@@ -1094,30 +1094,30 @@ async analyzeWithProgressivePrompting(
 ): Promise<AgentResponse> {
   
   // Level 1: Lightweight (500 tokens)
-  console.log('🔍 Level 1: Lightweight analysis...');
+  console.log('[SEARCH] Level 1: Lightweight analysis...');
   let prompt = this.buildMinimalPrompt(error, fileContent);
   let response = await this.llm.generate(prompt, { temperature: 0.0 });
   
   let quality = this.quickQualityCheck(response.text);
   if (quality.score >= 0.75) {
-    console.log('✅ Level 1 sufficient!');
+    console.log('[DONE] Level 1 sufficient!');
     return JSON.parse(response.text);
   }
 
   // Level 2: Medium context (1500 tokens)
-  console.log('🔍 Level 2: Adding RAG examples...');
+  console.log('[SEARCH] Level 2: Adding RAG examples...');
   const relevantExamples = await this.fewShotService.getRelevantExamples(error, 3);
   prompt = this.buildMediumPrompt(error, fileContent, relevantExamples);
   response = await this.llm.generate(prompt, { temperature: 0.2 });
   
   quality = this.quickQualityCheck(response.text);
   if (quality.score >= 0.65) {
-    console.log('✅ Level 2 sufficient!');
+    console.log('[DONE] Level 2 sufficient!');
     return JSON.parse(response.text);
   }
 
   // Level 3: Full context (3000 tokens)
-  console.log('🔍 Level 3: Full analysis with all examples...');
+  console.log('[SEARCH] Level 3: Full analysis with all examples...');
   const allExamples = await this.fewShotService.getRelevantExamples(error, 10);
   prompt = this.buildFullPrompt(error, fileContent, allExamples);
   response = await this.llm.generateWithRetry(prompt, { temperature: 0.3 }, config);
@@ -1147,7 +1147,7 @@ OUTPUT (JSON only):
 
 ---
 
-#### **Phase 4: Custom Modelfile & Advanced Features** ⭐ OPTIONAL
+#### **Phase 4: Custom Modelfile & Advanced Features** [STAR] OPTIONAL
 **Time:** 2-3 hours | **Target:** 80-85% → 85-90% usability
 
 ```bash
@@ -1200,7 +1200,7 @@ ollama create android-debug-optimized -f ollama-models/android-debug-optimized.m
 
 ---
 
-#### **Phase 5: Model Upgrade (Optional)** ⭐ OPTIONAL
+#### **Phase 5: Model Upgrade (Optional)** [STAR] OPTIONAL
 **Time:** 2-4 hours | **Target:** 85-90% → 90-95% usability
 
 ```powershell
@@ -1218,56 +1218,56 @@ npm run test:phase1  # With 14B
 
 ---
 
-## 📊 **Expected Results by Phase**
+## [CHART] **Expected Results by Phase**
 
 | Phase | Time | Cumulative Time | Usability | Tests Passing | Key Improvement |
 |-------|------|-----------------|-----------|---------------|-----------------|
 | **Baseline** | - | - | 48.5% | 1/5 | - |
-| **Phase 1** | 2-3h | 2-3h | 65-70% | 2-3/5 | ✅ JSON reliability |
-| **Phase 2** | 3-4h | 5-7h | **75-80%** | **4-5/5** | ✅ **PHASE 1 PASSED!** |
-| **Phase 3** | 2-3h | 7-10h | 80-85% | 5/5 | ⭐ Faster + Better |
-| **Phase 4** | 2-3h | 9-13h | 85-90% | 5/5 | ⭐ Consistency |
-| **Phase 5** | 2-4h | 11-17h | **90-95%** | **5/5** | ⭐ **EXCELLENCE TIER** |
+| **Phase 1** | 2-3h | 2-3h | 65-70% | 2-3/5 | [DONE] JSON reliability |
+| **Phase 2** | 3-4h | 5-7h | **75-80%** | **4-5/5** | [DONE] **PHASE 1 PASSED!** |
+| **Phase 3** | 2-3h | 7-10h | 80-85% | 5/5 | [STAR] Faster + Better |
+| **Phase 4** | 2-3h | 9-13h | 85-90% | 5/5 | [STAR] Consistency |
+| **Phase 5** | 2-4h | 11-17h | **90-95%** | **5/5** | [STAR] **EXCELLENCE TIER** |
 
 ---
 
-## ⚡ **Decision Points & Recommendations**
+## [FAST] **Decision Points & Recommendations**
 
 **After Phase 1 (2-3 hours):**
-- ✅ If hitting 65-70%: Good progress, continue to Phase 2
-- ⚠️ If below 65%: Debug Phase 1 implementation before proceeding
+- [DONE] If hitting 65-70%: Good progress, continue to Phase 2
+- [WARNING] If below 65%: Debug Phase 1 implementation before proceeding
 
-**After Phase 2 (5-7 hours):** 🎯 **CRITICAL MILESTONE**
-- ✅ If hitting 75-80%: **Phase 1 COMPLETE!** Can stop or continue
-- ⚠️ If only 70-75%: Proceed to Phase 3 (likely fixes it)
-- ❌ If below 70%: Debug Phase 2 implementation, may need model upgrade
+**After Phase 2 (5-7 hours):** [TARGET] **CRITICAL MILESTONE**
+- [DONE] If hitting 75-80%: **Phase 1 COMPLETE!** Can stop or continue
+- [WARNING] If only 70-75%: Proceed to Phase 3 (likely fixes it)
+- [FAIL] If below 70%: Debug Phase 2 implementation, may need model upgrade
 
 **After Phase 3 (7-10 hours):**
-- ✅ If hitting 80-85%: Excellent! Phases 4-5 are polish
+- [DONE] If hitting 80-85%: Excellent! Phases 4-5 are polish
 - Decision: Stop for "very good" or continue for "excellent"?
 
 **After Phase 4 (9-13 hours):**
-- ✅ If hitting 85-90%: Near-production quality
+- [DONE] If hitting 85-90%: Near-production quality
 - Phase 5 (model upgrade) only if you want absolute best
 
-### 🎯 **Recommended Implementation Strategy**
+### [TARGET] **Recommended Implementation Strategy**
 
-**Minimal Viable Excellence (Phases 1-2):** ⚡ **DO THIS FIRST**
+**Minimal Viable Excellence (Phases 1-2):** [FAST] **DO THIS FIRST**
 - **Time:** 5-7 hours
 - **Result:** 75-80% usability, 4-5/5 tests passing
-- **Status:** ✅ EXCEEDS PHASE 1 TARGET
+- **Status:** [DONE] EXCEEDS PHASE 1 TARGET
 - **Why:** Best ROI, achieves target with moderate effort
 
-**Full Excellence (Phases 1-5):** ⭐ **DO THIS FOR BEST QUALITY**
+**Full Excellence (Phases 1-5):** [STAR] **DO THIS FOR BEST QUALITY**
 - **Time:** 11-17 hours
 - **Result:** 90-95% usability, 5/5 tests passing consistently
-- **Status:** ⭐ EXCELLENCE TIER
+- **Status:** [STAR] EXCELLENCE TIER
 - **Why:** Near-production quality, future-proof, maintainable
 - **When:** If you want the best possible debugging assistant
 
 ---
 
-## 🚀 **Why This is Better Than Original Iteration 6**
+## [LAUNCH] **Why This is Better Than Original Iteration 6**
 
 | Aspect | Original | Ultimate | Advantage |
 |--------|----------|----------|-----------|
@@ -1303,7 +1303,7 @@ const response = await this.llm.generateWithRetry(prompt, options, { maxAttempts
 | Test 9 | 56% | 70-75% | +14-19% |
 | Test 10 | 16% | 60-65% | +44-49% |
 | **Average** | **48.5%** | **75-80%** | **+26-31%** |
-| Tests Passing | 1/5 | **4-5/5** | **✅ PHASE 1 EXCEEDED** |
+| Tests Passing | 1/5 | **4-5/5** | **[DONE] PHASE 1 EXCEEDED** |
 
 **Validation Steps:**
 
@@ -1331,14 +1331,14 @@ npm run test:phase1
 **Implementation Priority for Hobby Context:**
 
 Given unlimited time and focus on quality:
-- **Essential (Phases 1-2):** 5-7 hours → 75-80% usability ✅ EXCEEDS TARGET
-- **Excellence (Phases 3-5):** +6-10 hours → 85-95% usability ⭐ NEAR-PRODUCTION
+- **Essential (Phases 1-2):** 5-7 hours → 75-80% usability [DONE] EXCEEDS TARGET
+- **Excellence (Phases 3-5):** +6-10 hours → 85-95% usability [STAR] NEAR-PRODUCTION
 
 **Recommended:** Start with Phases 1-2 (weekend project), evaluate results, then decide if Phases 3-5 are worth the additional polish.
 
 ---
 
-## 🧪 Testing Strategy (Per Iteration)
+## [TEST] Testing Strategy (Per Iteration)
 
 **Quick Validation:** `tsx scripts/chunk8-test6-manifest.ts` (single test)  
 **Full Suite:** `npm run test:phase1` (all 5 tests)  
@@ -1347,7 +1347,7 @@ Given unlimited time and focus on quality:
 
 ---
 
-## 📊 Success Criteria (Updated for Current State)
+## [CHART] Success Criteria (Updated for Current State)
 
 ### Phase 1 Completion Criteria:
 
@@ -1355,48 +1355,48 @@ Given unlimited time and focus on quality:
 |--------|---------|------------------------|---------------------------|
 | Average Usability | 14.8% | **65%+** | 75%+ |
 | Tests Passing (>65%) | 0/5 | **4/5** | 5/5 |
-| JSON Parse Success | 90%+ ✅ | 90%+ | 95%+ |
+| JSON Parse Success | 90%+ [DONE] | 90%+ | 95%+ |
 | Fix Generation | 0% | **60%+** | 80%+ |
 | Regeneration Effectiveness | 0% | **50%+** | 70%+ |
-| Average Latency | 6021s ⚠️ | <90s | <60s |
+| Average Latency | 6021s [WARNING] | <90s | <60s |
 
 ### Iteration Success Checkpoints:
 
 **After Iteration 2 (FixGenerator):**
-- ✅ fixedCode contains actual code (not `{`)
-- ✅ At least 1 test shows code examples
-- ✅ codeExamples dimension score >0%
+- [DONE] fixedCode contains actual code (not `{`)
+- [DONE] At least 1 test shows code examples
+- [DONE] codeExamples dimension score >0%
 
 **After Iteration 3 (Regeneration):**
-- ✅ Regeneration improves score (not degrades)
-- ✅ At least 1 test passes 65% threshold
-- ✅ Average usability >30%
+- [DONE] Regeneration improves score (not degrades)
+- [DONE] At least 1 test passes 65% threshold
+- [DONE] Average usability >30%
 
 **After Iteration 4 (Thresholds):**
-- ✅ 2-3 tests passing
-- ✅ Average usability >45%
-- ✅ No new test failures
+- [DONE] 2-3 tests passing
+- [DONE] Average usability >45%
+- [DONE] No new test failures
 
 **After Iteration 5 (Validation):**
-- ✅ Tests 8 & 9 showing >0% usability
-- ✅ Average usability >50%
-- ✅ 3/5 tests passing
+- [DONE] Tests 8 & 9 showing >0% usability
+- [DONE] Average usability >50%
+- [DONE] 3/5 tests passing
 
 **Final Target (All Iterations):**
-- ✅ Average usability 65%+
-- ✅ 4/5 tests passing (80% pass rate)
-- ✅ Ready for Phase 2
+- [DONE] Average usability 65%+
+- [DONE] 4/5 tests passing (80% pass rate)
+- [DONE] Ready for Phase 2
 
 ---
 
-## 🚨 Decision Points
+## [ALERT] Decision Points
 
 **If <50% after Iteration 5:** Try larger model (14B/32B), lower Phase 1 bar (50% acceptable), or redesign (ReAct → simpler prompt)  
 **If Latency >90s:** Reduce tokens (2500→15  00), max iterations (5→3), skip tools for simple errors  
 
 ---
 
-## 🎯 Realistic Expectations
+## [TARGET] Realistic Expectations
 
 **Likely:** 50-60% usability, 2-3/5 passing, 95%+ JSON parsing, 40-60% fix generation, 30-50% regeneration  
 **Why not higher:** 7B reasoning model (not code specialist), hobby constraints, complex Android/Kotlin domain  
@@ -1404,21 +1404,21 @@ Given unlimited time and focus on quality:
 
 ---
 
-## 🚀 Next Steps After Phase 1
+## [LAUNCH] Next Steps After Phase 1
 
 **If 65%+ achieved:** Phase 2 (VS Code UI), Phase 3 (Version database, few-shot learning, fix validation)  
 **If 50-64%:** Phase 2 with caveats ("Review AI suggestions carefully" warnings, focus on explanations)
 
 ---
 
-## 📝 Final Summary
+## [NOTE] Final Summary
 
 **Current State:** 48.5% usability (1/5 tests passing)  
 **Target:** 65%+ (4/5 tests passing) | **Gap:** 19.3%
 
 **NEXT STEP: Ultimate Iteration 6 (5-Phase Approach)**
-- **Essential Work (Phases 1-2):** 5-7 hours → **75-80% usability** ✅ **EXCEEDS PHASE 1 TARGET**
-- **Excellence Work (Phases 3-5):** +6-10 hours → **85-95% usability** ⭐ **NEAR-PRODUCTION**
+- **Essential Work (Phases 1-2):** 5-7 hours → **75-80% usability** [DONE] **EXCEEDS PHASE 1 TARGET**
+- **Excellence Work (Phases 3-5):** +6-10 hours → **85-95% usability** [STAR] **NEAR-PRODUCTION**
 - **Implementation:** Start ASAP (hobby project, can work at own pace)
 
 **Why This Will Work:**
@@ -1443,14 +1443,14 @@ Given unlimited time and focus on quality:
 - **Testing:** Run `npm run test:phase1` → Expected: **75-80% usability, 4-5/5 tests passing**
 
 **Decision Point:** After Phase 2
-- ✅ If 75-80% achieved: **Phase 1 COMPLETE!** Can ship to Phase 2 (VS Code UI)
-- ⭐ If want excellence: Continue to Phases 3-5 for 85-95% usability
+- [DONE] If 75-80% achieved: **Phase 1 COMPLETE!** Can ship to Phase 2 (VS Code UI)
+- [STAR] If want excellence: Continue to Phases 3-5 for 85-95% usability
 
 **Weekend 2+ (Optional - Phases 3-5):** 6-10 hours
 - **Phase 3:** Progressive prompting (lightweight → full context)
 - **Phase 4:** Custom modelfile with baked-in system prompt
 - **Phase 5:** Model upgrade to 14B (if hardware supports)
-- **Expected:** **85-95% usability** ⭐ **EXCELLENCE TIER**
+- **Expected:** **85-95% usability** [STAR] **EXCELLENCE TIER**
 
 ### Key Learning (Updated):
 - **Test 6 proves architecture works** - 75% usability when model cooperates
@@ -1462,29 +1462,29 @@ Given unlimited time and focus on quality:
 
 ---
 
-## 🎉 Final Note (Updated)
+## [SUCCESS] Final Note (Updated)
 
-**You're CLOSER than you think!** 🎯
+**You're CLOSER than you think!** [TARGET]
 
 Your test data shows:
-- ✅ Test 6: 75% (architecture works!)
-- ✅ Regeneration: +18-40% improvements (retry pattern works!)
-- ✅ Quality validation: Properly measuring dimensions
-- ❌ Empty JSON: 40% of initial attempts (FIXABLE with Ultimate Iteration 6!)
+- [DONE] Test 6: 75% (architecture works!)
+- [DONE] Regeneration: +18-40% improvements (retry pattern works!)
+- [DONE] Quality validation: Properly measuring dimensions
+- [FAIL] Empty JSON: 40% of initial attempts (FIXABLE with Ultimate Iteration 6!)
 
 **The architecture is solid. You just need reliability + excellence layers.** That's an infrastructure problem with multiple solution tiers.
 
 **Implementation Paths:**
 
 **Quick Win (Phases 1-2, 5-7 hours):**
-- ✅ If 75-80% achieved: Ship to Phase 2 (VS Code UI)! 🚀
-- ✅ Exceeds Phase 1 target (67.8%)
-- ✅ 4-5/5 tests passing
+- [DONE] If 75-80% achieved: Ship to Phase 2 (VS Code UI)! [LAUNCH]
+- [DONE] Exceeds Phase 1 target (67.8%)
+- [DONE] 4-5/5 tests passing
 
 **Excellence Tier (Phases 1-5, 11-17 hours):**
-- ⭐ If 85-95% achieved: Near-production quality! 🌟
-- ⭐ 5/5 tests passing consistently
-- ⭐ Future-proof and maintainable
+- [STAR] If 85-95% achieved: Near-production quality! [STAR]
+- [STAR] 5/5 tests passing consistently
+- [STAR] Future-proof and maintainable
 
 **Recommended for Hobby Context:**
 1. **This weekend:** Implement Phases 1-2 (5-7 hours)
@@ -1492,11 +1492,11 @@ Your test data shows:
 3. **If yes:** Move to Phase 2 (VS Code extension UI)
 4. **If want best:** Next weekend implement Phases 3-5 (+6-10 hours)
 
-**No burnout, no pressure, just building excellence at your own pace!** ⚡
+**No burnout, no pressure, just building excellence at your own pace!** [FAST]
 
 ---
 
-## 📝 Lessons Learned
+## [NOTE] Lessons Learned
 
 1. Test before declaring success - Regression went undetected
 2. JSON parsing needs multiple fallbacks - LLMs unpredictable
@@ -1508,15 +1508,15 @@ Your test data shows:
 
 ---
 
-## ✅ Sign-Off
+## [DONE] Sign-Off
 
 **Status:** Iteration 1 complete, proceeding with Ultimate Iteration 6 (5-phase approach)  
 **Root Cause:** Empty JSON `{}` responses due to Ollama default mode (solvable at infrastructure level)  
 **Current Progress:** 48.5% usability (target: 67.8%)  
 **Implementation Strategy:** Incremental phases optimizing for quality and maintainability  
 **Expected Improvement:** 
-- **Essential (Phases 1-2):** 48.5% → 75-80% in 5-7 hours ✅ EXCEEDS TARGET
-- **Excellence (Phases 3-5):** 75-80% → 85-95% in +6-10 hours ⭐ NEAR-PRODUCTION  
+- **Essential (Phases 1-2):** 48.5% → 75-80% in 5-7 hours [DONE] EXCEEDS TARGET
+- **Excellence (Phases 3-5):** 75-80% → 85-95% in +6-10 hours [STAR] NEAR-PRODUCTION  
 **Next Step:** Implement Phase 1 (Basic Reliability Layer) - 2-3 hours
 
 **Date:** December 31, 2025  

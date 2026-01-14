@@ -1,4 +1,4 @@
-# Chunk 5: Error Detection & Queue Management
+﻿# Chunk 5: Error Detection & Queue Management
 
 **Priority:** HIGH | **Phase:** Communication & Data Flow | **Est. Time:** 2-3 hours  
 **Depends On:** Chunk 2 (Extension Entry Point)  
@@ -15,11 +15,11 @@
 
 ## Objectives
 
-- ✅ Verify error detection sources (diagnostics, terminal, build files)
-- ✅ Ensure `AdvancedErrorDetector` is running
-- ✅ Verify `ErrorQueueManager` receives errors
-- ✅ Test error flow: Detection → Queue → UI
-- ✅ Fix any gaps in error pipeline
+- [DONE] Verify error detection sources (diagnostics, terminal, build files)
+- [DONE] Ensure `AdvancedErrorDetector` is running
+- [DONE] Verify `ErrorQueueManager` receives errors
+- [DONE] Test error flow: Detection → Queue → UI
+- [DONE] Fix any gaps in error pipeline
 
 ## Files to Analyze
 
@@ -54,22 +54,22 @@
 │ 3. Build Files (gradle logs, compiler output)              │
 └────────────────────────┬────────────────────────────────────┘
                          │
-                         ▼
+                         [DOWN]
 ┌─────────────────────────────────────────────────────────────┐
 │              AdvancedErrorDetector                           │
 └────────────────────────┬────────────────────────────────────┘
                          │
-                         ▼
+                         [DOWN]
 ┌─────────────────────────────────────────────────────────────┐
 │              ErrorQueueManager                               │
 └────────────────────────┬────────────────────────────────────┘
                          │
-                         ▼
+                         [DOWN]
 ┌─────────────────────────────────────────────────────────────┐
 │              RCAWebviewProvider                              │
 └────────────────────────┬────────────────────────────────────┘
                          │
-                         ▼
+                         [DOWN]
 ┌─────────────────────────────────────────────────────────────┐
 │              Webview (React UI)                              │
 └─────────────────────────────────────────────────────────────┘
@@ -77,12 +77,12 @@
 
 ## Validation Criteria
 
-- ✅ AdvancedErrorDetector starts successfully
-- ✅ Diagnostic errors are detected
-- ✅ Errors added to queue
-- ✅ Queue change events fire
-- ✅ Webview receives error queue data
-- ✅ UI displays errors
+- [DONE] AdvancedErrorDetector starts successfully
+- [DONE] Diagnostic errors are detected
+- [DONE] Errors added to queue
+- [DONE] Queue change events fire
+- [DONE] Webview receives error queue data
+- [DONE] UI displays errors
 
 ## Post-Chunk Verification
 
@@ -118,7 +118,7 @@ git tag chunk-5-complete -m "Chunk 5: Error Detection - Complete"
 
 **Date:** [Date]
 **Duration:** [Time]
-**Status:** 🟡 In Progress
+**Status:** [YELLOW] In Progress
 
 ### Objectives
 - [ ] Verify error detection sources

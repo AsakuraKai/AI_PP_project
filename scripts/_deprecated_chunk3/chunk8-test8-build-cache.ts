@@ -27,9 +27,9 @@ interface TestMetrics {
 async function runTest8BuildCache(): Promise<void> {
   console.log('\n[TEST] CHUNK 8 - TEST 8: BUILD CACHE CORRUPTION\n');
   console.log('='.repeat(80));
-  
+
   const projectRoot = path.join(__dirname, '../tests/fixtures/test8-build-cache');
-  
+
   // Test project structure
   const testFiles = {
     'build.gradle': `buildscript {
@@ -49,7 +49,7 @@ allprojects {
         mavenCentral()
     }
 }`,
-    
+
     'app/build.gradle': `plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
@@ -78,7 +78,7 @@ dependencies {
     implementation 'androidx.compose.ui:ui:1.5.4'
     implementation 'androidx.compose.material3:material3:1.1.2'
 }`,
-    
+
     'app/src/main/kotlin/MainActivity.kt': `package com.example.cachetest
 
 import android.os.Bundle
@@ -101,18 +101,18 @@ fun Greeting(name: String) {
     Text(text = "Hello \$name!")
 }`
   };
-  
+
   // Create test project
   console.log('[FOLDER] Creating test project...');
   await fs.mkdir(projectRoot, { recursive: true });
-  
+
   for (const [filename, content] of Object.entries(testFiles)) {
     const filePath = path.join(projectRoot, filename);
     await fs.mkdir(path.dirname(filePath), { recursive: true });
     await fs.writeFile(filePath, content);
   }
   console.log('[OK] Test project created\n');
-  
+
   // Cache corruption error log
   const errorLog = `FAILURE: Build failed with an exception.
 
@@ -139,27 +139,27 @@ Caused by: java.io.IOException: Cannot read from cache: corrupted cache header
 > Run with --scan to get full insights.
 
 BUILD FAILED in 12s`;
-  
+
   // Initialize agent
-  console.log('🤖 Initializing RCA agent...');
+  console.log('[INIT] Initializing RCA agent...');
   const llm = new OllamaClient({
     model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest',
     baseUrl: 'http://localhost:11434',
     timeout: 120000
   });
-  
+
   const agent = new MinimalReactAgent(llm, {
     maxIterations: 5,
     generateFix: true,
     projectRoot: projectRoot
   });
-  
+
   console.log('[OK] Agent initialized\n');
-  
+
   // Run analysis
   console.log('[SEARCH] Running RCA analysis...\n');
   const startTime = Date.now();
-  
+
   try {
     const result = await agent.analyze({
       type: 'kotlin_compilation',
@@ -170,12 +170,12 @@ BUILD FAILED in 12s`;
       column: 0,
       language: 'kotlin'
     });
-    
+
     const latency = Date.now() - startTime;
-    
+
     console.log('\n' + '='.repeat(80));
     console.log('[STATS] TEST 8 RESULTS\n');
-    
+
     console.log('[SEARCH] AGENT OUTPUT:\n');
     console.log('Root Cause:', result.rootCause);
     console.log('\nFix Guidelines:', result.fixGuidelines);
@@ -183,11 +183,11 @@ BUILD FAILED in 12s`;
       console.log('\nCode Fix:', result.codeFix.explanation);
     }
     console.log('\nConfidence:', result.confidence);
-    console.log('Latency:', `${latency}ms (${(latency/1000).toFixed(2)}s)`);
-    
+    console.log('Latency:', `${latency}ms (${(latency / 1000).toFixed(2)}s)`);
+
     // Calculate metrics
     const metrics = calculateMetrics(result, latency);
-    
+
     console.log('\n[UP] DETAILED METRICS:\n');
     console.log(`Diagnosis Accuracy:      ${metrics.diagnosis_accuracy}% ${getStatusEmoji(metrics.diagnosis_accuracy, 90)}`);
     console.log(`Solution Specificity:    ${metrics.solution_specificity}% ${getStatusEmoji(metrics.solution_specificity, 70)}`);
@@ -196,15 +196,15 @@ BUILD FAILED in 12s`;
     console.log(`Version Suggestions:     N/A (not applicable for cache errors)`);
     console.log(`Overall Usability:       ${metrics.overall_usability}% ${getStatusEmoji(metrics.overall_usability, 65)}`);
     console.log(`Confidence:              ${(metrics.confidence * 100).toFixed(0)}%`);
-    console.log(`Latency:                 ${(metrics.latency_ms/1000).toFixed(2)}s ${getStatusEmoji(metrics.latency_ms < 20000 ? 100 : 50, 80)}`);
-    
+    console.log(`Latency:                 ${(metrics.latency_ms / 1000).toFixed(2)}s ${getStatusEmoji(metrics.latency_ms < 20000 ? 100 : 50, 80)}`);
+
     // Save results
     const resultsDir = path.join(__dirname, '../tests/results/chunk8');
     await fs.mkdir(resultsDir, { recursive: true });
-    
+
     const timestamp = new Date().toISOString().replace(/:/g, '-');
     const resultsFile = path.join(resultsDir, `test8-build-cache-${timestamp}.json`);
-    
+
     await fs.writeFile(resultsFile, JSON.stringify({
       test: 'Test 8: Build Cache Corruption',
       timestamp: new Date().toISOString(),
@@ -213,13 +213,13 @@ BUILD FAILED in 12s`;
       errorLog,
       projectRoot
     }, null, 2));
-    
+
     console.log(`\n💾 Results saved to: ${resultsFile}`);
-    
+
     // Summary
     console.log('\n' + '='.repeat(80));
     console.log('[NOTE] TEST 8 SUMMARY\n');
-    
+
     if (metrics.overall_usability >= 65) {
       console.log('[OK] TEST PASSED - Usability target exceeded!');
     } else if (metrics.overall_usability >= 50) {
@@ -227,11 +227,11 @@ BUILD FAILED in 12s`;
     } else {
       console.log('[X] TEST FAILED - Usability below acceptable threshold');
     }
-    
+
     console.log(`\nTarget: 65%+ usability`);
     console.log(`Actual: ${metrics.overall_usability}%`);
     console.log(`Difference: ${metrics.overall_usability >= 65 ? '+' : ''}${(metrics.overall_usability - 65).toFixed(1)}%`);
-    
+
   } catch (error) {
     console.error('[X] Test failed with error:', error);
     throw error;
@@ -243,14 +243,14 @@ function calculateMetrics(result: any, latency: number): TestMetrics {
   let solution = 0;
   let fileId = 0;
   let codeEx = 0;
-  
+
   // Diagnosis: Should identify cache corruption
   const rootCause = result.rootCause?.toLowerCase() || '';
   if (rootCause.includes('cache') && rootCause.includes('corrupt')) diagnosis += 40;
   if (rootCause.includes('build cache') || rootCause.includes('gradle cache')) diagnosis += 30;
   if (rootCause.includes('kotlin') || rootCause.includes('compiler')) diagnosis += 20;
   if (rootCause.includes('ir lowering') || rootCause.includes('backend')) diagnosis += 10;
-  
+
   // Solution: Should suggest cache clear commands
   const fix = (Array.isArray(result.fixGuidelines) ? result.fixGuidelines.join(' ') : result.fixGuidelines || '').toLowerCase();
   if (fix.includes('./gradlew clean')) solution += 35;
@@ -258,19 +258,19 @@ function calculateMetrics(result: any, latency: number): TestMetrics {
   if (fix.includes('.gradle') && fix.includes('delete')) solution += 20;
   if (fix.includes('invalidate') || fix.includes('caches')) solution += 15;
   if (fix.includes('rebuild') || fix.includes('clean build')) solution += 10;
-  
+
   // File identification: N/A for cache issues (no specific file to edit)
   if (fix.includes('terminal') || fix.includes('command')) fileId += 50;
   if (fix.includes('./gradlew')) fileId += 50;
-  
+
   // Code examples: Should show exact commands
   const code = result.codeFix?.diff || result.fixGuidelines?.join(' ') || '';
   if (code.includes('./gradlew clean')) codeEx += 40;
   if (code.includes('./gradlew build')) codeEx += 30;
   if (code.includes('rm -rf .gradle') || code.includes('delete .gradle')) codeEx += 30;
-  
+
   const overall = (diagnosis + solution + fileId + codeEx) / 4;
-  
+
   return {
     diagnosis_accuracy: Math.min(100, diagnosis),
     solution_specificity: Math.min(100, solution),

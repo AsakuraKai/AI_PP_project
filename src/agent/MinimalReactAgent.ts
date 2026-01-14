@@ -155,7 +155,7 @@ export class MinimalReactAgent {
           ],
         });
       }
-      
+
       // Register VersionLookupTool (Phase 3, Chunk 2)
       if (!this.toolRegistry.has('version_lookup')) {
         const versionLookupTool = new VersionLookupTool();
@@ -233,7 +233,7 @@ export class MinimalReactAgent {
         confidence: classification.confidence,
         reasoning: classification.reasoning
       });
-      
+
       // Get system prompt and few-shot examples if using PromptEngine
       const stopPromptGen = this.performanceTracker.startTimer('prompt_generation');
       let systemPrompt: string | null = null;
@@ -296,7 +296,7 @@ export class MinimalReactAgent {
                     parsedL1.thought || ''
                   );
                 } catch (fixError) {
-                  console.warn('⚠ Fix generation failed (progressive):', fixError);
+                  console.warn('[WARN] Fix generation failed (progressive):', fixError);
                 }
               }
 
@@ -351,7 +351,7 @@ export class MinimalReactAgent {
                     parsedL2.thought || ''
                   );
                 } catch (fixError) {
-                  console.warn('⚠ Fix generation failed (progressive):', fixError);
+                  console.warn('[WARN] Fix generation failed (progressive):', fixError);
                 }
               }
 
@@ -363,7 +363,7 @@ export class MinimalReactAgent {
           }
         }
 
-        console.log('↩️ Progressive prompting insufficient; proceeding with full ReAct loop');
+        console.log('[FALLBACK] Progressive prompting insufficient; proceeding with full ReAct loop');
       }
 
       // Dynamic iteration loop
@@ -376,7 +376,7 @@ export class MinimalReactAgent {
 
         // Generate thought/action using PromptEngine or fallback
         let response: { thought: string; action: ToolCall | null; rootCause?: string; fixGuidelines?: string[]; confidence?: number };
-        
+
         if (this.usePromptEngine) {
           const stopPromptBuild = this.performanceTracker.startTimer('prompt_build');
           const prompt = await this.promptEngine.buildIterationPrompt({
@@ -396,7 +396,7 @@ export class MinimalReactAgent {
           if (i === 0) {
             console.log(`\n[SEARCH] PROMPT SENT TO LLM (first 1000 chars):\n${prompt.substring(0, 1000)}\n...\n(last 500 chars):\n${prompt.substring(Math.max(0, prompt.length - 500))}\n`);
           }
-          
+
           // Iteration 6 Phase 2: Use generateWithRetry for better reliability
           const llmResponse = await this.llm.generateWithRetry(prompt, {
             temperature: 0.0, // Starting temp (will progress to 0.3, 0.5, 0.7 if needed)
@@ -406,7 +406,7 @@ export class MinimalReactAgent {
             qualityThreshold: 0.5, // P2 FIX: Lowered from 0.6 to accept "good enough" responses
           }, error.message + ' ' + (error.stackTrace?.map(f => f.file).join(' ') || '')); // P3: Pass error context for accuracy check
           stopLLM();
-          
+
           // DEBUG: Log raw LLM response
           if (i === 0) {
             console.log(`\n[SEARCH] RAW LLM RESPONSE (full):\n${llmResponse.text}\n`);
@@ -451,7 +451,7 @@ export class MinimalReactAgent {
           } catch (toolError) {
             const errorMsg = `Tool ${response.action.tool} failed: ${toolError instanceof Error ? toolError.message : 'Unknown error'}`;
             state.observations.push(errorMsg);
-            
+
             // Emit observation event (failure)
             this.stream.emitObservation(errorMsg, state.iteration, false);
 
@@ -466,7 +466,7 @@ export class MinimalReactAgent {
             const params = response.action.parameters as { filePath: string; line: number };
             const fileContent = await this.readFileTool.execute(params.filePath, params.line);
             stopReadFile();
-            
+
             state.actions.push(response.action);
             state.observations.push(fileContent || 'No file content available');
 
@@ -510,7 +510,7 @@ export class MinimalReactAgent {
 
             return result;
           }
-          
+
           // Phase 1: Validate output quality before accepting
           const preliminaryResult: RCAResult = {
             error: error.message,
@@ -520,23 +520,23 @@ export class MinimalReactAgent {
             iterations: i + 1,
             toolsUsed: state.actions.map((a) => a.tool),
           };
-          
+
           const validation = this.outputValidator.validate(preliminaryResult, error);
           console.log(`[STATS] Quality score: ${(validation.score * 100).toFixed(1)}% (threshold: 60%)`);
           console.log(`   Breakdown: fileSpec=${(validation.dimensions.filePathSpecificity * 100).toFixed(0)}% versionSpec=${(validation.dimensions.versionSpecificity * 100).toFixed(0)}% codeExamples=${(validation.dimensions.codeExamples * 100).toFixed(0)}%`);
-          
+
           // If quality is too low, try to regenerate (max 2 attempts)
           let regenerationCount = 0;
           let finalResult = preliminaryResult;
           let finalValidation = validation;
           let bestScore = validation.score;
           let bestResult = preliminaryResult;
-          
+
           while (!finalValidation.passes && regenerationCount < this.maxRegenerations) {
             regenerationCount++;
             console.log(`[WARN] Quality below threshold. Regenerating (attempt ${regenerationCount}/${this.maxRegenerations})...`);
             console.log(`   Issues: ${finalValidation.issues.slice(0, 3).join('; ')}`);
-            
+
             // Build regeneration prompt with SPECIFIC feedback
             const stopRegen = this.performanceTracker.startTimer('output_regeneration');
             const regenPrompt = this.promptEngine.buildRegenerationPrompt({
@@ -547,7 +547,7 @@ export class MinimalReactAgent {
               dimensionScores: finalValidation.dimensions,
               iteration: i + 1,
             });
-            
+
             // Iteration 6 Phase 2: Use generateWithRetry for regeneration
             // This replaces the manual temperature progression with quality-based retry
             const regenResponse = await this.llm.generateWithRetry(regenPrompt, {
@@ -559,9 +559,9 @@ export class MinimalReactAgent {
               qualityThreshold: 0.55, // P2 FIX: Lowered from 0.65 (regeneration gets domain-specific examples from P1)
             }, error.message + ' ' + (error.stackTrace?.map(f => f.file).join(' ') || '')); // P3: Pass error context for accuracy check
             stopRegen();
-            
+
             const parsedRegen = this.promptEngine.parseResponse(regenResponse.text);
-            
+
             if (parsedRegen.rootCause && parsedRegen.fixGuidelines) {
               finalResult = {
                 error: error.message,
@@ -571,11 +571,11 @@ export class MinimalReactAgent {
                 iterations: i + 1,
                 toolsUsed: state.actions.map((a) => a.tool),
               };
-              
+
               finalValidation = this.outputValidator.validate(finalResult, error);
               console.log(`[STATS] Regeneration ${regenerationCount} score: ${(finalValidation.score * 100).toFixed(1)}%`);
               console.log(`   Breakdown: fileSpec=${(finalValidation.dimensions.filePathSpecificity * 100).toFixed(0)}% versionSpec=${(finalValidation.dimensions.versionSpecificity * 100).toFixed(0)}% codeExamples=${(finalValidation.dimensions.codeExamples * 100).toFixed(0)}%`);
-              
+
               // Track best result across regenerations
               if (finalValidation.score > bestScore) {
                 bestScore = finalValidation.score;
@@ -587,24 +587,24 @@ export class MinimalReactAgent {
               break;
             }
           }
-          
+
           // Use best result found (not necessarily last)
           finalResult = bestResult;
           finalValidation = this.outputValidator.validate(finalResult, error);
-          
+
           // Fix #3: Fallback to original if ALL regenerations were worse
           if (finalValidation.score < validation.score) {
             console.log(`[WARN] Regenerations worse than original (${(finalValidation.score * 100).toFixed(1)}% < ${(validation.score * 100).toFixed(1)}%), reverting`);
             finalResult = preliminaryResult;
             finalValidation = validation;
           }
-          
+
           if (!finalValidation.passes) {
             console.log(`[WARN] Quality still below threshold after ${regenerationCount} attempts. Proceeding with best result.`);
           }
-          
+
           stopTotal();
-          
+
           // Chunk 5: Generate code fix if enabled
           let codeFix: CodeFix | null = null;
           if (this.generateFix) {
@@ -616,18 +616,18 @@ export class MinimalReactAgent {
                 finalResult.rootCause,
                 state.thoughts.join('\n')
               );
-              
+
               if (codeFix) {
                 console.log(`✓ Code fix generated (confidence: ${codeFix.confidence}%)`);
               } else {
-                console.log('⚠ Could not generate code fix');
+                console.log('[WARN] Could not generate code fix');
               }
             } catch (fixError) {
-              console.warn('⚠ Fix generation failed:', fixError);
+              console.warn('[WARN] Fix generation failed:', fixError);
             }
             stopFixGen();
           }
-          
+
           const result: RCAResult = {
             ...finalResult,
             codeFix: codeFix || undefined, // Chunk 5: Include generated fix
@@ -644,8 +644,8 @@ export class MinimalReactAgent {
       }
 
       // Reached max iterations - force conclusion
-      console.warn(`⚠ Reached max iterations (${this.maxIterations}), forcing conclusion`);
-      
+      console.warn(`[WARN] Reached max iterations (${this.maxIterations}), forcing conclusion`);
+
       const stopFinalPrompt = this.performanceTracker.startTimer('final_prompt_generation');
       const finalPrompt = this.usePromptEngine
         ? this.promptEngine.buildFinalPrompt(state)
@@ -658,28 +658,28 @@ export class MinimalReactAgent {
       // doesn't implement generateWithRetry).
       const finalResponse = this.usePromptEngine && typeof (this.llm as any).generateWithRetry === 'function'
         ? await (this.llm as any).generateWithRetry(
-            finalPrompt,
-            {
-              temperature: 0.5,
-              maxTokens: 1500,
-            },
-            {
-              maxAttempts: 3,
-              qualityThreshold: 0.45,
-            },
-            error.message + ' ' + (error.stackTrace?.map((f) => f.file).join(' ') || '')
-          )
-        : await this.llm.generate(finalPrompt, {
+          finalPrompt,
+          {
             temperature: 0.5,
             maxTokens: 1500,
-          });
+          },
+          {
+            maxAttempts: 3,
+            qualityThreshold: 0.45,
+          },
+          error.message + ' ' + (error.stackTrace?.map((f) => f.file).join(' ') || '')
+        )
+        : await this.llm.generate(finalPrompt, {
+          temperature: 0.5,
+          maxTokens: 1500,
+        });
       stopFinalLLM();
 
       stopTotal();
 
       if (this.usePromptEngine) {
         const parsed = this.promptEngine.parseResponse(finalResponse.text);
-        
+
         // Chunk 5: Generate code fix if enabled (for max iterations case)
         let codeFix: CodeFix | null = null;
         if (this.generateFix && parsed.rootCause) {
@@ -692,11 +692,11 @@ export class MinimalReactAgent {
               state.thoughts.join('\n')
             );
           } catch (fixError) {
-            console.warn('⚠ Fix generation failed:', fixError);
+            console.warn('[WARN] Fix generation failed:', fixError);
           }
           stopFixGen();
         }
-        
+
         const result: RCAResult = {
           error: error.message,
           rootCause: parsed.rootCause || 'Analysis incomplete - reached max iterations',
@@ -716,7 +716,7 @@ export class MinimalReactAgent {
         return result;
       } else {
         const result = this.parseOutputLegacy(finalResponse.text, error, state);
-        
+
         // Emit completion event
         this.stream.emitComplete(result, this.maxIterations);
 
@@ -727,7 +727,7 @@ export class MinimalReactAgent {
       }
     } catch (error) {
       stopTotal();
-      
+
       // Emit error event (best effort, don't let it break error handling)
       try {
         this.stream.emitError(

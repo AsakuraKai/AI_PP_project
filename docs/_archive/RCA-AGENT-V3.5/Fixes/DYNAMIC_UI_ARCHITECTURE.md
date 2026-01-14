@@ -1,4 +1,4 @@
-# Dynamic UI Architecture - Visual Flow
+﻿# Dynamic UI Architecture - Visual Flow
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -7,7 +7,7 @@
 
                             User Actions / System Events
                                        │
-                                       ▼
+                                       [DOWN]
 ┌────────────────────────────────────────────────────────────────────────┐
 │                          StateManager.ts                                │
 │  - addError()           → fires onErrorQueueChange                     │
@@ -17,7 +17,7 @@
 └────────────────────────────────────────────────────────────────────────┘
                                        │
                                        │ EventEmitter events
-                                       ▼
+                                       [DOWN]
 ┌────────────────────────────────────────────────────────────────────────┐
 │                        UIEventManager.ts (NEW!)                         │
 │  ┌──────────────────────────────────────────────────────────────────┐  │
@@ -39,7 +39,7 @@
 └────────────────────────────────────────────────────────────────────────┘
                                        │
                                        │ fires onUIEvent / onActivityUpdate
-                                       ▼
+                                       [DOWN]
 ┌────────────────────────────────────────────────────────────────────────┐
 │                      RCAWebviewProvider.ts                              │
 │  Subscribes to UIEventManager:                                         │
@@ -53,17 +53,17 @@
 └────────────────────────────────────────────────────────────────────────┘
                                        │
                                        │ postMessage
-                                       ▼
+                                       [DOWN]
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                          FRONTEND (Webview)                              │
 └─────────────────────────────────────────────────────────────────────────┘
 
                           window.addEventListener('message')
                                        │
-                                       ▼
+                                       [DOWN]
            ┌────────────────────────────────────────────┐
            │                                             │
-           ▼                        ▼                    ▼
+           [DOWN]                        [DOWN]                    [DOWN]
    ┌──────────────┐        ┌──────────────┐    ┌──────────────┐
    │useDashboard  │        │useMetrics    │    │useErrorQueue │
    │Data.ts       │        │.ts           │    │.ts           │
@@ -73,7 +73,7 @@
            │ • uiEvent              │ • uiEvent          │ • uiEvent
            │ • activityUpdate       │ • metrics_changed  │ • error_*
            │                        │ • analysis_*       │
-           ▼                        ▼                    ▼
+           [DOWN]                        [DOWN]                    [DOWN]
    ┌──────────────┐        ┌──────────────┐    ┌──────────────┐
    │Dashboard.tsx │        │Metrics.tsx   │    │ErrorQueue.tsx│
    └──────────────┘        └──────────────┘    └──────────────┘
@@ -81,18 +81,18 @@
            │ Uses:                  │ Updates:           │ Updates:
            │ AnimatedStatGrid       │ Charts             │ Error list
            │ Activity Feed          │ Summary stats      │ Counts
-           ▼                        ▼                    ▼
+           [DOWN]                        [DOWN]                    [DOWN]
    ┌──────────────────────────────────────────────────────────┐
    │            AnimatedStat.tsx (NEW!)                        │
    │  • requestAnimationFrame for smooth transitions          │
    │  • 800ms animation with ease-out cubic                   │
    │  • Pulse effect on change                                │
-   │  • Trend indicators (▲ ▼)                                │
+   │  • Trend indicators ([UP] [DOWN])                                │
    │  • Scale effect                                          │
    └──────────────────────────────────────────────────────────┘
                                        │
-                                       ▼
-                              VISUAL UPDATE ✨
+                                       [DOWN]
+                              VISUAL UPDATE [SPARKLE]
 ```
 
 ---
@@ -104,43 +104,43 @@
 ```
 User runs: ./gradlew build
               │
-              ▼
+              [DOWN]
 ErrorQueueManager.addError()
               │
-              ▼
+              [DOWN]
 StateManager.addError()
               │
-              ▼
+              [DOWN]
 fires onErrorQueueChange → [error1, error2, ...]
               │
-              ▼
+              [DOWN]
 UIEventManager receives event
               │
               ├─► Fires UIEvent { type: 'error_added', data: { error } }
               │
               └─► Adds to activity feed: "New error detected: ..."
                             │
-                            ▼
+                            [DOWN]
             RCAWebviewProvider receives
                             │
-                            ▼
+                            [DOWN]
             postMessage({ command: 'uiEvent', event })
                             │
-                            ▼
+                            [DOWN]
             useDashboardData receives message
                             │
                             ├─► Updates pendingErrors count
                             │
                             └─► Triggers loadDashboardData()
                                           │
-                                          ▼
+                                          [DOWN]
                               Dashboard.tsx re-renders
                                           │
-                                          ▼
+                                          [DOWN]
                     AnimatedStatGrid animates counter up
                                           │
-                                          ▼
-                              ✅ User sees change (< 100ms)
+                                          [DOWN]
+                              [DONE] User sees change (< 100ms)
 ```
 
 ### Example 2: Analysis Completed
@@ -148,16 +148,16 @@ UIEventManager receives event
 ```
 User clicks "Analyze"
               │
-              ▼
+              [DOWN]
 AnalysisService.analyzeError()
               │
-              ▼
+              [DOWN]
 StateManager.addToHistory(result)
               │
-              ▼
+              [DOWN]
 fires onHistoryChange → [historyItem1, historyItem2, ...]
               │
-              ▼
+              [DOWN]
 UIEventManager receives event
               │
               ├─► Fires UIEvent { type: 'analysis_completed' }
@@ -166,30 +166,30 @@ UIEventManager receives event
               │
               └─► Schedules metrics update (debounced 1s)
                             │
-                            ▼
+                            [DOWN]
             RCAWebviewProvider receives
                             │
                             ├─► postMessage('uiEvent')
                             │
                             └─► postMessage('activityUpdate')
                                           │
-                                          ▼
+                                          [DOWN]
               ┌─────────────────────────┴────────────────────────┐
               │                                                    │
-              ▼                                                    ▼
+              [DOWN]                                                    [DOWN]
    useDashboardData                                        useMetrics
    • Shows activity                                        • Auto-refreshes
    • Updates stats                                         • Recalculates
               │                                                    │
-              ▼                                                    ▼
+              [DOWN]                                                    [DOWN]
    Dashboard.tsx                                          Metrics.tsx
    • AnimatedStat: analyzesPerformed++                    • Charts update
    • AnimatedStat: successRate updates                    • Stats recalc
    • Activity feed adds item                              
               │                                                    │
               └────────────────┬───────────────────────────────────┘
-                               ▼
-                    ✅ User sees updates instantly
+                               [DOWN]
+                    [DONE] User sees updates instantly
                     • Stats animate smoothly
                     • Activity feed shows success
                     • Metrics charts update
@@ -200,16 +200,16 @@ UIEventManager receives event
 ```
 User clicks "Analyze All" (10 errors)
               │
-              ▼
+              [DOWN]
 10x analysis complete in 2 seconds
               │
-              ▼
+              [DOWN]
 StateManager.addToHistory() × 10
               │
-              ▼
+              [DOWN]
 fires onHistoryChange × 10
               │
-              ▼
+              [DOWN]
 UIEventManager receives 10 events
               │
               ├─► Fires 10x 'analysis_completed'
@@ -222,14 +222,14 @@ UIEventManager receives 10 events
                   ↓
          After 1s: Single 'metrics_changed' event
                             │
-                            ▼
+                            [DOWN]
             useMetrics auto-refreshes ONCE
                             │
-                            ▼
+                            [DOWN]
                   Metrics.tsx updates
                             │
-                            ▼
-          ✅ No flicker! Smooth single update
+                            [DOWN]
+          [DONE] No flicker! Smooth single update
              instead of 10 rapid updates
 ```
 
@@ -301,21 +301,21 @@ Total: ~15 KB additional memory
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  BEFORE: Static, Polling-Based                               │
-│  ⏱️  30-60s update delay                                     │
-│  🔄 No visual feedback                                       │
-│  📊 Static numbers                                           │
+│  [TIMER]  30-60s update delay                                     │
+│  [REFRESH] No visual feedback                                       │
+│  [CHART] Static numbers                                           │
 └─────────────────────────────────────────────────────────────┘
 
-                          ⬇️ UPGRADE ⬇️
+                          [DOWN] UPGRADE [DOWN]
 
 ┌─────────────────────────────────────────────────────────────┐
 │  AFTER: Dynamic, Event-Driven                                │
-│  ⚡ < 100ms real-time updates                                │
-│  ✅ Animated visual feedback                                 │
-│  📈 Smooth transitions + trends                              │
-│  🎯 Live activity feed                                       │
+│  [FAST] < 100ms real-time updates                                │
+│  [DONE] Animated visual feedback                                 │
+│  [GRAPH] Smooth transitions + trends                              │
+│  [TARGET] Live activity feed                                       │
 │  💚 Great user experience                                    │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**The UI is now fully reactive!** 🚀
+**The UI is now fully reactive!** [LAUNCH]

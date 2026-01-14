@@ -1,4 +1,4 @@
-# RCA Agent Developer Guide
+﻿# RCA Agent Developer Guide
 
 **Version:** 2.0.0  
 **Last Updated:** January 5, 2026
@@ -31,22 +31,22 @@ RCA Agent follows a **layered architecture** with clear separation of concerns:
 │  (Panel UI, Commands, Integrations, Settings)       │
 └──────────────────┬──────────────────────────────────┘
                    │
-┌──────────────────▼──────────────────────────────────┐
+┌──────────────────[DOWN]──────────────────────────────────┐
 │                   Agent Layer                        │
 │  (MultiPassAgent, StateManager, ToolOrchestrator)   │
 └──────────────────┬──────────────────────────────────┘
                    │
-┌──────────────────▼──────────────────────────────────┐
+┌──────────────────[DOWN]──────────────────────────────────┐
 │                   Tool Layer                         │
 │  (FileResolver, VersionLookup, FixGenerator, etc.)  │
 └──────────────────┬──────────────────────────────────┘
                    │
-┌──────────────────▼──────────────────────────────────┐
+┌──────────────────[DOWN]──────────────────────────────────┐
 │                Knowledge & LLM Layer                 │
 │  (TemplateEngine, FewShotDB, OllamaClient)         │
 └──────────────────┬──────────────────────────────────┘
                    │
-┌──────────────────▼──────────────────────────────────┐
+┌──────────────────[DOWN]──────────────────────────────────┐
 │                   Storage Layer                      │
 │  (ChromaDB, Cache, File System)                     │
 └─────────────────────────────────────────────────────┘
@@ -275,9 +275,9 @@ interface FewShotExample {
 - **Limit:** Max 3 examples per query (prevent model confusion)
 
 **Performance Findings:**
-- ✅ **3-5 examples optimal** for quality
-- ❌ **All 82 examples causes regression** (58.3% vs 61% with 3-5)
-- ✅ **Category relevance matters** more than quantity
+- [DONE] **3-5 examples optimal** for quality
+- [FAIL] **All 82 examples causes regression** (58.3% vs 61% with 3-5)
+- [DONE] **Category relevance matters** more than quantity
 
 ---
 
@@ -339,11 +339,11 @@ enum ErrorSeverity {
 ```
 
 **Features:**
-- 🎯 **Contextual error messages** with emoji indicators
-- 💡 **Step-by-step recovery instructions** with time estimates
-- 🔧 **Alternative solutions** for common scenarios
-- 📚 **Documentation links** (Ollama, model installation)
-- ⚡ **Quick action buttons** (Retry, View Logs, Report Issue)
+- [TARGET] **Contextual error messages** with emoji indicators
+- [IDEA] **Step-by-step recovery instructions** with time estimates
+- [TOOL] **Alternative solutions** for common scenarios
+- [DOCS] **Documentation links** (Ollama, model installation)
+- [FAST] **Quick action buttons** (Retry, View Logs, Report Issue)
 
 **Example Error Handling:**
 ```typescript
@@ -521,7 +521,7 @@ npm run test:report
 ```
 
 **Test Cases:**
-1. AGP Version Conflict (85% accuracy ✅)
+1. AGP Version Conflict (85% accuracy [DONE])
 2. Kotlin lateinit NPE (76% accuracy)
 3. Compose API Breakage (69% accuracy)
 4. XML Layout Inflation (54% accuracy)
@@ -1032,6 +1032,6 @@ perf: Optimize template loading
 
 ---
 
-**Happy Coding! 🚀**
+**Happy Coding! [LAUNCH]**
 
 Questions? Open an issue or start a discussion on GitHub.

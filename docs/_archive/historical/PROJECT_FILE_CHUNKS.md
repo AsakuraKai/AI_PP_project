@@ -1,4 +1,4 @@
-# RCA Agent - Project Files by Chunk
+﻿# RCA Agent - Project Files by Chunk
 
 > **Purpose:** Organized file listing by implementation phase/chunk  
 > **Generated:** January 2, 2026  
@@ -6,7 +6,7 @@
 
 ---
 
-## 📦 **CHUNK 1: MVP Foundation (Core Agent)**
+## [PACKAGE] **CHUNK 1: MVP Foundation (Core Agent)**
 
 ### **Core Agent Logic**
 - `src/agent/MinimalReactAgent.ts` - Main ReACT agent implementation
@@ -32,7 +32,7 @@
 
 ---
 
-## 📦 **CHUNK 2: Core Tools & Parsing**
+## [PACKAGE] **CHUNK 2: Core Tools & Parsing**
 
 ### **Advanced Parsers**
 - `src/utils/parsers/KotlinParser.ts` - Comprehensive Kotlin error parser
@@ -50,7 +50,7 @@
 
 ---
 
-## 📦 **CHUNK 3: Database & Knowledge Management**
+## [PACKAGE] **CHUNK 3: Database & Knowledge Management**
 
 ### **ChromaDB Integration**
 - `src/db/ChromaDBClient.ts` - ChromaDB client
@@ -89,7 +89,7 @@
 
 ---
 
-## 📦 **CHUNK 4: Android-Specific Tools & Parsers**
+## [PACKAGE] **CHUNK 4: Android-Specific Tools & Parsers**
 
 ### **Android Parsers**
 - `src/utils/parsers/JetpackComposeParser.ts` - Jetpack Compose error parser
@@ -110,7 +110,7 @@
 
 ---
 
-## 📦 **CHUNK 5: Polish & Advanced Features**
+## [PACKAGE] **CHUNK 5: Polish & Advanced Features**
 
 ### **Agent State Streaming**
 - `src/agent/AgentStateStream.ts` - Real-time agent state updates
@@ -133,7 +133,7 @@
 
 ---
 
-## 🧪 **TEST INFRASTRUCTURE**
+## [TEST] **TEST INFRASTRUCTURE**
 
 ### **Unit Tests (42 files)**
 - `tests/unit/AgentStateStream.test.ts`
@@ -196,7 +196,7 @@
 
 ---
 
-## 🔧 **SCRIPTS & UTILITIES**
+## [TOOL] **SCRIPTS & UTILITIES**
 
 ### **Test Runners**
 - `scripts/phase4-test-runner.ts` - Phase 4 unified test runner
@@ -242,7 +242,7 @@
 
 ---
 
-## 🎨 **VS CODE EXTENSION**
+## [DESIGN] **VS CODE EXTENSION**
 
 ### **Extension Entry Point**
 - `vscode-extension/src/extension.ts` - Main extension entry point
@@ -345,7 +345,7 @@
 
 ---
 
-## ⚙️ **CONFIGURATION FILES**
+## [SETTINGS] **CONFIGURATION FILES**
 
 ### **Root Configuration**
 - `package.json` - Project dependencies and scripts
@@ -415,7 +415,7 @@
 
 ---
 
-## 🎯 **FILE ORGANIZATION PRINCIPLES**
+## [TARGET] **FILE ORGANIZATION PRINCIPLES**
 
 **Backend Core (`src/`):**
 - `agent/` - Agent logic and prompts

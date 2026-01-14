@@ -27,9 +27,9 @@ interface TestMetrics {
 async function runTest7GradleNetwork(): Promise<void> {
   console.log('\n[TEST] CHUNK 8 - TEST 7: GRADLE SYNC FAILED (NETWORK)\n');
   console.log('='.repeat(80));
-  
+
   const projectRoot = path.join(__dirname, '../tests/fixtures/test7-gradle-network');
-  
+
   // Test project structure
   const testFiles = {
     'build.gradle': `buildscript {
@@ -52,7 +52,7 @@ allprojects {
         mavenCentral()
     }
 }`,
-    
+
     'app/build.gradle': `plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
@@ -74,7 +74,7 @@ dependencies {
     // Dependency only available on internal repo
     implementation 'com.company.internal:sdk:2.0.0'
 }`,
-    
+
     'settings.gradle': `pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -94,18 +94,18 @@ dependencyResolutionManagement {
 rootProject.name = "NetworkTest"
 include ':app'`
   };
-  
+
   // Create test project
   console.log('[FOLDER] Creating test project...');
   await fs.mkdir(projectRoot, { recursive: true });
-  
+
   for (const [filename, content] of Object.entries(testFiles)) {
     const filePath = path.join(projectRoot, filename);
     await fs.mkdir(path.dirname(filePath), { recursive: true });
     await fs.writeFile(filePath, content);
   }
   console.log('[OK] Test project created\n');
-  
+
   // Network error log
   const errorLog = `FAILURE: Build failed with an exception.
 
@@ -128,27 +128,27 @@ A problem occurred configuring project ':app'.
 > Run with --stacktrace option to get the stack trace.
 > Run with --info or --debug option to get more log output.
 > Run with --scan to get full insights.`;
-  
+
   // Initialize agent
-  console.log('🤖 Initializing RCA agent...');
+  console.log('[INIT] Initializing RCA agent...');
   const llm = new OllamaClient({
     model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest',
     baseUrl: 'http://localhost:11434',
     timeout: 120000
   });
-  
+
   const agent = new MinimalReactAgent(llm, {
     maxIterations: 5,
     generateFix: true,
     projectRoot: projectRoot
   });
-  
+
   console.log('[OK] Agent initialized\n');
-  
+
   // Run analysis
   console.log('[SEARCH] Running RCA analysis...\n');
   const startTime = Date.now();
-  
+
   try {
     const result = await agent.analyze({
       type: 'gradle_sync',
@@ -159,12 +159,12 @@ A problem occurred configuring project ':app'.
       column: 0,
       language: 'gradle'
     });
-    
+
     const latency = Date.now() - startTime;
-    
+
     console.log('\n' + '='.repeat(80));
     console.log('[STATS] TEST 7 RESULTS\n');
-    
+
     console.log('[SEARCH] AGENT OUTPUT:\n');
     console.log('Root Cause:', result.rootCause);
     console.log('\nFix Guidelines:', result.fixGuidelines);
@@ -172,11 +172,11 @@ A problem occurred configuring project ':app'.
       console.log('\nCode Fix:', result.codeFix.explanation);
     }
     console.log('\nConfidence:', result.confidence);
-    console.log('Latency:', `${latency}ms (${(latency/1000).toFixed(2)}s)`);
-    
+    console.log('Latency:', `${latency}ms (${(latency / 1000).toFixed(2)}s)`);
+
     // Calculate metrics
     const metrics = calculateMetrics(result, latency);
-    
+
     console.log('\n[UP] DETAILED METRICS:\n');
     console.log(`Diagnosis Accuracy:      ${metrics.diagnosis_accuracy}% ${getStatusEmoji(metrics.diagnosis_accuracy, 90)}`);
     console.log(`Solution Specificity:    ${metrics.solution_specificity}% ${getStatusEmoji(metrics.solution_specificity, 70)}`);
@@ -185,15 +185,15 @@ A problem occurred configuring project ':app'.
     console.log(`Version Suggestions:     N/A (not applicable for network errors)`);
     console.log(`Overall Usability:       ${metrics.overall_usability}% ${getStatusEmoji(metrics.overall_usability, 70)}`);
     console.log(`Confidence:              ${(metrics.confidence * 100).toFixed(0)}%`);
-    console.log(`Latency:                 ${(metrics.latency_ms/1000).toFixed(2)}s ${getStatusEmoji(metrics.latency_ms < 20000 ? 100 : 50, 80)}`);
-    
+    console.log(`Latency:                 ${(metrics.latency_ms / 1000).toFixed(2)}s ${getStatusEmoji(metrics.latency_ms < 20000 ? 100 : 50, 80)}`);
+
     // Save results
     const resultsDir = path.join(__dirname, '../tests/results/chunk8');
     await fs.mkdir(resultsDir, { recursive: true });
-    
+
     const timestamp = new Date().toISOString().replace(/:/g, '-');
     const resultsFile = path.join(resultsDir, `test7-gradle-network-${timestamp}.json`);
-    
+
     await fs.writeFile(resultsFile, JSON.stringify({
       test: 'Test 7: Gradle Sync Failed (Network)',
       timestamp: new Date().toISOString(),
@@ -202,13 +202,13 @@ A problem occurred configuring project ':app'.
       errorLog,
       projectRoot
     }, null, 2));
-    
+
     console.log(`\n💾 Results saved to: ${resultsFile}`);
-    
+
     // Summary
     console.log('\n' + '='.repeat(80));
     console.log('[NOTE] TEST 7 SUMMARY\n');
-    
+
     if (metrics.overall_usability >= 70) {
       console.log('[OK] TEST PASSED - Usability target exceeded!');
     } else if (metrics.overall_usability >= 55) {
@@ -216,11 +216,11 @@ A problem occurred configuring project ':app'.
     } else {
       console.log('[X] TEST FAILED - Usability below acceptable threshold');
     }
-    
+
     console.log(`\nTarget: 70%+ usability`);
     console.log(`Actual: ${metrics.overall_usability}%`);
     console.log(`Difference: ${metrics.overall_usability >= 70 ? '+' : ''}${(metrics.overall_usability - 70).toFixed(1)}%`);
-    
+
   } catch (error) {
     console.error('[X] Test failed with error:', error);
     throw error;
@@ -232,14 +232,14 @@ function calculateMetrics(result: any, latency: number): TestMetrics {
   let solution = 0;
   let fileId = 0;
   let codeEx = 0;
-  
+
   // Diagnosis: Should identify network/repository issue
   const rootCause = result.rootCause?.toLowerCase() || '';
   if (rootCause.includes('network') || rootCause.includes('connection')) diagnosis += 30;
   if (rootCause.includes('repository') || rootCause.includes('maven')) diagnosis += 30;
   if (rootCause.includes('timeout') || rootCause.includes('unreachable')) diagnosis += 20;
   if (rootCause.includes('custom-internal-repo') || rootCause.includes('internal')) diagnosis += 20;
-  
+
   // Solution: Should suggest removing internal repo or adding VPN/proxy
   const fix = (Array.isArray(result.fixGuidelines) ? result.fixGuidelines.join(' ') : result.fixGuidelines || '').toLowerCase();
   if (fix.includes('remove') && fix.includes('repository')) solution += 30;
@@ -247,19 +247,19 @@ function calculateMetrics(result: any, latency: number): TestMetrics {
   if (fix.includes('vpn') || fix.includes('proxy') || fix.includes('network')) solution += 15;
   if (fix.includes('maven { url')) solution += 15;
   if (fix.includes('comment') || fix.includes('//') || fix.includes('delete')) solution += 15;
-  
+
   // File identification: Should mention build.gradle or settings.gradle
   if (fix.includes('build.gradle') && fix.includes('settings.gradle')) fileId += 100;
   else if (fix.includes('build.gradle') || fix.includes('settings.gradle')) fileId += 70;
-  
+
   // Code examples: Should show how to remove/comment repository
   const code = result.codeFix?.diff || result.fixGuidelines?.join(' ') || '';
   if (code.includes('//') && code.includes('maven')) codeEx += 50;
   if (code.includes('repositories {')) codeEx += 30;
   if (code.includes('custom-internal-repo') || code.includes('remove this line')) codeEx += 20;
-  
+
   const overall = (diagnosis + solution + fileId + codeEx) / 4;
-  
+
   return {
     diagnosis_accuracy: Math.min(100, diagnosis),
     solution_specificity: Math.min(100, solution),

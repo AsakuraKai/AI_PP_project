@@ -1,10 +1,10 @@
-# 🎨 VS Code Extension - Visual Workflow Guide
+﻿# [DESIGN] VS Code Extension - Visual Workflow Guide
 
 > **Visual diagrams showing how the extension works from user interaction to final result**
 
 ---
 
-## 🎯 Table of Contents
+## [TARGET] Table of Contents
 
 1. [User Interaction Flow](#user-interaction-flow)
 2. [Analysis Pipeline](#analysis-pipeline)
@@ -27,14 +27,14 @@
          │
          ├─────────────┬──────────────┬────────────────┐
          │             │              │                │
-         ▼             ▼              ▼                ▼
+         [DOWN]             [DOWN]              [DOWN]                [DOWN]
    [Paste in    [Select in    [Cmd Palette]   [Cmd Palette]
     editor]      editor]                       
          │             │              │                │
          │             │              │                │
          └─────────────┴──────────────┴────────────────┘
                        │
-                       ▼
+                       [DOWN]
               [Press Ctrl+Shift+R]
                OR [Ctrl+Shift+W]
                        │
@@ -42,71 +42,71 @@
 │                  EXTENSION ACTIVATION                           │
 └─────────────────────────────────────────────────────────────────┘
                        │
-                       ▼
+                       [DOWN]
          ┌─────────────────────────┐
          │  analyzeErrorCommand()  │
          └─────────────────────────┘
                        │
          ┌─────────────┴──────────────┐
          │                            │
-         ▼                            ▼
+         [DOWN]                            [DOWN]
    [Get from           [Show input box]
     selection]          "Paste error..."
          │                            │
          └────────────┬───────────────┘
                       │
-                      ▼
+                      [DOWN]
               [Error text acquired]
                       │
 ┌─────────────────────┴───────────────────────────────────────────┐
 │                     PROCESSING                                  │
 └─────────────────────────────────────────────────────────────────┘
                       │
-                      ▼
+                      [DOWN]
               [Sanitize input]
                       │
-                      ▼
+                      [DOWN]
               [Parse error]
                       │
          ┌────────────┴────────────┐
          │                         │
-         ▼                         ▼
+         [DOWN]                         [DOWN]
     [Cache HIT]              [Cache MISS]
          │                         │
-         │                         ▼
+         │                         [DOWN]
          │              [Run full analysis]
          │              [3 iterations]
          │                         │
          └────────────┬────────────┘
                       │
-                      ▼
+                      [DOWN]
 ┌─────────────────────┴───────────────────────────────────────────┐
 │                      DISPLAY                                    │
 └─────────────────────────────────────────────────────────────────┘
                       │
          ┌────────────┴────────────┐
          │                         │
-         ▼                         ▼
+         [DOWN]                         [DOWN]
   [Output Channel]           [Webview Panel]
    (Text format)            (Visual UI)
          │                         │
          └────────────┬────────────┘
                       │
-                      ▼
+                      [DOWN]
               [Show feedback]
-                 [👍 / 👎]
+                 [[LIKE] / [DISLIKE]]
                       │
-                      ▼
+                      [DOWN]
               [Update database]
               [Update cache]
                       │
-                      ▼
+                      [DOWN]
                    [DONE]
 ```
 
 ---
 
-## 🔄 Analysis Pipeline
+## [REFRESH] Analysis Pipeline
 
 ### Detailed Processing Steps
 
@@ -117,27 +117,27 @@
 
 Input Text (raw)
       │
-      ▼
+      [DOWN]
   ┌─────────────────────┐
   │ Length Check        │  Max 50KB
-  │ (<50,000 chars)     │  ✅ Pass / ❌ Reject
+  │ (<50,000 chars)     │  [DONE] Pass / [FAIL] Reject
   └─────────┬───────────┘
             │
-            ▼
+            [DOWN]
   ┌─────────────────────┐
   │ Sanitize            │  Remove control chars
   │ - Remove \x00-\x1F  │  Trim whitespace
   │ - Trim              │
   └─────────┬───────────┘
             │
-            ▼
+            [DOWN]
   Sanitized Text
       │
 ┌─────┴──────────────────────────────────────────────────────────────┐
 │  STEP 2: ERROR PARSING & LANGUAGE DETECTION                        │
 └────────────────────────────────────────────────────────────────────┘
       │
-      ▼
+      [DOWN]
   ┌─────────────────────┐
   │ Language Detector   │  Keyword analysis
   │ - Check keywords    │  + File extension
@@ -150,7 +150,7 @@ Input Text (raw)
             ├─ Gradle (80%) → GradleParser
             └─ Manifest (90%) → ManifestParser
             │
-            ▼
+            [DOWN]
   ┌─────────────────────┐
   │ Language Parser     │  Extract:
   │ - Error type        │  • type (lateinit, npe)
@@ -159,7 +159,7 @@ Input Text (raw)
   │ - Stack trace       │  • line (42)
   └─────────┬───────────┘
             │
-            ▼
+            [DOWN]
   ParsedError {
     type: 'lateinit',
     message: '...',
@@ -172,17 +172,17 @@ Input Text (raw)
 │  STEP 3: CACHE LOOKUP                                              │
 └────────────────────────────────────────────────────────────────────┘
       │
-      ▼
+      [DOWN]
   ┌─────────────────────┐
   │ ErrorHasher         │  SHA-256 hash
   │ - Normalize message │  of normalized
   │ - Generate hash     │  error
   └─────────┬───────────┘
             │
-            ▼
+            [DOWN]
   hash: "a3b2c1d4..."
       │
-      ▼
+      [DOWN]
   ┌─────────────────────┐
   │ RCACache.get()      │  Check L1 cache
   │ - Lookup hash       │  (in-memory Map)
@@ -191,17 +191,17 @@ Input Text (raw)
             │
       ┌─────┴──────┐
       │            │
-      ▼ (Hit)      ▼ (Miss)
+      [DOWN] (Hit)      [DOWN] (Miss)
   [Return      [Continue to
    cached]      analysis]
       │            │
-      │            ▼
+      │            [DOWN]
       │  ┌─────────────────────┐
       │  │ Agent Analysis      │  3 iterations
       │  │ (75s avg)           │  with tools
       │  └─────────┬───────────┘
       │            │
-      │            ▼
+      │            [DOWN]
       │  ┌─────────────────────┐
       │  │ RCACache.set()      │  Store result
       │  │ - Cache with TTL    │  for 24 hours
@@ -213,7 +213,7 @@ Input Text (raw)
 │  STEP 4: RESULT DISPLAY                                             │
 └──────────────────────────────────────────────────────────────────────┘
                    │
-                   ▼
+                   [DOWN]
          RCAResult {
            error: '...',
            rootCause: '...',
@@ -225,7 +225,7 @@ Input Text (raw)
                    │
       ┌────────────┴─────────────┐
       │                          │
-      ▼                          ▼
+      [DOWN]                          [DOWN]
 ┌──────────────┐      ┌──────────────────┐
 │ Output       │      │ Webview          │
 │ Channel      │      │ Panel            │
@@ -241,13 +241,13 @@ Input Text (raw)
 │  STEP 5: FEEDBACK COLLECTION                                        │
 └──────────────────────────────────────────────────────────────────────┘
                    │
-                   ▼
+                   [DOWN]
          [Show feedback prompt]
-              [👍 / 👎]
+              [[LIKE] / [DISLIKE]]
                    │
       ┌────────────┴─────────────┐
       │                          │
-      ▼ (Positive)               ▼ (Negative)
+      [DOWN] (Positive)               [DOWN] (Negative)
 ┌──────────────┐      ┌──────────────────┐
 │ +20%         │      │ -50%             │
 │ confidence   │      │ confidence       │
@@ -258,17 +258,17 @@ Input Text (raw)
        │                       │
        └───────────┬───────────┘
                    │
-                   ▼
+                   [DOWN]
          [Update database]
          [Quality score]
                    │
-                   ▼
+                   [DOWN]
                  [DONE]
 ```
 
 ---
 
-## 🎨 UI Update Flow
+## [DESIGN] UI Update Flow
 
 ### Real-Time Progress Updates
 
@@ -279,7 +279,7 @@ Input Text (raw)
 
 Agent Analysis Starts
          │
-         ▼
+         [DOWN]
   ┌─────────────────┐
   │ Iteration 1/3   │
   │ Thought:        │
@@ -289,7 +289,7 @@ Agent Analysis Starts
            │
            │ [Event: 'iteration']
            │
-           ▼
+           [DOWN]
    ┌─────────────────────┐
    │ Webview.postMessage │
    │ { type: 'progress', │
@@ -299,7 +299,7 @@ Agent Analysis Starts
    │   progress: 33 }    │
    └─────────┬───────────┘
              │
-             ▼
+             [DOWN]
    ┌─────────────────────────┐
    │ Webview JavaScript      │
    │ - Update progress bar   │
@@ -323,10 +323,10 @@ Agent Analysis Starts
    │                                          │
    └──────────────────────────────────────────┘
              │
-             ▼
+             [DOWN]
   [Repeat for iterations 2 and 3]
              │
-             ▼
+             [DOWN]
   ┌─────────────────┐
   │ Analysis        │
   │ Complete        │
@@ -334,14 +334,14 @@ Agent Analysis Starts
            │
            │ [Event: 'complete']
            │
-           ▼
+           [DOWN]
    ┌─────────────────────┐
    │ Webview.postMessage │
    │ { type: 'result',   │
    │   rca: {...} }      │
    └─────────┬───────────┘
              │
-             ▼
+             [DOWN]
    ┌─────────────────────────┐
    │ Webview JavaScript      │
    │ - Hide progress         │
@@ -352,20 +352,20 @@ Agent Analysis Starts
    ┌─────────┴────────────────────────────────┐
    │                                          │
    │  ╔════════════════════════════════════╗  │
-   │  ║  🔴 LATEINIT                       ║  │
+   │  ║  [RED] LATEINIT                       ║  │
    │  ║  MainActivity.kt:42                ║  │
    │  ╠════════════════════════════════════╣  │
    │  ║                                    ║  │
-   │  ║  🎯 Root Cause                     ║  │
+   │  ║  [TARGET] Root Cause                     ║  │
    │  ║  Property accessed before init...  ║  │
    │  ║                                    ║  │
-   │  ║  🛠️ Fix Guidelines                 ║  │
+   │  ║  [FIX] Fix Guidelines                 ║  │
    │  ║  1. Initialize in onCreate()       ║  │
    │  ║  2. Use nullable type              ║  │
    │  ║                                    ║  │
-   │  ║  ✅ Confidence: 92%                ║  │
+   │  ║  [DONE] Confidence: 92%                ║  │
    │  ║                                    ║  │
-   │  ║  [👍 Helpful] [👎 Not Helpful]    ║  │
+   │  ║  [[LIKE] Helpful] [[DISLIKE] Not Helpful]    ║  │
    │  ║                                    ║  │
    │  ╚════════════════════════════════════╝  │
    │                                          │
@@ -374,7 +374,7 @@ Agent Analysis Starts
 
 ---
 
-## 💾 Cache Flow
+## [SAVE] Cache Flow
 
 ### Cache Hit vs Cache Miss
 
@@ -385,16 +385,16 @@ Agent Analysis Starts
 
 ParsedError
      │
-     ▼
+     [DOWN]
 ┌─────────────────┐
 │ ErrorHasher     │
 │ hash(error)     │
 └────────┬────────┘
          │
-         ▼
+         [DOWN]
    hash: "a3b2..."
          │
-         ▼
+         [DOWN]
 ┌─────────────────┐
 │ RCACache        │
 │ .get(hash)      │
@@ -402,35 +402,35 @@ ParsedError
          │
    ┌─────┴──────┐
    │            │
-   ▼            ▼
+   [DOWN]            [DOWN]
 [Found]      [Not Found]
    │            │
    ├─ Check TTL
    │            │
    ├─ Expired?  │
    │   │        │
-   │   ▼        │
+   │   [DOWN]        │
    │  Yes       No
    │   │        │
    │   └────────┤
    │            │
-   │            ▼
+   │            [DOWN]
    │       [Return result]
-   │       ⚡ <5s
+   │       [FAST] <5s
    │
    └────────────┼────────────┐
                 │            │
-                ▼            ▼
+                [DOWN]            [DOWN]
         ┌──────────────────────────┐
         │ Full Analysis Required   │
         │ - Initialize agent       │
         │ - Run 3 iterations       │
         │ - Execute tools          │
         │ - Generate RCA           │
-        │ ⏱️ ~75s                  │
+        │ [TIMER] ~75s                  │
         └─────────┬────────────────┘
                   │
-                  ▼
+                  [DOWN]
         ┌──────────────────────────┐
         │ Store in Cache           │
         │ - Generate hash          │
@@ -438,7 +438,7 @@ ParsedError
         │ - Store in Map           │
         └─────────┬────────────────┘
                   │
-                  ▼
+                  [DOWN]
               [Return result]
 
 ┌─────────────────────────────────────────────────────────────────┐
@@ -458,7 +458,7 @@ ParsedError
 
 ---
 
-## 🔁 Feedback Loop
+## [REPEAT] Feedback Loop
 
 ### How Feedback Improves Future Analyses
 
@@ -469,26 +469,26 @@ ParsedError
 
 User Views Result
         │
-        ▼
+        [DOWN]
 [Show feedback buttons]
-   [👍] [👎]
+   [[LIKE]] [[DISLIKE]]
         │
    ┌────┴─────┐
    │          │
-   ▼          ▼
+   [DOWN]          [DOWN]
 [Positive] [Negative]
    │          │
-   │          ▼
+   │          [DOWN]
    │     [Optional comment]
    │          │
    └─────┬────┘
          │
-         ▼
+         [DOWN]
 ┌─────────────────────────────────────────────────────────────────┐
-│  POSITIVE FEEDBACK (👍)                                         │
+│  POSITIVE FEEDBACK ([LIKE])                                         │
 └─────────────────────────────────────────────────────────────────┘
          │
-         ▼
+         [DOWN]
   ┌──────────────────┐
   │ Update Database  │
   │ - confidence +20%│
@@ -496,26 +496,26 @@ User Views Result
   │ - validated=true │
   └────────┬─────────┘
            │
-           ▼
+           [DOWN]
   ┌──────────────────┐
   │ Update Cache     │
   │ - Keep entry     │
   │ - Update metadata│
   └────────┬─────────┘
            │
-           ▼
+           [DOWN]
   ┌──────────────────┐
   │ Future Impact    │
-  │ ✅ Higher rank   │
-  │ ✅ More visible  │
-  │ ✅ Longer TTL    │
+  │ [DONE] Higher rank   │
+  │ [DONE] More visible  │
+  │ [DONE] Longer TTL    │
   └──────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────┐
-│  NEGATIVE FEEDBACK (👎)                                         │
+│  NEGATIVE FEEDBACK ([DISLIKE])                                         │
 └─────────────────────────────────────────────────────────────────┘
          │
-         ▼
+         [DOWN]
   ┌──────────────────┐
   │ Update Database  │
   │ - confidence -50%│
@@ -524,19 +524,19 @@ User Views Result
   │ - store comment  │
   └────────┬─────────┘
            │
-           ▼
+           [DOWN]
   ┌──────────────────┐
   │ Invalidate Cache │
   │ - Remove entry   │
   │ - Force re-run   │
   └────────┬─────────┘
            │
-           ▼
+           [DOWN]
   ┌──────────────────┐
   │ Future Impact    │
-  │ ❌ Lower rank    │
-  │ ❌ Less visible  │
-  │ ❌ Re-analyzed   │
+  │ [FAIL] Lower rank    │
+  │ [FAIL] Less visible  │
+  │ [FAIL] Re-analyzed   │
   └──────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────┐
@@ -545,33 +545,33 @@ User Views Result
 
     Iteration 1: Initial Analysis
          │
-         ▼
-    [User feedback: 👎]
+         [DOWN]
+    [User feedback: [DISLIKE]]
          │
-         ▼
+         [DOWN]
     [Confidence lowered]
     [Cache invalidated]
          │
-         ▼
+         [DOWN]
     Iteration 2: Re-Analysis (next time)
          │
-         ▼
+         [DOWN]
     [Better result]
          │
-         ▼
-    [User feedback: 👍]
+         [DOWN]
+    [User feedback: [LIKE]]
          │
-         ▼
+         [DOWN]
     [Confidence boosted]
     [Cached & prioritized]
          │
-         ▼
-    Future: Fast & Accurate Results ✅
+         [DOWN]
+    Future: Fast & Accurate Results [DONE]
 ```
 
 ---
 
-## 🎓 Educational Mode Flow
+## [LEARN] Educational Mode Flow
 
 ### How Educational Mode Enriches Results
 
@@ -582,7 +582,7 @@ User Views Result
 
 Standard Analysis
         │
-        ▼
+        [DOWN]
   ┌──────────────────┐
   │ Generate RCA     │
   │ - Root cause     │
@@ -595,13 +595,13 @@ Standard Analysis
            │
       ┌────┴─────┐
       │          │
-      ▼ (No)     ▼ (Yes)
+      [DOWN] (No)     [DOWN] (Yes)
   [Return]  ┌────────────────────┐
             │ EducationalAgent   │
             │ .enrichWithNotes() │
             └─────────┬──────────┘
                       │
-                      ▼
+                      [DOWN]
             ┌────────────────────┐
             │ Generate:          │
             │ - "What" section   │
@@ -610,10 +610,10 @@ Standard Analysis
             │ - Code examples    │
             └─────────┬──────────┘
                       │
-                      ▼
+                      [DOWN]
             RCAResult + LearningNotes
                       │
-                      ▼
+                      [DOWN]
 ┌─────────────────────────────────────────────────────────────────┐
 │  DISPLAY COMPARISON                                             │
 └─────────────────────────────────────────────────────────────────┘
@@ -621,32 +621,32 @@ Standard Analysis
     Standard Mode               Educational Mode
     
     ╔═════════════════╗         ╔═════════════════════════════╗
-    ║ 🔴 LATEINIT     ║         ║ 🔴 LATEINIT                 ║
+    ║ [RED] LATEINIT     ║         ║ [RED] LATEINIT                 ║
     ║ MainActivity:42 ║         ║ MainActivity:42             ║
     ╠═════════════════╣         ╠═════════════════════════════╣
     ║                 ║         ║                             ║
-    ║ 🎯 Root Cause   ║         ║ 🎯 Root Cause               ║
+    ║ [TARGET] Root Cause   ║         ║ [TARGET] Root Cause               ║
     ║ Property...     ║         ║ Property accessed before... ║
     ║                 ║         ║                             ║
-    ║ 🛠️ Fix          ║         ║ 🛠️ Fix Guidelines           ║
+    ║ [FIX] Fix          ║         ║ [FIX] Fix Guidelines           ║
     ║ 1. Initialize   ║         ║ 1. Initialize in onCreate() ║
     ║ 2. Use nullable ║         ║ 2. Use nullable type        ║
     ║                 ║         ║                             ║
-    ║ ✅ 92%          ║         ║ ✅ Confidence: 92%          ║
+    ║ [DONE] 92%          ║         ║ [DONE] Confidence: 92%          ║
     ╚═════════════════╝         ║                             ║
-                                ║ 🎓 LEARNING NOTES           ║
+                                ║ [LEARN] LEARNING NOTES           ║
                                 ║                             ║
-                                ║ 📚 WHAT is lateinit?        ║
+                                ║ [DOCS] WHAT is lateinit?        ║
                                 ║ lateinit allows non-null    ║
                                 ║ properties to be init later ║
                                 ║                             ║
-                                ║ 📚 WHY did this happen?     ║
+                                ║ [DOCS] WHY did this happen?     ║
                                 ║ Common causes:              ║
                                 ║ • Wrong lifecycle phase     ║
                                 ║ • Forgot initialization     ║
                                 ║ • Conditional didn't run    ║
                                 ║                             ║
-                                ║ 📚 HOW to prevent?          ║
+                                ║ [DOCS] HOW to prevent?          ║
                                 ║ 1. Check isInitialized      ║
                                 ║    if (::prop.isInit)       ║
                                 ║                             ║
@@ -660,7 +660,7 @@ Standard Analysis
 
 ---
 
-## 📊 Performance Flow
+## [CHART] Performance Flow
 
 ### Where Time is Spent
 
@@ -735,14 +735,14 @@ Standard Analysis
 
 User Input
     │
-    ▼
+    [DOWN]
 ┌─────────────────────┐
-│ Length Check        │  ✅ Max 50KB
-│ if (len > 50000)    │  ❌ Reject if too large
+│ Length Check        │  [DONE] Max 50KB
+│ if (len > 50000)    │  [FAIL] Reject if too large
 │   reject()          │
 └─────────┬───────────┘
           │
-          ▼
+          [DOWN]
 ┌─────────────────────┐
 │ Control Char Filter │  Remove dangerous chars
 │ .replace(           │  \x00-\x1F (control)
@@ -750,28 +750,28 @@ User Input
 │ )                   │
 └─────────┬───────────┘
           │
-          ▼
+          [DOWN]
 ┌─────────────────────┐
 │ Trim Whitespace     │  Remove leading/trailing
 │ .trim()             │  whitespace
 └─────────┬───────────┘
           │
-          ▼
+          [DOWN]
 ┌─────────────────────┐
 │ Type Validation     │  Ensure string type
 │ typeof input ===    │  No objects/arrays
 │ 'string'            │
 └─────────┬───────────┘
           │
-          ▼
-  ✅ Sanitized Input
+          [DOWN]
+  [DONE] Sanitized Input
       │
       └─ Safe to process
 ```
 
 ---
 
-## 🎨 Theme Integration
+## [DESIGN] Theme Integration
 
 ### VS Code Theme Compatibility
 
@@ -782,13 +782,13 @@ User Input
 
 User Changes Theme
         │
-        ▼
+        [DOWN]
   VS Code Emits Event
         │
-        ▼
+        [DOWN]
   Webview CSS Variables Update
         │
-        ▼
+        [DOWN]
 ┌──────────────────────────────────────────┐
 │  CSS Variables                           │
 │                                          │
@@ -800,16 +800,16 @@ User Changes Theme
 │  ... (50+ variables)                    │
 └──────────────┬───────────────────────────┘
                │
-               ▼
+               [DOWN]
        Automatic Re-render
                │
    ┌───────────┴────────────┐
    │                        │
-   ▼                        ▼
+   [DOWN]                        [DOWN]
 Light Theme            Dark Theme
 
 ╔════════════════╗    ╔════════════════╗
-║ 🔴 LATEINIT   ║    ║ 🔴 LATEINIT   ║
+║ [RED] LATEINIT   ║    ║ [RED] LATEINIT   ║
 ║ White bg      ║    ║ Dark bg       ║
 ║ Black text    ║    ║ White text    ║
 ║               ║    ║               ║
@@ -819,7 +819,7 @@ Light Theme            Dark Theme
 
 ---
 
-## 📚 Summary
+## [DOCS] Summary
 
 This visual guide shows:
 1. **User Interaction** - How users trigger analysis

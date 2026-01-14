@@ -1,4 +1,4 @@
-# RCA Agent Backend Polish and Fix - Comprehensive Guideline
+﻿# RCA Agent Backend Polish and Fix - Comprehensive Guideline
 
 **Created:** January 12, 2026  
 **Status:** Active Debugging Roadmap  
@@ -13,7 +13,7 @@
 
 ---
 
-## 📋 Table of Contents
+## [CLIPBOARD] Table of Contents
 
 1. [Overview & Strategy](#overview--strategy)
 2. [Known Issues & Pain Points](#known-issues--pain-points)
@@ -30,7 +30,7 @@
 
 ---
 
-## 🎯 Overview & Strategy
+## [TARGET] Overview & Strategy
 
 ### Current Situation
 
@@ -38,7 +38,7 @@ The RCA Agent backend is experiencing a "stalemate" with bugs and errors that pr
 
 1. **Multiple Frontend Versions:** 3 UI iterations with potential orphaned code/contracts
 2. **Path Issues:** Backend in `src/`, extension in `vscode-extension/src/`
-3. **Message Passing Complexity:** Extension ↔ Webview ↔ Backend communication
+3. **Message Passing Complexity:** Extension [H_ARROW] Webview [H_ARROW] Backend communication
 4. **API Mismatches:** Constructor signatures, method calls, type incompatibilities
 5. **State Management:** Multiple singleton managers with unclear initialization order
 6. **Integration Gaps:** Documented features not fully wired to UI
@@ -180,7 +180,7 @@ Before considering the polish complete, verify:
 
 ---
 
-## 🚨 Known Issues & Pain Points
+## [ALERT] Known Issues & Pain Points
 
 ### Critical Issues (Blocking)
 
@@ -251,7 +251,7 @@ Before considering the polish complete, verify:
 
 ---
 
-## 📚 Session-Based Debugging Approach
+## [DOCS] Session-Based Debugging Approach
 
 ### Session Structure
 
@@ -289,7 +289,7 @@ Use this template for each chunk:
 
 **Date:** [Date]
 **Duration:** [Time]
-**Status:** 🔴 Not Started | 🟡 In Progress | 🟢 Complete | 🔵 Blocked
+**Status:** [RED] Not Started | [YELLOW] In Progress | [GREEN] Complete | 🔵 Blocked
 
 ### Objectives
 - [ ] Objective 1
@@ -319,7 +319,7 @@ Use this template for each chunk:
 
 ---
 
-## 🔧 Chunk 1: Core Backend Services
+## [TOOL] Chunk 1: Core Backend Services
 
 **Priority:** CRITICAL | **Phase:** Foundation | **Est. Time:** 2-3 hours  
 **Depends On:** None (Foundational)  
@@ -336,12 +336,12 @@ Use this template for each chunk:
 
 ### Objectives
 
-- ✅ Verify `src/types.ts` definitions are correct
-- ✅ Verify LLM client (`OllamaClient`) API
-- ✅ Verify database client (`ChromaDBClient`) API
-- ✅ Verify core parsers (`ErrorParser`, `LogcatParser`, etc.)
-- ✅ Document actual signatures vs expected signatures
-- ✅ Create compatibility layer if needed
+- [DONE] Verify `src/types.ts` definitions are correct
+- [DONE] Verify LLM client (`OllamaClient`) API
+- [DONE] Verify database client (`ChromaDBClient`) API
+- [DONE] Verify core parsers (`ErrorParser`, `LogcatParser`, etc.)
+- [DONE] Document actual signatures vs expected signatures
+- [DONE] Create compatibility layer if needed
 
 ### Files to Analyze
 
@@ -408,10 +408,10 @@ console.log('ErrorParser.parseError:', typeof ErrorParser.parseError);
 
 ### Validation Criteria
 
-- ✅ All backend services can be imported without errors
-- ✅ All constructor calls use correct parameters
-- ✅ All method calls match actual signatures
-- ✅ Types are consistent between backend and extension
+- [DONE] All backend services can be imported without errors
+- [DONE] All constructor calls use correct parameters
+- [DONE] All method calls match actual signatures
+- [DONE] Types are consistent between backend and extension
 
 ### Post-Chunk Verification
 
@@ -480,11 +480,11 @@ git tag chunk-1-complete -m "Chunk 1: Core Backend Services - Complete"
 
 ### Objectives
 
-- ✅ Understand extension activation flow
-- ✅ Verify service initialization order
-- ✅ Fix singleton initialization race conditions
-- ✅ Ensure all required services are initialized
-- ✅ Verify error handling during initialization
+- [DONE] Understand extension activation flow
+- [DONE] Verify service initialization order
+- [DONE] Fix singleton initialization race conditions
+- [DONE] Ensure all required services are initialized
+- [DONE] Verify error handling during initialization
 
 ### Files to Analyze
 
@@ -579,11 +579,11 @@ git tag chunk-1-complete -m "Chunk 1: Core Backend Services - Complete"
 
 ### Validation Criteria
 
-- ✅ Extension activates successfully
-- ✅ No undefined reference errors
-- ✅ All services initialized in correct order
-- ✅ Proper error handling if service fails
-- ✅ Clean deactivation without warnings
+- [DONE] Extension activates successfully
+- [DONE] No undefined reference errors
+- [DONE] All services initialized in correct order
+- [DONE] Proper error handling if service fails
+- [DONE] Clean deactivation without warnings
 
 ### Post-Chunk Verification
 
@@ -648,7 +648,7 @@ git tag chunk-2-complete -m "Chunk 2: Extension Entry Point - Complete"
 
 ---
 
-## 💬 Chunk 3: Message Passing Layer
+## [CHAT] Chunk 3: Message Passing Layer
 
 **Priority:** HIGH | **Phase:** Communication & Data Flow | **Est. Time:** 3-4 hours  
 **Depends On:** Chunk 2 (Extension Entry Point)  
@@ -665,12 +665,12 @@ git tag chunk-2-complete -m "Chunk 2: Extension Entry Point - Complete"
 
 ### Objectives
 
-- ✅ Map all message commands (Webview → Extension)
-- ✅ Map all message responses (Extension → Webview)
-- ✅ Verify message handlers exist for all commands
-- ✅ Ensure response data matches frontend expectations
-- ✅ Fix any missing handlers
-- ✅ Test message flow end-to-end
+- [DONE] Map all message commands (Webview → Extension)
+- [DONE] Map all message responses (Extension → Webview)
+- [DONE] Verify message handlers exist for all commands
+- [DONE] Ensure response data matches frontend expectations
+- [DONE] Fix any missing handlers
+- [DONE] Test message flow end-to-end
 
 ### Files to Analyze
 
@@ -701,14 +701,14 @@ Create a mapping document:
 - **Payload:** { command: 'analyzeError', error: ErrorInfo }
 - **Handler:** RCAWebviewProvider._handleAnalyzeError()
 - **Response:** { command: 'analysisComplete', result: RCAResult }
-- **Status:** ✅ Implemented / ❌ Missing / ⚠️ Partial
+- **Status:** [DONE] Implemented / [FAIL] Missing / [WARNING] Partial
 
 ### Command: getErrorQueue
 - **Sent by:** useErrorQueue hook
 - **Payload:** { command: 'getErrorQueue' }
 - **Handler:** RCAWebviewProvider._handleGetErrorQueue()
 - **Response:** { command: 'errorQueueData', errors: ErrorItem[] }
-- **Status:** ✅ Implemented / ❌ Missing / ⚠️ Partial
+- **Status:** [DONE] Implemented / [FAIL] Missing / [WARNING] Partial
 
 // ... repeat for ALL commands
 ```
@@ -770,7 +770,7 @@ From `docs/_archive/RCA-AGENT-OVERHUAL-01-09-2026/technical/MESSAGE_PASSING.md`:
    
    // In RCAWebviewProvider._handleMessage():
    case 'someCommand':
-     // ❌ No implementation
+     // [FAIL] No implementation
      break;
    
    // FIX: Implement handler
@@ -849,11 +849,11 @@ From `docs/_archive/RCA-AGENT-OVERHUAL-01-09-2026/technical/MESSAGE_PASSING.md`:
 
 ### Validation Criteria
 
-- ✅ All commands have handlers
-- ✅ All handlers return expected responses
-- ✅ Error cases handled gracefully
-- ✅ No silent failures
-- ✅ Message flow tested end-to-end
+- [DONE] All commands have handlers
+- [DONE] All handlers return expected responses
+- [DONE] Error cases handled gracefully
+- [DONE] No silent failures
+- [DONE] Message flow tested end-to-end
 
 ### Post-Chunk Verification
 
@@ -929,7 +929,7 @@ git tag chunk-3-complete -m "Chunk 3: Message Passing Layer - Complete"
 
 ---
 
-## 🔧 Chunk 4: Frontend Services Integration
+## [TOOL] Chunk 4: Frontend Services Integration
 
 **Priority:** HIGH | **Phase:** Communication & Data Flow | **Est. Time:** 2-3 hours  
 **Depends On:** Chunks 1, 2, 3 (Core Backend, Extension Entry, Message Passing)  
@@ -946,11 +946,11 @@ git tag chunk-3-complete -m "Chunk 3: Message Passing Layer - Complete"
 
 ### Objectives
 
-- ✅ Verify `AnalysisService` integration
-- ✅ Verify `FixApplicationService` integration
-- ✅ Verify `NetworkTimeoutHandler` usage
-- ✅ Ensure services use correct backend APIs
-- ✅ Test service methods from extension context
+- [DONE] Verify `AnalysisService` integration
+- [DONE] Verify `FixApplicationService` integration
+- [DONE] Verify `NetworkTimeoutHandler` usage
+- [DONE] Ensure services use correct backend APIs
+- [DONE] Test service methods from extension context
 
 ### Files to Analyze
 
@@ -1013,7 +1013,7 @@ git tag chunk-3-complete -m "Chunk 3: Message Passing Layer - Complete"
 
 ### Critical Integration Points
 
-1. **AnalysisService ↔ Backend Agents**
+1. **AnalysisService [H_ARROW] Backend Agents**
    ```typescript
    // In AnalysisService.ts
    
@@ -1027,7 +1027,7 @@ git tag chunk-3-complete -m "Chunk 3: Message Passing Layer - Complete"
    // Check if method calls match
    ```
 
-2. **FixApplicationService ↔ FixGenerator**
+2. **FixApplicationService [H_ARROW] FixGenerator**
    ```typescript
    // In FixApplicationService.ts
    
@@ -1039,7 +1039,7 @@ git tag chunk-3-complete -m "Chunk 3: Message Passing Layer - Complete"
    // Documentation says to use FixGenerator (P0 fix)
    ```
 
-3. **Services ↔ RCAWebviewProvider**
+3. **Services [H_ARROW] RCAWebviewProvider**
    ```typescript
    // In RCAWebviewProvider.ts
    
@@ -1115,11 +1115,11 @@ git tag chunk-3-complete -m "Chunk 3: Message Passing Layer - Complete"
 
 ### Validation Criteria
 
-- ✅ All services can import backend code
-- ✅ All services use correct backend APIs
-- ✅ Service methods work in isolation
-- ✅ Services integrated with webview provider
-- ✅ Error handling comprehensive
+- [DONE] All services can import backend code
+- [DONE] All services use correct backend APIs
+- [DONE] Service methods work in isolation
+- [DONE] Services integrated with webview provider
+- [DONE] Error handling comprehensive
 
 ### Post-Chunk Verification
 
@@ -1204,7 +1204,7 @@ git tag chunk-4-complete -m "Chunk 4: Frontend Services Integration - Complete"
 
 ---
 
-## 🔍 Chunk 5: Error Detection & Queue Management
+## [SEARCH] Chunk 5: Error Detection & Queue Management
 
 **Priority:** HIGH | **Phase:** Communication & Data Flow | **Est. Time:** 2-3 hours  
 **Depends On:** Chunk 2 (Extension Entry Point)  
@@ -1221,11 +1221,11 @@ git tag chunk-4-complete -m "Chunk 4: Frontend Services Integration - Complete"
 
 ### Objectives
 
-- ✅ Verify error detection sources (diagnostics, terminal, build files)
-- ✅ Ensure `AdvancedErrorDetector` is running
-- ✅ Verify `ErrorQueueManager` receives errors
-- ✅ Test error flow: Detection → Queue → UI
-- ✅ Fix any gaps in error pipeline
+- [DONE] Verify error detection sources (diagnostics, terminal, build files)
+- [DONE] Ensure `AdvancedErrorDetector` is running
+- [DONE] Verify `ErrorQueueManager` receives errors
+- [DONE] Test error flow: Detection → Queue → UI
+- [DONE] Fix any gaps in error pipeline
 
 ### Files to Analyze
 
@@ -1290,7 +1290,7 @@ git tag chunk-4-complete -m "Chunk 4: Frontend Services Integration - Complete"
 └────────────────────────┬────────────────────────────────────┘
                          │
                          │ Detected errors
-                         ▼
+                         [DOWN]
 ┌─────────────────────────────────────────────────────────────┐
 │              AdvancedErrorDetector                           │
 ├─────────────────────────────────────────────────────────────┤
@@ -1300,7 +1300,7 @@ git tag chunk-4-complete -m "Chunk 4: Frontend Services Integration - Complete"
 └────────────────────────┬────────────────────────────────────┘
                          │
                          │ Parsed ErrorInfo
-                         ▼
+                         [DOWN]
 ┌─────────────────────────────────────────────────────────────┐
 │              ErrorQueueManager                               │
 ├─────────────────────────────────────────────────────────────┤
@@ -1312,7 +1312,7 @@ git tag chunk-4-complete -m "Chunk 4: Frontend Services Integration - Complete"
 └────────────────────────┬────────────────────────────────────┘
                          │
                          │ Event notification
-                         ▼
+                         [DOWN]
 ┌─────────────────────────────────────────────────────────────┐
 │              RCAWebviewProvider                              │
 ├─────────────────────────────────────────────────────────────┤
@@ -1322,7 +1322,7 @@ git tag chunk-4-complete -m "Chunk 4: Frontend Services Integration - Complete"
 └────────────────────────┬────────────────────────────────────┘
                          │
                          │ Message passing
-                         ▼
+                         [DOWN]
 ┌─────────────────────────────────────────────────────────────┐
 │              Webview (React UI)                              │
 ├─────────────────────────────────────────────────────────────┤
@@ -1422,12 +1422,12 @@ if (advancedErrorDetector) {
 
 ### Validation Criteria
 
-- ✅ AdvancedErrorDetector starts successfully
-- ✅ Diagnostic errors are detected
-- ✅ Errors added to queue
-- ✅ Queue change events fire
-- ✅ Webview receives error queue data
-- ✅ UI displays errors
+- [DONE] AdvancedErrorDetector starts successfully
+- [DONE] Diagnostic errors are detected
+- [DONE] Errors added to queue
+- [DONE] Queue change events fire
+- [DONE] Webview receives error queue data
+- [DONE] UI displays errors
 
 ### Post-Chunk Verification
 
@@ -1542,7 +1542,7 @@ git tag chunk-5-complete -m "Chunk 5: Error Detection - Complete"
 
 ---
 
-## 🤖 Chunk 6: Agent System & Analysis Flow
+## [BOT] Chunk 6: Agent System & Analysis Flow
 
 **Priority:** HIGH | **Phase:** Core Features | **Est. Time:** 3-4 hours  
 **Depends On:** Chunks 1, 4, 5 (Backend Services, Frontend Services, Error Detection)  
@@ -1560,13 +1560,13 @@ git tag chunk-5-complete -m "Chunk 5: Error Detection - Complete"
 
 ### Objectives
 
-- ✅ Verify agent initialization
-- ✅ Test agent analysis flow end-to-end
-- ✅ Verify tool orchestration
-- ✅ Check streaming/progress updates
-- ✅ Validate result format
-- ✅ Test error handling in agent
-- ✅ Integrate EducationalAgent (if educational mode enabled)
+- [DONE] Verify agent initialization
+- [DONE] Test agent analysis flow end-to-end
+- [DONE] Verify tool orchestration
+- [DONE] Check streaming/progress updates
+- [DONE] Validate result format
+- [DONE] Test error handling in agent
+- [DONE] Integrate EducationalAgent (if educational mode enabled)
 
 ### Files to Analyze
 
@@ -1690,13 +1690,13 @@ testAgent().catch(console.error);
 
 ### Validation Criteria
 
-- ✅ Agent initializes without errors
-- ✅ Agent can execute analysis
-- ✅ Tool orchestration works
-- ✅ Progress updates stream correctly
-- ✅ Final result has correct format
-- ✅ Error handling robust
-- ✅ Educational mode functional (if enabled)
+- [DONE] Agent initializes without errors
+- [DONE] Agent can execute analysis
+- [DONE] Tool orchestration works
+- [DONE] Progress updates stream correctly
+- [DONE] Final result has correct format
+- [DONE] Error handling robust
+- [DONE] Educational mode functional (if enabled)
 
 ### Post-Chunk Verification
 
@@ -1836,7 +1836,7 @@ git tag chunk-6-complete -m "Chunk 6: Agent System - Complete"
 
 ---
 
-## 🛠️ Chunk 7: Tools System
+## [FIX] Chunk 7: Tools System
 
 **Priority:** MEDIUM | **Phase:** Core Features | **Est. Time:** 4-5 hours  
 **Depends On:** Chunk 6 (Agent System)  
@@ -1854,12 +1854,12 @@ git tag chunk-6-complete -m "Chunk 6: Agent System - Complete"
 
 ### Objectives
 
-- ✅ Verify all 15+ tools are implemented
-- ✅ Test each tool in isolation
-- ✅ Ensure tools integrate with agent
-- ✅ Check tool parameters and return types
-- ✅ Validate tool documentation/descriptions
-- ✅ Ensure ToolOrchestrator selects tools correctly
+- [DONE] Verify all 15+ tools are implemented
+- [DONE] Test each tool in isolation
+- [DONE] Ensure tools integrate with agent
+- [DONE] Check tool parameters and return types
+- [DONE] Validate tool documentation/descriptions
+- [DONE] Ensure ToolOrchestrator selects tools correctly
 
 ### Tool Inventory
 
@@ -1970,12 +1970,12 @@ For each tool:
 
 ### Validation Criteria
 
-- ✅ All 15 tools implemented
-- ✅ Each tool has unit test
-- ✅ All tools registered in orchestrator
-- ✅ Tool parameters standardized
-- ✅ Tool return types consistent
-- ✅ Error handling in all tools
+- [DONE] All 15 tools implemented
+- [DONE] Each tool has unit test
+- [DONE] All tools registered in orchestrator
+- [DONE] Tool parameters standardized
+- [DONE] Tool return types consistent
+- [DONE] Error handling in all tools
 
 ### Post-Chunk Verification
 
@@ -2130,7 +2130,7 @@ git tag chunk-7-complete -m "Chunk 7: Tools System - Complete"
 
 ---
 
-## 🌐 Chunk 8: Cross-Cutting Concerns
+## [WEB] Chunk 8: Cross-Cutting Concerns
 
 **Priority:** MEDIUM | **Phase:** Polish & Optimization | **Est. Time:** 2-3 hours  
 **Depends On:** All previous chunks (1-7)  
@@ -2148,14 +2148,14 @@ git tag chunk-7-complete -m "Chunk 7: Tools System - Complete"
 
 ### Objectives
 
-- ✅ Verify logging/telemetry
-- ✅ Test error handling patterns
-- ✅ Check configuration management
-- ✅ Verify caching/performance optimizations
-- ✅ Test educational mode integration (elevate from "nice-to-have")
-- ✅ Review security considerations
-- ✅ Optimize memory usage
-- ✅ Ensure graceful degradation
+- [DONE] Verify logging/telemetry
+- [DONE] Test error handling patterns
+- [DONE] Check configuration management
+- [DONE] Verify caching/performance optimizations
+- [DONE] Test educational mode integration (elevate from "nice-to-have")
+- [DONE] Review security considerations
+- [DONE] Optimize memory usage
+- [DONE] Ensure graceful degradation
 
 ### Files to Analyze
 
@@ -2201,14 +2201,14 @@ Webview updates UI
 
 ### Validation Criteria
 
-- ✅ Logging consistent and useful
-- ✅ Errors handled gracefully
-- ✅ Configuration changes apply immediately
-- ✅ Caching improves performance
-- ✅ Educational mode works
-- ✅ No security vulnerabilities
-- ✅ Memory usage acceptable
-- ✅ Performance meets baselines
+- [DONE] Logging consistent and useful
+- [DONE] Errors handled gracefully
+- [DONE] Configuration changes apply immediately
+- [DONE] Caching improves performance
+- [DONE] Educational mode works
+- [DONE] No security vulnerabilities
+- [DONE] Memory usage acceptable
+- [DONE] Performance meets baselines
 
 ### Post-Chunk Verification
 
@@ -2410,11 +2410,11 @@ git tag backend-polish-complete -m "Backend Polish Complete - All Chunks Done"
 - [ ] Graceful degradation when services unavailable
 - [ ] Full integration test passes
 - [ ] All fixes committed and tagged
-- [ ] Backend polish COMPLETE ✅
+- [ ] Backend polish COMPLETE [DONE]
 
 ---
 
-## ✅ Verification & Testing
+## [DONE] Verification & Testing
 
 ### Test Levels
 
@@ -2508,27 +2508,27 @@ npm run test:coverage
 
 ---
 
-## 📊 Progress Tracker
+## [CHART] Progress Tracker
 
 ### Overall Status
 
 | Chunk | Name                  | Status        | Completion % | Blockers               |
 | ----- | --------------------- | ------------- | ------------ | ---------------------- |
-| 1     | Core Backend Services | 🔴 Not Started | 0%           | -                      |
-| 2     | Extension Entry Point | 🔴 Not Started | 0%           | -                      |
-| 3     | Message Passing Layer | 🔴 Not Started | 0%           | -                      |
-| 4     | Frontend Services     | 🔴 Not Started | 0%           | Depends on Chunk 1     |
-| 5     | Error Detection       | 🔴 Not Started | 0%           | Depends on Chunk 2     |
-| 6     | Agent System          | 🔴 Not Started | 0%           | Depends on Chunks 1, 4 |
-| 7     | Tools System          | 🔴 Not Started | 0%           | Depends on Chunk 6     |
-| 8     | Cross-Cutting         | 🔴 Not Started | 0%           | -                      |
+| 1     | Core Backend Services | [RED] Not Started | 0%           | -                      |
+| 2     | Extension Entry Point | [RED] Not Started | 0%           | -                      |
+| 3     | Message Passing Layer | [RED] Not Started | 0%           | -                      |
+| 4     | Frontend Services     | [RED] Not Started | 0%           | Depends on Chunk 1     |
+| 5     | Error Detection       | [RED] Not Started | 0%           | Depends on Chunk 2     |
+| 6     | Agent System          | [RED] Not Started | 0%           | Depends on Chunks 1, 4 |
+| 7     | Tools System          | [RED] Not Started | 0%           | Depends on Chunk 6     |
+| 8     | Cross-Cutting         | [RED] Not Started | 0%           | -                      |
 
 **Legend:**
-- 🔴 Not Started
-- 🟡 In Progress
-- 🟢 Complete
+- [RED] Not Started
+- [YELLOW] In Progress
+- [GREEN] Complete
 - 🔵 Blocked
-- ⚠️ Issues Found
+- [WARNING] Issues Found
 
 ### Session Log Template
 
@@ -2540,7 +2540,7 @@ Create a new file for each session: `Backend-Polish-Session-[N]-[YYYY-MM-DD].md`
 **Date:** [Date]
 **Duration:** [Start] - [End] ([Duration])
 **Focus:** Chunk [N] - [Name]
-**Status:** 🟡 In Progress
+**Status:** [YELLOW] In Progress
 
 ## Objectives
 
@@ -2561,7 +2561,7 @@ Create a new file for each session: `Backend-Polish-Session-[N]-[YYYY-MM-DD].md`
    - **Severity:** Critical
    - **Description:** ...
    - **Fix:** ...
-   - **Verified:** ✅ Yes / ❌ No
+   - **Verified:** [DONE] Yes / [FAIL] No
 
 ### Issues Found
 
@@ -2592,7 +2592,7 @@ Create a new file for each session: `Backend-Polish-Session-[N]-[YYYY-MM-DD].md`
 
 ---
 
-## 🎯 Recommended Session Sequence
+## [TARGET] Recommended Session Sequence
 
 ### Week 1: Foundation
 
@@ -2669,7 +2669,7 @@ Create a new file for each session: `Backend-Polish-Session-[N]-[YYYY-MM-DD].md`
 
 ---
 
-## 📚 Reference Documentation
+## [DOCS] Reference Documentation
 
 ### Key Documents
 
@@ -2717,46 +2717,46 @@ npm run format
 
 ---
 
-## 🚀 Success Criteria
+## [LAUNCH] Success Criteria
 
 ### Minimum Viable (Must Have)
 
-- ✅ Extension activates without errors
-- ✅ Error detection finds at least diagnostic errors
-- ✅ Error queue displays errors
-- ✅ Analysis can be triggered
-- ✅ Analysis completes with result
-- ✅ Result displays in UI
-- ✅ No console errors
+- [DONE] Extension activates without errors
+- [DONE] Error detection finds at least diagnostic errors
+- [DONE] Error queue displays errors
+- [DONE] Analysis can be triggered
+- [DONE] Analysis completes with result
+- [DONE] Result displays in UI
+- [DONE] No console errors
 
 ### Full Feature (Should Have)
 
-- ✅ All error detection sources work (diagnostics, terminal, build)
-- ✅ Real-time error detection
-- ✅ Streaming progress updates
-- ✅ Fix generation works
-- ✅ Fix preview works
-- ✅ Fix application works
-- ✅ History tracking works
-- ✅ Metrics display correctly
-- ✅ Educational mode works
-- ✅ Settings apply immediately
+- [DONE] All error detection sources work (diagnostics, terminal, build)
+- [DONE] Real-time error detection
+- [DONE] Streaming progress updates
+- [DONE] Fix generation works
+- [DONE] Fix preview works
+- [DONE] Fix application works
+- [DONE] History tracking works
+- [DONE] Metrics display correctly
+- [DONE] Educational mode works
+- [DONE] Settings apply immediately
 
 ### Excellence (Nice to Have)
 
-- ✅ All 15 tools working
-- ✅ Multi-pass analysis
-- ✅ Adaptive learning
-- ✅ Performance optimizations (caching, etc.)
-- ✅ Comprehensive error handling
-- ✅ Detailed logging
-- ✅ 90%+ test coverage
-- ✅ No TypeScript errors
-- ✅ No lint warnings
+- [DONE] All 15 tools working
+- [DONE] Multi-pass analysis
+- [DONE] Adaptive learning
+- [DONE] Performance optimizations (caching, etc.)
+- [DONE] Comprehensive error handling
+- [DONE] Detailed logging
+- [DONE] 90%+ test coverage
+- [DONE] No TypeScript errors
+- [DONE] No lint warnings
 
 ---
 
-## 💡 Tips & Best Practices
+## [IDEA] Tips & Best Practices
 
 ### Debugging Tips
 
@@ -2821,7 +2821,7 @@ npm run format
 
 ---
 
-## 📞 Getting Help
+## [CALL] Getting Help
 
 ### When Stuck
 
@@ -2860,7 +2860,7 @@ log('Result:', result);
 
 ---
 
-## 📝 Conclusion
+## [NOTE] Conclusion
 
 This guideline provides a structured, systematic approach to debugging and fixing the RCA Agent backend. By following the chunk-based sessions and carefully analyzing each component, you'll be able to identify and resolve the issues causing the stalemate.
 
@@ -2871,7 +2871,7 @@ This guideline provides a structured, systematic approach to debugging and fixin
 - Don't skip validation steps
 - Ask for help when stuck
 
-**Good luck! 🚀**
+**Good luck! [LAUNCH]**
 
 ---
 

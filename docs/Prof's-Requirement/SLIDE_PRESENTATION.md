@@ -1,4 +1,4 @@
-# RCA Agent: Local-First AI Debugging Assistant
+﻿# RCA Agent: Local-First AI Debugging Assistant
 ## Slide Presentation
 
 **Author:** Your Original Work  
@@ -114,28 +114,28 @@ This personal research project aims to:
 │         VS Code Extension (UI Layer)        │
 └──────────────────┬──────────────────────────┘
                    │
-┌──────────────────▼──────────────────────────┐
+┌──────────────────[DOWN]──────────────────────────┐
 │            Agent Layer                      │
 │  • MinimalReactAgent (ReAct reasoning)      │
 │  • EducationalAgent (beginner mode)         │
 │  • ToolOrchestrator (smart tool selection)  │
 └──────────────────┬──────────────────────────┘
                    │
-┌──────────────────▼──────────────────────────┐
+┌──────────────────[DOWN]──────────────────────────┐
 │            Tool Layer                       │
 │  • ReadFileTool, LSPTool, FixGenerator      │
 │  • VersionLookupTool, AndroidBuildTool      │
 │  • ManifestAnalyzerTool, DocsSearchTool     │
 └──────────────────┬──────────────────────────┘
                    │
-┌──────────────────▼──────────────────────────┐
+┌──────────────────[DOWN]──────────────────────────┐
 │       Knowledge & LLM Layer                 │
 │  • PromptEngine (templates + examples)      │
 │  • OllamaClient (local LLM integration)     │
 │  • FewShotDatabase (82 examples)            │
 └──────────────────┬──────────────────────────┘
                    │
-┌──────────────────▼──────────────────────────┐
+┌──────────────────[DOWN]──────────────────────────┐
 │          Storage Layer                      │
 │  • ChromaDB (vector database)               │
 │  • RCACache (in-memory cache)               │
@@ -188,11 +188,11 @@ Evaluated 5 models based on 4 criteria:
 
 | Model | Size | VRAM | Latency | Accuracy | Selected |
 |-------|------|------|---------|----------|----------|
-| GPT-3.5-turbo | Cloud | N/A | ~2s | ~75% | ❌ Privacy concerns |
-| Llama 2 7B | 7B | 6GB | 12s | 52% | ❌ Lower accuracy |
-| Mistral 7B | 7B | 6GB | 10s | 55% | ❌ Moderate performance |
-| **DeepSeek-R1-Distill-Qwen-7B** | 7B | 5.2GB | 10-12s | **61%** | ✅ Best local option |
-| DeepSeek 33B | 33B | 22GB | 35s | 68% | ❌ Hardware limitations |
+| GPT-3.5-turbo | Cloud | N/A | ~2s | ~75% | [FAIL] Privacy concerns |
+| Llama 2 7B | 7B | 6GB | 12s | 52% | [FAIL] Lower accuracy |
+| Mistral 7B | 7B | 6GB | 10s | 55% | [FAIL] Moderate performance |
+| **DeepSeek-R1-Distill-Qwen-7B** | 7B | 5.2GB | 10-12s | **61%** | [DONE] Best local option |
+| DeepSeek 33B | 33B | 22GB | 35s | 68% | [FAIL] Hardware limitations |
 
 **Training Approach:**
 
@@ -253,12 +253,12 @@ This project uses **prompt engineering** rather than fine-tuning:
 
 | Metric | Definition | Target | Achieved |
 |--------|------------|--------|----------|
-| **Parse Accuracy** | % of errors correctly parsed | 95% | 100% ✅ |
-| **Analysis Accuracy** | % of correct root cause identification | 70% | 61% ⚠️ |
-| **Latency (p50)** | Median analysis time | <60s | 45-55s ✅ |
-| **Latency (p90)** | 90th percentile time | <90s | 85.9s ✅ |
-| **Cache Hit Rate** | % of cached responses | 60% | 60-70% ✅ |
-| **Test Coverage** | % of code tested | 80% | 99% ✅ |
+| **Parse Accuracy** | % of errors correctly parsed | 95% | 100% [DONE] |
+| **Analysis Accuracy** | % of correct root cause identification | 70% | 61% [WARNING] |
+| **Latency (p50)** | Median analysis time | <60s | 45-55s [DONE] |
+| **Latency (p90)** | 90th percentile time | <90s | 85.9s [DONE] |
+| **Cache Hit Rate** | % of cached responses | 60% | 60-70% [DONE] |
+| **Test Coverage** | % of code tested | 80% | 99% [DONE] |
 
 ---
 
@@ -282,16 +282,16 @@ This project uses **prompt engineering** rather than fine-tuning:
 
 | ID | Error Type | Confidence | Latency | Root Cause ID | Status |
 |----|------------|------------|---------|---------------|--------|
-| TC001 | Lateinit Property | **0.95** | 29.0s | Correct | ✅ High confidence |
-| TC002 | Null Pointer | 0.30 | 37.6s | Correct | ⚠️ Low confidence (generic) |
-| TC003 | View Not Found | **0.85** | 27.4s | Correct | ✅ High confidence |
-| TC004 | Constructor Path | **0.85** | 31.2s | Correct | ✅ High confidence |
-| TC005 | Intent Extras | 0.50 | 26.8s | Correct | ✅ Medium confidence |
-| TC006 | List Index OOB | **0.85** | 32.1s | Correct | ✅ High confidence |
-| TC007 | Lateinit Coroutine | **0.85** | 37.6s | Correct | ✅ High confidence |
-| TC008 | Fragment Lifecycle | 0.30 | 26.0s | Correct | ⚠️ Low confidence |
-| TC009 | Companion Object | **0.85** | 40.1s | Correct | ✅ High confidence |
-| TC010 | Forced Non-Null | **0.85** | 27.8s | Correct | ✅ High confidence |
+| TC001 | Lateinit Property | **0.95** | 29.0s | Correct | [DONE] High confidence |
+| TC002 | Null Pointer | 0.30 | 37.6s | Correct | [WARNING] Low confidence (generic) |
+| TC003 | View Not Found | **0.85** | 27.4s | Correct | [DONE] High confidence |
+| TC004 | Constructor Path | **0.85** | 31.2s | Correct | [DONE] High confidence |
+| TC005 | Intent Extras | 0.50 | 26.8s | Correct | [DONE] Medium confidence |
+| TC006 | List Index OOB | **0.85** | 32.1s | Correct | [DONE] High confidence |
+| TC007 | Lateinit Coroutine | **0.85** | 37.6s | Correct | [DONE] High confidence |
+| TC008 | Fragment Lifecycle | 0.30 | 26.0s | Correct | [WARNING] Low confidence |
+| TC009 | Companion Object | **0.85** | 40.1s | Correct | [DONE] High confidence |
+| TC010 | Forced Non-Null | **0.85** | 27.8s | Correct | [DONE] High confidence |
 
 **Key Findings:**
 - **High confidence (0.85+):** 7/10 cases - Well-understood error patterns
@@ -305,24 +305,24 @@ This project uses **prompt engineering** rather than fine-tuning:
 
 | Component | Time | % of Total | Optimization Potential |
 |-----------|------|------------|----------------------|
-| **LLM Inference** | 45-50s | 60% | ⚠️ Model-limited |
-| **File Reading** | 2-5s | 5% | ✅ Already optimized |
-| **Tool Execution** | 3-8s | 8% | ✅ Parallelized |
-| **Prompt Generation** | 1-2s | 2% | ✅ Minimal |
-| **Parsing** | 0.5-1s | 1% | ✅ Sub-millisecond |
-| **Database Ops** | 0.1-0.5s | 1% | ✅ Cached |
-| **Overhead** | 5-10s | 10% | ✅ Acceptable |
+| **LLM Inference** | 45-50s | 60% | [WARNING] Model-limited |
+| **File Reading** | 2-5s | 5% | [DONE] Already optimized |
+| **Tool Execution** | 3-8s | 8% | [DONE] Parallelized |
+| **Prompt Generation** | 1-2s | 2% | [DONE] Minimal |
+| **Parsing** | 0.5-1s | 1% | [DONE] Sub-millisecond |
+| **Database Ops** | 0.1-0.5s | 1% | [DONE] Cached |
+| **Overhead** | 5-10s | 10% | [DONE] Acceptable |
 
 **Performance vs. Target:**
 
 ```
 Metric                 Target    Actual    Status
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Latency (Standard)     <60s      45-55s    ✅ 25% faster
-Accuracy               70%       61%       ⚠️ 13% below
-Cache Hit Rate         60%       65%       ✅ 8% better
-Test Coverage          80%       99%       ✅ 24% better
-Tests Passing          95%       99%       ✅ 4% better
+Latency (Standard)     <60s      45-55s    [DONE] 25% faster
+Accuracy               70%       61%       [WARNING] 13% below
+Cache Hit Rate         60%       65%       [DONE] 8% better
+Test Coverage          80%       99%       [DONE] 24% better
+Tests Passing          95%       99%       [DONE] 4% better
 ```
 
 ### 4.4 Comparison: Which Approach is Better?
@@ -331,10 +331,10 @@ Tests Passing          95%       99%       ✅ 4% better
 
 | Approach | Iteration | Examples Used | Accuracy | Why Better/Worse |
 |----------|-----------|---------------|----------|------------------|
-| **Few-Shot Learning** | 7 | 82 examples | 58.3% | ❌ Overwhelms small models with too much context |
-| **Minimal Few-Shot** | 8 | 1 example | 56.0% | ❌ Insufficient guidance |
-| **Template-Based** | 11 | 0 examples (templates only) | **61.0%** | ✅ **Best:** Structured format reduces cognitive load |
-| **Hybrid** | Future | 2-3 examples + templates | Projected 65% | 🔮 Combines structure with context |
+| **Few-Shot Learning** | 7 | 82 examples | 58.3% | [FAIL] Overwhelms small models with too much context |
+| **Minimal Few-Shot** | 8 | 1 example | 56.0% | [FAIL] Insufficient guidance |
+| **Template-Based** | 11 | 0 examples (templates only) | **61.0%** | [DONE] **Best:** Structured format reduces cognitive load |
+| **Hybrid** | Future | 2-3 examples + templates | Projected 65% | [FUTURE] Combines structure with context |
 
 **Why Template-Based Wins:**
 
@@ -556,7 +556,7 @@ This project represents **13 weeks of focused personal research** into building 
 
 The work establishes a foundation for future exploration of larger models, fine-tuning approaches, and multi-agent architectures. Most importantly, it provides a working, usable debugging assistant that respects privacy and enables unlimited iteration—proving that personal research projects can produce practical, valuable tools while serving as rich learning experiences.
 
-**Project Status:** Production Ready ✅  
+**Project Status:** Production Ready [DONE]  
 **Next Phase:** Real-world usage and continuous improvement based on user feedback
 
 ---

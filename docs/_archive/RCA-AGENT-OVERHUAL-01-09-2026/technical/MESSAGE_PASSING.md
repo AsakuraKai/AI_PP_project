@@ -1,6 +1,6 @@
-# Message Passing - Technical Reference
+﻿# Message Passing - Technical Reference
 
-**Purpose:** Extension ↔ Webview communication patterns  
+**Purpose:** Extension [H_ARROW] Webview communication patterns  
 **Protocol:** VS Code Webview API
 
 ---

@@ -27,9 +27,9 @@ interface TestMetrics {
 async function runTest10Navigation(): Promise<void> {
   console.log('\n[TEST] CHUNK 8 - TEST 10: JETPACK NAVIGATION ARGUMENT MISMATCH\n');
   console.log('='.repeat(80));
-  
+
   const projectRoot = path.join(__dirname, '../tests/fixtures/test10-navigation');
-  
+
   // Test project structure
   const testFiles = {
     'app/build.gradle': `plugins {
@@ -61,7 +61,7 @@ dependencies {
     implementation 'androidx.compose.material3:material3:1.1.2'
     implementation 'androidx.navigation:navigation-compose:2.7.5'
 }`,
-    
+
     'app/src/main/kotlin/Navigation.kt': `package com.example.navtest
 
 import androidx.compose.runtime.Composable
@@ -107,7 +107,7 @@ fun HomeScreen(onNavigateToProfile: (String) -> Unit) {
 fun ProfileScreen(userId: Int) {
     // Expects Int userId
 }`,
-    
+
     'app/src/main/kotlin/MainActivity.kt': `package com.example.navtest
 
 import android.os.Bundle
@@ -125,18 +125,18 @@ class MainActivity : ComponentActivity() {
     }
 }`
   };
-  
+
   // Create test project
   console.log('[FOLDER] Creating test project...');
   await fs.mkdir(projectRoot, { recursive: true });
-  
+
   for (const [filename, content] of Object.entries(testFiles)) {
     const filePath = path.join(projectRoot, filename);
     await fs.mkdir(path.dirname(filePath), { recursive: true });
     await fs.writeFile(filePath, content);
   }
   console.log('[OK] Test project created\n');
-  
+
   // Navigation error log
   const errorLog = `FATAL EXCEPTION: main
 Process: com.example.navtest, PID: 12345
@@ -153,27 +153,27 @@ HomeScreen passes: navController.navigate("profile/\${userId}") where userId is 
 ProfileScreen expects: navArgument("userId") { type = NavType.IntType }
 
 Type mismatch: String → Int`;
-  
+
   // Initialize agent
-  console.log('🤖 Initializing RCA agent...');
+  console.log('[INIT] Initializing RCA agent...');
   const llm = new OllamaClient({
     model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest',
     baseUrl: 'http://localhost:11434',
     timeout: 120000
   });
-  
+
   const agent = new MinimalReactAgent(llm, {
     maxIterations: 5,
     generateFix: true,
     projectRoot: projectRoot
   });
-  
+
   console.log('[OK] Agent initialized\n');
-  
+
   // Run analysis
   console.log('[SEARCH] Running RCA analysis...\n');
   const startTime = Date.now();
-  
+
   try {
     const result = await agent.analyze({
       type: 'runtime_illegalargument',
@@ -184,12 +184,12 @@ Type mismatch: String → Int`;
       column: 0,
       language: 'kotlin'
     });
-    
+
     const latency = Date.now() - startTime;
-    
+
     console.log('\n' + '='.repeat(80));
     console.log('[STATS] TEST 10 RESULTS\n');
-    
+
     console.log('[SEARCH] AGENT OUTPUT:\n');
     console.log('Root Cause:', result.rootCause);
     console.log('\nFix Guidelines:', result.fixGuidelines);
@@ -197,11 +197,11 @@ Type mismatch: String → Int`;
       console.log('\nCode Fix:', result.codeFix.explanation);
     }
     console.log('\nConfidence:', result.confidence);
-    console.log('Latency:', `${latency}ms (${(latency/1000).toFixed(2)}s)`);
-    
+    console.log('Latency:', `${latency}ms (${(latency / 1000).toFixed(2)}s)`);
+
     // Calculate metrics
     const metrics = calculateMetrics(result, latency);
-    
+
     console.log('\n[UP] DETAILED METRICS:\n');
     console.log(`Diagnosis Accuracy:      ${metrics.diagnosis_accuracy}% ${getStatusEmoji(metrics.diagnosis_accuracy, 90)}`);
     console.log(`Solution Specificity:    ${metrics.solution_specificity}% ${getStatusEmoji(metrics.solution_specificity, 70)}`);
@@ -210,15 +210,15 @@ Type mismatch: String → Int`;
     console.log(`Version Suggestions:     N/A (not applicable for navigation errors)`);
     console.log(`Overall Usability:       ${metrics.overall_usability}% ${getStatusEmoji(metrics.overall_usability, 80)}`);
     console.log(`Confidence:              ${(metrics.confidence * 100).toFixed(0)}%`);
-    console.log(`Latency:                 ${(metrics.latency_ms/1000).toFixed(2)}s ${getStatusEmoji(metrics.latency_ms < 20000 ? 100 : 50, 80)}`);
-    
+    console.log(`Latency:                 ${(metrics.latency_ms / 1000).toFixed(2)}s ${getStatusEmoji(metrics.latency_ms < 20000 ? 100 : 50, 80)}`);
+
     // Save results
     const resultsDir = path.join(__dirname, '../tests/results/chunk8');
     await fs.mkdir(resultsDir, { recursive: true });
-    
+
     const timestamp = new Date().toISOString().replace(/:/g, '-');
     const resultsFile = path.join(resultsDir, `test10-navigation-${timestamp}.json`);
-    
+
     await fs.writeFile(resultsFile, JSON.stringify({
       test: 'Test 10: Jetpack Navigation Argument Mismatch',
       timestamp: new Date().toISOString(),
@@ -227,13 +227,13 @@ Type mismatch: String → Int`;
       errorLog,
       projectRoot
     }, null, 2));
-    
+
     console.log(`\n💾 Results saved to: ${resultsFile}`);
-    
+
     // Summary
     console.log('\n' + '='.repeat(80));
     console.log('[NOTE] TEST 10 SUMMARY\n');
-    
+
     if (metrics.overall_usability >= 80) {
       console.log('[OK] TEST PASSED - Usability target exceeded!');
     } else if (metrics.overall_usability >= 65) {
@@ -241,11 +241,11 @@ Type mismatch: String → Int`;
     } else {
       console.log('[X] TEST FAILED - Usability below acceptable threshold');
     }
-    
+
     console.log(`\nTarget: 80%+ usability`);
     console.log(`Actual: ${metrics.overall_usability}%`);
     console.log(`Difference: ${metrics.overall_usability >= 80 ? '+' : ''}${(metrics.overall_usability - 80).toFixed(1)}%`);
-    
+
   } catch (error) {
     console.error('[X] Test failed with error:', error);
     throw error;
@@ -257,33 +257,33 @@ function calculateMetrics(result: any, latency: number): TestMetrics {
   let solution = 0;
   let fileId = 0;
   let codeEx = 0;
-  
+
   // Diagnosis: Should identify type mismatch in navigation arguments
   const rootCause = result.rootCause?.toLowerCase() || '';
   if (rootCause.includes('type') && rootCause.includes('mismatch')) diagnosis += 30;
   if (rootCause.includes('navigation') || rootCause.includes('navargument')) diagnosis += 30;
   if (rootCause.includes('string') && rootCause.includes('int')) diagnosis += 25;
   if (rootCause.includes('userid')) diagnosis += 15;
-  
+
   // Solution: Should explain to either change navArgument type or convert value
   const fix = (Array.isArray(result.fixGuidelines) ? result.fixGuidelines.join(' ') : result.fixGuidelines || '').toLowerCase();
   if (fix.includes('navtype.stringtype') || fix.includes('navtype.inttype')) solution += 35;
   if (fix.includes('toint()') || fix.includes('convert')) solution += 25;
   if (fix.includes('navigation.kt') || fix.includes('line')) solution += 20;
   if (fix.includes('either') || fix.includes('option')) solution += 20;
-  
+
   // File identification: Should specify Navigation.kt
   if (fix.includes('navigation.kt')) fileId += 100;
   else if (fix.includes('navigation')) fileId += 60;
-  
+
   // Code examples: Should show before/after for both options
   const code = result.codeFix?.diff || result.fixGuidelines?.join(' ') || '';
   if (code.includes('NavType.StringType') || code.includes('NavType.IntType')) codeEx += 40;
   if (code.includes('.toInt()') || code.includes('$')) codeEx += 30;
   if (code.includes('navArgument(') || code.includes('arguments')) codeEx += 30;
-  
+
   const overall = (diagnosis + solution + fileId + codeEx) / 4;
-  
+
   return {
     diagnosis_accuracy: Math.min(100, diagnosis),
     solution_specificity: Math.min(100, solution),

@@ -1,13 +1,13 @@
-# Message Passing Contract - Complete Mapping
+﻿# Message Passing Contract - Complete Mapping
 
 **Generated:** January 12, 2026  
 **Status:** Complete Analysis
 
 ## Legend
-- ✅ **Implemented** - Handler exists and appears functional
-- ❌ **Missing** - No handler found
-- ⚠️ **Partial** - Handler exists but may have issues
-- 🔄 **Response** - Response message from extension to webview
+- [DONE] **Implemented** - Handler exists and appears functional
+- [FAIL] **Missing** - No handler found
+- [WARNING] **Partial** - Handler exists but may have issues
+- [REFRESH] **Response** - Response message from extension to webview
 
 ---
 
@@ -18,35 +18,35 @@
 - **Payload:** `{ command: 'getDashboardData' }`
 - **Handler:** `RCAWebviewProvider._handleGetDashboardData()`
 - **Response:** `{ command: 'dashboardData', stats: {...}, activity: [...] }`
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### analyzeAllErrors
 - **Sent by:** `useDashboardData.analyzeAllErrors()`
 - **Payload:** `{ command: 'analyzeAllErrors' }`
 - **Handler:** `RCAWebviewProvider._handleAnalyzeAllErrors()`
 - **Response:** Various analysis progress/completion messages
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### scanWorkspace
 - **Sent by:** `useDashboardData.scanWorkspace()`
 - **Payload:** `{ command: 'scanWorkspace' }`
 - **Handler:** `RCAWebviewProvider._handleScanWorkspace()`
 - **Response:** Updates error queue
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### openSettings
 - **Sent by:** `useDashboardData.openSettings()`
 - **Payload:** `{ command: 'openSettings' }`
 - **Handler:** `RCAWebviewProvider._handleOpenSettings()`
 - **Response:** Opens VS Code settings UI
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### checkOllamaStatus
 - **Sent by:** `useDashboardData.checkOllamaStatus()`
 - **Payload:** `{ command: 'checkOllamaStatus' }`
 - **Handler:** `RCAWebviewProvider._handleCheckOllamaStatus()`
 - **Response:** `{ command: 'ollamaStatus', status: {...} }`
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ---
 
@@ -57,63 +57,63 @@
 - **Payload:** `{ command: 'getErrorQueue' }`
 - **Handler:** `RCAWebviewProvider._handleGetErrorQueue()`
 - **Response:** `{ command: 'errorQueueData', errors: [...] }`
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### refreshErrorQueue
 - **Sent by:** `useErrorQueue.refreshErrors()`
 - **Payload:** `{ command: 'refreshErrorQueue' }`
 - **Handler:** `RCAWebviewProvider._handleRefreshErrorQueue()`
 - **Response:** `{ command: 'errorQueueData', errors: [...] }`
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### removeError
 - **Sent by:** `useErrorQueue.removeError(errorId)`
 - **Payload:** `{ command: 'removeError', errorId: string }`
 - **Handler:** `RCAWebviewProvider._handleRemoveError(errorId)`
 - **Response:** `{ command: 'errorRemoved', errorId: string }`
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### pinError
 - **Sent by:** `useErrorQueue.pinError(errorId)`
 - **Payload:** `{ command: 'pinError', errorId: string }`
 - **Handler:** `RCAWebviewProvider._handlePinError(errorId)`
 - **Response:** Updates error queue
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### unpinError
 - **Sent by:** `useErrorQueue.unpinError(errorId)`
 - **Payload:** `{ command: 'unpinError', errorId: string }`
 - **Handler:** `RCAWebviewProvider._handleUnpinError(errorId)`
 - **Response:** Updates error queue
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### analyzeMultipleErrors
 - **Sent by:** `useErrorQueue.analyzeSelected()`
 - **Payload:** `{ command: 'analyzeMultipleErrors', errorIds: string[] }`
 - **Handler:** `RCAWebviewProvider._handleAnalyzeMultipleErrors(errorIds)`
 - **Response:** Analysis progress/completion messages
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### clearCompletedErrors
 - **Sent by:** `useErrorQueue.clearCompleted()`
 - **Payload:** `{ command: 'clearCompletedErrors' }`
 - **Handler:** `RCAWebviewProvider._handleClearCompletedErrors()`
 - **Response:** Updates error queue
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### clearAllErrors
 - **Sent by:** `useErrorQueue.clearAll()`
 - **Payload:** `{ command: 'clearAllErrors' }`
 - **Handler:** `RCAWebviewProvider._handleClearAllErrors()`
 - **Response:** `{ command: 'errorQueueData', errors: [] }`
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### openErrorLocation
 - **Sent by:** `useErrorQueue.openErrorLocation(errorId)`
 - **Payload:** `{ command: 'openErrorLocation', errorId: string }`
 - **Handler:** `RCAWebviewProvider._handleOpenErrorLocation(errorId)`
 - **Response:** Opens file in editor
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ---
 
@@ -128,42 +128,42 @@
   - `{ command: 'analysisProgress', progress: {...} }`
   - `{ command: 'analysisComplete', result: {...} }`
   - `{ command: 'analysisError', error: string }`
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### startAnalysis
 - **Sent by:** `useAnalysis.startAnalysis(errorId, settings)`
 - **Payload:** `{ command: 'startAnalysis', errorId: string, settings: any }`
 - **Handler:** `RCAWebviewProvider._handleStartAnalysis(errorId, settings)`
 - **Response:** Same as analyzeError
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### startManualAnalysis
 - **Sent by:** `useAnalysis.startManualAnalysis(errorText, settings)`
 - **Payload:** `{ command: 'startManualAnalysis', errorText: string, settings: any }`
 - **Handler:** `RCAWebviewProvider._handleStartManualAnalysis(errorText, settings)`
 - **Response:** Same as analyzeError
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### cancelAnalysis
 - **Sent by:** `useAnalysis.cancelAnalysis()`
 - **Payload:** `{ command: 'cancelAnalysis' }`
 - **Handler:** `RCAWebviewProvider._handleCancelAnalysis()`
 - **Response:** `{ command: 'analysisCancelled', message: string }`
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### applyFix
 - **Sent by:** `useAnalysis.applyFix(fixId)`, `useFixManager.applyFix(fixId)`
 - **Payload:** `{ command: 'applyFix', fixId: string }` or `{ command: 'applyFix', fix: {...} }`
 - **Handler:** `RCAWebviewProvider._handleApplyFix(fix)`
 - **Response:** `{ command: 'fixApplied', data: {...} }`
-- **Status:** ⚠️ **MISMATCH** - Hook sends `fixId`, handler expects `fix` object
+- **Status:** [WARNING] **MISMATCH** - Hook sends `fixId`, handler expects `fix` object
 
 ### exportResult
 - **Sent by:** `useAnalysis.exportResult()` (as 'exportAnalysis')
 - **Payload:** `{ command: 'exportAnalysis', result: {...} }`
 - **Handler:** `RCAWebviewProvider._handleExportResult(result)`
 - **Response:** Saves file to disk
-- **Status:** ⚠️ **MISMATCH** - Hook sends 'exportAnalysis', handler expects 'exportResult'
+- **Status:** [WARNING] **MISMATCH** - Hook sends 'exportAnalysis', handler expects 'exportResult'
 
 ---
 
@@ -174,56 +174,56 @@
 - **Payload:** `{ command: 'getHistory' }`
 - **Handler:** `RCAWebviewProvider._handleGetHistory(limit)`
 - **Response:** `{ command: 'historyData', history: [...] }`
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### searchHistory
 - **Sent by:** `useHistory.searchHistory(query)`
 - **Payload:** `{ command: 'searchHistory', query: string }`
 - **Handler:** `RCAWebviewProvider._handleSearchHistory(query)`
 - **Response:** `{ command: 'searchHistoryResults', results: [...] }`
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### reanalyzeFromHistory
 - **Sent by:** `useHistory.reanalyzeError(historyId)`
 - **Payload:** `{ command: 'reanalyzeFromHistory', historyId: string }`
 - **Handler:** `RCAWebviewProvider._handleReanalyzeFromHistory(historyId)`
 - **Response:** Analysis progress/completion messages
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### deleteHistoryItem
 - **Sent by:** `useHistory.deleteHistoryItem(historyId)`
 - **Payload:** `{ command: 'deleteHistoryItem', historyId: string }`
 - **Handler:** `RCAWebviewProvider._handleDeleteHistoryItem(historyId)`
 - **Response:** `{ command: 'historyItemDeleted', id: string }`
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### clearHistory
 - **Sent by:** `useHistory.clearHistory()`
 - **Payload:** `{ command: 'clearHistory' }`
 - **Handler:** `RCAWebviewProvider._handleClearHistory()`
 - **Response:** `{ command: 'historyCleared' }`
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### exportHistoryItem
 - **Sent by:** `useHistory.exportToMarkdown(historyId)`
 - **Payload:** `{ command: 'exportHistoryItem', historyId: string }`
 - **Handler:** `RCAWebviewProvider._handleExportHistoryItem(historyId)`
 - **Response:** Saves file to disk
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### exportAllHistory
 - **Sent by:** `useHistory.exportAllToMarkdown()`
 - **Payload:** `{ command: 'exportAllHistory' }`
 - **Handler:** `RCAWebviewProvider._handleExportAllHistory()`
 - **Response:** Saves file to disk
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### refreshHistory
 - **Sent by:** `useHistory.refreshHistory()`
 - **Payload:** `{ command: 'refreshHistory' }`
 - **Handler:** `RCAWebviewProvider._handleRefreshHistory()`
 - **Response:** `{ command: 'historyData', history: [...] }`
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ---
 
@@ -234,21 +234,21 @@
 - **Payload:** `{ command: 'subscribeAgentState' }`
 - **Handler:** `RCAWebviewProvider._handleSubscribeAgentState()`
 - **Response:** Real-time agent state updates
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### unsubscribeAgentState
 - **Sent by:** `useAgentState.unsubscribeFromAgentState()`
 - **Payload:** `{ command: 'unsubscribeAgentState' }`
 - **Handler:** `RCAWebviewProvider._handleUnsubscribeAgentState()`
 - **Response:** Stops state updates
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### getToolMetrics
 - **Sent by:** `useAgentState.getToolMetrics()`
 - **Payload:** `{ command: 'getToolMetrics' }`
 - **Handler:** `RCAWebviewProvider._handleGetToolMetrics()`
 - **Response:** `{ command: 'toolMetricsData', metrics: [...] }`
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ---
 
@@ -259,56 +259,56 @@
 - **Payload:** `{ command: 'getPendingFixes' }`
 - **Handler:** `RCAWebviewProvider._handleGetPendingFixes()`
 - **Response:** `{ command: 'pendingFixesData', fixes: [...] }`
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### getAppliedFixes
 - **Sent by:** `useFixManager.loadAppliedFixes()`
 - **Payload:** `{ command: 'getAppliedFixes' }`
 - **Handler:** `RCAWebviewProvider._handleGetAppliedFixes()`
 - **Response:** `{ command: 'appliedFixesData', fixes: [...] }`
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### previewFix
 - **Sent by:** `useFixManager.previewFix(fixId)`
 - **Payload:** `{ command: 'previewFix', fixId: string }`
 - **Handler:** `RCAWebviewProvider._handlePreviewFix(fixId)`
 - **Response:** `{ command: 'diffPreviewData', diff: {...} }`
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### applyFixById
 - **Sent by:** Not directly sent by hooks (internal use)
 - **Payload:** `{ command: 'applyFixById', fixId: string }`
 - **Handler:** `RCAWebviewProvider._handleApplyFixById(fixId)`
 - **Response:** `{ command: 'fixApplied', ... }`
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### rejectFix
 - **Sent by:** `useFixManager.rejectFix(fixId)`
 - **Payload:** `{ command: 'rejectFix', fixId: string }`
 - **Handler:** `RCAWebviewProvider._handleRejectFix(fixId)`
 - **Response:** `{ command: 'fixRejected', fixId: string }`
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### applyMultipleFixes
 - **Sent by:** `useFixManager.applySelectedFixes()`
 - **Payload:** `{ command: 'applyMultipleFixes', fixIds: string[] }`
 - **Handler:** `RCAWebviewProvider._handleApplyMultipleFixes(fixIds)`
 - **Response:** Multiple fix applied/error messages
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### rejectMultipleFixes
 - **Sent by:** `useFixManager.rejectSelectedFixes()`
 - **Payload:** `{ command: 'rejectMultipleFixes', fixIds: string[] }`
 - **Handler:** `RCAWebviewProvider._handleRejectMultipleFixes(fixIds)`
 - **Response:** Multiple fix rejected messages
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### clearAppliedFixes
 - **Sent by:** `useFixManager.clearAppliedFixes()`
 - **Payload:** `{ command: 'clearAppliedFixes' }`
 - **Handler:** `RCAWebviewProvider._handleClearAppliedFixes()`
 - **Response:** `{ command: 'fixesCleared' }`
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ---
 
@@ -319,14 +319,14 @@
 - **Payload:** `{ command: 'getMetrics', timeRange: '7d'|'30d'|'all' }`
 - **Handler:** `RCAWebviewProvider._handleGetMetrics(timeRange)`
 - **Response:** `{ command: 'metricsData', metrics: {...} }`
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ### exportMetrics
 - **Sent by:** `useMetrics.exportMetrics()`
 - **Payload:** `{ command: 'exportMetrics', timeRange: string }`
 - **Handler:** `RCAWebviewProvider._handleExportMetrics(timeRange)`
 - **Response:** Saves file to disk
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ---
 
@@ -337,7 +337,7 @@
 - **Payload:** `{ command: 'updateConfig', key: string, value: any }`
 - **Handler:** `RCAWebviewProvider._handleUpdateConfig(key, value)`
 - **Response:** `{ command: 'configUpdated', data: {...} }`
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ---
 
@@ -348,13 +348,13 @@
 - **Payload:** `{ command: 'navigate', route: string }`
 - **Handler:** `RCAWebviewProvider._handleNavigate(route)`
 - **Response:** `{ command: 'routeChanged', data: {...} }`
-- **Status:** ✅ Implemented
+- **Status:** [DONE] Implemented
 
 ---
 
 ## Issues Found
 
-### 🔴 Critical Issues
+### [RED] Critical Issues
 
 #### 1. `applyFix` Command Mismatch
 **Problem:** 
@@ -372,7 +372,7 @@
 **Impact:** Export functionality won't work
 **Fix Required:** Change hook to use 'exportResult' command name
 
-### ⚠️ Minor Issues
+### [WARNING] Minor Issues
 
 #### 3. Message Parameter Inconsistency
 **Problem:** Some hooks send data directly in payload, others wrap in nested object
@@ -387,10 +387,10 @@
 ## Summary
 
 ### Total Commands Analyzed: 47
-- ✅ **Implemented & Working:** 44 (93.6%)
-- ⚠️ **Partial/Mismatched:** 2 (4.3%)
-- ❌ **Missing:** 0 (0%)
-- 🔄 **Response Messages:** ~30 different response types
+- [DONE] **Implemented & Working:** 44 (93.6%)
+- [WARNING] **Partial/Mismatched:** 2 (4.3%)
+- [FAIL] **Missing:** 0 (0%)
+- [REFRESH] **Response Messages:** ~30 different response types
 
 ### Next Steps
 1. Fix `applyFix` command mismatch

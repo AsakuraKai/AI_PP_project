@@ -15,7 +15,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { AlertCircle, Download, Play, RefreshCw, Search, X, Sparkles } from 'lucide-react';
+import { AlertCircle, Download, Play, RefreshCw, Search, ThumbsDown, ThumbsUp, X, Sparkles } from 'lucide-react';
 import { useAnalysis } from '../hooks/useAnalysis';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -30,10 +30,12 @@ export function Analyze() {
     progress,
     result,
     error,
+    feedbackStatus,
     startManualAnalysis,
     cancelAnalysis,
     applyFix,
     exportResult,
+    submitFeedback,
     reset
   } = useAnalysis();
 
@@ -299,6 +301,57 @@ export function Analyze() {
                 </Badge>
               )}
             </div>
+          </div>
+
+          {/* Feedback */}
+          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6" role="region" aria-label="Feedback">
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div>
+                <h3 className="text-lg font-medium text-zinc-200">Was this analysis helpful?</h3>
+                <p className="text-sm text-zinc-400">
+                  Your feedback improves future suggestions.
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  className="gap-2"
+                  disabled={!result.feedback?.enabled || feedbackStatus.status === 'sending'}
+                  onClick={() => submitFeedback('positive')}
+                  aria-label="Submit positive feedback"
+                >
+                  <ThumbsUp className="h-4 w-4" aria-hidden="true" />
+                  Helpful
+                </Button>
+                <Button
+                  variant="outline"
+                  className="gap-2"
+                  disabled={!result.feedback?.enabled || feedbackStatus.status === 'sending'}
+                  onClick={() => submitFeedback('negative')}
+                  aria-label="Submit negative feedback"
+                >
+                  <ThumbsDown className="h-4 w-4" aria-hidden="true" />
+                  Not helpful
+                </Button>
+              </div>
+            </div>
+
+            {!result.feedback?.enabled && (
+              <p className="text-xs text-zinc-500 mt-3">
+                Feedback is disabled because the analysis was not persisted (ChromaDB not available).
+              </p>
+            )}
+
+            {feedbackStatus.status === 'sent' && feedbackStatus.message && (
+              <p className="text-xs text-green-400 mt-3" role="status" aria-live="polite">
+                {feedbackStatus.message}
+              </p>
+            )}
+            {feedbackStatus.status === 'error' && feedbackStatus.message && (
+              <p className="text-xs text-red-400 mt-3" role="alert">
+                {feedbackStatus.message}
+              </p>
+            )}
           </div>
 
           {/* Hypothesis */}

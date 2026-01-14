@@ -1,9 +1,9 @@
-# ✅ Chunk 2.1-2.2 UI COMPLETE - Error Badges & Tool Feedback
+﻿# [DONE] Chunk 2.1-2.2 UI COMPLETE - Error Badges & Tool Feedback
 
 **Completion Date:** December 19, 2025 (Week 9)  
 **Phase:** Phase 1 - MVP UI Enhancements  
 **Milestone:** Core UI Enhancements (Chunks 2.1-2.2)  
-**Status:** ✅ **COMPLETE**
+**Status:** [DONE] **COMPLETE**
 
 ---
 
@@ -21,21 +21,21 @@ Successfully completed Chunks 2.1-2.2 UI implementation, enhancing the RCA Agent
 **Goal:** Visual indicators for different error types
 
 **Deliverables:**
-- ✅ Error type badge display in output
-- ✅ Color-coded badges for 30+ error types
-- ✅ Support for 4 error categories: Kotlin, Gradle, Compose, XML
-- ✅ Badge integration with backend parser types
-- ✅ Professional formatting with emoji indicators
+- [DONE] Error type badge display in output
+- [DONE] Color-coded badges for 30+ error types
+- [DONE] Support for 4 error categories: Kotlin, Gradle, Compose, XML
+- [DONE] Badge integration with backend parser types
+- [DONE] Professional formatting with emoji indicators
 
 ### Chunk 2.2: Tool Execution Feedback (Days 4-5, ~16h)
 **Goal:** Show what tools agent is using
 
 **Deliverables:**
-- ✅ Tool execution status in progress notifications
-- ✅ 6-step progress feedback (Parsing → LLM → Tools → Database → Synthesis → Complete)
-- ✅ Tool usage display in output (which tools were used)
-- ✅ Tool icon mapping (📖 read, 🔍 search, 📚 database, 🌐 web)
-- ✅ Iteration count display
+- [DONE] Tool execution status in progress notifications
+- [DONE] 6-step progress feedback (Parsing → LLM → Tools → Database → Synthesis → Complete)
+- [DONE] Tool usage display in output (which tools were used)
+- [DONE] Tool icon mapping ([BOOK] read, [SEARCH] search, [DOCS] database, [WEB] web)
+- [DONE] Iteration count display
 
 **Combined Time Investment:** ~35 hours actual (vs ~40h estimated)
 
@@ -81,29 +81,29 @@ interface RCAResult {
 
 **Before (Week 8):** 5 error types
 ```typescript
-'npe': '🔴 NullPointerException',
+'npe': '[RED] NullPointerException',
 'lateinit': '🟠 Lateinit Error',
-'gradle_build': '🟡 Build Error',
+'gradle_build': '[YELLOW] Build Error',
 'unresolved_reference': '🔵 Unresolved Reference',
 'type_mismatch': '🟣 Type Mismatch',
 ```
 
 **After (Week 9):** 30+ error types across 4 categories
 
-**Kotlin Errors (Red 🔴):**
-- `kotlin_npe` → 🔴 Kotlin NPE
-- `kotlin_lateinit` → 🔴 Kotlin Lateinit Error
-- `kotlin_unresolved_reference` → 🔴 Kotlin Unresolved Reference
-- `kotlin_type_mismatch` → 🔴 Kotlin Type Mismatch
-- `kotlin_cast_exception` → 🔴 Kotlin Cast Exception
-- `kotlin_index_out_of_bounds` → 🔴 Kotlin Index Out of Bounds
+**Kotlin Errors (Red [RED]):**
+- `kotlin_npe` → [RED] Kotlin NPE
+- `kotlin_lateinit` → [RED] Kotlin Lateinit Error
+- `kotlin_unresolved_reference` → [RED] Kotlin Unresolved Reference
+- `kotlin_type_mismatch` → [RED] Kotlin Type Mismatch
+- `kotlin_cast_exception` → [RED] Kotlin Cast Exception
+- `kotlin_index_out_of_bounds` → [RED] Kotlin Index Out of Bounds
 
-**Gradle Errors (Yellow 🟡):**
-- `gradle_build_failure` → 🟡 Gradle Build Failure
-- `gradle_dependency_resolution` → 🟡 Gradle Dependency Error
-- `gradle_version_conflict` → 🟡 Gradle Version Conflict
-- `gradle_task_failure` → 🟡 Gradle Task Failure
-- `gradle_compilation_error` → 🟡 Gradle Compilation Error
+**Gradle Errors (Yellow [YELLOW]):**
+- `gradle_build_failure` → [YELLOW] Gradle Build Failure
+- `gradle_dependency_resolution` → [YELLOW] Gradle Dependency Error
+- `gradle_version_conflict` → [YELLOW] Gradle Version Conflict
+- `gradle_task_failure` → [YELLOW] Gradle Task Failure
+- `gradle_compilation_error` → [YELLOW] Gradle Compilation Error
 
 **Jetpack Compose Errors (Purple 🟣):**
 - `compose_remember` → 🟣 Compose Remember Error
@@ -128,8 +128,8 @@ interface RCAResult {
 - `xml_color_resource` → 🟠 XML Color Resource Error
 
 **Color Coding Strategy:**
-- 🔴 Red: Kotlin runtime errors (critical, immediate attention)
-- 🟡 Yellow: Build/dependency errors (warning, blocks compilation)
+- [RED] Red: Kotlin runtime errors (critical, immediate attention)
+- [YELLOW] Yellow: Build/dependency errors (warning, blocks compilation)
 - 🟣 Purple: Compose framework errors (modern Android UI)
 - 🟠 Orange: XML layout errors (traditional Android UI)
 - ⚪ White: Unknown/uncategorized (fallback)
@@ -139,8 +139,8 @@ interface RCAResult {
 function getErrorBadge(errorType: string): string {
   const badges: Record<string, string> = {
     // Kotlin errors (red)
-    'kotlin_npe': '🔴 Kotlin NPE',
-    'kotlin_lateinit': '🔴 Kotlin Lateinit Error',
+    'kotlin_npe': '[RED] Kotlin NPE',
+    'kotlin_lateinit': '[RED] Kotlin Lateinit Error',
     // ... 28+ more mappings
   };
   return badges[errorType] || '⚪ Unknown Error';
@@ -149,7 +149,7 @@ function getErrorBadge(errorType: string): string {
 
 **Usage in Output:**
 ```
-🔴 Kotlin NPE
+[RED] Kotlin NPE
 
 ERROR: kotlin.UninitializedPropertyAccessException: lateinit property viewModel...
 FILE: MainActivity.kt:42
@@ -172,25 +172,25 @@ async function analyzeWithProgress(parsedError: ParsedError) {
   }, async (progress) => {
     try {
       // Step 1: Parsing (instant)
-      progress.report({ message: '📖 Parsing error...' });
+      progress.report({ message: '[BOOK] Parsing error...' });
       
       // Step 2: LLM initialization (2-5s)
-      progress.report({ message: '🤖 Initializing LLM...' });
+      progress.report({ message: '[BOT] Initializing LLM...' });
       const llm = await OllamaClient.create({ model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest' });
       
       // Step 3: Tool execution (10-30s)
-      progress.report({ message: '🔍 Executing tools...' });
+      progress.report({ message: '[SEARCH] Executing tools...' });
       const agent = new MinimalReactAgent(llm);
       
       // Step 4: Database search (optional, 1-3s)
-      progress.report({ message: '📚 Searching database...' });
+      progress.report({ message: '[DOCS] Searching database...' });
       
       // Step 5: Result synthesis (5-15s)
-      progress.report({ message: '🧠 Synthesizing result...' });
+      progress.report({ message: '[BRAIN] Synthesizing result...' });
       const result = await agent.analyze(parsedError);
       
       // Step 6: Complete
-      progress.report({ message: '✅ Complete!', increment: 100 });
+      progress.report({ message: '[DONE] Complete!', increment: 100 });
       
       showResult(result);
       vscode.window.showInformationMessage('Analysis complete!');
@@ -204,12 +204,12 @@ async function analyzeWithProgress(parsedError: ParsedError) {
 
 **Visual Output:**
 ```
-RCA Agent: 📖 Parsing error...      [Progress: 10%]
-RCA Agent: 🤖 Initializing LLM...   [Progress: 20%]
-RCA Agent: 🔍 Executing tools...    [Progress: 50%]
-RCA Agent: 📚 Searching database... [Progress: 70%]
-RCA Agent: 🧠 Synthesizing result...[Progress: 90%]
-RCA Agent: ✅ Complete!             [Progress: 100%]
+RCA Agent: [BOOK] Parsing error...      [Progress: 10%]
+RCA Agent: [BOT] Initializing LLM...   [Progress: 20%]
+RCA Agent: [SEARCH] Executing tools...    [Progress: 50%]
+RCA Agent: [DOCS] Searching database... [Progress: 70%]
+RCA Agent: [BRAIN] Synthesizing result...[Progress: 90%]
+RCA Agent: [DONE] Complete!             [Progress: 100%]
 ```
 
 #### 4. Tool Icon Mapping
@@ -219,14 +219,14 @@ RCA Agent: ✅ Complete!             [Progress: 100%]
 ```typescript
 function getToolIcon(toolName: string): string {
   const icons: Record<string, string> = {
-    'read_file': '📖',
-    'search_code': '🔍',
-    'vector_search': '📚',
-    'web_search': '🌐',
-    'lsp_find_references': '🔗',
-    'lsp_find_definition': '📍',
+    'read_file': '[BOOK]',
+    'search_code': '[SEARCH]',
+    'vector_search': '[DOCS]',
+    'web_search': '[WEB]',
+    'lsp_find_references': '[LINK]',
+    'lsp_find_definition': '[LOCATION]',
   };
-  return icons[toolName.toLowerCase()] || '🔧';
+  return icons[toolName.toLowerCase()] || '[TOOL]';
 }
 ```
 
@@ -241,7 +241,7 @@ function getToolIcon(toolName: string): string {
 ```typescript
 // Display which tools were used
 if (result.toolsUsed && result.toolsUsed.length > 0) {
-  outputChannel.appendLine('\n🔧 TOOLS USED:');
+  outputChannel.appendLine('\n[TOOL] TOOLS USED:');
   result.toolsUsed.forEach(tool => {
     const icon = getToolIcon(tool);
     outputChannel.appendLine(`   ${icon} ${tool}`);
@@ -250,18 +250,18 @@ if (result.toolsUsed && result.toolsUsed.length > 0) {
 
 // Display iteration count (agent reasoning loops)
 if (result.iterations) {
-  outputChannel.appendLine(`\n🔄 ITERATIONS: ${result.iterations}`);
+  outputChannel.appendLine(`\n[REFRESH] ITERATIONS: ${result.iterations}`);
 }
 ```
 
 **Example Output:**
 ```
-🔴 Kotlin NPE
+[RED] Kotlin NPE
 
 ERROR: kotlin.UninitializedPropertyAccessException: lateinit property viewModel
 FILE: MainActivity.kt:42
 
-📝 CODE CONTEXT:
+[NOTE] CODE CONTEXT:
 ```kotlin
 41: class MainActivity : AppCompatActivity() {
 42:     private lateinit var viewModel: MainViewModel
@@ -274,22 +274,22 @@ FILE: MainActivity.kt:42
 49: }
 ```
 
-💡 ROOT CAUSE:
+[IDEA] ROOT CAUSE:
 The lateinit property `viewModel` is accessed before being initialized in onCreate().
 
-🛠️  FIX GUIDELINES:
+[FIX]  FIX GUIDELINES:
   1. Initialize viewModel before use: viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
   2. Move viewModel access to after initialization
   3. Consider using nullable property with lazy initialization
 
-🔧 TOOLS USED:
-   📖 read_file
-   🔍 search_code
-   📚 vector_search
+[TOOL] TOOLS USED:
+   [BOOK] read_file
+   [SEARCH] search_code
+   [DOCS] vector_search
 
-🔄 ITERATIONS: 3
+[REFRESH] ITERATIONS: 3
 
-✅ CONFIDENCE: 95%
+[DONE] CONFIDENCE: 95%
    ████████████████████░ (High confidence)
    High confidence - likely accurate
 
@@ -304,41 +304,41 @@ Was this helpful? Run "RCA Agent: Give Feedback" to help improve results.
 ### Manual Testing Performed
 
 **Test 1: Error Badge Display**
-- ✅ All 30+ error types display correct badges
-- ✅ Color coding matches category (Kotlin=red, Gradle=yellow, etc.)
-- ✅ Unknown error types show fallback badge (⚪ Unknown Error)
-- ✅ Badge appears at top of output prominently
+- [DONE] All 30+ error types display correct badges
+- [DONE] Color coding matches category (Kotlin=red, Gradle=yellow, etc.)
+- [DONE] Unknown error types show fallback badge (⚪ Unknown Error)
+- [DONE] Badge appears at top of output prominently
 
 **Test 2: Progress Notifications**
-- ✅ All 6 progress steps display in correct order
-- ✅ Progress notification appears in bottom-right corner
-- ✅ Each step shows appropriate emoji and message
-- ✅ Progress bar animates smoothly
-- ✅ Final "Complete!" message shown
+- [DONE] All 6 progress steps display in correct order
+- [DONE] Progress notification appears in bottom-right corner
+- [DONE] Each step shows appropriate emoji and message
+- [DONE] Progress bar animates smoothly
+- [DONE] Final "Complete!" message shown
 
 **Test 3: Tool Usage Display**
-- ✅ Mock tool list displays correctly in output
-- ✅ Each tool has correct icon mapping
-- ✅ Section only appears when tools were used
-- ✅ Formatting is clean and readable
+- [DONE] Mock tool list displays correctly in output
+- [DONE] Each tool has correct icon mapping
+- [DONE] Section only appears when tools were used
+- [DONE] Formatting is clean and readable
 
 **Test 4: Iteration Count Display**
-- ✅ Iteration count appears in output
-- ✅ Section only appears when iterations > 0
-- ✅ Formatting matches other sections
+- [DONE] Iteration count appears in output
+- [DONE] Section only appears when iterations > 0
+- [DONE] Formatting matches other sections
 
 **Test 5: TypeScript Compilation**
-- ✅ Extension compiles with zero errors
-- ✅ All type annotations correct
-- ✅ ESLint passes (zero warnings)
+- [DONE] Extension compiles with zero errors
+- [DONE] All type annotations correct
+- [DONE] ESLint passes (zero warnings)
 
 ### Edge Cases Tested
 
-- ✅ Unknown error type → Shows fallback badge
-- ✅ Missing toolsUsed field → Section hidden
-- ✅ Missing iterations field → Section hidden
-- ✅ Empty toolsUsed array → Section hidden
-- ✅ Invalid tool name → Shows fallback icon (🔧)
+- [DONE] Unknown error type → Shows fallback badge
+- [DONE] Missing toolsUsed field → Section hidden
+- [DONE] Missing iterations field → Section hidden
+- [DONE] Empty toolsUsed array → Section hidden
+- [DONE] Invalid tool name → Shows fallback icon ([TOOL])
 
 ---
 
@@ -353,31 +353,31 @@ Was this helpful? Run "RCA Agent: Give Feedback" to help improve results.
 | **Progress Steps** | 3 | 6 | +100% |
 | **Helper Functions** | 6 | 8 | +2 |
 | **Output Sections** | 5 | 7 | +2 (tools, iterations) |
-| **TypeScript Errors** | 0 | 0 | ✅ Clean |
-| **ESLint Warnings** | 0 | 0 | ✅ Clean |
+| **TypeScript Errors** | 0 | 0 | [DONE] Clean |
+| **ESLint Warnings** | 0 | 0 | [DONE] Clean |
 
 ### Error Type Coverage
 
 | Category | Error Types | Backend Parser | Status |
 |----------|-------------|----------------|--------|
-| **Kotlin** | 6 | KotlinParser | ✅ Complete |
-| **Gradle** | 5 | GradleParser | ✅ Complete |
-| **Jetpack Compose** | 10 | JetpackComposeParser | ✅ Complete |
-| **XML** | 8 | XMLParser | ✅ Complete |
-| **Fallback** | 1 | N/A | ✅ Complete |
-| **Total** | **30+** | **4 parsers** | ✅ **Full Coverage** |
+| **Kotlin** | 6 | KotlinParser | [DONE] Complete |
+| **Gradle** | 5 | GradleParser | [DONE] Complete |
+| **Jetpack Compose** | 10 | JetpackComposeParser | [DONE] Complete |
+| **XML** | 8 | XMLParser | [DONE] Complete |
+| **Fallback** | 1 | N/A | [DONE] Complete |
+| **Total** | **30+** | **4 parsers** | [DONE] **Full Coverage** |
 
 ### Feature Completeness
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| Error badge display | ✅ Complete | 30+ types with color coding |
-| Progress notifications | ✅ Complete | 6 steps with emoji indicators |
-| Tool usage display | ✅ Complete | Icon mapping + formatting |
-| Iteration count display | ✅ Complete | Shows agent reasoning loops |
-| Error handling | ✅ Complete | 4 specific categories from Week 8 |
-| TypeScript compliance | ✅ Complete | Strict mode, zero errors |
-| Code quality | ✅ Complete | ESLint clean, documented |
+| Error badge display | [DONE] Complete | 30+ types with color coding |
+| Progress notifications | [DONE] Complete | 6 steps with emoji indicators |
+| Tool usage display | [DONE] Complete | Icon mapping + formatting |
+| Iteration count display | [DONE] Complete | Shows agent reasoning loops |
+| Error handling | [DONE] Complete | 4 specific categories from Week 8 |
+| TypeScript compliance | [DONE] Complete | Strict mode, zero errors |
+| Code quality | [DONE] Complete | ESLint clean, documented |
 
 ---
 
@@ -386,13 +386,13 @@ Was this helpful? Run "RCA Agent: Give Feedback" to help improve results.
 ### Backend Dependencies (Kai's Work)
 
 **Required for Integration:**
-- ✅ KotlinParser with 6 error types (Chunk 2.1 backend)
-- ✅ GradleParser with 5 error types (Chunk 4.1 backend)
-- ✅ JetpackComposeParser with 10 error types (Chunk 4.1 backend)
-- ✅ XMLParser with 8 error types (Chunk 4.2 backend)
-- ✅ ErrorParser router to select correct parser
-- ✅ MinimalReactAgent with tool execution tracking
-- ✅ Tool Registry with ReadFileTool, LSPTool, etc.
+- [DONE] KotlinParser with 6 error types (Chunk 2.1 backend)
+- [DONE] GradleParser with 5 error types (Chunk 4.1 backend)
+- [DONE] JetpackComposeParser with 10 error types (Chunk 4.1 backend)
+- [DONE] XMLParser with 8 error types (Chunk 4.2 backend)
+- [DONE] ErrorParser router to select correct parser
+- [DONE] MinimalReactAgent with tool execution tracking
+- [DONE] Tool Registry with ReadFileTool, LSPTool, etc.
 
 **Integration Points:**
 1. Replace `parseError()` mock → `ErrorParser.parse(errorText)`
@@ -400,19 +400,19 @@ Was this helpful? Run "RCA Agent: Give Feedback" to help improve results.
 3. Wire `result.iterations` → Agent's reasoning loop count
 4. Stream progress events from agent → Progress notification updates
 
-**Status:** ✅ **All backend dependencies complete** (Chunks 1-4 backend done)
+**Status:** [DONE] **All backend dependencies complete** (Chunks 1-4 backend done)
 
 ### UI Completion Status
 
 **Completed (Chunks 1.1-2.2):**
-- ✅ Extension activation & command registration (Chunk 1.1)
-- ✅ User input handling with validation (Chunk 1.2)
-- ✅ Output channel display with formatting (Chunk 1.3)
-- ✅ Code context display with syntax highlighting (Chunk 1.4)
-- ✅ Confidence visualization with bar chart (Chunk 1.5)
-- ✅ Enhanced error handling with 4 categories (Chunk 1.5)
-- ✅ 30+ error type badges with color coding (Chunk 2.1)
-- ✅ Tool execution feedback with 6 progress steps (Chunk 2.2)
+- [DONE] Extension activation & command registration (Chunk 1.1)
+- [DONE] User input handling with validation (Chunk 1.2)
+- [DONE] Output channel display with formatting (Chunk 1.3)
+- [DONE] Code context display with syntax highlighting (Chunk 1.4)
+- [DONE] Confidence visualization with bar chart (Chunk 1.5)
+- [DONE] Enhanced error handling with 4 categories (Chunk 1.5)
+- [DONE] 30+ error type badges with color coding (Chunk 2.1)
+- [DONE] Tool execution feedback with 6 progress steps (Chunk 2.2)
 
 **Pending (Week 10+):**
 - [ ] Accuracy metrics display (Chunk 2.3 UI)
@@ -441,9 +441,9 @@ Was this helpful? Run "RCA Agent: Give Feedback" to help improve results.
 - Extensibility: Easy to add new languages with new colors (TypeScript = blue, Python = green)
 
 **Trade-offs:**
-- ✅ Pro: Clear visual hierarchy by domain
-- ✅ Pro: Supports multiple error types per language
-- ❌ Con: Can't distinguish between critical vs warning within same language
+- [DONE] Pro: Clear visual hierarchy by domain
+- [DONE] Pro: Supports multiple error types per language
+- [FAIL] Con: Can't distinguish between critical vs warning within same language
 - ⚖️ Mitigation: Confidence score handles severity signaling
 
 ### Decision 2: Progress Notification Granularity
@@ -462,31 +462,31 @@ Was this helpful? Run "RCA Agent: Give Feedback" to help improve results.
 - Not excessive: 6 steps is informative without being annoying
 
 **Trade-offs:**
-- ✅ Pro: Builds user trust (not a black box)
-- ✅ Pro: Helps with troubleshooting (e.g., "stuck on database search")
-- ❌ Con: Slightly more complex code
+- [DONE] Pro: Builds user trust (not a black box)
+- [DONE] Pro: Helps with troubleshooting (e.g., "stuck on database search")
+- [FAIL] Con: Slightly more complex code
 - ⚖️ Balance: 6 steps is sweet spot (not 2, not 20)
 
 ### Decision 3: Tool Icon Mapping
 
 **Options Considered:**
 1. **No icons:** Just text labels (e.g., "read_file")
-2. **Generic icon:** Same 🔧 for all tools
+2. **Generic icon:** Same [TOOL] for all tools
 3. **Specific icons:** Different emoji for each tool type
 
 **Decision:** **Specific icons per tool type** (Option 3)
 
 **Rationale:**
-- Visual scannability: Users can quickly spot "🔍 search" vs "📖 read"
+- Visual scannability: Users can quickly spot "[SEARCH] search" vs "[BOOK] read"
 - Professional appearance: Emoji adds visual interest without clutter
-- Consistency: Matches existing badge system (🔴🟡🟣🟠)
+- Consistency: Matches existing badge system ([RED][YELLOW]🟣🟠)
 - Low cost: Just a small mapping dictionary
 
 **Trade-offs:**
-- ✅ Pro: Better UX, more scannable output
-- ✅ Pro: Consistent with design language
-- ❌ Con: Must maintain icon mappings as tools are added
-- ⚖️ Mitigation: Fallback icon 🔧 for unknown tools
+- [DONE] Pro: Better UX, more scannable output
+- [DONE] Pro: Consistent with design language
+- [FAIL] Con: Must maintain icon mappings as tools are added
+- ⚖️ Mitigation: Fallback icon [TOOL] for unknown tools
 
 ---
 
@@ -494,29 +494,29 @@ Was this helpful? Run "RCA Agent: Give Feedback" to help improve results.
 
 ### Before (Week 8) - MVP UI
 ```
-🔍 === ROOT CAUSE ANALYSIS ===
+[SEARCH] === ROOT CAUSE ANALYSIS ===
 
-🐛 ERROR: kotlin.UninitializedPropertyAccessException
+[BUG] ERROR: kotlin.UninitializedPropertyAccessException
 📁 FILE: MainActivity.kt:42
 
-💡 ROOT CAUSE:
+[IDEA] ROOT CAUSE:
 Property not initialized before use
 
-🛠️  FIX GUIDELINES:
+[FIX]  FIX GUIDELINES:
   1. Initialize the property
   2. Use nullable type
 
-✅ CONFIDENCE: 95%
+[DONE] CONFIDENCE: 95%
 ```
 
 ### After (Week 9) - Enhanced UI
 ```
-🔴 Kotlin Lateinit Error                        ← NEW: Category-specific badge
+[RED] Kotlin Lateinit Error                        ← NEW: Category-specific badge
 
-🐛 ERROR: kotlin.UninitializedPropertyAccessException: lateinit property viewModel
+[BUG] ERROR: kotlin.UninitializedPropertyAccessException: lateinit property viewModel
 📁 FILE: MainActivity.kt:42
 
-📝 CODE CONTEXT:
+[NOTE] CODE CONTEXT:
 ```kotlin
 41: class MainActivity : AppCompatActivity() {
 42:     private lateinit var viewModel: MainViewModel
@@ -528,22 +528,22 @@ Property not initialized before use
 48: }
 ```
 
-💡 ROOT CAUSE:
+[IDEA] ROOT CAUSE:
 The lateinit property `viewModel` is accessed before being initialized in onCreate().
 
-🛠️  FIX GUIDELINES:
+[FIX]  FIX GUIDELINES:
   1. Initialize viewModel before use: viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
   2. Move viewModel access to after initialization
   3. Consider using nullable property with lazy initialization
 
-🔧 TOOLS USED:                                  ← NEW: Tool transparency
-   📖 read_file
-   🔍 search_code
-   📚 vector_search
+[TOOL] TOOLS USED:                                  ← NEW: Tool transparency
+   [BOOK] read_file
+   [SEARCH] search_code
+   [DOCS] vector_search
 
-🔄 ITERATIONS: 3                                ← NEW: Reasoning steps shown
+[REFRESH] ITERATIONS: 3                                ← NEW: Reasoning steps shown
 
-✅ CONFIDENCE: 95%
+[DONE] CONFIDENCE: 95%
    ████████████████████░ (High confidence)
    High confidence - likely accurate
 
@@ -599,23 +599,23 @@ Was this helpful? Run "RCA Agent: Give Feedback" to help improve results.
 
 ---
 
-## 📊 Week 9 Summary & Project Metrics
+## [CHART] Week 9 Summary & Project Metrics
 
 ### Weekly Overview
 **Week:** December 16-20, 2025 (Week 9)  
 **Time Investment:** ~35 hours (vs 40h estimated, **12.5% under budget**)  
-**Status:** ✅ All Week 9 objectives complete
+**Status:** [DONE] All Week 9 objectives complete
 
 ### Overall Phase 1 UI Progress
 
 | Phase | Chunks | Status | Completion |
 |-------|--------|--------|-----------|
-| **MVP UI (Weeks 1-2)** | 1.1-1.5 | ✅ Complete | 100% |
-| **Core Enhancements (Week 9)** | 2.1-2.2 | ✅ Complete | 100% |
-| **Accuracy Display (Week 10)** | 2.3 | 🔄 Pending | 0% |
-| **Database UI (Weeks 11-12)** | 3.1-3.4 | 🔄 Pending | 0% |
-| **Android UI (Weeks 13-14)** | 4.1-4.5 | 🔄 Pending | 0% |
-| **Webview (Weeks 15-16)** | 5.1-5.5 | 🔄 Pending | 0% |
+| **MVP UI (Weeks 1-2)** | 1.1-1.5 | [DONE] Complete | 100% |
+| **Core Enhancements (Week 9)** | 2.1-2.2 | [DONE] Complete | 100% |
+| **Accuracy Display (Week 10)** | 2.3 | [REFRESH] Pending | 0% |
+| **Database UI (Weeks 11-12)** | 3.1-3.4 | [REFRESH] Pending | 0% |
+| **Android UI (Weeks 13-14)** | 4.1-4.5 | [REFRESH] Pending | 0% |
+| **Webview (Weeks 15-16)** | 5.1-5.5 | [REFRESH] Pending | 0% |
 
 **Overall Phase 1 UI Progress:** 7/28 chunks complete (**25%**)
 
@@ -623,11 +623,11 @@ Was this helpful? Run "RCA Agent: Give Feedback" to help improve results.
 
 | Goal | Target | Actual | Status |
 |------|--------|--------|--------|
-| **Error type coverage** | 25+ | 30+ | ✅ **Exceeded** |
-| **Progress steps** | 4-5 | 6 | ✅ **Exceeded** |
-| **Code quality** | Zero errors | Zero errors | ✅ **Met** |
-| **Time budget** | 40h | 35h | ✅ **12.5% under** |
-| **Documentation** | Updated | 4 docs | ✅ **Met** |
+| **Error type coverage** | 25+ | 30+ | [DONE] **Exceeded** |
+| **Progress steps** | 4-5 | 6 | [DONE] **Exceeded** |
+| **Code quality** | Zero errors | Zero errors | [DONE] **Met** |
+| **Time budget** | 40h | 35h | [DONE] **12.5% under** |
+| **Documentation** | Updated | 4 docs | [DONE] **Met** |
 
 ---
 
@@ -637,15 +637,15 @@ Was this helpful? Run "RCA Agent: Give Feedback" to help improve results.
 
 | Component | Status | Chunk | Tests |
 |-----------|--------|-------|-------|
-| KotlinParser (6 types) | ✅ Complete | 2.1 backend | 15 tests |
-| GradleParser (5 types) | ✅ Complete | 4.1 backend | 12 tests |
-| JetpackComposeParser (10 types) | ✅ Complete | 4.1 backend | 18 tests |
-| XMLParser (8 types) | ✅ Complete | 4.2 backend | 43 tests |
-| ErrorParser router | ✅ Complete | 1.2 backend | 12 tests |
-| MinimalReactAgent | ✅ Complete | 1.3 backend | 14 tests |
-| Tool Registry | ✅ Complete | 1.4 backend | 8 tests |
+| KotlinParser (6 types) | [DONE] Complete | 2.1 backend | 15 tests |
+| GradleParser (5 types) | [DONE] Complete | 4.1 backend | 12 tests |
+| JetpackComposeParser (10 types) | [DONE] Complete | 4.1 backend | 18 tests |
+| XMLParser (8 types) | [DONE] Complete | 4.2 backend | 43 tests |
+| ErrorParser router | [DONE] Complete | 1.2 backend | 12 tests |
+| MinimalReactAgent | [DONE] Complete | 1.3 backend | 14 tests |
+| Tool Registry | [DONE] Complete | 1.4 backend | 8 tests |
 
-**All dependencies met** ✅
+**All dependencies met** [DONE]
 
 ### Downstream Dependencies (Future UI Work)
 
@@ -660,14 +660,14 @@ Was this helpful? Run "RCA Agent: Give Feedback" to help improve results.
 
 ## Lessons Learned
 
-### What Went Well ✅
+### What Went Well [DONE]
 
 1. **Clear Interface Contract:** `RCAResult` interface makes backend integration trivial
 2. **Incremental Testing:** Testing each error type badge individually caught 3 typos early
 3. **Reusable Helpers:** `getErrorBadge()` and `getToolIcon()` are DRY and testable
 4. **User-Centered Design:** Progress notifications address #1 user complaint (waiting time)
 
-### What Could Be Improved 🔄
+### What Could Be Improved [REFRESH]
 
 1. **Badge Maintainability:** 30+ error types in one function is unwieldy
    - **Fix:** Consider JSON config file for badge mappings (future refactor)
@@ -676,7 +676,7 @@ Was this helpful? Run "RCA Agent: Give Feedback" to help improve results.
 3. **Tool Icon Coverage:** Only 6 tool types mapped, but backend has more
    - **Fix:** Audit backend ToolRegistry and add missing mappings
 
-### Surprises 🎉
+### Surprises [SUCCESS]
 
 1. **Emoji Impact:** Emoji icons significantly improved perceived UX (informal user feedback)
 2. **Color Coding Effectiveness:** Language-based colors make errors easier to categorize at a glance
@@ -687,16 +687,16 @@ Was this helpful? Run "RCA Agent: Give Feedback" to help improve results.
 ## 🤝 Team Coordination (Week 9)
 
 ### Sokchea's Work
-- ✅ Implemented Chunks 2.1-2.2 UI
-- ✅ Updated all documentation
-- ✅ Prepared integration contracts
-- ✅ Validated TypeScript compilation
+- [DONE] Implemented Chunks 2.1-2.2 UI
+- [DONE] Updated all documentation
+- [DONE] Prepared integration contracts
+- [DONE] Validated TypeScript compilation
 
 ### Kai's Work (Previously Completed)
-- ✅ Backend parsers (Kotlin, Gradle, Compose, XML)
-- ✅ MinimalReactAgent with tool execution
-- ✅ Tool Registry and ReadFileTool
-- ✅ 628 tests passing
+- [DONE] Backend parsers (Kotlin, Gradle, Compose, XML)
+- [DONE] MinimalReactAgent with tool execution
+- [DONE] Tool Registry and ReadFileTool
+- [DONE] 628 tests passing
 
 ### Integration Points for Week 10
 1. **ParseError Interface:** Confirm structure matches UI expectations
@@ -704,7 +704,7 @@ Was this helpful? Run "RCA Agent: Give Feedback" to help improve results.
 3. **Tool Names:** Ensure backend tool names match icon mappings
 4. **Error Types:** Cross-reference backend parser types with badge mappings
 
-**Coordination Status:** ✅ **Ready for integration**
+**Coordination Status:** [DONE] **Ready for integration**
 
 ---
 
@@ -759,14 +759,14 @@ Was this helpful? Run "RCA Agent: Give Feedback" to help improve results.
 Chunks 2.1-2.2 successfully enhance the RCA Agent VS Code extension with professional-grade error visualization and process transparency. The expanded badge system (30+ types) provides comprehensive error type coverage, while tool execution feedback builds user trust by showing AI agent behavior.
 
 **Key Outcomes:**
-- ✅ 30+ error types supported (6x increase from Week 8)
-- ✅ 6-step progress feedback (2x increase from Week 8)
-- ✅ Tool usage transparency (new capability)
-- ✅ Iteration count display (new capability)
-- ✅ Zero regressions (all existing features still work)
-- ✅ Production-ready code quality (zero TypeScript errors, zero ESLint warnings)
+- [DONE] 30+ error types supported (6x increase from Week 8)
+- [DONE] 6-step progress feedback (2x increase from Week 8)
+- [DONE] Tool usage transparency (new capability)
+- [DONE] Iteration count display (new capability)
+- [DONE] Zero regressions (all existing features still work)
+- [DONE] Production-ready code quality (zero TypeScript errors, zero ESLint warnings)
 
-**Status:** ✅ **Ready for Chunk 2.3 (Accuracy Metrics Display) and backend integration**
+**Status:** [DONE] **Ready for Chunk 2.3 (Accuracy Metrics Display) and backend integration**
 
 ---
 

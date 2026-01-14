@@ -1,10 +1,10 @@
-# Architecture Documentation
+﻿# Architecture Documentation
 
 > **System design, workflows, and architectural decisions for RCA Agent**
 
 ---
 
-## 📚 Core Architecture
+## [DOCS] Core Architecture
 
 ### System Design
 - **[overview.md](overview.md)** - Complete system architecture with component diagrams (~1,800 lines)
@@ -29,7 +29,7 @@
 
 ---
 
-## 🎯 Quick Navigation
+## [TARGET] Quick Navigation
 
 **Looking for...**
 - **System overview** → [overview.md](overview.md)
@@ -43,7 +43,7 @@
 
 ---
 
-## 📊 Documentation Scope
+## [CHART] Documentation Scope
 
 ### Backend Architecture
 - Component interactions and dependencies

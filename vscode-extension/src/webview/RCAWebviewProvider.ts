@@ -5,6 +5,7 @@ import { FixApplicationService } from '../services/FixApplicationService';
 import { StateManager } from '../services/StateManager';
 import { ErrorQueueManager } from '../services/ErrorQueueManager';
 import { NetworkTimeoutHandler } from '../services/NetworkTimeoutHandler';
+import { FeedbackService } from '../services/FeedbackService';
 
 export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'rca-agent.mainView';
@@ -14,6 +15,7 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     private readonly analysisService: AnalysisService;
     private readonly fixApplicationService: FixApplicationService;
     private readonly networkTimeoutHandler: NetworkTimeoutHandler;
+    private readonly feedbackService: FeedbackService;
     private readonly stateManager: StateManager;
     private readonly errorQueueManager: ErrorQueueManager;
 
@@ -23,6 +25,7 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
         this.analysisService = AnalysisService.getInstance();
         this.fixApplicationService = FixApplicationService.getInstance();
         this.networkTimeoutHandler = new NetworkTimeoutHandler();
+        this.feedbackService = FeedbackService.getInstance();
 
         // Use existing singletons that were initialized in extension.ts
         // This ensures error detection is already active before webview opens
@@ -52,7 +55,7 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
         this.stateManager.onHistoryChange((history) => {
             this._sendMessage({
                 command: 'historyUpdated',
-                history: history
+                history: this._normalizeHistoryForWebview(history)
             });
         });
 
@@ -133,6 +136,11 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
                 break;
             case 'exportResult':
                 await this._handleExportResult(message.result);
+                break;
+
+            // Feedback
+            case 'submitFeedback':
+                await this._handleSubmitFeedback(message);
                 break;
 
             // Config commands
@@ -232,8 +240,43 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
         }
     }
 
+    private async _handleSubmitFeedback(message: any) {
+        try {
+            const feedbackType = message.feedbackType as 'positive' | 'negative' | undefined;
+            const rcaId = message.rcaId as string | undefined;
+            const errorHash = message.errorHash as string | undefined;
+
+            if (!feedbackType || (feedbackType !== 'positive' && feedbackType !== 'negative')) {
+                throw new Error('Invalid feedback type');
+            }
+            if (!rcaId) {
+                throw new Error('Missing rcaId (analysis was not persisted)');
+            }
+
+            const res = await this.feedbackService.submitFeedback({
+                rcaId,
+                feedbackType,
+                errorHash
+            });
+
+            this._sendMessage({
+                command: 'feedbackResult',
+                result: res
+            });
+        } catch (error: any) {
+            this._sendMessage({
+                command: 'feedbackError',
+                error: error?.message || 'Failed to submit feedback',
+                feedbackType: message?.feedbackType,
+                rcaId: message?.rcaId,
+                errorHash: message?.errorHash
+            });
+        }
+    }
+
     private async _handleAnalyzeError(error: any) {
         try {
+            const startTime = Date.now();
             this._sendMessage({
                 command: 'analysisStarted',
                 errorId: error.id,
@@ -250,13 +293,29 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
                 }
             );
 
+            const duration = Date.now() - startTime;
+
             // Transform backend result to webview-compatible format
             const webviewResult = this._normalizeResultForWebview(result);
+            webviewResult.duration = duration;
 
             this._sendMessage({
                 command: 'analysisComplete',
                 result: webviewResult
             });
+
+            // Record analysis to history (used by History + Metrics views)
+            try {
+                await this.stateManager.addToHistory({
+                    id: `hist-${Date.now()}-${error.id}`,
+                    timestamp: Date.now(),
+                    error,
+                    result: webviewResult,
+                    duration
+                } as any);
+            } catch (historyError) {
+                console.warn('[RCAWebviewProvider] Failed to add item to history:', historyError);
+            }
         } catch (error: any) {
             this._sendMessage({
                 command: 'analysisError',
@@ -647,7 +706,7 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
             const history = this.stateManager.getHistory(limit || 100);
             this._sendMessage({
                 command: 'historyData',
-                history: history
+                history: this._normalizeHistoryForWebview(history)
             });
         } catch (error: any) {
             console.error('Failed to get history:', error);
@@ -663,7 +722,7 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
             const results = this.stateManager.searchHistory(query);
             this._sendMessage({
                 command: 'searchHistoryResults',
-                results: results
+                results: this._normalizeHistoryForWebview(results)
             });
         } catch (error: any) {
             console.error('Failed to search history:', error);
@@ -672,6 +731,37 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
                 message: `Failed to search history: ${error.message}`
             });
         }
+    }
+
+    private _normalizeHistoryForWebview(history: any[]): any[] {
+        return (history || []).map((item: any) => {
+            const confidence = item?.result?.confidence;
+            const success = typeof item?.success === 'boolean'
+                ? item.success
+                : typeof confidence === 'number'
+                    ? confidence > 0.7
+                    : true;
+
+            return {
+                id: item.id,
+                timestamp: item.timestamp,
+                error: {
+                    message: item?.error?.message,
+                    filePath: item?.error?.filePath,
+                    line: item?.error?.line,
+                    stackTrace: item?.error?.stackTrace
+                },
+                result: {
+                    rootCause: item?.result?.rootCause,
+                    confidence: item?.result?.confidence,
+                    fixes: item?.result?.fixes,
+                    analysis: item?.result?.analysis,
+                    feedback: item?.result?.feedback
+                },
+                duration: item?.duration,
+                success
+            };
+        });
     }
 
     private async _handleReanalyzeFromHistory(historyId: string) {
@@ -1466,6 +1556,9 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
      * Ensures all expected properties exist to avoid runtime errors
      */
     private _normalizeResultForWebview(result: import('../../../src/types').RCAResult): any {
+        const rcaId = (result as any).rcaId as string | undefined;
+        const errorHash = (result as any).errorHash as string | undefined;
+
         return {
             ...result,
             // Map fixGuidelines to fixes array if not already present
@@ -1479,7 +1572,13 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
             // Extract hypothesis from rootCause if not present
             hypothesis: result.rootCause || 'No hypothesis available',
             // Map fixGuidelines to reasoning steps if not present
-            reasoning: result.fixGuidelines || []
+            reasoning: result.fixGuidelines || [],
+            // Feedback metadata for UI
+            feedback: {
+                enabled: !!rcaId,
+                rcaId,
+                errorHash
+            }
         };
     }
 }

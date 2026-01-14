@@ -1,12 +1,12 @@
-# 🔗 Error Parser Integration Guide
+﻿# [LINK] Error Parser Integration Guide
 
-> **Module:** ErrorQueueManager ↔ Backend ErrorParser Integration  
+> **Module:** ErrorQueueManager [H_ARROW] Backend ErrorParser Integration  
 > **Version:** 3.0.0 | **Date:** January 13, 2026  
-> **Status:** ✅ Production Ready
+> **Status:** [DONE] Production Ready
 
 ---
 
-## 📋 Overview
+## [CLIPBOARD] Overview
 
 This document describes the integration between the VS Code extension's **ErrorQueueManager** and the backend **ErrorParser** system, enabling detection of 26+ Android/Kotlin/Gradle error types that were previously only available in the backend.
 
@@ -29,7 +29,7 @@ Multiple Sources → ErrorParser → ErrorQueueManager → Error Queue UI
 
 ---
 
-## 🎯 Key Features
+## [TARGET] Key Features
 
 ### 1. **Automatic Build Log Monitoring**
 - Watches `**/build/outputs/logs/**/*.log` and `**/build/*.log`
@@ -56,7 +56,7 @@ Multiple Sources → ErrorParser → ErrorQueueManager → Error Queue UI
 
 ---
 
-## 🏗️ Architecture
+## [BUILD] Architecture
 
 ### Integration Components
 
@@ -93,7 +93,7 @@ class ErrorQueueManager {
 │  4. VS Code Diagnostics (automatic)                             │
 └────────────────────────┬────────────────────────────────────────┘
                          │
-                         ▼
+                         [DOWN]
 ┌─────────────────────────────────────────────────────────────────┐
 │               ErrorParser.parse(text, filePath)                  │
 │  • Language Detection (Kotlin/Gradle/Compose/XML)                │
@@ -101,7 +101,7 @@ class ErrorQueueManager {
 │  • Stack Trace Extraction                                        │
 └────────────────────────┬────────────────────────────────────────┘
                          │
-                         ▼ ParsedError
+                         [DOWN] ParsedError
 ┌─────────────────────────────────────────────────────────────────┐
 │         ErrorQueueManager._addParsedError()                      │
 │  • Deduplication Check                                           │
@@ -110,14 +110,14 @@ class ErrorQueueManager {
 │  • Metadata Enhancement                                          │
 └────────────────────────┬────────────────────────────────────────┘
                          │
-                         ▼ ErrorItem
+                         [DOWN] ErrorItem
 ┌─────────────────────────────────────────────────────────────────┐
 │               StateManager.addError()                            │
 │  • Persistence                                                   │
 │  • Event Emission                                                │
 └────────────────────────┬────────────────────────────────────────┘
                          │
-                         ▼
+                         [DOWN]
 ┌─────────────────────────────────────────────────────────────────┐
 │                Error Queue UI (React)                            │
 └─────────────────────────────────────────────────────────────────┘
@@ -125,7 +125,7 @@ class ErrorQueueManager {
 
 ---
 
-## 📖 Usage
+## [BOOK] Usage
 
 ### Automatic Detection (Build Logs)
 
@@ -182,7 +182,7 @@ Type mismatch: inferred type is String but Int was expected
 
 ---
 
-## 🔧 Configuration
+## [TOOL] Configuration
 
 ### Settings (VS Code Settings / `settings.json`)
 
@@ -219,7 +219,7 @@ await config.update('maxBuildLogSize', 10 * 1024 * 1024, true); // 10MB
 
 ---
 
-## 🎨 Type Mapping
+## [DESIGN] Type Mapping
 
 ### Backend Error Types → Frontend Error Types
 
@@ -252,7 +252,7 @@ await config.update('maxBuildLogSize', 10 * 1024 * 1024, true); // 10MB
 
 ---
 
-## 🧪 Testing
+## [TEST] Testing
 
 ### Test Error Detection Flow
 
@@ -333,7 +333,7 @@ describe('ErrorQueueManager Integration', () => {
 
 ---
 
-## 🔍 Debugging
+## [SEARCH] Debugging
 
 ### Enable Verbose Logging
 
@@ -373,7 +373,7 @@ Open **Output** panel → Select **"RCA Agent"** channel:
 
 ---
 
-## 🚀 Performance
+## [LAUNCH] Performance
 
 ### Benchmarks
 
@@ -405,7 +405,7 @@ dispose(): void {
 
 ---
 
-## 📊 Monitoring
+## [CHART] Monitoring
 
 ### Metrics to Track
 
@@ -431,7 +431,7 @@ const types = {
 
 ---
 
-## 🔗 Related Documentation
+## [LINK] Related Documentation
 
 - [ERROR_DETECTION_SYSTEM.md](./ERROR_DETECTION_SYSTEM.md) - Backend error parser details
 - [DEVELOPER_GUIDE.md](../DEVELOPER_GUIDE.md) - Extension development guide
@@ -439,6 +439,6 @@ const types = {
 
 ---
 
-> **Status:** ✅ Integration Complete  
+> **Status:** [DONE] Integration Complete  
 > **Last Updated:** January 13, 2026  
 > **Maintainer:** Backend & Extension Teams

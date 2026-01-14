@@ -1,4 +1,4 @@
-# Agent API Reference
+﻿# Agent API Reference
 
 > **Module:** `src/agent/`  
 > **Purpose:** Root Cause Analysis agents with ReAct (Reasoning + Acting) pattern  
@@ -251,19 +251,19 @@ Each learning note contains:
 ```markdown
 ### Learning Notes:
 
-1. 🎓 **What is a lateinit error?**
+1. [LEARN] **What is a lateinit error?**
    A `lateinit` property is like a box you promise to fill before opening. 
    If you try to open it (access the property) before putting something in 
    (initialization), Kotlin throws this error to prevent crashes.
 
-2. 🔍 **Why did this happen?**
+2. [SEARCH] **Why did this happen?**
    The property 'user' was declared lateinit at line 12 but never initialized 
    before being accessed at line 45. This commonly happens when:
    - Initialization is in onCreate() but access is in onResume()
    - Initialization depends on async operation that hasn't completed
    - Copy-paste code missing initialization step
 
-3. 🛡️ **How to prevent this:**
+3. [SHIELD] **How to prevent this:**
    - Initialize lateinit properties in onCreate() or init {} block
    - Use ::property.isInitialized to check before accessing
    - Consider nullable type (var user: User?) if initialization timing is uncertain
@@ -688,15 +688,15 @@ stream.on('thought', ({ thought }) => {
 });
 
 stream.on('action', ({ action }) => {
-  console.log('🔧', action.tool);
+  console.log('[TOOL]', action.tool);
 });
 
 stream.on('observation', ({ observation }) => {
-  console.log('👁️', observation);
+  console.log('[EYE]', observation);
 });
 
 stream.on('complete', ({ rca, duration }) => {
-  console.log(`✅ Complete in ${(duration / 1000).toFixed(1)}s`);
+  console.log(`[DONE] Complete in ${(duration / 1000).toFixed(1)}s`);
 });
 
 // Start analysis

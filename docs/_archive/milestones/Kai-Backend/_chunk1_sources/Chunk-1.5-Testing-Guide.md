@@ -1,24 +1,24 @@
-# Chunk 1.5: MVP Testing & Refinement - Complete Guide
+﻿# Chunk 1.5: MVP Testing & Refinement - Complete Guide
 
-**Status:** ✅ Ready for Testing  
+**Status:** [DONE] Ready for Testing  
 **Duration:** Days 13-14 (~16h)  
 **Goal:** Validate MVP accuracy and measure performance
 
 ---
 
-## 📋 Overview
+## [CLIPBOARD] Overview
 
 Chunk 1.5 focuses on comprehensive testing of the MVP backend implementation (Chunks 1.1-1.4). We validate that the RCA Agent can accurately analyze real Kotlin NPE errors and meet performance targets.
 
 ### Success Criteria
-- ✅ **Accuracy:** 6/10 errors analyzed correctly (60%)
-- ✅ **Latency:** <90s average per analysis
-- ✅ **Stability:** No crashes or unhandled exceptions
-- ✅ **Coverage:** All 10 test cases parsed successfully
+- [DONE] **Accuracy:** 6/10 errors analyzed correctly (60%)
+- [DONE] **Latency:** <90s average per analysis
+- [DONE] **Stability:** No crashes or unhandled exceptions
+- [DONE] **Coverage:** All 10 test cases parsed successfully
 
 ---
 
-## 🧪 Test Dataset
+## [TEST] Test Dataset
 
 We use 10 real-world Kotlin error examples from `tests/fixtures/test-dataset.ts`:
 
@@ -42,7 +42,7 @@ We use 10 real-world Kotlin error examples from `tests/fixtures/test-dataset.ts`
 
 ---
 
-## 🚀 Running Tests
+## [LAUNCH] Running Tests
 
 ### Prerequisites
 
@@ -97,7 +97,7 @@ ts-node scripts/benchmark.ts
 
 ---
 
-## 📊 Metrics Collected
+## [CHART] Metrics Collected
 
 ### Accuracy Metrics
 
@@ -161,7 +161,7 @@ Saved to: `docs/benchmark-results.json`
 
 ---
 
-## 📈 Expected Results
+## [GRAPH] Expected Results
 
 ### Target Achievement
 
@@ -169,11 +169,11 @@ Based on MVP implementation:
 
 | Metric | Target | Expected | Status |
 |--------|--------|----------|--------|
-| Parse Rate | 100% | 100% | ✅ |
-| Accuracy Rate | 60% (6/10) | 60-70% | ✅ |
-| Average Latency | <90s | 55-65s | ✅ |
-| Max Latency | <120s | 75-85s | ✅ |
-| Crashes | 0 | 0 | ✅ |
+| Parse Rate | 100% | 100% | [DONE] |
+| Accuracy Rate | 60% (6/10) | 60-70% | [DONE] |
+| Average Latency | <90s | 55-65s | [DONE] |
+| Max Latency | <120s | 75-85s | [DONE] |
+| Crashes | 0 | 0 | [DONE] |
 
 ### Performance Breakdown
 
@@ -186,7 +186,7 @@ Typical analysis time breakdown:
 
 ---
 
-## 🔍 Analyzing Results
+## [SEARCH] Analyzing Results
 
 ### Review Accuracy Report
 
@@ -203,26 +203,26 @@ npm run test:accuracy
 ### What to Look For
 
 **Good Signs:**
-- ✅ Parse rate = 100% (all errors parsed correctly)
-- ✅ Accuracy ≥ 60% (6+ errors analyzed well)
-- ✅ Average latency < 90s
-- ✅ No crashes or exceptions
+- [DONE] Parse rate = 100% (all errors parsed correctly)
+- [DONE] Accuracy ≥ 60% (6+ errors analyzed well)
+- [DONE] Average latency < 90s
+- [DONE] No crashes or exceptions
 
 **Warning Signs:**
-- ⚠️ Parse rate < 100% (parser bugs)
-- ⚠️ Accuracy < 50% (prompt issues or model problems)
-- ⚠️ Average latency > 90s (performance issues)
-- ⚠️ Low confidence scores (<0.5) (uncertain results)
+- [WARNING] Parse rate < 100% (parser bugs)
+- [WARNING] Accuracy < 50% (prompt issues or model problems)
+- [WARNING] Average latency > 90s (performance issues)
+- [WARNING] Low confidence scores (<0.5) (uncertain results)
 
 **Red Flags:**
-- 🚨 Crashes or unhandled exceptions
-- 🚨 Accuracy < 40% (fundamental issues)
-- 🚨 Timeout errors (>120s)
-- 🚨 Parse failures on valid errors
+- [ALERT] Crashes or unhandled exceptions
+- [ALERT] Accuracy < 40% (fundamental issues)
+- [ALERT] Timeout errors (>120s)
+- [ALERT] Parse failures on valid errors
 
 ---
 
-## 🐛 Troubleshooting
+## [BUG] Troubleshooting
 
 ### Issue 1: Tests Skip with "Ollama not available"
 
@@ -287,7 +287,7 @@ npm run bench
 
 ---
 
-## 📝 Documentation Checklist
+## [NOTE] Documentation Checklist
 
 After completing Chunk 1.5, ensure:
 
@@ -297,27 +297,27 @@ After completing Chunk 1.5, ensure:
 - [x] Package.json scripts added (`test:accuracy`, `bench`)
 - [x] Metrics files generated (`docs/accuracy-metrics.json`, `docs/benchmark-results.json`)
 - [ ] DEVLOG updated with Chunk 1.5 results
-- [ ] Copilot instructions updated with ✅ status
+- [ ] Copilot instructions updated with [DONE] status
 - [ ] Milestone document created (`docs/milestones/Week2-Chunk-1.5-Complete.md`)
 
 ---
 
-## 🎯 Next Steps
+## [TARGET] Next Steps
 
 After Chunk 1.5 is complete and targets met:
 
-### If Accuracy ≥ 60% and Latency < 90s: ✅ MVP COMPLETE
+### If Accuracy ≥ 60% and Latency < 90s: [DONE] MVP COMPLETE
 - **Proceed to Chunk 2.1:** Full Error Parser (5+ error types)
 - Document MVP completion in DEVLOG
-- Celebrate! 🎉 The backend MVP works!
+- Celebrate! [SUCCESS] The backend MVP works!
 
-### If Accuracy < 60%: ⚠️ Iteration Needed
+### If Accuracy < 60%: [WARNING] Iteration Needed
 - **Analyze failures:** Which test cases fail most?
 - **Improve prompts:** Add more context or examples
 - **Debug agent logic:** Check iteration reasoning
 - **Re-test:** Run `npm run test:accuracy` again
 
-### If Latency > 90s: ⚠️ Performance Issues
+### If Latency > 90s: [WARNING] Performance Issues
 - **Check GPU usage:** Is GPU being used?
 - **Profile bottlenecks:** Where is time spent?
 - **Consider optimizations:** Reduce iterations? Smaller model?
@@ -325,7 +325,7 @@ After Chunk 1.5 is complete and targets met:
 
 ---
 
-## 🔧 Advanced Testing
+## [TOOL] Advanced Testing
 
 ### Run Subset of Tests
 
@@ -361,7 +361,7 @@ it('should analyze ...', async () => {
 
 ---
 
-## 📚 Related Documentation
+## [DOCS] Related Documentation
 
 - [Test Dataset](../tests/fixtures/test-dataset.ts) - 10 real error examples
 - [Accuracy Test Suite](../tests/integration/accuracy.test.ts) - Main test file
@@ -371,4 +371,4 @@ it('should analyze ...', async () => {
 
 ---
 
-**Chunk 1.5 Complete! Ready to validate MVP and move to Chunk 2.** 🚀
+**Chunk 1.5 Complete! Ready to validate MVP and move to Chunk 2.** [LAUNCH]

@@ -29,11 +29,11 @@ const CONFIG = {
   maxRegenerationAttempts: 3,
   verboseValidation: true,
   trackMetrics: true,
-  
+
   // Test selection
   runAllTests: true,
   specificTests: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], // Run all 10 tests
-  
+
   // Output
   resultsDir: path.join(__dirname, '../tests/results/phase4/option-c'),
   saveIndividualResults: true,
@@ -56,7 +56,7 @@ async function main() {
   console.log(`   Track Metrics: ${CONFIG.trackMetrics}`);
   console.log(`   Tests to Run: ${CONFIG.runAllTests ? 'All 10 tests' : CONFIG.specificTests.join(', ')}`);
   console.log();
-  
+
   // Initialize LLM client
   console.log('[TOOL] Initializing Ollama client...');
   const llm = new OllamaClient({
@@ -64,7 +64,7 @@ async function main() {
     baseUrl: 'http://localhost:11434',
     timeout: 120000 // 2 minute timeout
   });
-  
+
   // Initialize MultiPassAgent
   console.log('[INIT] Creating MultiPassAgent with quality validation...');
   const agent = new MultiPassAgent(llm, {
@@ -76,28 +76,28 @@ async function main() {
     verboseValidation: CONFIG.verboseValidation,
     trackMetrics: CONFIG.trackMetrics
   });
-  
+
   // Initialize test suite
   console.log('[PACKAGE] Setting up Phase 4 test suite...');
   const testSuite = new Phase4TestSuite(agent, { useValidation: true });
-  
+
   // Get test cases
   const allTests = testSuite.getAllTestCases();
-  const testsToRun = CONFIG.runAllTests 
-    ? allTests 
+  const testsToRun = CONFIG.runAllTests
+    ? allTests
     : allTests.filter(t => CONFIG.specificTests.includes(t.id));
-  
+
   console.log(`\n[OK] Ready to run ${testsToRun.length} test(s)\n`);
-  
+
   // Run tests
   console.log('='.repeat(80));
   console.log('[TEST] RUNNING TESTS');
   console.log('='.repeat(80));
-  
+
   const startTime = Date.now();
   const report = await testSuite.runAllTests();
   const totalDuration = Date.now() - startTime;
-  
+
   // Print results
   console.log('\n' + '='.repeat(80));
   console.log('[STATS] RESULTS SUMMARY');
@@ -108,17 +108,17 @@ async function main() {
   console.log(`[STATS] Average Usability: ${Math.round(report.average_usability)}%`);
   console.log(`[FAST] Average Latency: ${Math.round(report.average_latency_ms)}ms`);
   console.log();
-  
+
   // Get validation metrics from agent
   const validationMetrics = agent.getMetrics();
   console.log('[TARGET] VALIDATION METRICS (Option C Performance)');
   console.log('='.repeat(80));
   console.log(agent.getMetricsSummary());
-  
+
   // Save detailed results
   console.log('\n💾 Saving results...');
   await fs.mkdir(CONFIG.resultsDir, { recursive: true });
-  
+
   // Save main report
   const reportPath = path.join(CONFIG.resultsDir, `option-c-report-${Date.now()}.json`);
   await fs.writeFile(reportPath, JSON.stringify({
@@ -129,12 +129,12 @@ async function main() {
     totalDuration
   }, null, 2));
   console.log(`   [OK] Report saved: ${path.basename(reportPath)}`);
-  
+
   // Save metrics
   const metricsPath = path.join(CONFIG.resultsDir, `validation-metrics-${Date.now()}.json`);
   await fs.writeFile(metricsPath, agent.exportMetrics());
   console.log(`   [OK] Metrics saved: ${path.basename(metricsPath)}`);
-  
+
   // Generate comparison if baseline exists
   if (CONFIG.generateComparisonReport) {
     try {
@@ -143,7 +143,7 @@ async function main() {
       console.log(`   [WARN]  Could not generate comparison (baseline may not exist): ${error}`);
     }
   }
-  
+
   // Final summary
   console.log('\n' + '='.repeat(80));
   console.log('[OK] OPTION C TEST RUN COMPLETE');
@@ -155,7 +155,7 @@ async function main() {
   console.log(`   - First Attempt Pass Rate: ${Math.round(validationMetrics.passedFirstAttempt / validationMetrics.totalAnalyses * 100)}%`);
   console.log(`   - Average Validation Score: ${validationMetrics.averageScore.toFixed(1)}/100`);
   console.log();
-  
+
   // Determine success
   const targetMet = report.average_usability >= 70;
   if (targetMet) {
@@ -181,7 +181,7 @@ async function main() {
 
 async function generateComparisonReport(currentReport: any, validationMetrics: any) {
   console.log('\n[STATS] Generating comparison report...');
-  
+
   // Load most recent Iteration 8 baseline
   const baselineDir = path.join(__dirname, '../tests/results/phase4');
   const files = await fs.readdir(baselineDir);
@@ -189,15 +189,15 @@ async function generateComparisonReport(currentReport: any, validationMetrics: a
     .filter(f => f.startsWith('phase4-test-suite-report-') && !f.includes('option-c'))
     .sort()
     .reverse();
-  
+
   if (baselineFiles.length === 0) {
     throw new Error('No baseline report found');
   }
-  
+
   const baselinePath = path.join(baselineDir, baselineFiles[0]);
   const baselineContent = await fs.readFile(baselinePath, 'utf-8');
   const baseline = JSON.parse(baselineContent);
-  
+
   // Calculate improvements
   const comparison = {
     baseline: {
@@ -225,11 +225,11 @@ async function generateComparisonReport(currentReport: any, validationMetrics: a
       latency_percent_change: ((currentReport.average_latency_ms - baseline.average_latency_ms) / baseline.average_latency_ms * 100).toFixed(1)
     }
   };
-  
+
   const comparisonPath = path.join(CONFIG.resultsDir, `comparison-iteration8-vs-optionc-${Date.now()}.json`);
   await fs.writeFile(comparisonPath, JSON.stringify(comparison, null, 2));
   console.log(`   [OK] Comparison saved: ${path.basename(comparisonPath)}`);
-  
+
   // Print comparison
   console.log('\n[STATS] COMPARISON: Iteration 8 vs Option C');
   console.log('='.repeat(80));

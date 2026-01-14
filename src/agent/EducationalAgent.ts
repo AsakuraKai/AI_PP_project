@@ -68,7 +68,7 @@ export class EducationalAgent extends MinimalReactAgent {
   ): Promise<EducationalRCAResult> {
     // Get base analysis from parent
     const rca = await super.analyze(error);
-    
+
     const educationalRCA: EducationalRCAResult = {
       ...rca,
       learningNotes: []
@@ -81,7 +81,7 @@ export class EducationalAgent extends MinimalReactAgent {
       // Generate learning notes asynchronously (faster, delayed)
       const promise = this.generateLearningNotes(educationalRCA, error);
       this.pendingEducation.set(this.getErrorKey(error), promise);
-      
+
       // Return immediately without learning notes
       educationalRCA.learningNotes = ['[PENDING] Learning notes generating...'];
     }
@@ -98,7 +98,7 @@ export class EducationalAgent extends MinimalReactAgent {
   async getPendingLearningNotes(error: ParsedError): Promise<string[] | null> {
     const key = this.getErrorKey(error);
     const promise = this.pendingEducation.get(key);
-    
+
     if (!promise) {
       return null;
     }
@@ -137,7 +137,7 @@ export class EducationalAgent extends MinimalReactAgent {
 
       // 3. Prevention tips
       const preventionTips = await this.generatePreventionTips(error);
-      notes.push(`🛡️ **How to prevent this:**\n${preventionTips}`);
+      notes.push(`[SHIELD] **How to prevent this:**\n${preventionTips}`);
 
     } catch (err) {
       console.error('Failed to generate learning notes:', err);
@@ -152,7 +152,7 @@ export class EducationalAgent extends MinimalReactAgent {
    */
   private async explainErrorType(error: ParsedError): Promise<string> {
     const prompt = this.buildErrorTypePrompt(error);
-    
+
     const options: GenerateOptions = {
       temperature: 0.7,
       maxTokens: 300
@@ -170,7 +170,7 @@ export class EducationalAgent extends MinimalReactAgent {
     error: ParsedError
   ): Promise<string> {
     const prompt = this.buildRootCausePrompt(rca, error);
-    
+
     const options: GenerateOptions = {
       temperature: 0.7,
       maxTokens: 300
@@ -185,7 +185,7 @@ export class EducationalAgent extends MinimalReactAgent {
    */
   private async generatePreventionTips(error: ParsedError): Promise<string> {
     const prompt = this.buildPreventionPrompt(error);
-    
+
     const options: GenerateOptions = {
       temperature: 0.7,
       maxTokens: 400

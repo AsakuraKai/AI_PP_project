@@ -1,4 +1,4 @@
-# 🏗️ PHASE 1: Kotlin/Android Complete (Flexible Timeline)
+﻿# [BUILD] PHASE 1: Kotlin/Android Complete (Flexible Timeline)
 
 > **Goal:** Build a fully working debugging assistant for Kotlin/Android development. Everything else comes later. **Work at your own pace - this is a learning journey, not a race.**
 
@@ -8,24 +8,24 @@
 
 ## What Phase 1 Delivers
 
-- ✅ VS Code extension that works
-- ✅ Analyzes Kotlin errors (NullPointerException, lateinit, scope functions, etc.)
-- ✅ Handles Android-specific issues (lifecycle, Jetpack Compose, Gradle builds)
-- ✅ Parses XML layouts and Groovy build scripts
-- ✅ Vector DB learning from your errors
-- ✅ Fast analysis (<60s) on your GPU
-- ✅ Educational mode for learning
-- ✅ Actually useful in real Android projects
+- [DONE] VS Code extension that works
+- [DONE] Analyzes Kotlin errors (NullPointerException, lateinit, scope functions, etc.)
+- [DONE] Handles Android-specific issues (lifecycle, Jetpack Compose, Gradle builds)
+- [DONE] Parses XML layouts and Groovy build scripts
+- [DONE] Vector DB learning from your errors
+- [DONE] Fast analysis (<60s) on your GPU
+- [DONE] Educational mode for learning
+- [DONE] Actually useful in real Android projects
 
 ## Phase 1 Language Focus
 
 | Language/Format | Coverage | Parser | Priority |
 |----------------|---------|--------|----------|
-| **Kotlin** | Full language support | ✅ VS Code LSP | 🔥 Highest |
-| **Jetpack Compose** | UI errors, recomposition | ✅ Kotlin parser | 🔥 Highest |
-| **XML Layouts** | View inflation, attributes | ✅ Custom parser | High |
-| **Groovy (Gradle)** | Build errors, dependencies | ✅ Basic parser | High |
-| **Kotlin DSL (Gradle)** | Modern build scripts | ✅ Kotlin parser | Medium |
+| **Kotlin** | Full language support | [DONE] VS Code LSP | [HOT] Highest |
+| **Jetpack Compose** | UI errors, recomposition | [DONE] Kotlin parser | [HOT] Highest |
+| **XML Layouts** | View inflation, attributes | [DONE] Custom parser | High |
+| **Groovy (Gradle)** | Build errors, dependencies | [DONE] Basic parser | High |
+| **Kotlin DSL (Gradle)** | Modern build scripts | [DONE] Kotlin parser | Medium |
 
 ## Android Error Types Covered
 
@@ -40,7 +40,7 @@
 
 ---
 
-## 🚀 Prerequisites (Complete Before Starting)
+## [LAUNCH] Prerequisites (Complete Before Starting)
 
 ### Hardware Setup
 - [ ] **NVIDIA drivers + CUDA installed** (for GPU acceleration)
@@ -103,7 +103,7 @@ ollama list             # Should show hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-
 
 ---
 
-## 🎯 Development Approach Options
+## [TARGET] Development Approach Options
 
 ### Option A: Traditional Systematic Approach (6 Chunks)
 Build systematically with testable milestones. Best for thorough learning.
@@ -150,8 +150,8 @@ Get working prototype fast, then expand. Best for quick validation.
 
 ## Option A: Detailed Chunks
 
-### 🔧 CHUNK 1: Core Infrastructure Setup (Weeks 1-2)
-**Priority:** 🔥 CRITICAL - Foundation for everything else  
+### [TOOL] CHUNK 1: Core Infrastructure Setup (Weeks 1-2)
+**Priority:** [HOT] CRITICAL - Foundation for everything else  
 **Goal:** Get basic extension running with database connection
 
 #### What You'll Build
@@ -171,13 +171,13 @@ Get working prototype fast, then expand. Best for quick validation.
 #### Test Criteria (End of Chunk 1)
 ```bash
 # Integration test checklist
-✅ Extension loads in VS Code (<1s activation time)
-✅ Command palette shows "RCA Agent: Analyze Error"
-✅ Ollama responds to test prompt in <5s
-✅ ChromaDB health check passes (localhost:8000)
-✅ Can create RCA collection in ChromaDB
-✅ StateManager saves/loads checkpoint successfully
-✅ Configuration schema accepts model selection
+[DONE] Extension loads in VS Code (<1s activation time)
+[DONE] Command palette shows "RCA Agent: Analyze Error"
+[DONE] Ollama responds to test prompt in <5s
+[DONE] ChromaDB health check passes (localhost:8000)
+[DONE] Can create RCA collection in ChromaDB
+[DONE] StateManager saves/loads checkpoint successfully
+[DONE] Configuration schema accepts model selection
 ```
 
 #### Files Created (Chunk 1)
@@ -205,8 +205,8 @@ tests/integration/
 
 ---
 
-### 🛠️ CHUNK 2: Tool Ecosystem (Weeks 3-4)
-**Priority:** 🔥 HIGH - Agent needs tools to be useful  
+### [FIX] CHUNK 2: Tool Ecosystem (Weeks 3-4)
+**Priority:** [HOT] HIGH - Agent needs tools to be useful  
 **Goal:** Build complete tool infrastructure and parsers
 
 #### What You'll Build
@@ -228,13 +228,13 @@ tests/integration/
 #### Test Criteria (End of Chunk 2)
 ```bash
 # Integration test checklist
-✅ Parse 10+ different Kotlin error types correctly
-✅ Read file tool extracts code context (50 lines)
-✅ LSP tool finds callers of test function
-✅ Language detector: 95%+ accuracy on sample errors
-✅ Sanitizer blocks "Ignore previous instructions" attacks
-✅ Tool execution errors handled gracefully
-✅ All tool schemas validate with Zod
+[DONE] Parse 10+ different Kotlin error types correctly
+[DONE] Read file tool extracts code context (50 lines)
+[DONE] LSP tool finds callers of test function
+[DONE] Language detector: 95%+ accuracy on sample errors
+[DONE] Sanitizer blocks "Ignore previous instructions" attacks
+[DONE] Tool execution errors handled gracefully
+[DONE] All tool schemas validate with Zod
 ```
 
 #### Files Created (Chunk 2)
@@ -263,8 +263,8 @@ tests/integration/
 
 ---
 
-### 🧠 CHUNK 3: Agent Intelligence (Weeks 5-6)
-**Priority:** 🔥 HIGH - The brain of the system  
+### [BRAIN] CHUNK 3: Agent Intelligence (Weeks 5-6)
+**Priority:** [HOT] HIGH - The brain of the system  
 **Goal:** Working ReAct agent that can analyze simple errors
 
 #### What You'll Build
@@ -286,14 +286,14 @@ tests/integration/
 #### Test Criteria (End of Chunk 3)
 ```bash
 # Integration test checklist
-✅ Analyzes Kotlin NPE with >70% confidence
-✅ Uses 3+ tools during analysis
-✅ Completes in <60s on GPU
-✅ Self-reflection triggers on contradicting evidence
-✅ Generates root cause + fix guidelines
-✅ Parallel tool execution: 3x faster than sequential
-✅ Hypothesis mentioned in final RCA
-✅ Agent terminates without hanging
+[DONE] Analyzes Kotlin NPE with >70% confidence
+[DONE] Uses 3+ tools during analysis
+[DONE] Completes in <60s on GPU
+[DONE] Self-reflection triggers on contradicting evidence
+[DONE] Generates root cause + fix guidelines
+[DONE] Parallel tool execution: 3x faster than sequential
+[DONE] Hypothesis mentioned in final RCA
+[DONE] Agent terminates without hanging
 ```
 
 #### Files Created (Chunk 3)
@@ -321,8 +321,8 @@ tests/integration/
 
 ---
 
-### 📱 CHUNK 4: Android Specialization (Weeks 7-8)
-**Priority:** 🟡 MEDIUM - Android-specific features  
+### [MOBILE] CHUNK 4: Android Specialization (Weeks 7-8)
+**Priority:** [YELLOW] MEDIUM - Android-specific features  
 **Goal:** Handle all Android error types comprehensively
 
 #### What You'll Build
@@ -344,13 +344,13 @@ tests/integration/
 #### Test Criteria (End of Chunk 4)
 ```bash
 # Integration test checklist
-✅ 5+ Compose errors analyzed correctly
-✅ XML inflation errors identify missing IDs
-✅ Gradle conflicts detected and explained
-✅ Manifest merge errors show conflicting attributes
-✅ Lifecycle errors mention proper initialization points
-✅ Android docs search returns relevant results
-✅ Fix suggestions compile (Android-specific validation)
+[DONE] 5+ Compose errors analyzed correctly
+[DONE] XML inflation errors identify missing IDs
+[DONE] Gradle conflicts detected and explained
+[DONE] Manifest merge errors show conflicting attributes
+[DONE] Lifecycle errors mention proper initialization points
+[DONE] Android docs search returns relevant results
+[DONE] Fix suggestions compile (Android-specific validation)
 ```
 
 #### Files Created (Chunk 4)
@@ -372,8 +372,8 @@ tests/integration/
 
 ---
 
-### 🎨 CHUNK 5: User Experience (Weeks 9-10)
-**Priority:** 🟡 MEDIUM - Makes it usable  
+### [DESIGN] CHUNK 5: User Experience (Weeks 9-10)
+**Priority:** [YELLOW] MEDIUM - Makes it usable  
 **Goal:** Polish UI and add educational mode
 
 #### What You'll Build
@@ -395,13 +395,13 @@ tests/integration/
 #### Test Criteria (End of Chunk 5)
 ```bash
 # Integration test checklist
-✅ UI displays thought/action/observation in real-time
-✅ Markdown document includes code snippets with syntax highlighting
-✅ Educational mode explanations are beginner-friendly
-✅ Positive feedback increases RCA confidence score
-✅ Quality scorer identifies low-quality RCAs (<0.5)
-✅ Collection merge combines 2+ workspaces successfully
-✅ UI responsive during long-running analysis
+[DONE] UI displays thought/action/observation in real-time
+[DONE] Markdown document includes code snippets with syntax highlighting
+[DONE] Educational mode explanations are beginner-friendly
+[DONE] Positive feedback increases RCA confidence score
+[DONE] Quality scorer identifies low-quality RCAs (<0.5)
+[DONE] Collection merge combines 2+ workspaces successfully
+[DONE] UI responsive during long-running analysis
 ```
 
 #### Files Created (Chunk 5)
@@ -425,8 +425,8 @@ tests/integration/
 
 ---
 
-### 🚀 CHUNK 6: Production Ready (Weeks 11-12)
-**Priority:** 🟢 POLISH - Make it production-grade  
+### [LAUNCH] CHUNK 6: Production Ready (Weeks 11-12)
+**Priority:** [GREEN] POLISH - Make it production-grade  
 **Goal:** Testing, performance optimization, deployment
 
 #### What You'll Build
@@ -448,15 +448,15 @@ tests/integration/
 #### Test Criteria (End of Chunk 6)
 ```bash
 # Production readiness checklist
-✅ All unit tests passing (500+ tests)
-✅ Integration tests cover 15+ real scenarios
-✅ Golden tests validate against reference RCAs
-✅ Performance benchmarks meet targets
-✅ CI pipeline green (GitHub Actions)
-✅ ESLint + Prettier + TypeScript strict mode
-✅ Documentation complete (README + API_CONTRACTS)
-✅ Extension installs and activates successfully
-✅ No console errors or warnings
+[DONE] All unit tests passing (500+ tests)
+[DONE] Integration tests cover 15+ real scenarios
+[DONE] Golden tests validate against reference RCAs
+[DONE] Performance benchmarks meet targets
+[DONE] CI pipeline green (GitHub Actions)
+[DONE] ESLint + Prettier + TypeScript strict mode
+[DONE] Documentation complete (README + API_CONTRACTS)
+[DONE] Extension installs and activates successfully
+[DONE] No console errors or warnings
 ```
 
 #### Files Created (Chunk 6)
@@ -489,8 +489,8 @@ docs/
 
 ## Option B: Detailed Chunks
 
-### ⚡ CHUNK 1: Minimal Viable Prototype (Weeks 1-2)
-**Priority:** 🔥 CRITICAL - Prove the concept works  
+### [FAST] CHUNK 1: Minimal Viable Prototype (Weeks 1-2)
+**Priority:** [HOT] CRITICAL - Prove the concept works  
 **Goal:** ONE Kotlin NPE working end-to-end in 2 weeks
 
 #### What You'll Build
@@ -526,15 +526,15 @@ docs/
 #### Test Criteria (End of Chunk 1)
 ```bash
 # MVP Success Checklist
-✅ Extension activates without errors
-✅ Can analyze this exact error:
+[DONE] Extension activates without errors
+[DONE] Can analyze this exact error:
    "kotlin.UninitializedPropertyAccessException: 
     lateinit property viewModel has not been initialized"
-✅ Agent uses read_file tool correctly
-✅ Generates hypothesis mentioning "lateinit" and "initialization"
-✅ Completes in <90s (even on CPU)
-✅ Output includes: root cause, affected file, line number
-✅ Works on at least 3/5 real errors from your projects
+[DONE] Agent uses read_file tool correctly
+[DONE] Generates hypothesis mentioning "lateinit" and "initialization"
+[DONE] Completes in <90s (even on CPU)
+[DONE] Output includes: root cause, affected file, line number
+[DONE] Works on at least 3/5 real errors from your projects
 ```
 
 #### Files Created (Chunk 1 - MVP)
@@ -555,14 +555,14 @@ tests/
 ```
 
 **What You're NOT Building Yet:**
-- ❌ Vector database
-- ❌ Multiple error types
-- ❌ UI/Webview
-- ❌ Educational mode
-- ❌ Caching
-- ❌ State persistence
-- ❌ LSP integration
-- ❌ Android-specific features
+- [FAIL] Vector database
+- [FAIL] Multiple error types
+- [FAIL] UI/Webview
+- [FAIL] Educational mode
+- [FAIL] Caching
+- [FAIL] State persistence
+- [FAIL] LSP integration
+- [FAIL] Android-specific features
 
 #### Lessons to Learn from MVP
 After completing this chunk, you'll discover:
@@ -576,33 +576,33 @@ After completing this chunk, you'll discover:
 
 ---
 
-### 🛠️ CHUNK 2: Core Tools & Validation (Week 3) ✅ COMPLETE
-**Priority:** 🔥 HIGH - Expand MVP to handle more cases  
+### [FIX] CHUNK 2: Core Tools & Validation (Week 3) [DONE] COMPLETE
+**Priority:** [HOT] HIGH - Expand MVP to handle more cases  
 **Goal:** Work on 5+ error types with better tool support
 
-**Status:** ✅ **COMPLETE** (December 18, 2025)
+**Status:** [DONE] **COMPLETE** (December 18, 2025)
 
 **Achievement Highlights:**
-- ✅ **6 Kotlin error types** supported (exceeded 5+ target)
-- ✅ **5 Gradle error types** supported
-- ✅ **Tool Registry System** with Zod validation
-- ✅ **LSP Integration** foundation (placeholder for MVP)
-- ✅ **Advanced Prompt Engineering** with few-shot examples
-- ✅ **113 new unit tests** (ToolRegistry: 64, LSPTool: 24, PromptEngine: 25)
-- ✅ **281 total tests passing** (100% pass rate)
-- ✅ **95%+ code coverage maintained**
+- [DONE] **6 Kotlin error types** supported (exceeded 5+ target)
+- [DONE] **5 Gradle error types** supported
+- [DONE] **Tool Registry System** with Zod validation
+- [DONE] **LSP Integration** foundation (placeholder for MVP)
+- [DONE] **Advanced Prompt Engineering** with few-shot examples
+- [DONE] **113 new unit tests** (ToolRegistry: 64, LSPTool: 24, PromptEngine: 25)
+- [DONE] **281 total tests passing** (100% pass rate)
+- [DONE] **95%+ code coverage maintained**
 
 #### What You've Built (Added to MVP)
-- ✅ Full error parser (NPE, lateinit, build errors, type mismatch, imports, etc.) - **Chunk 2.1**
-- ✅ LSP integration for code analysis (placeholder implementation) - **Chunk 2.2**
-- ✅ Tool Registry system with schema validation - **Chunk 2.2**
-- ✅ Advanced prompt engineering with few-shot learning - **Chunk 2.3**
-- ✅ Language detector with confidence scoring - **Chunk 2.1**
-- ✅ Validation on diverse error set (109 parser + 113 tool tests = 222 new tests)
+- [DONE] Full error parser (NPE, lateinit, build errors, type mismatch, imports, etc.) - **Chunk 2.1**
+- [DONE] LSP integration for code analysis (placeholder implementation) - **Chunk 2.2**
+- [DONE] Tool Registry system with schema validation - **Chunk 2.2**
+- [DONE] Advanced prompt engineering with few-shot learning - **Chunk 2.3**
+- [DONE] Language detector with confidence scoring - **Chunk 2.1**
+- [DONE] Validation on diverse error set (109 parser + 113 tool tests = 222 new tests)
 
-#### Deliverables ✅ ALL COMPLETED
+#### Deliverables [DONE] ALL COMPLETED
 
-**Chunk 2.1: Full Error Parser** ✅
+**Chunk 2.1: Full Error Parser** [DONE]
 - [x] Parse 6 Kotlin error types (exceeded target)
   - lateinit, NPE, unresolved_reference, type_mismatch, compilation_error, import_error
 - [x] Parse 5 Gradle error types (exceeded expectation)
@@ -611,7 +611,7 @@ After completing this chunk, you'll discover:
 - [x] Test suite with 109 parser tests (exceeded 10+ target)
 - [x] Handle edge cases (null, empty, very long errors, missing file paths)
 
-**Chunk 2.2: LSP Integration & Tool Registry** ✅
+**Chunk 2.2: LSP Integration & Tool Registry** [DONE]
 - [x] Tool Registry with Zod schema validation
 - [x] Dynamic tool registration and discovery
 - [x] LSP Tool for code analysis (find_callers, find_definition, get_symbol_info, search_symbols)
@@ -619,7 +619,7 @@ After completing this chunk, you'll discover:
 - [x] Test suite with 88 tests (64 ToolRegistry + 24 LSPTool)
 - [x] Error handling and graceful degradation
 
-**Chunk 2.3: Prompt Engineering** ✅
+**Chunk 2.3: Prompt Engineering** [DONE]
 - [x] System prompts with agent instructions
 - [x] Few-shot examples for 4 error types (lateinit, NPE, unresolved_reference, type_mismatch)
 - [x] Initial analysis prompts with context
@@ -628,69 +628,69 @@ After completing this chunk, you'll discover:
 - [x] JSON extraction and validation
 - [x] Test suite with 25 tests
 
-#### Test Criteria (End of Chunk 2) ✅ ALL MET
+#### Test Criteria (End of Chunk 2) [DONE] ALL MET
 ```bash
 # Expanded Coverage Checklist
-✅ Handles: NPE, lateinit, unresolved reference, build errors, type mismatch, imports
-✅ 281/281 total tests passing (100%)
-✅ Agent explains WHY error happened (not just WHAT) - Validated in Chunk 1
-✅ Completes in <60s on GPU - Validated in Chunk 1.5 (75.8s avg)
-✅ Edge case handling verified (null, empty, long inputs)
-✅ Backward compatibility maintained (0 regressions)
-✅ Tool registry functional with schema validation
-✅ Prompt engineering with few-shot learning operational
+[DONE] Handles: NPE, lateinit, unresolved reference, build errors, type mismatch, imports
+[DONE] 281/281 total tests passing (100%)
+[DONE] Agent explains WHY error happened (not just WHAT) - Validated in Chunk 1
+[DONE] Completes in <60s on GPU - Validated in Chunk 1.5 (75.8s avg)
+[DONE] Edge case handling verified (null, empty, long inputs)
+[DONE] Backward compatibility maintained (0 regressions)
+[DONE] Tool registry functional with schema validation
+[DONE] Prompt engineering with few-shot learning operational
 ```
 
-#### Files Created (Chunk 2 Complete) ✅
+#### Files Created (Chunk 2 Complete) [DONE]
 
 **Chunk 2.1 - Parser Expansion**
 ```
 src/utils/
-├── ErrorParser.ts (188 lines)          ✅ Router with singleton pattern
-├── LanguageDetector.ts (188 lines)     ✅ Multi-language detection
+├── ErrorParser.ts (188 lines)          [DONE] Router with singleton pattern
+├── LanguageDetector.ts (188 lines)     [DONE] Multi-language detection
 └── parsers/
-    ├── KotlinParser.ts (272 lines)     ✅ 6 Kotlin error types
-    └── GradleParser.ts (282 lines)     ✅ 5 Gradle error types
+    ├── KotlinParser.ts (272 lines)     [DONE] 6 Kotlin error types
+    └── GradleParser.ts (282 lines)     [DONE] 5 Gradle error types
 
 tests/unit/
-├── ErrorParser.test.ts (28 tests)      ✅ 100% passing
-├── LanguageDetector.test.ts (33 tests) ✅ 100% passing
-├── KotlinParser.test.ts (24 tests)     ✅ 100% passing
-└── GradleParser.test.ts (24 tests)     ✅ 100% passing
+├── ErrorParser.test.ts (28 tests)      [DONE] 100% passing
+├── LanguageDetector.test.ts (33 tests) [DONE] 100% passing
+├── KotlinParser.test.ts (24 tests)     [DONE] 100% passing
+└── GradleParser.test.ts (24 tests)     [DONE] 100% passing
 
 docs/milestones/
-└── Chunk-2.1-COMPLETE.md               ✅ Completion documentation
+└── Chunk-2.1-COMPLETE.md               [DONE] Completion documentation
 ```
 
 **Chunk 2.2 - LSP Integration & Tool Registry**
 ```
 src/tools/
-├── ToolRegistry.ts (295 lines)         ✅ Central tool management
-└── LSPTool.ts (260 lines)              ✅ Code analysis tool (placeholder)
+├── ToolRegistry.ts (295 lines)         [DONE] Central tool management
+└── LSPTool.ts (260 lines)              [DONE] Code analysis tool (placeholder)
 
 tests/unit/
-├── ToolRegistry.test.ts (64 tests)     ✅ 100% passing
-└── LSPTool.test.ts (24 tests)          ✅ 100% passing
+├── ToolRegistry.test.ts (64 tests)     [DONE] 100% passing
+└── LSPTool.test.ts (24 tests)          [DONE] 100% passing
 ```
 
 **Chunk 2.3 - Prompt Engineering**
 ```
 src/agent/
-└── PromptEngine.ts (533 lines)         ✅ Advanced prompt generation
+└── PromptEngine.ts (533 lines)         [DONE] Advanced prompt generation
 
 tests/unit/
-└── PromptEngine.test.ts (25 tests)     ✅ 100% passing
+└── PromptEngine.test.ts (25 tests)     [DONE] 100% passing
 
 docs/milestones/
-└── Chunk-2.2-2.3-COMPLETE.md           ✅ Combined completion doc
+└── Chunk-2.2-2.3-COMPLETE.md           [DONE] Combined completion doc
 ```
 
 **Next Up:** Chunk 2.4 - Agent Integration (integrate new tools and prompts with MinimalReactAgent)
 
 ---
 
-### 🗄️ CHUNK 3: Database & Learning (Weeks 4-5)
-**Priority:** 🟡 MEDIUM - Add memory/learning capability  
+### [DATABASE] CHUNK 3: Database & Learning (Weeks 4-5)
+**Priority:** [YELLOW] MEDIUM - Add memory/learning capability  
 **Goal:** Vector DB learns from solved errors
 
 #### What You'll Build (Adding to Chunks 1-2)
@@ -710,11 +710,11 @@ docs/milestones/
 #### Test Criteria (End of Chunk 3)
 ```bash
 # Learning System Checklist
-✅ Store 10 RCAs in vector DB
-✅ Query "NullPointerException" returns relevant past solutions
-✅ Repeat identical error: <5s (cache hit)
-✅ Positive feedback increases confidence score
-✅ Low-quality RCAs (confidence <0.5) not returned in search
+[DONE] Store 10 RCAs in vector DB
+[DONE] Query "NullPointerException" returns relevant past solutions
+[DONE] Repeat identical error: <5s (cache hit)
+[DONE] Positive feedback increases confidence score
+[DONE] Low-quality RCAs (confidence <0.5) not returned in search
 ```
 
 #### Files Created (Chunk 3 - Database)
@@ -738,8 +738,8 @@ tests/integration/
 
 ---
 
-### 📱 CHUNK 4: Android Full Coverage (Weeks 6-8)
-**Priority:** 🟡 MEDIUM - Complete Android support  
+### [MOBILE] CHUNK 4: Android Full Coverage (Weeks 6-8)
+**Priority:** [YELLOW] MEDIUM - Complete Android support  
 **Goal:** Handle all Android error types (Compose, XML, Gradle)
 
 #### What You'll Build (Adding to Chunks 1-3)
@@ -759,11 +759,11 @@ tests/integration/
 #### Test Criteria (End of Chunk 4)
 ```bash
 # Full Android Support Checklist
-✅ 5+ Compose errors: remember, derivedStateOf, LaunchedEffect
-✅ 3+ XML errors: inflation, missing IDs, attribute errors
-✅ 3+ Gradle errors: dependency conflicts, version mismatches
-✅ 2+ Manifest errors: merge conflicts, missing permissions
-✅ Android docs search returns SDK references
+[DONE] 5+ Compose errors: remember, derivedStateOf, LaunchedEffect
+[DONE] 3+ XML errors: inflation, missing IDs, attribute errors
+[DONE] 3+ Gradle errors: dependency conflicts, version mismatches
+[DONE] 2+ Manifest errors: merge conflicts, missing permissions
+[DONE] Android docs search returns SDK references
 ```
 
 #### Files Created (Chunk 4 - Android)
@@ -785,8 +785,8 @@ tests/integration/
 
 ---
 
-### 🎨 CHUNK 5: Polish & Production (Weeks 9-12)
-**Priority:** 🟢 POLISH - Make it production-ready  
+### [DESIGN] CHUNK 5: Polish & Production (Weeks 9-12)
+**Priority:** [GREEN] POLISH - Make it production-ready  
 **Goal:** UI, educational mode, testing, deployment
 
 #### What You'll Build (Adding to Chunks 1-4)
@@ -806,13 +806,13 @@ tests/integration/
 #### Test Criteria (End of Chunk 5)
 ```bash
 # Production Ready Checklist
-✅ UI shows iteration progress in real-time
-✅ Educational mode generates beginner-friendly explanations
-✅ All performance targets met (<60s standard)
-✅ Golden test suite passes (15+ reference RCAs)
-✅ CI pipeline green
-✅ Extension installs successfully
-✅ Documentation complete
+[DONE] UI shows iteration progress in real-time
+[DONE] Educational mode generates beginner-friendly explanations
+[DONE] All performance targets met (<60s standard)
+[DONE] Golden test suite passes (15+ reference RCAs)
+[DONE] CI pipeline green
+[DONE] Extension installs successfully
+[DONE] Documentation complete
 ```
 
 #### Files Created (Chunk 5 - Polish)
@@ -838,21 +838,21 @@ docs/
 
 ---
 
-## 📋 Quick Reference: Which Approach to Choose?
+## [CLIPBOARD] Quick Reference: Which Approach to Choose?
 
 ### Choose Option A (Traditional) if you:
-- ✅ Want to learn systematically and thoroughly
-- ✅ Prefer building solid foundations before moving forward
-- ✅ Have 12 weeks to dedicate (flexible pace)
-- ✅ Like structured learning with clear milestones
-- ✅ Don't mind waiting to see it work end-to-end
+- [DONE] Want to learn systematically and thoroughly
+- [DONE] Prefer building solid foundations before moving forward
+- [DONE] Have 12 weeks to dedicate (flexible pace)
+- [DONE] Like structured learning with clear milestones
+- [DONE] Don't mind waiting to see it work end-to-end
 
 ### Choose Option B (MVP-First) if you:
-- ✅ Want to see results in 2 weeks
-- ✅ Learn best by iterating on working prototypes
-- ✅ Want to validate LLM reasoning early
-- ✅ Prefer discovering problems through real use
-- ✅ More comfortable with refactoring as you learn
+- [DONE] Want to see results in 2 weeks
+- [DONE] Learn best by iterating on working prototypes
+- [DONE] Want to validate LLM reasoning early
+- [DONE] Prefer discovering problems through real use
+- [DONE] More comfortable with refactoring as you learn
 
 **Recommendation:** Try Option B first. If MVP works well in 2 weeks, you've validated the approach. If it doesn't, you've only invested 2 weeks instead of 8-12.
 
@@ -1770,18 +1770,18 @@ export const VectorSearchTool: ToolDefinition = {
 
 | Mode | Model | Quant | Per Iteration | Total (8 iter) | Status |
 |------|-------|-------|---------------|----------------|--------|
-| **NVIDIA GPU (8GB+)** | 7B | Q8 | 4-6s | 32-48s | Standard ✅ |
-| **Apple M1/M2 (16GB)** | 7B | Q8 | 6-8s | 48-64s | Standard ✅ |
-| **CPU (8-core)** | 7B | Q8 | 15-20s | 120-160s | Standard 🟡 |
-| **CPU (8-core)** | 7B | Q4 | 10-12s | 80-96s | Standard 🟡 |
-| **NVIDIA GPU (8GB+)** | 3B | Q8 | 2-3s | 16-24s | Fast ✅ |
-| **Apple M1/M2 (16GB)** | 7B | Q8 | 8-10s | 64-80s | Educational ✅ |
-| **CPU (4-core)** | 3B | Q4 | 8-10s | 64-80s | Fast 🟡 |
+| **NVIDIA GPU (8GB+)** | 7B | Q8 | 4-6s | 32-48s | Standard [DONE] |
+| **Apple M1/M2 (16GB)** | 7B | Q8 | 6-8s | 48-64s | Standard [DONE] |
+| **CPU (8-core)** | 7B | Q8 | 15-20s | 120-160s | Standard [YELLOW] |
+| **CPU (8-core)** | 7B | Q4 | 10-12s | 80-96s | Standard [YELLOW] |
+| **NVIDIA GPU (8GB+)** | 3B | Q8 | 2-3s | 16-24s | Fast [DONE] |
+| **Apple M1/M2 (16GB)** | 7B | Q8 | 8-10s | 64-80s | Educational [DONE] |
+| **CPU (4-core)** | 3B | Q4 | 8-10s | 64-80s | Fast [YELLOW] |
 
 **Targets by Hardware:**
-- **GPU/Apple Silicon:** <60s standard, <90s educational, <40s fast ✅
-- **CPU-only (8-core):** <100s standard, <120s educational, <80s fast 🟡
-- **CPU-only (4-core):** Fast mode only (<80s) 🟡
+- **GPU/Apple Silicon:** <60s standard, <90s educational, <40s fast [DONE]
+- **CPU-only (8-core):** <100s standard, <120s educational, <80s fast [YELLOW]
+- **CPU-only (4-core):** Fast mode only (<80s) [YELLOW]
 
 **Caching Impact:**
 - First analysis: Full time (see above)
@@ -1812,29 +1812,29 @@ export const VectorSearchTool: ToolDefinition = {
 │ RCA Agent - Analyzing Error         │
 │ Mode: [Standard] Educational Fast   │
 ├─────────────────────────────────────┤
-│ ⚙️  Status: Running (Iteration 3/10)│
-│ ⏱️  Elapsed: 12s / 60s               │
-│ 📊 Complexity: Medium (0.65)         │
+│ [SETTINGS]  Status: Running (Iteration 3/10)│
+│ [TIMER]  Elapsed: 12s / 60s               │
+│ [CHART] Complexity: Medium (0.65)         │
 ├─────────────────────────────────────┤
-│ 🧠 Thought #3:                       │
+│ [BRAIN] Thought #3:                       │
 │ "Error occurs in fetchUserData().    │
 │ Need to check API response format."  │
 │                                      │
-│ 🔧 Action: read_file                 │
+│ [TOOL] Action: read_file                 │
 │ Parameters: { filePath: "api.ts" }   │
 │                                      │
-│ 👁️  Observation:                     │
+│ [EYE]  Observation:                     │
 │ "Line 45: data.users.map() - data   │
 │ may be undefined if API fails"       │
 ├─────────────────────────────────────┤
-│ 💡 Hypothesis:                       │
+│ [IDEA] Hypothesis:                       │
 │ Missing error handling for failed    │
 │ API responses causes undefined data  │
 │                                      │
-│ ✅ Confidence: 85%                   │
-│ 📚 Quality Score: 0.82               │
+│ [DONE] Confidence: 85%                   │
+│ [DOCS] Quality Score: 0.82               │
 ├─────────────────────────────────────┤
-│ 🎓 LEARNING NOTE (Educational):      │
+│ [LEARN] LEARNING NOTE (Educational):      │
 │ "When calling .map() on an object,   │
 │ always ensure it exists first. The   │
 │ optional chaining operator (?.)      │
@@ -1900,7 +1900,7 @@ export class SetupWizard {
   
   private async showWelcome(): Promise<void> {
     const message = `
-      Welcome to RCA Agent! 🚀
+      Welcome to RCA Agent! [LAUNCH]
       
       This wizard will help you set up:
       • Local LLM provider (Ollama or OpenAI)
@@ -1985,7 +1985,7 @@ export class SetupWizard {
       }
     );
     
-    vscode.window.showInformationMessage('✅ Model downloaded successfully!');
+    vscode.window.showInformationMessage('[DONE] Model downloaded successfully!');
   }
   
   private async runTestAnalysis(): Promise<void> {
@@ -2016,7 +2016,7 @@ export class SetupWizard {
   
   private async showSuccess(): Promise<void> {
     const message = `
-      🎉 Setup Complete!
+      [SUCCESS] Setup Complete!
       
       RCA Agent is ready to use.
       
@@ -2077,10 +2077,10 @@ export class SetupWizard {
 **Confidence:** [0-100%]  
 **Quality Score:** [0-100%]
 
-## 🐛 Problem Summary
+## [BUG] Problem Summary
 [Error type, message, stack trace excerpt]
 
-## 🔍 Root Cause Analysis
+## [SEARCH] Root Cause Analysis
 
 ### Primary Cause
 [Main issue identified]
@@ -2094,10 +2094,10 @@ export class SetupWizard {
 - **Function:** `functionName()`
 - **Call Chain:** A → B → C (error here)
 
-## 📦 Dependencies Involved
+## [PACKAGE] Dependencies Involved
 - `package@version` - [How it's related]
 
-## 🛠️ Fix Guidelines
+## [FIX] Fix Guidelines
 
 ### Immediate Fix
 ```[language]
@@ -2114,7 +2114,7 @@ data?.map(...) ?? []
 3. Add unit tests
 
 ${mode === 'educational' ? `
-## 🎓 Learning Notes
+## [LEARN] Learning Notes
 
 ### Why This Error Happened
 [Beginner-friendly explanation]
@@ -2136,12 +2136,12 @@ Try refactoring this similar pattern in your codebase:
 \`\`\`
 ` : ''}
 
-## 🔗 Related Resources
+## [LINK] Related Resources
 - [Similar past RCA] (if found in vector DB)
 - [External documentation]
 
 ---
-*Was this helpful?* 👍 Yes | 👎 No
+*Was this helpful?* [LIKE] Yes | [DISLIKE] No
 ```
 
 **Implementation:**
@@ -2334,27 +2334,27 @@ export class StateManager {
 export class ErrorPresenter {
   static getUserMessage(error: Error): string {
     if (error instanceof ModelOOMError) {
-      return `⚠️ GPU memory full. Switched to smaller model (3B).\n` +
+      return `[WARNING] GPU memory full. Switched to smaller model (3B).\n` +
              `Analysis will be slightly less detailed but still accurate.`;
     }
     
     if (error instanceof VectorDBError) {
-      return `⚠️ Learning database unavailable.\n` +
+      return `[WARNING] Learning database unavailable.\n` +
              `Analysis will continue without past solutions.\n` +
              `Tip: Start ChromaDB with: docker compose up chromadb`;
     }
     
     if (error instanceof ContextLengthError) {
-      return `⚠️ Error context too large for model.\n` +
+      return `[WARNING] Error context too large for model.\n` +
              `Summarizing code to fit model limits...`;
     }
     
     if (error instanceof RCAError) {
-      return `❌ Analysis failed: ${error.message}\n` +
+      return `[FAIL] Analysis failed: ${error.message}\n` +
              `Checkpoint saved. Resume with: Cmd+Shift+P → "RCA: Resume Analysis"`;
     }
     
-    return `❌ Unexpected error: ${error.message}\n` +
+    return `[FAIL] Unexpected error: ${error.message}\n` +
            `Please report this issue on GitHub.`;
   }
 }
@@ -2631,13 +2631,13 @@ export class MetricsCollector {
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
       </head>
       <body>
-        <h1>🚀 RCA Agent Performance Dashboard</h1>
+        <h1>[LAUNCH] RCA Agent Performance Dashboard</h1>
         
         <div class="metric-card">
           <h2>Analysis Speed</h2>
           <p>Average: <strong>${(metrics.avg_duration_ms / 1000).toFixed(1)}s</strong></p>
           <p>90th percentile: <strong>${(metrics.p90_duration_ms / 1000).toFixed(1)}s</strong></p>
-          <p>Target: <60s ⚡</p>
+          <p>Target: <60s [FAST]</p>
         </div>
         
         <div class="metric-card">
@@ -2712,13 +2712,13 @@ export class MetricsCollector {
 ## Phase 1 Success Criteria
 
 **Phase 1 is complete when:**
-- ✅ Can analyze real Kotlin/Android errors from your projects
-- ✅ Provides useful root cause analysis
-- ✅ Completes in <60s on your GPU
-- ✅ Handles all error types listed above
-- ✅ Vector DB learns from your errors
-- ✅ You actually use it during development
-- ✅ Educational mode helps you learn Kotlin better
+- [DONE] Can analyze real Kotlin/Android errors from your projects
+- [DONE] Provides useful root cause analysis
+- [DONE] Completes in <60s on your GPU
+- [DONE] Handles all error types listed above
+- [DONE] Vector DB learns from your errors
+- [DONE] You actually use it during development
+- [DONE] Educational mode helps you learn Kotlin better
 
 **At this point, you have a working product for Kotlin/Android!**
 

@@ -248,7 +248,7 @@ function compareMetric(
   const percentChange = baseline !== 0 ? (change / baseline) : 0;
 
   let status: 'improved' | 'degraded' | 'stable';
-  
+
   if (higherIsBetter) {
     if (percentChange > Math.abs(threshold) / 2) status = 'improved';
     else if (percentChange < threshold) status = 'degraded';
@@ -279,7 +279,7 @@ function generateComparisonReport(
   current: PerformanceMetrics
 ): ComparisonReport {
   const comparisons = compareMetrics(baseline, current);
-  
+
   const improvements = comparisons.filter(c => c.status === 'improved').length;
   const degradations = comparisons.filter(c => c.status === 'degraded').length;
   const stable = comparisons.filter(c => c.status === 'stable').length;
@@ -297,8 +297,8 @@ function generateComparisonReport(
     return false;
   });
 
-  const overallStatus = criticalDegradations.length > 0 ? 'fail' : 
-                        degradations > 0 ? 'warning' : 'pass';
+  const overallStatus = criticalDegradations.length > 0 ? 'fail' :
+    degradations > 0 ? 'warning' : 'pass';
 
   // Generate recommendations
   const recommendations = generateRecommendations(comparisons, current);
@@ -388,14 +388,14 @@ function displayComparisonReport(report: ComparisonReport): void {
   console.log('\n' + '='.repeat(80));
   console.log('[STATS] PERFORMANCE COMPARISON REPORT');
   console.log('='.repeat(80));
-  
-  const statusIcon = report.overallStatus === 'pass' ? '[OK]' : 
-                     report.overallStatus === 'warning' ? '[WARN]' : '🔴';
-  
+
+  const statusIcon = report.overallStatus === 'pass' ? '[OK]' :
+    report.overallStatus === 'warning' ? '[WARN]' : '🔴';
+
   console.log(`\n${statusIcon} Overall Status: ${report.overallStatus.toUpperCase()}`);
   console.log(`Baseline: ${new Date(report.baselineDate).toLocaleDateString()}`);
   console.log(`Current:  ${new Date(report.currentDate).toLocaleDateString()}`);
-  
+
   console.log('\n' + '-'.repeat(80));
   console.log('[UP] SUMMARY');
   console.log('-'.repeat(80));
@@ -413,12 +413,12 @@ function displayComparisonReport(report: ComparisonReport): void {
 
   for (const comp of report.comparisons) {
     const statusIcon = comp.status === 'improved' ? '[OK]' :
-                       comp.status === 'degraded' ? '[X]' : '➡️';
-    
+      comp.status === 'degraded' ? '[X]' : '[SAME]';
+
     const baselineStr = formatMetricValue(comp.metric, comp.baseline);
     const currentStr = formatMetricValue(comp.metric, comp.current);
     const changeStr = formatChange(comp.change, comp.percentChange, comp.metric);
-    
+
     console.log(
       `${comp.metric.padEnd(25)} ${baselineStr.padEnd(12)} ${currentStr.padEnd(12)} ${changeStr.padEnd(12)} ${statusIcon}`
     );
@@ -459,7 +459,7 @@ function formatChange(change: number, percentChange: number, metric: string): st
 
 function loadResultsFile(filePath: string): PerformanceMetrics {
   const fullPath = path.resolve(filePath);
-  
+
   if (!fs.existsSync(fullPath)) {
     throw new Error(`Results file not found: ${fullPath}`);
   }
@@ -471,14 +471,14 @@ function loadResultsFile(filePath: string): PerformanceMetrics {
 function saveComparisonReport(report: ComparisonReport, outputPath?: string): void {
   const defaultPath = path.join(process.cwd(), 'performance-comparison.json');
   const finalPath = outputPath ? path.resolve(outputPath) : defaultPath;
-  
+
   fs.writeFileSync(finalPath, JSON.stringify(report, null, 2), 'utf-8');
   console.log(`\n[OK] Comparison report saved to: ${finalPath}`);
 }
 
 function getHistoricalResults(): PerformanceMetrics[] {
   const resultsDir = path.join(process.cwd(), 'performance-results');
-  
+
   if (!fs.existsSync(resultsDir)) {
     return [];
   }
@@ -585,7 +585,7 @@ async function main(): Promise<void> {
     if (options.history) {
       console.log('\n[STATS] Historical Performance Trends');
       console.log('='.repeat(80));
-      
+
       const historical = getHistoricalResults();
       if (historical.length === 0) {
         console.log('\nNo historical results found. Run performance tests to generate data.');
@@ -604,18 +604,18 @@ async function main(): Promise<void> {
         const success = `${(result.successRate * 100).toFixed(1)}%`;
         const latency = `${(result.averageLatencyMs / 1000).toFixed(1)}s`;
         const confidence = `${(result.averageConfidence * 100).toFixed(1)}%`;
-        
+
         console.log(
           `${date.padEnd(20)} ${tests.padEnd(10)} ${success.padEnd(12)} ${latency.padEnd(15)} ${confidence}`
         );
       }
-      
+
       return;
     }
 
     // Load current results
     let current: PerformanceMetrics;
-    
+
     if (options.file) {
       current = loadResultsFile(options.file);
     } else {
