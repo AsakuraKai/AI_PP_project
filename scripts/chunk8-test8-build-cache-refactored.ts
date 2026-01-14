@@ -121,11 +121,11 @@ fun Greeting(name: String) {
 if (require.main === module) {
   runTest8BuildCache()
     .then(() => {
-      console.log('\n✅ Test 8 complete!');
+      console.log('\n[OK] Test 8 complete!');
       process.exit(0);
     })
     .catch(error => {
-      console.error('\n❌ Test failed:', error);
+      console.error('\n[X] Test failed:', error);
       process.exit(1);
     });
 }

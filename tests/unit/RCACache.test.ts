@@ -467,7 +467,7 @@ describe('RCACache', () => {
     it('should handle unicode in messages', () => {
       const unicodeError: ParsedError = {
         ...sampleError,
-        message: 'Error with unicode: 你好世界 🎉 émojis'
+        message: 'Error with unicode: 你好世界 [SUCCESS] émojis'
       };
       
       cache.setForError(unicodeError, sampleRCA);

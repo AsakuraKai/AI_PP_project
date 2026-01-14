@@ -93,7 +93,7 @@ export class DocumentSynthesizer {
    */
   private generateHeader(error: ParsedError): string {
     const errorType = this.formatErrorType(error.type);
-    return `# 🔍 Root Cause Analysis: ${errorType}\n`;
+    return `# [SEARCH] Root Cause Analysis: ${errorType}\n`;
   }
 
   /**
@@ -105,7 +105,7 @@ export class DocumentSynthesizer {
       ? `[${error.filePath}:${error.line}](${error.filePath}#L${error.line})`
       : 'Unknown location';
 
-    return `## 📋 Summary
+    return `## [LIST] Summary
 
 **Error Type:** ${this.formatErrorType(error.type)}  
 **Location:** ${location}  
@@ -122,7 +122,7 @@ ${error.message}
    * Generate root cause section
    */
   private generateRootCauseSection(rca: RCAResult): string {
-    return `## 🎯 Root Cause
+    return `## [TARGET] Root Cause
 
 ${rca.rootCause}`;
   }
@@ -135,7 +135,7 @@ ${rca.rootCause}`;
       .map((guideline, index) => `${index + 1}. ${guideline}`)
       .join('\n');
 
-    return `## 🛠️ Fix Guidelines
+    return `## [BUILD] Fix Guidelines
 
 ${steps}`;
   }
@@ -156,7 +156,7 @@ ${steps}`;
 
     const language = this.getCodeLanguage(error.language);
 
-    return `## 📄 Code Context
+    return `## [FILE] Code Context
 
 **File:** ${error.filePath}  
 **Line:** ${error.line}
@@ -173,7 +173,7 @@ ${codeContext}
     const tools = rca.toolsUsed || [];
     const toolList = tools.map(tool => `- ${this.formatToolName(tool)}`).join('\n');
 
-    return `## 🔧 Analysis Tools Used
+    return `## [TOOL] Analysis Tools Used
 
 ${toolList}`;
   }
@@ -211,7 +211,7 @@ ${toolList}`;
       return '';
     }
 
-    return `## 📊 Analysis Metadata
+    return `## [STATS] Analysis Metadata
 
 ${metadata.join('  \n')}`;
   }
@@ -266,7 +266,7 @@ ${metadata.join('  \n')}`;
   private formatToolName(tool: string): string {
     const toolNames: Record<string, string> = {
       read_file: '📖 Read File',
-      find_callers: '🔍 Find Callers (LSP)',
+      find_callers: '[SEARCH] Find Callers (LSP)',
       vector_search_db: '🗄️ Vector Search',
       android_build_tool: '🔨 Android Build Analysis',
     };

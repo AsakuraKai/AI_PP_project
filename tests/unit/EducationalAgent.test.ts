@@ -85,7 +85,7 @@ describe('EducationalAgent', () => {
       
       // Check structure of learning notes
       expect(result.learningNotes![0]).toContain('🎓 **What is this error?**');
-      expect(result.learningNotes![1]).toContain('🔍 **Why did this happen?**');
+      expect(result.learningNotes![1]).toContain('[SEARCH] **Why did this happen?**');
       expect(result.learningNotes![2]).toContain('🛡️ **How to prevent this:**');
     });
 
@@ -153,7 +153,7 @@ describe('EducationalAgent', () => {
       const result = await agent.analyze(sampleError, 'async');
 
       expect(result.learningNotes).toBeDefined();
-      expect(result.learningNotes![0]).toContain('⏳');
+      expect(result.learningNotes![0]).toContain('[PENDING]');
       expect(result.learningNotes![0]).toContain('generating');
     });
 

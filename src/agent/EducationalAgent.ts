@@ -83,7 +83,7 @@ export class EducationalAgent extends MinimalReactAgent {
       this.pendingEducation.set(this.getErrorKey(error), promise);
       
       // Return immediately without learning notes
-      educationalRCA.learningNotes = ['⏳ Learning notes generating...'];
+      educationalRCA.learningNotes = ['[PENDING] Learning notes generating...'];
     }
 
     return educationalRCA;
@@ -133,7 +133,7 @@ export class EducationalAgent extends MinimalReactAgent {
 
       // 2. Explain root cause
       const causeExplanation = await this.explainRootCause(rca, error);
-      notes.push(`🔍 **Why did this happen?**\n${causeExplanation}`);
+      notes.push(`[SEARCH] **Why did this happen?**\n${causeExplanation}`);
 
       // 3. Prevention tips
       const preventionTips = await this.generatePreventionTips(error);
@@ -141,7 +141,7 @@ export class EducationalAgent extends MinimalReactAgent {
 
     } catch (err) {
       console.error('Failed to generate learning notes:', err);
-      notes.push('❌ Failed to generate learning notes. Please try again.');
+      notes.push('[X] Failed to generate learning notes. Please try again.');
     }
 
     return notes;

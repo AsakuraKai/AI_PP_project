@@ -550,7 +550,7 @@ MIT License
 ## Version History
 
 ### v3.0.0 (January 2026)
-- ✨ **Conversational AI Debugging** - Chat participant with `@rca` for natural language debugging
+- [FEATURE] **Conversational AI Debugging** - Chat participant with `@rca` for natural language debugging
 - ** **Multi-Turn Conversations** - Context-aware responses with conversation memory
 - ** **Guided Debugging Workflows** - Step-by-step interactive debugging assistance
 - ** **Enhanced Intelligence** - Improved context collection and LLM integration

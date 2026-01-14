@@ -112,11 +112,11 @@ include ':app'`,
 if (require.main === module) {
   runTest7GradleNetwork()
     .then(() => {
-      console.log('\n✅ Test 7 complete!');
+      console.log('\n[OK] Test 7 complete!');
       process.exit(0);
     })
     .catch(error => {
-      console.error('\n❌ Test failed:', error);
+      console.error('\n[X] Test failed:', error);
       process.exit(1);
     });
 }

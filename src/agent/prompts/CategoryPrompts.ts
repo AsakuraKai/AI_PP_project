@@ -24,13 +24,13 @@ SOLUTION MUST INCLUDE:
 - Gradle sync command: "./gradlew --refresh-dependencies"
 
 EXAMPLES OF GOOD SOLUTIONS:
-✅ "Update gradle/libs.versions.toml line 5: agp = "8.7.3" (latest stable, compatible with Kotlin 1.9.0+)"
-✅ "Update app/build.gradle line 42: implementation("androidx.compose.ui:ui:1.6.0") (fixes API breakage)"
+[OK] "Update gradle/libs.versions.toml line 5: agp = "8.7.3" (latest stable, compatible with Kotlin 1.9.0+)"
+[OK] "Update app/build.gradle line 42: implementation("androidx.compose.ui:ui:1.6.0") (fixes API breakage)"
 
 EXAMPLES OF BAD SOLUTIONS:
-❌ "Update to the latest version" (too vague)
-❌ "Change your build.gradle" (which file? which line?)
-❌ "Ensure dependencies are compatible" (not actionable)
+[X] "Update to the latest version" (too vague)
+[X] "Change your build.gradle" (which file? which line?)
+[X] "Ensure dependencies are compatible" (not actionable)
 `,
 
   [ErrorCategory.MANIFEST_PERMISSION]: `
@@ -51,16 +51,16 @@ SOLUTION MUST INCLUDE:
 - Verification: "Re-run app to verify permission granted"
 
 EXAMPLES OF GOOD SOLUTIONS:
-✅ "Add to AndroidManifest.xml inside <manifest>, before <application>:
+[OK] "Add to AndroidManifest.xml inside <manifest>, before <application>:
     <uses-permission android:name="android.permission.CAMERA" />
     
     Then request at runtime (API 23+):
     ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 100)"
 
 EXAMPLES OF BAD SOLUTIONS:
-❌ "Add the permission" (which permission? where?)
-❌ "Fix your manifest" (how?)
-❌ "Change your code to handle permissions" (manifest edit needed first!)
+[X] "Add the permission" (which permission? where?)
+[X] "Fix your manifest" (how?)
+[X] "Change your code to handle permissions" (manifest edit needed first!)
 `,
 
   [ErrorCategory.BUILD_CACHE]: `
@@ -81,15 +81,15 @@ SOLUTION MUST INCLUDE:
 - Prevention: "Add .gradle/ to .gitignore"
 
 EXAMPLES OF GOOD SOLUTIONS:
-✅ "Run './gradlew clean' to clear build outputs, then './gradlew build' to rebuild.
+[OK] "Run './gradlew clean' to clear build outputs, then './gradlew build' to rebuild.
     If error persists, stop Gradle daemon with './gradlew --stop' and delete cache:
     rm -rf .gradle/caches
     Then restart Android Studio and sync."
 
 EXAMPLES OF BAD SOLUTIONS:
-❌ "Update your AGP version" (not a cache fix)
-❌ "Clean your project" (too vague - how?)
-❌ "Fix your Gradle configuration" (cache issue, not config)
+[X] "Update your AGP version" (not a cache fix)
+[X] "Clean your project" (too vague - how?)
+[X] "Fix your Gradle configuration" (cache issue, not config)
 `,
 
   [ErrorCategory.PROGUARD_MINIFICATION]: `
@@ -110,21 +110,21 @@ SOLUTION MUST INCLUDE:
 - Common patterns: Retrofit, Gson, Room, Navigation SafeArgs
 
 EXAMPLES OF GOOD SOLUTIONS:
-✅ "Add to app/proguard-rules.pro:
+[OK] "Add to app/proguard-rules.pro:
     # Keep Retrofit interfaces (used with reflection)
     -keep interface com.example.api.** { *; }
     
     Then rebuild release: ./gradlew assembleRelease"
 
-✅ "Add to proguard-rules.pro:
+[OK] "Add to proguard-rules.pro:
     # Keep Gson models (field names needed for serialization)
     -keep class com.example.models.** { *; }
     -keepclassmembers class com.example.models.** { *; }"
 
 EXAMPLES OF BAD SOLUTIONS:
-❌ "Disable ProGuard" (bad security practice)
-❌ "Change your code" (ProGuard rules needed, not code changes)
-❌ "Fix the obfuscation" (how?)
+[X] "Disable ProGuard" (bad security practice)
+[X] "Change your code" (ProGuard rules needed, not code changes)
+[X] "Fix the obfuscation" (how?)
 `,
 
   [ErrorCategory.NAVIGATION_ROUTING]: `
@@ -145,7 +145,7 @@ SOLUTION MUST INCLUDE:
 - Verification: "Run app and navigate to screen"
 
 EXAMPLES OF GOOD SOLUTIONS:
-✅ "Fix argument type mismatch in Navigation.kt:
+[OK] "Fix argument type mismatch in Navigation.kt:
 
     BEFORE (line 25):
     composable("detail/{id}") { backStackEntry ->
@@ -165,9 +165,9 @@ EXAMPLES OF GOOD SOLUTIONS:
     navController.navigate("detail/" + item.id) // id is Int, no quotes"
 
 EXAMPLES OF BAD SOLUTIONS:
-❌ "Add a null check" (fixes symptom, not root cause)
-❌ "Use toString()" (type mismatch still exists)
-❌ "Change navigation" (too vague)
+[X] "Add a null check" (fixes symptom, not root cause)
+[X] "Use toString()" (type mismatch still exists)
+[X] "Change navigation" (too vague)
 `,
 
   [ErrorCategory.NETWORK_CONNECTIVITY]: `
@@ -188,7 +188,7 @@ SOLUTION MUST INCLUDE:
 - Prevention: "Enable Gradle caching" or "Use local Maven repository"
 
 EXAMPLES OF GOOD SOLUTIONS:
-✅ "Network connection timeout suggests internet issue.
+[OK] "Network connection timeout suggests internet issue.
     
     IMMEDIATE FIX: Build offline if dependencies cached:
     ./gradlew build --offline
@@ -204,9 +204,9 @@ EXAMPLES OF GOOD SOLUTIONS:
     }"
 
 EXAMPLES OF BAD SOLUTIONS:
-❌ "Update your dependencies" (network issue, not version)
-❌ "Fix your configuration" (too vague)
-❌ "Change AGP version" (unrelated to network)
+[X] "Update your dependencies" (network issue, not version)
+[X] "Fix your configuration" (too vague)
+[X] "Change AGP version" (unrelated to network)
 `,
 
   [ErrorCategory.UNKNOWN]: `

@@ -107,15 +107,15 @@ export class ToolVerifier {
         const backendRegistry = path.join(this.projectRoot, 'src', 'tools', 'ToolRegistry.ts');
         const extensionRegistry = path.join(this.projectRoot, 'vscode-extension', 'src', 'tools', 'ToolRegistry.ts');
 
-        console.log('Backend ToolRegistry:', fs.existsSync(backendRegistry) ? '✅' : '❌');
-        console.log('Extension ToolRegistry:', fs.existsSync(extensionRegistry) ? '✅' : '❌');
+        console.log('Backend ToolRegistry:', fs.existsSync(backendRegistry) ? '[OK]' : '[X]');
+        console.log('Extension ToolRegistry:', fs.existsSync(extensionRegistry) ? '[OK]' : '[X]');
 
         if (fs.existsSync(backendRegistry)) {
             const content = fs.readFileSync(backendRegistry, 'utf-8');
-            console.log('  - Has singleton pattern:', content.includes('getInstance') ? '✅' : '❌');
-            console.log('  - Has register method:', content.includes('register(') ? '✅' : '❌');
-            console.log('  - Has execute method:', content.includes('execute(') ? '✅' : '❌');
-            console.log('  - Has Zod validation:', content.includes('ZodSchema') ? '✅' : '❌');
+            console.log('  - Has singleton pattern:', content.includes('getInstance') ? '[OK]' : '[X]');
+            console.log('  - Has register method:', content.includes('register(') ? '[OK]' : '[X]');
+            console.log('  - Has execute method:', content.includes('execute(') ? '[OK]' : '[X]');
+            console.log('  - Has Zod validation:', content.includes('ZodSchema') ? '[OK]' : '[X]');
         }
     }
 
@@ -129,14 +129,14 @@ export class ToolVerifier {
 
         if (fs.existsSync(agentFile)) {
             const content = fs.readFileSync(agentFile, 'utf-8');
-            console.log('MinimalReactAgent found:', '✅');
-            console.log('  - Has registerTools method:', content.includes('registerTools') ? '✅' : '❌');
-            console.log('  - Registers read_file:', content.includes('read_file') ? '✅' : '❌');
-            console.log('  - Registers find_callers:', content.includes('find_callers') ? '✅' : '❌');
-            console.log('  - Registers version_lookup:', content.includes('version_lookup') ? '✅' : '❌');
-            console.log('  - Uses ToolRegistry:', content.includes('ToolRegistry') ? '✅' : '❌');
+            console.log('MinimalReactAgent found:', '[OK]');
+            console.log('  - Has registerTools method:', content.includes('registerTools') ? '[OK]' : '[X]');
+            console.log('  - Registers read_file:', content.includes('read_file') ? '[OK]' : '[X]');
+            console.log('  - Registers find_callers:', content.includes('find_callers') ? '[OK]' : '[X]');
+            console.log('  - Registers version_lookup:', content.includes('version_lookup') ? '[OK]' : '[X]');
+            console.log('  - Uses ToolRegistry:', content.includes('ToolRegistry') ? '[OK]' : '[X]');
         } else {
-            console.log('MinimalReactAgent found:', '❌');
+            console.log('MinimalReactAgent found:', '[X]');
         }
 
         // Check extension tool initialization
@@ -144,12 +144,12 @@ export class ToolVerifier {
 
         if (fs.existsSync(extensionToolsFile)) {
             const content = fs.readFileSync(extensionToolsFile, 'utf-8');
-            console.log('\nExtension Tool Initialization:', '✅');
-            console.log('  - Has initializeTools function:', content.includes('initializeTools') ? '✅' : '❌');
-            console.log('  - Registers file tools:', content.includes('ReadFileTool') ? '✅' : '❌');
-            console.log('  - Registers workspace tools:', content.includes('FindFilesTool') ? '✅' : '❌');
-            console.log('  - Registers terminal tool:', content.includes('TerminalTool') ? '✅' : '❌');
-            console.log('  - Registers gradle helper:', content.includes('GradleCommandHelper') ? '✅' : '❌');
+            console.log('\nExtension Tool Initialization:', '[OK]');
+            console.log('  - Has initializeTools function:', content.includes('initializeTools') ? '[OK]' : '[X]');
+            console.log('  - Registers file tools:', content.includes('ReadFileTool') ? '[OK]' : '[X]');
+            console.log('  - Registers workspace tools:', content.includes('FindFilesTool') ? '[OK]' : '[X]');
+            console.log('  - Registers terminal tool:', content.includes('TerminalTool') ? '[OK]' : '[X]');
+            console.log('  - Registers gradle helper:', content.includes('GradleCommandHelper') ? '[OK]' : '[X]');
         }
     }
 
@@ -163,13 +163,13 @@ export class ToolVerifier {
 
         if (fs.existsSync(orchestratorFile)) {
             const content = fs.readFileSync(orchestratorFile, 'utf-8');
-            console.log('ToolOrchestrator found:', '✅');
-            console.log('  - Has createExecutionPlan:', content.includes('createExecutionPlan') ? '✅' : '❌');
-            console.log('  - Has executePlan:', content.includes('executePlan') ? '✅' : '❌');
-            console.log('  - Supports parallel execution:', content.includes('Promise.allSettled') ? '✅' : '❌');
-            console.log('  - Has result caching:', content.includes('resultCache') ? '✅' : '❌');
+            console.log('ToolOrchestrator found:', '[OK]');
+            console.log('  - Has createExecutionPlan:', content.includes('createExecutionPlan') ? '[OK]' : '[X]');
+            console.log('  - Has executePlan:', content.includes('executePlan') ? '[OK]' : '[X]');
+            console.log('  - Supports parallel execution:', content.includes('Promise.allSettled') ? '[OK]' : '[X]');
+            console.log('  - Has result caching:', content.includes('resultCache') ? '[OK]' : '[X]');
         } else {
-            console.log('ToolOrchestrator found:', '❌');
+            console.log('ToolOrchestrator found:', '[X]');
         }
     }
 
@@ -244,7 +244,7 @@ export class ToolVerifier {
      * Print tool verification result
      */
     private printToolResult(result: ToolVerificationResult): void {
-        const status = result.errors.length === 0 ? '✅' : '❌';
+        const status = result.errors.length === 0 ? '[OK]' : '[X]';
         console.log(`${status} ${result.name}`);
 
         if (result.errors.length > 0) {
@@ -288,23 +288,23 @@ export class ToolVerifier {
         console.log('VERIFICATION SUMMARY');
         console.log('='.repeat(60));
         console.log(`Total Tools Verified: ${summary.totalTools}`);
-        console.log(`✅ Passed: ${summary.passedTools}`);
-        console.log(`❌ Failed: ${summary.failedTools}`);
+        console.log(`[OK] Passed: ${summary.passedTools}`);
+        console.log(`[X] Failed: ${summary.failedTools}`);
         console.log(`Backend Tools Found: ${summary.backendToolsFound}/${EXPECTED_BACKEND_TOOLS.length}`);
         console.log(`Extension Tools Found: ${summary.extensionToolsFound}/${EXPECTED_EXTENSION_TOOLS.length}`);
         console.log('='.repeat(60));
 
         if (summary.failedTools > 0) {
-            console.log('\n⚠️  Some tools have issues. Review the output above for details.');
+            console.log('\n[WARN]  Some tools have issues. Review the output above for details.');
         } else {
-            console.log('\n🎉 All tools verified successfully!');
+            console.log('\n[SUCCESS] All tools verified successfully!');
         }
     }
 }
 
 // Run verification
 async function main() {
-    console.log('🔍 Tool System Verification Script');
+    console.log('[SEARCH] Tool System Verification Script');
     console.log('===================================\n');
 
     const verifier = new ToolVerifier();

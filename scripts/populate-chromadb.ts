@@ -113,7 +113,7 @@ async function main() {
     await service.clearExamples();
   }
 
-  console.log('📦 Seeding examples...');
+  console.log('[PACKAGE] Seeding examples...');
   await service.bulkAddExamples(combined);
 
   // Verify count using direct client
@@ -122,11 +122,11 @@ async function main() {
   const count = await collection.count();
 
   console.log('='.repeat(60));
-  console.log(`✅ Done. Collection now contains ${count} documents.`);
+  console.log(`[OK] Done. Collection now contains ${count} documents.`);
   console.log('Next: run `npm run test:phase2` to validate semantic search returns matches.');
 }
 
 main().catch(err => {
-  console.error('❌ populate-chromadb failed:', err);
+  console.error('[X] populate-chromadb failed:', err);
   process.exit(1);
 });

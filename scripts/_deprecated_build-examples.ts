@@ -57,12 +57,12 @@ const compiledData = {
 // Write to file
 fs.writeFileSync(outputPath, JSON.stringify(compiledData, null, 2), 'utf-8');
 
-console.log('✅ Successfully compiled TypeScript examples to JSON');
+console.log('[OK] Successfully compiled TypeScript examples to JSON');
 console.log(`   Output: ${outputPath}`);
 console.log(`   Total examples: ${ALL_CATEGORY_EXAMPLES.length}`);
 console.log(`   Categories: ${Object.keys(EXAMPLES_BY_CATEGORY).filter(k => !k.match(/[A-Z]/) && k !== 'version_dependency' && k !== 'unknown').length}`);
 console.log('');
-console.log('📊 Breakdown:');
+console.log('[STATS] Breakdown:');
 console.log(`   - Manifest Permission: ${MANIFEST_PERMISSION_EXAMPLES.length} examples`);
 console.log(`   - Build Cache: ${BUILD_CACHE_EXAMPLES.length} examples`);
 console.log(`   - ProGuard/Minification: ${PROGUARD_EXAMPLES.length} examples`);

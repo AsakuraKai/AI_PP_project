@@ -96,22 +96,22 @@ const TEST_CASES: TestCase[] = [
 
 function printBanner() {
   console.log(chalk.cyan('\n' + '='.repeat(70)));
-  console.log(chalk.cyan.bold('  🚀 Phase 4: Real-World Testing - Quick Start'));
+  console.log(chalk.cyan.bold('  [LAUNCH] Phase 4: Real-World Testing - Quick Start'));
   console.log(chalk.cyan('='.repeat(70) + '\n'));
 }
 
 function printStatus() {
-  console.log(chalk.yellow('📊 Test Case Status:\n'));
+  console.log(chalk.yellow('[STATS] Test Case Status:\n'));
   
   const existing = TEST_CASES.filter(t => t.status === 'exists');
   const toImplement = TEST_CASES.filter(t => t.status === 'to-implement');
   
-  console.log(chalk.green(`✅ Existing test cases: ${existing.length}/10`));
+  console.log(chalk.green(`[OK] Existing test cases: ${existing.length}/10`));
   existing.forEach(tc => {
     console.log(chalk.gray(`   ${tc.id}. ${tc.name} (${tc.scriptPath})`));
   });
   
-  console.log(chalk.yellow(`\n⏳ To be implemented: ${toImplement.length}/10`));
+  console.log(chalk.yellow(`\n[PENDING] To be implemented: ${toImplement.length}/10`));
   toImplement.forEach(tc => {
     console.log(chalk.gray(`   ${tc.id}. ${tc.name}`));
   });
@@ -120,7 +120,7 @@ function printStatus() {
 }
 
 function printNextSteps() {
-  console.log(chalk.blue.bold('\n📋 Next Steps (Phase 4 Week 1):\n'));
+  console.log(chalk.blue.bold('\n[LIST] Next Steps (Phase 4 Week 1):\n'));
   
   console.log(chalk.white('Day 1 (January 2, 2026):'));
   console.log(chalk.gray('  1. Create test framework'));
@@ -147,7 +147,7 @@ function printNextSteps() {
 }
 
 function printUsefulCommands() {
-  console.log(chalk.magenta.bold('\n🔧 Useful Commands:\n'));
+  console.log(chalk.magenta.bold('\n[TOOL] Useful Commands:\n'));
   
   console.log(chalk.white('Run existing tests:'));
   console.log(chalk.gray('  npm run test:phase4:case1   # AGP version (baseline)'));
@@ -170,7 +170,7 @@ function printUsefulCommands() {
 }
 
 function printGoals() {
-  console.log(chalk.green.bold('\n🎯 Phase 4 Goals:\n'));
+  console.log(chalk.green.bold('\n[TARGET] Phase 4 Goals:\n'));
   
   console.log(chalk.white('Target Metrics:'));
   console.log(chalk.gray('  • Overall Usability: 40% → 85%+ (+45%)'));
@@ -190,7 +190,7 @@ function printGoals() {
 }
 
 async function checkExistingTests() {
-  console.log(chalk.yellow('\n🔍 Checking existing test scripts...\n'));
+  console.log(chalk.yellow('\n[SEARCH] Checking existing test scripts...\n'));
   
   for (const testCase of TEST_CASES) {
     if (testCase.status === 'exists' && testCase.scriptPath) {
@@ -282,8 +282,8 @@ if (require.main === module) {
   const framework = new Phase4TestFramework();
   framework.runAllTests()
     .then(results => framework.generateReport(results))
-    .then(() => console.log('✅ Testing complete!'))
-    .catch(error => console.error('❌ Test failed:', error));
+    .then(() => console.log('[OK] Testing complete!'))
+    .catch(error => console.error('[X] Test failed:', error));
 }
 `;
   
@@ -310,7 +310,7 @@ async function main() {
   console.log(chalk.gray('     └── PHASE-4-COMPREHENSIVE-IMPLEMENTATION.md (77+ pages)'));
   console.log(chalk.cyan('='.repeat(70) + '\n'));
   
-  console.log(chalk.green.bold('🚀 Ready to begin Phase 4!'));
+  console.log(chalk.green.bold('[LAUNCH] Ready to begin Phase 4!'));
   console.log(chalk.gray('   Start with: npm run phase4:day1\n'));
 }
 

@@ -99,7 +99,7 @@ export class SemanticCodeSearchTool extends Tool {
     this.projectPath = projectPath;
 
     try {
-      console.log('🔧 Initializing SemanticCodeSearchTool...');
+      console.log('[TOOL] Initializing SemanticCodeSearchTool...');
       
       // Create or get collection
       const collectionName = `code_${path.basename(projectPath)}`;
@@ -121,7 +121,7 @@ export class SemanticCodeSearchTool extends Tool {
       console.log('✓ SemanticCodeSearchTool initialized');
 
     } catch (error) {
-      console.warn('⚠️ Failed to initialize SemanticCodeSearchTool:', error);
+      console.warn('[WARN] Failed to initialize SemanticCodeSearchTool:', error);
       this.initialized = false;
     }
   }
@@ -131,7 +131,7 @@ export class SemanticCodeSearchTool extends Tool {
    */
   async execute(params: SemanticCodeSearchParams, _context?: ToolExecutionContext): Promise<CodeLocation[]> {
     if (!this.initialized || !this.collection) {
-      console.warn('⚠️ SemanticCodeSearchTool not initialized');
+      console.warn('[WARN] SemanticCodeSearchTool not initialized');
       return [];
     }
 
@@ -140,7 +140,7 @@ export class SemanticCodeSearchTool extends Tool {
       const maxResults = params.maxResults || 5;
       const minSimilarity = params.minSimilarity || 0.6;
 
-      console.log(`🔍 Semantic code search: "${query.substring(0, 60)}..."`);
+      console.log(`[SEARCH] Semantic code search: "${query.substring(0, 60)}..."`);
 
       // Query ChromaDB
       const results = await this.collection.query({
@@ -178,7 +178,7 @@ export class SemanticCodeSearchTool extends Tool {
       return topResults;
 
     } catch (error) {
-      console.warn('⚠️ Semantic code search failed:', error);
+      console.warn('[WARN] Semantic code search failed:', error);
       return [];
     }
   }
@@ -187,7 +187,7 @@ export class SemanticCodeSearchTool extends Tool {
    * Index codebase for semantic search
    */
   private async indexCodebase(projectPath: string): Promise<void> {
-    console.log('📦 Indexing codebase...');
+    console.log('[PACKAGE] Indexing codebase...');
 
     const codeFiles = await this.findCodeFiles(projectPath);
     console.log(`  Found ${codeFiles.length} code files`);
@@ -202,7 +202,7 @@ export class SemanticCodeSearchTool extends Tool {
           console.log(`  Indexed ${indexed}/${codeFiles.length} files...`);
         }
       } catch (error) {
-        console.warn(`⚠️ Failed to index ${file}:`, error);
+        console.warn(`[WARN] Failed to index ${file}:`, error);
       }
     }
 

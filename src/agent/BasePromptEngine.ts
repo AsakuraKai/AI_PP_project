@@ -78,7 +78,7 @@ export abstract class BasePromptEngine {
 
     // Strategy 6: NEVER FAIL - Return minimal valid JSON
     if (!process.env.JEST_WORKER_ID) {
-      console.warn('⚠️ All JSON extraction strategies failed, creating minimal fallback');
+      console.warn('[WARN] All JSON extraction strategies failed, creating minimal fallback');
     }
     return {
       thought: 'JSON parsing failed - response was: ' + response.substring(0, 150),
@@ -140,7 +140,7 @@ export abstract class BasePromptEngine {
       
       if (rootCauseMatch || text.includes('rootCause') || text.includes('error')) {
         if (!process.env.JEST_WORKER_ID) {
-          console.warn('⚠️ Using ultra-lenient extraction - creating minimal valid response');
+          console.warn('[WARN] Using ultra-lenient extraction - creating minimal valid response');
         }
         return {
           thought: rootCauseMatch ? `Analysis: ${rootCauseMatch[1].substring(0, 100)}` : 'See analysis below',
@@ -204,7 +204,7 @@ export abstract class BasePromptEngine {
       }
       
       if (warnings.length > 0 && !process.env.JEST_WORKER_ID) {
-        console.warn(`⚠️ Response validation warnings (auto-fixed): ${warnings.join(', ')}`);
+        console.warn(`[WARN] Response validation warnings (auto-fixed): ${warnings.join(', ')}`);
       }
     }
 

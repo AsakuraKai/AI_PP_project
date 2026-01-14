@@ -237,7 +237,7 @@ export class LearningPipeline {
       };
       
       if (this.config.enableLogging) {
-        console.log(`[LearningPipeline] ✅ Pipeline completed in ${result.totalDurationMs}ms`);
+        console.log(`[LearningPipeline] [OK] Pipeline completed in ${result.totalDurationMs}ms`);
         console.log(`  - Patterns identified: ${result.patternsIdentified}`);
         console.log(`  - Examples generated: ${result.examplesGenerated}`);
       }
@@ -248,7 +248,7 @@ export class LearningPipeline {
       const completedAt = Date.now();
       
       if (this.config.enableLogging) {
-        console.error(`[LearningPipeline] ❌ Pipeline failed: ${error}`);
+        console.error(`[LearningPipeline] [X] Pipeline failed: ${error}`);
       }
       
       return {

@@ -50,7 +50,7 @@ describe('Accuracy Testing Suite - Chunk 1.5', () => {
 
   beforeAll(async () => {
     if (!isOllamaAvailable) {
-      console.log('⚠️  Ollama not available - skipping accuracy tests');
+      console.log('[WARN]  Ollama not available - skipping accuracy tests');
       console.log('   Set OLLAMA_AVAILABLE=true to run these tests');
       return;
     }
@@ -68,9 +68,9 @@ describe('Accuracy Testing Suite - Chunk 1.5', () => {
     // Check Ollama connection
     try {
       await llmClient.connect();
-      console.log('✅ Connected to Ollama for accuracy testing');
+      console.log('[OK] Connected to Ollama for accuracy testing');
     } catch (error) {
-      console.error('❌ Failed to connect to Ollama:', error);
+      console.error('[X] Failed to connect to Ollama:', error);
       throw error;
     }
   });
@@ -160,7 +160,7 @@ describe('Accuracy Testing Suite - Chunk 1.5', () => {
 
       // Log summary
       console.log('\n========================================');
-      console.log('📊 ACCURACY TEST SUMMARY');
+      console.log('[STATS] ACCURACY TEST SUMMARY');
       console.log('========================================');
       console.log(`Total Tests: ${metrics.totalTests}`);
       console.log(`Parsed Successfully: ${metrics.parsedSuccessfully}/${metrics.totalTests}`);
@@ -257,7 +257,7 @@ async function saveMetrics(metrics: AccuracyMetrics): Promise<void> {
   try {
     await fs.mkdir(metricsDir, { recursive: true });
     await fs.writeFile(metricsFile, JSON.stringify(metrics, null, 2));
-    console.log(`✅ Metrics saved to ${metricsFile}`);
+    console.log(`[OK] Metrics saved to ${metricsFile}`);
   } catch (error) {
     console.error('Failed to save metrics:', error);
   }

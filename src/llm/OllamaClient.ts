@@ -204,7 +204,7 @@ export class OllamaClient {
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       const strategy = strategies[Math.min(attempt, strategies.length - 1)];
       
-      console.log(`🔄 Attempt ${attempt + 1}/${maxAttempts} (temp: ${strategy.temp})...`);
+      console.log(`[SYNC] Attempt ${attempt + 1}/${maxAttempts} (temp: ${strategy.temp})...`);
       
       try {
         const response = await this.generate(
@@ -215,7 +215,7 @@ export class OllamaClient {
         // Quick quality check before validation (P3: now includes diagnostic accuracy)
         const quality = this.quickQualityCheck(response.text, originalError);
         
-        console.log(`📊 Quality score: ${(quality.score * 100).toFixed(1)}%`);
+        console.log(`[STATS] Quality score: ${(quality.score * 100).toFixed(1)}%`);
         
         // Track best response across all attempts
         if (!bestResponse || quality.score > bestResponse.quality) {
@@ -224,11 +224,11 @@ export class OllamaClient {
 
         // Early exit if quality meets threshold
         if (quality.score >= qualityThreshold) {
-          console.log(`✅ Quality threshold met on attempt ${attempt + 1}`);
+          console.log(`[OK] Quality threshold met on attempt ${attempt + 1}`);
           return response;
         }
 
-        console.log(`⚠️ Quality below threshold (${quality.issues.join(', ')}), retrying...`);
+        console.log(`[WARN] Quality below threshold (${quality.issues.join(', ')}), retrying...`);
         
         // Exponential backoff between attempts
         if (attempt < maxAttempts - 1) {
@@ -237,18 +237,18 @@ export class OllamaClient {
         
       } catch (error) {
         lastError = error as Error;
-        console.warn(`❌ Attempt ${attempt + 1} failed: ${lastError.message}`);
+        console.warn(`[X] Attempt ${attempt + 1} failed: ${lastError.message}`);
       }
     }
 
     // Return best attempt if quality is reasonable (>30%)
     if (bestResponse && bestResponse.quality > 0.3) {
-      console.log(`⚠️ Returning best attempt (quality: ${(bestResponse.quality * 100).toFixed(1)}%)`);
+      console.log(`[WARN] Returning best attempt (quality: ${(bestResponse.quality * 100).toFixed(1)}%)`);
       return bestResponse.response;
     }
 
     // Graceful degradation - return fallback response
-    console.warn(`⚠️ All attempts failed. Returning fallback response.`);
+    console.warn(`[WARN] All attempts failed. Returning fallback response.`);
     return this.createFallbackResponse(prompt, lastError);
   }
 

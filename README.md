@@ -1,13 +1,13 @@
 # RCA Agent: Local-First AI Debugging Assistant
 
 > **Personal Learning Project** - Building a local AI debugging assistant for Kotlin/Android development.  
-> **Current Status:** Phase 4 Real-World Testing 🚀 | Backend Complete ✅ | Chat Interface Complete ✅
+> **Current Status:** Phase 4 Real-World Testing [LAUNCH] | Backend Complete [OK] | Chat Interface Complete [OK]
 
 ---
 
-## 🎉 Latest Updates (January 2026)
+## [SUCCESS] Latest Updates (January 2026)
 
-### ✅ Phase 1: Backend Infrastructure (COMPLETE - Dec 25, 2025)
+### [OK] Phase 1: Backend Infrastructure (COMPLETE - Dec 25, 2025)
 - **26+ error parsers** with 100% parsing accuracy
 - **MinimalReactAgent** with ReAct reasoning and tool execution
 - **Knowledge bases** covering 156 AGP versions + 52 Kotlin versions
@@ -15,7 +15,7 @@
 - **878/878 tests passing** with 99% code coverage
 - **Status:** Production-ready backend
 
-### ✅ Phase 2-3: Chat Participant + Intelligence (COMPLETE - Jan 1, 2026)
+### [OK] Phase 2-3: Chat Participant + Intelligence (COMPLETE - Jan 1, 2026)
 - **Conversational interface** via `@rca-agent` chat participant
 - **Context-aware analysis** from files, diagnostics, and terminal output
 - **Action buttons** for Apply Fix, Explain More, and Search Similar
@@ -23,7 +23,7 @@
 - **10.35s average response time** (88% faster than 90s target)
 - **Status:** Ready for real-world testing
 
-### 🚀 Phase 4: Real-World Testing (IN PROGRESS - Week 4 Complete)
+### [LAUNCH] Phase 4: Real-World Testing (IN PROGRESS - Week 4 Complete)
 **Week 1-2 (COMPLETE):** Testing infrastructure
 - Phase4TestSuite with 10 diverse test cases
 - 7 standardized metrics for evaluation
@@ -41,7 +41,7 @@
 - Analyzing failure patterns and edge cases
 - Target: 85%+ usability rating, 8/10 tests passing
 
-### 📊 Current Project Stats
+### [STATS] Current Project Stats
 - **15+ weeks** of development (Dec 2025 - Jan 2026)
 - **~15,000 total LOC** (~12,000 production + ~3,000 tests)
 - **1,111/1,120 tests passing** (99% pass rate)
@@ -93,7 +93,7 @@ All project documentation is organized in the `docs/` folder:
 
 ---
 
-## 🚀 Quick Start
+## [LAUNCH] Quick Start
 
 ### Prerequisites
 - Node.js 18+
@@ -117,7 +117,7 @@ npm run test:phase4
 
 ### Current Implementation Status
 
-**✅ Phase 1: Backend (COMPLETE - Dec 25, 2025)**
+**[OK] Phase 1: Backend (COMPLETE - Dec 25, 2025)**
 - 26+ error parsers (Kotlin, Gradle, Compose, XML, Manifest)
 - MinimalReactAgent with ReAct reasoning and tool execution
 - 5 specialized tools (ReadFile, LSP, AndroidBuild, Manifest, Docs)
@@ -125,7 +125,7 @@ npm run test:phase4
 - Knowledge bases: 156 AGP + 52 Kotlin versions
 - 878/878 tests passing, 99% coverage
 
-**✅ Phase 2-3: Chat Interface (COMPLETE - Jan 1, 2026)**
+**[OK] Phase 2-3: Chat Interface (COMPLETE - Jan 1, 2026)**
 - Conversational `@rca-agent` chat participant
 - Context-aware analysis from files, diagnostics, terminal
 - Action buttons (Apply Fix, Explain More, Search Similar)
@@ -133,7 +133,7 @@ npm run test:phase4
 - 2,900+ LOC of production code
 - 10.35s average response time
 
-**🚀 Phase 4: Real-World Testing (IN PROGRESS - Week 4 Complete)**
+**[LAUNCH] Phase 4: Real-World Testing (IN PROGRESS - Week 4 Complete)**
 - Week 1-2: Testing infrastructure with Phase4TestSuite
 - Week 3-4: Interactive debugging (ConversationalAgent, GuidedDebugging)
 - Week 5+: Baseline testing and iterative improvements
@@ -147,7 +147,7 @@ npm run test:phase4
 
 ---
 
-## 🧪 Personal Testing Guide
+## [TEST] Personal Testing Guide
 
 ### A. Testing During Development
 
@@ -164,10 +164,10 @@ npm run test:coverage
 ```
 
 **Development Checklist:**
-- ✅ Tests pass (816/826 expected)
-- ✅ Coverage stays >95%
-- ✅ No TypeScript errors
-- ✅ Build completes (~16s)
+- [OK] Tests pass (816/826 expected)
+- [OK] Coverage stays >95%
+- [OK] No TypeScript errors
+- [OK] Build completes (~16s)
 
 #### Testing Backend Components
 
@@ -308,7 +308,7 @@ dependencies {
 | Educational Mode | `Ctrl+Shift+P` → Toggle Educational → Check explanations |
 | Code Context     | Verify agent reads correct file/line                     |
 | Fix Guidelines   | Check if fixes are actionable                            |
-| Feedback System  | Click 👍/👎 → Verify stored in ChromaDB                    |
+| Feedback System  | Click [THUMBS_UP]/[THUMBS_DOWN] → Verify stored in ChromaDB                    |
 | Cache            | Analyze same error twice → 2nd should be instant         |
 | Panel UI         | `Ctrl+Shift+P` → Open Panel → Check real-time updates    |
 
@@ -331,18 +331,18 @@ dependencies {
 **5. Validate Results**
 
 **Good RCA Should Have:**
-- ✅ Correct root cause identified
-- ✅ Actionable fix guidelines (3-5 steps)
-- ✅ Relevant code context shown
-- ✅ Confidence score >0.7
-- ✅ Completes in 60-90s
+- [OK] Correct root cause identified
+- [OK] Actionable fix guidelines (3-5 steps)
+- [OK] Relevant code context shown
+- [OK] Confidence score >0.7
+- [OK] Completes in 60-90s
 
 **Red Flags:**
-- ❌ Generic/vague root cause
-- ❌ Wrong file/line referenced
-- ❌ Fix guidelines don't apply
-- ❌ Takes >2 minutes
-- ❌ Crashes or errors
+- [X] Generic/vague root cause
+- [X] Wrong file/line referenced
+- [X] Fix guidelines don't apply
+- [X] Takes >2 minutes
+- [X] Crashes or errors
 
 #### Quick Experiment Protocol
 
@@ -383,7 +383,7 @@ Ctrl+Shift+P → "RCA: Open Analysis Panel"
 # Review agent iterations and tool calls
 
 # If still bad, provide negative feedback
-Click 👎 button
+Click [THUMBS_DOWN] button
 ```
 
 **Performance issues:**
@@ -428,7 +428,7 @@ docker ps  # See if ChromaDB running
 
 ---
 
-## 📊 Project Stats
+## [STATS] Project Stats
 
 | Metric               | Value                                        |
 | -------------------- | -------------------------------------------- |

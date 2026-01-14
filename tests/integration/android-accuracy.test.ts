@@ -143,7 +143,7 @@ describe('Chunk 4.5 - Android Testing Suite', () => {
 
       console.log('\n--- Compose Parser Results ---');
       results.forEach(r => {
-        const status = r.success ? '✅' : '❌';
+        const status = r.success ? '[OK]' : '[X]';
         console.log(`${status} ${r.id}: ${r.type || 'null'}`);
       });
       console.log(`Accuracy: ${successCount}/${composeTests.length} (${(successCount / composeTests.length * 100).toFixed(1)}%)`);
@@ -210,7 +210,7 @@ describe('Chunk 4.5 - Android Testing Suite', () => {
 
       console.log('\n--- XML Parser Results ---');
       results.forEach(r => {
-        const status = r.success ? '✅' : '❌';
+        const status = r.success ? '[OK]' : '[X]';
         console.log(`${status} ${r.id}: ${r.type || 'null'}`);
       });
       console.log(`Accuracy: ${successCount}/${xmlTests.length} (${(successCount / xmlTests.length * 100).toFixed(1)}%)`);
@@ -295,7 +295,7 @@ describe('Chunk 4.5 - Android Testing Suite', () => {
 
       console.log('\n--- Gradle Parser Results ---');
       results.forEach(r => {
-        const status = r.success ? '✅' : '❌';
+        const status = r.success ? '[OK]' : '[X]';
         console.log(`${status} ${r.id}: ${r.type || 'null'}`);
       });
       console.log(`Accuracy: ${successCount}/${gradleTests.length} (${(successCount / gradleTests.length * 100).toFixed(1)}%)`);
@@ -363,7 +363,7 @@ describe('Chunk 4.5 - Android Testing Suite', () => {
 
       console.log('\n--- Manifest Analyzer Results ---');
       results.forEach(r => {
-        const status = r.success ? '✅' : '❌';
+        const status = r.success ? '[OK]' : '[X]';
         console.log(`${status} ${r.id}: ${r.type || 'null'}`);
       });
       console.log(`Accuracy: ${successCount}/${manifestTests.length} (${(successCount / manifestTests.length * 100).toFixed(1)}%)`);
@@ -451,7 +451,7 @@ describe('Chunk 4.5 - Android Testing Suite', () => {
 
       console.log('\n--- Mixed Error Results ---');
       results.forEach(r => {
-        const status = r.success ? '✅' : '❌';
+        const status = r.success ? '[OK]' : '[X]';
         console.log(`${status} ${r.id}: ${r.type || 'null'}`);
       });
       console.log(`Accuracy: ${successCount}/${mixedTests.length} (${(successCount / mixedTests.length * 100).toFixed(1)}%)`);

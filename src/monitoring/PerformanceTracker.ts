@@ -184,16 +184,16 @@ export class PerformanceTracker {
    * Print formatted metrics to console.
    */
   printMetrics(): void {
-    console.log('\n📊 Performance Metrics');
+    console.log('\n[STATS] Performance Metrics');
     console.log('='.repeat(80));
     
     const metrics = this.exportMetrics();
     
-    console.log(`\n⏱️  Total Time: ${metrics.summary.totalTime.toFixed(2)}ms`);
-    console.log(`📈 Total Operations: ${metrics.summary.totalOperations}`);
+    console.log(`\n[TIME]  Total Time: ${metrics.summary.totalTime.toFixed(2)}ms`);
+    console.log(`[UP] Total Operations: ${metrics.summary.totalOperations}`);
     console.log(`⌀  Average Time: ${metrics.summary.averageTime.toFixed(2)}ms`);
     
-    console.log('\n📋 Operation Breakdown:');
+    console.log('\n[LIST] Operation Breakdown:');
     console.log('-'.repeat(80));
     console.log(
       'Operation'.padEnd(30) +

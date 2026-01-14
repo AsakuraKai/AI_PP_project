@@ -235,17 +235,17 @@ async function runTest(testCase: TestCase): Promise<TestResult> {
     
     // Check for highlights
     if (/\w+\/\w+\.\w+.*line\s*\d+/.test(text)) {
-      highlights.push('Exact file path with line number ✅');
+      highlights.push('Exact file path with line number [OK]');
     }
     if (text.includes('before:') && text.includes('after:')) {
-      highlights.push('Code before/after examples ✅');
+      highlights.push('Code before/after examples [OK]');
     }
     const versionMatches = text.match(/\d+\.\d+\.\d+/g);
     if (versionMatches && versionMatches.length >= 2) {
-      highlights.push(`Specific version numbers: ${versionMatches.join(', ')} ✅`);
+      highlights.push(`Specific version numbers: ${versionMatches.join(', ')} [OK]`);
     }
     if (/(\.\/gradlew|rm -rf)/i.test(text)) {
-      highlights.push('Specific terminal commands ✅');
+      highlights.push('Specific terminal commands [OK]');
     }
     
     // Determine pass/fail (target: 65%+ usability)
@@ -302,7 +302,7 @@ async function main() {
     console.log(`\n${'-'.repeat(80)}`);
     console.log(`RESULTS: ${result.testName}`);
     console.log(`${'-'.repeat(80)}`);
-    console.log(`Status: ${result.passed ? '✅ PASS' : '❌ FAIL'}`);
+    console.log(`Status: ${result.passed ? '[OK] PASS' : '[X] FAIL'}`);
     console.log(`Usability Score: ${result.usabilityScore}% (target: 65%)`);
     console.log(`Specificity Score: ${result.specificityScore}%`);
     console.log(`Latency: ${(result.latency / 1000).toFixed(2)}s`);
@@ -314,7 +314,7 @@ async function main() {
     
     if (result.issues.length > 0) {
       console.log(`\nIssues:`);
-      result.issues.forEach(issue => console.log(`  ❌ ${issue}`));
+      result.issues.forEach(issue => console.log(`  [X] ${issue}`));
     }
     
     console.log('');
@@ -350,21 +350,21 @@ async function main() {
   console.log('Individual Test Results:');
   console.log('─'.repeat(80));
   results.forEach(r => {
-    const status = r.passed ? '✅' : '❌';
+    const status = r.passed ? '[OK]' : '[X]';
     console.log(`${status} ${r.testName.padEnd(35)} ${r.usabilityScore.toString().padStart(3)}% usability`);
   });
   console.log('');
   
   // Phase 1 verdict
   if (avgUsability >= 65) {
-    console.log('✅ PHASE 1 SUCCESS - Target achieved (65%+)!');
+    console.log('[OK] PHASE 1 SUCCESS - Target achieved (65%+)!');
     console.log('   Ready to proceed to Phase 2 (Deep Intelligence)');
   } else if (avgUsability >= 55) {
-    console.log('⚠️  PHASE 1 PARTIAL - Good progress but below target');
+    console.log('[WARN]  PHASE 1 PARTIAL - Good progress but below target');
     console.log(`   Need +${(65 - avgUsability).toFixed(1)}% more to reach 65%`);
     console.log('   Consider: More aggressive prompt constraints or additional examples');
   } else {
-    console.log('❌ PHASE 1 NEEDS WORK - Below expectations');
+    console.log('[X] PHASE 1 NEEDS WORK - Below expectations');
     console.log(`   Need +${(65 - avgUsability).toFixed(1)}% to reach target`);
     console.log('   Review: LLM config, prompt effectiveness, example quality');
   }

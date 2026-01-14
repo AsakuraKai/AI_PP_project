@@ -25,7 +25,7 @@ interface TestMetrics {
 }
 
 async function runTest6ManifestPermission(): Promise<void> {
-  console.log('\n🧪 CHUNK 8 - TEST 6: MANIFEST PERMISSION MISSING\n');
+  console.log('\n[TEST] CHUNK 8 - TEST 6: MANIFEST PERMISSION MISSING\n');
   console.log('=' .repeat(80));
   
   const projectRoot = path.join(__dirname, '../tests/fixtures/test6-manifest-permission');
@@ -103,7 +103,7 @@ dependencies {
   };
   
   // Create test project
-  console.log('📁 Creating test project...');
+  console.log('[FOLDER] Creating test project...');
   await fs.mkdir(projectRoot, { recursive: true });
   
   for (const [filename, content] of Object.entries(testFiles)) {
@@ -111,7 +111,7 @@ dependencies {
     await fs.mkdir(path.dirname(filePath), { recursive: true });
     await fs.writeFile(filePath, content);
   }
-  console.log('✅ Test project created\n');
+  console.log('[OK] Test project created\n');
   
   // Runtime error log
   const errorLog = `FATAL EXCEPTION: main
@@ -148,10 +148,10 @@ java.lang.SecurityException: Permission Denial: starting Intent { act=android.me
     projectRoot: projectRoot
   });
   
-  console.log('✅ Agent initialized\n');
+  console.log('[OK] Agent initialized\n');
   
   // Run analysis
-  console.log('🔍 Running RCA analysis...\n');
+  console.log('[SEARCH] Running RCA analysis...\n');
   const startTime = Date.now();
   
   try {
@@ -168,9 +168,9 @@ java.lang.SecurityException: Permission Denial: starting Intent { act=android.me
     const latency = Date.now() - startTime;
     
     console.log('\n' + '='.repeat(80));
-    console.log('📊 TEST 6 RESULTS\n');
+    console.log('[STATS] TEST 6 RESULTS\n');
     
-    console.log('🔍 AGENT OUTPUT:\n');
+    console.log('[SEARCH] AGENT OUTPUT:\n');
     console.log('Root Cause:', result.rootCause);
     console.log('\nFix Guidelines:', result.fixGuidelines);
     if (result.codeFix) {
@@ -182,7 +182,7 @@ java.lang.SecurityException: Permission Denial: starting Intent { act=android.me
     // Calculate metrics
     const metrics = calculateMetrics(result, latency);
     
-    console.log('\n📈 DETAILED METRICS:\n');
+    console.log('\n[UP] DETAILED METRICS:\n');
     console.log(`Diagnosis Accuracy:      ${metrics.diagnosis_accuracy}% ${getStatusEmoji(metrics.diagnosis_accuracy, 90)}`);
     console.log(`Solution Specificity:    ${metrics.solution_specificity}% ${getStatusEmoji(metrics.solution_specificity, 70)}`);
     console.log(`File Identification:     ${metrics.file_identification}% ${getStatusEmoji(metrics.file_identification, 85)}`);
@@ -212,14 +212,14 @@ java.lang.SecurityException: Permission Denial: starting Intent { act=android.me
     
     // Summary
     console.log('\n' + '='.repeat(80));
-    console.log('📝 TEST 6 SUMMARY\n');
+    console.log('[NOTE] TEST 6 SUMMARY\n');
     
     if (metrics.overall_usability >= 75) {
-      console.log('✅ TEST PASSED - Usability target exceeded!');
+      console.log('[OK] TEST PASSED - Usability target exceeded!');
     } else if (metrics.overall_usability >= 60) {
-      console.log('⚠️  TEST PARTIAL - Usability acceptable but below target');
+      console.log('[WARN]  TEST PARTIAL - Usability acceptable but below target');
     } else {
-      console.log('❌ TEST FAILED - Usability below acceptable threshold');
+      console.log('[X] TEST FAILED - Usability below acceptable threshold');
     }
     
     console.log(`\nTarget: 75%+ usability`);
@@ -227,7 +227,7 @@ java.lang.SecurityException: Permission Denial: starting Intent { act=android.me
     console.log(`Difference: ${metrics.overall_usability >= 75 ? '+' : ''}${(metrics.overall_usability - 75).toFixed(1)}%`);
     
   } catch (error) {
-    console.error('❌ Test failed with error:', error);
+    console.error('[X] Test failed with error:', error);
     throw error;
   }
 }
@@ -275,9 +275,9 @@ function calculateMetrics(result: any, latency: number): TestMetrics {
 }
 
 function getStatusEmoji(value: number, target: number): string {
-  if (value >= target) return '✅';
-  if (value >= target * 0.8) return '⚠️';
-  return '❌';
+  if (value >= target) return '[OK]';
+  if (value >= target * 0.8) return '[WARN]';
+  return '[X]';
 }
 
 // Run test

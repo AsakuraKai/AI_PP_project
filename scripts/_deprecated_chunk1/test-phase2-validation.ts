@@ -11,23 +11,23 @@ import { SemanticExampleService } from '../src/knowledge/SemanticExampleService'
 import { ParsedError } from '../src/types';
 
 async function runPhase2Tests() {
-  console.log('🚀 Phase 2 Validation Tests\n');
+  console.log('[LAUNCH] Phase 2 Validation Tests\n');
   console.log('=' .repeat(60));
 
   // Test 1: Multi-Pass Reasoning
-  console.log('\n📋 TEST 1: Multi-Pass Reasoning\n');
+  console.log('\n[LIST] TEST 1: Multi-Pass Reasoning\n');
   await testMultiPassReasoning();
 
   // Test 2: Semantic Example Search
-  console.log('\n📋 TEST 2: Semantic Example Search\n');
+  console.log('\n[LIST] TEST 2: Semantic Example Search\n');
   await testSemanticSearch();
 
   // Test 3: Full Phase 2 Integration
-  console.log('\n📋 TEST 3: Full Phase 2 Integration\n');
+  console.log('\n[LIST] TEST 3: Full Phase 2 Integration\n');
   await testFullIntegration();
 
   console.log('\n' + '='.repeat(60));
-  console.log('✅ Phase 2 Validation Complete\n');
+  console.log('[OK] Phase 2 Validation Complete\n');
 }
 
 /**
@@ -59,7 +59,7 @@ async function testMultiPassReasoning() {
   const duration = Date.now() - startTime;
 
   console.log('\n✓ Analysis complete');
-  console.log(`⏱️  Duration: ${(duration / 1000).toFixed(1)}s`);
+  console.log(`[TIME]  Duration: ${(duration / 1000).toFixed(1)}s`);
   console.log(`\nRoot Cause:\n${result.rootCause}`);
   console.log(`\nConfidence: ${(result.confidence * 100).toFixed(0)}%`);
   console.log(`\nFix Guidelines:`);
@@ -82,7 +82,7 @@ async function testSemanticSearch() {
   await service.initialize();
 
   if (!service.isAvailable()) {
-    console.log('⚠️  ChromaDB not available. Skipping semantic search test.');
+    console.log('[WARN]  ChromaDB not available. Skipping semantic search test.');
     console.log('   Start ChromaDB: docker run -p 8000:8000 chromadb/chroma');
     return;
   }
@@ -103,7 +103,7 @@ async function testSemanticSearch() {
   const duration = Date.now() - startTime;
 
   console.log(`\n✓ Found ${results.length} similar examples`);
-  console.log(`⏱️  Search time: ${duration}ms`);
+  console.log(`[TIME]  Search time: ${duration}ms`);
 
   results.forEach((result, i) => {
     console.log(`\n${i + 1}. Similarity: ${(result.similarity * 100).toFixed(0)}%`);
@@ -145,7 +145,7 @@ async function testFullIntegration() {
   const duration = Date.now() - startTime;
 
   console.log('\n✓ Full analysis complete');
-  console.log(`⏱️  Duration: ${(duration / 1000).toFixed(1)}s`);
+  console.log(`[TIME]  Duration: ${(duration / 1000).toFixed(1)}s`);
   console.log(`\nRoot Cause:\n${result.rootCause}`);
   console.log(`\nConfidence: ${(result.confidence * 100).toFixed(0)}%`);
   
@@ -161,6 +161,6 @@ async function testFullIntegration() {
 
 // Run tests
 runPhase2Tests().catch(error => {
-  console.error('❌ Test failed:', error);
+  console.error('[X] Test failed:', error);
   process.exit(1);
 });

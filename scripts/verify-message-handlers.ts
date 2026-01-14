@@ -173,9 +173,9 @@ function main() {
     const extraHandlers = actualHandlers.filter(cmd => !expectedCommands.includes(cmd));
 
     if (missingHandlers.length === 0) {
-        console.log('✅ All expected commands have handlers!');
+        console.log('[OK] All expected commands have handlers!');
     } else {
-        console.log(`❌ Missing handlers for ${missingHandlers.length} commands:`);
+        console.log(`[X] Missing handlers for ${missingHandlers.length} commands:`);
         missingHandlers.forEach(cmd => console.log(`  - ${cmd}`));
     }
 
@@ -193,9 +193,9 @@ function main() {
     const extraResponses = actualResponses.filter(cmd => !expectedResponses.includes(cmd));
 
     if (missingResponses.length === 0) {
-        console.log('✅ All expected response messages are sent!');
+        console.log('[OK] All expected response messages are sent!');
     } else {
-        console.log(`⚠️  Response messages in spec but not sent (${missingResponses.length}):`);
+        console.log(`[WARN]  Response messages in spec but not sent (${missingResponses.length}):`);
         missingResponses.forEach(cmd => console.log(`  - ${cmd}`));
     }
 
@@ -215,11 +215,11 @@ function main() {
 
     if (missingHandlers.length === 0 && missingResponses.length === 0) {
         console.log();
-        console.log('✅ MESSAGE PASSING LAYER: VERIFIED AND COMPLETE!');
+        console.log('[OK] MESSAGE PASSING LAYER: VERIFIED AND COMPLETE!');
         process.exit(0);
     } else {
         console.log();
-        console.log('⚠️  MESSAGE PASSING LAYER: ISSUES FOUND - SEE ABOVE');
+        console.log('[WARN]  MESSAGE PASSING LAYER: ISSUES FOUND - SEE ABOVE');
         process.exit(1);
     }
 }
