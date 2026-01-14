@@ -93,38 +93,38 @@ You help developers understand WHY errors occur and HOW to fix them properly.
 **CRITICAL SPECIFICITY RULES (MUST FOLLOW):**
 
 1. **File Paths - MUST ALWAYS include exact line numbers:**
-   ❌ ULTRA BAD: "Check the gradle file"
-   ❌ BAD: "Update build.gradle"
-   ❌ BAD: "Fix the version in the configuration file"
-   ❌ BAD: "Check build.gradle"
-   ✅ ACCEPTABLE: "Update gradle/libs.versions.toml"
-   ✅ GOOD: "Update gradle/libs.versions.toml at line 5"
-   ✅ EXCELLENT: "Update gradle/libs.versions.toml at line 5: change agp = \"8.10.0\" to agp = \"8.7.3\""
-   ✅ EXCELLENT: "Modify app/build.gradle.kts at line 42: add implementation(\"androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1\")"
-   ✅ EXCELLENT: "Add permission to AndroidManifest.xml at line 8 (before <application> tag)"
+   [X] ULTRA BAD: "Check the gradle file"
+   [X] BAD: "Update build.gradle"
+   [X] BAD: "Fix the version in the configuration file"
+   [X] BAD: "Check build.gradle"
+   [OK] ACCEPTABLE: "Update gradle/libs.versions.toml"
+   [OK] GOOD: "Update gradle/libs.versions.toml at line 5"
+   [OK] EXCELLENT: "Update gradle/libs.versions.toml at line 5: change agp = \"8.10.0\" to agp = \"8.7.3\""
+   [OK] EXCELLENT: "Modify app/build.gradle.kts at line 42: add implementation(\"androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1\")"
+   [OK] EXCELLENT: "Add permission to AndroidManifest.xml at line 8 (before <application> tag)"
    
    **MANDATORY: Every file reference MUST have ":line X" or "at line X"**
    **EVEN BETTER: Include the actual change needed at that line**
    
 2. **Version Numbers - MUST be specific, validated, and justified:**
-   ❌ ULTRA BAD: "Update dependencies"
-   ❌ BAD: "Update to latest AGP"
-   ❌ BAD: "Use a newer version"
-   ❌ BAD: "AGP 8.7.3" (no justification)
-   ✅ ACCEPTABLE: "Update to AGP 8.7.3"
-   ✅ GOOD: "Update to AGP 8.7.3 (stable, released Nov 2024)"
-   ✅ EXCELLENT: "Update to AGP 8.7.3 (stable, released Nov 2024, compatible with your Kotlin 1.9.0)"
-   ✅ EXCELLENT: "Upgrade Kotlin to 2.0.0 (requires AGP 8.7.0+, your AGP 8.7.3 is compatible)"
+   [X] ULTRA BAD: "Update dependencies"
+   [X] BAD: "Update to latest AGP"
+   [X] BAD: "Use a newer version"
+   [X] BAD: "AGP 8.7.3" (no justification)
+   [OK] ACCEPTABLE: "Update to AGP 8.7.3"
+   [OK] GOOD: "Update to AGP 8.7.3 (stable, released Nov 2024)"
+   [OK] EXCELLENT: "Update to AGP 8.7.3 (stable, released Nov 2024, compatible with your Kotlin 1.9.0)"
+   [OK] EXCELLENT: "Upgrade Kotlin to 2.0.0 (requires AGP 8.7.0+, your AGP 8.7.3 is compatible)"
    → ALWAYS use VersionLookupTool to validate versions before suggesting!
    → ALWAYS explain WHY this version (stability, compatibility, release date)
    
 3. **Code Examples - MANDATORY (MUST include in fixGuidelines!):**
-   ❌ ULTRA BAD: "Fix the code"
-   ❌ BAD: "Change the version"
-   ❌ BAD: "Initialize the variable"
-   ❌ BAD: "Update agp to 8.7.3" (no code shown)
-   ✅ ACCEPTABLE: "Change agp = \"8.10.0\" to agp = \"8.7.3\""
-   ✅ GOOD:
+   [X] ULTRA BAD: "Fix the code"
+   [X] BAD: "Change the version"
+   [X] BAD: "Initialize the variable"
+   [X] BAD: "Update agp to 8.7.3" (no code shown)
+   [OK] ACCEPTABLE: "Change agp = \"8.10.0\" to agp = \"8.7.3\""
+   [OK] GOOD:
    Before:
    \`\`\`gradle
    agp = "8.10.0"  // Invalid version
@@ -134,7 +134,7 @@ You help developers understand WHY errors occur and HOW to fix them properly.
    agp = "8.7.3"  // Stable, compatible with Kotlin 1.9.0+
    \`\`\`
    
-   ✅ EXCELLENT (showing context):
+   [OK] EXCELLENT (showing context):
    Before:
    \`\`\`gradle
    [versions]
@@ -158,62 +158,62 @@ You help developers understand WHY errors occur and HOW to fix them properly.
    - THIS IS MANDATORY - DO NOT SKIP CODE EXAMPLES!
    
 4. **Variable/Function Names - MUST reference actual code with context:**
-   ❌ ULTRA BAD: "Fix the null pointer"
-   ❌ BAD: "The variable is not initialized"
-   ❌ BAD: "Initialize the lateinit variable"
-   ✅ ACCEPTABLE: "Variable 'viewModel' is not initialized"
-   ✅ GOOD: "Variable 'viewModel' (declared at line 15) is not initialized before use at line 45"
-   ✅ EXCELLENT: "Lateinit property 'viewModel' (declared at MainActivity.kt:15) is accessed at line 45 in onCreate() before being initialized in setupViewModel() (called at line 52)"
-   ✅ EXCELLENT: "Function 'loadData()' (called at UserActivity.kt:67) receives null from 'getUserId()' because the user object is not initialized in onStart()"
+   [X] ULTRA BAD: "Fix the null pointer"
+   [X] BAD: "The variable is not initialized"
+   [X] BAD: "Initialize the lateinit variable"
+   [OK] ACCEPTABLE: "Variable 'viewModel' is not initialized"
+   [OK] GOOD: "Variable 'viewModel' (declared at line 15) is not initialized before use at line 45"
+   [OK] EXCELLENT: "Lateinit property 'viewModel' (declared at MainActivity.kt:15) is accessed at line 45 in onCreate() before being initialized in setupViewModel() (called at line 52)"
+   [OK] EXCELLENT: "Function 'loadData()' (called at UserActivity.kt:67) receives null from 'getUserId()' because the user object is not initialized in onStart()"
    
 5. **Verification Steps - MUST explain how to test fix:**
-   ❌ ULTRA BAD: "This will work"
-   ❌ BAD: "This should fix it"
-   ❌ BAD: "The error will be resolved"
-   ✅ ACCEPTABLE: "Run the build to verify"
-   ✅ GOOD: "After applying fix, run './gradlew clean build' to verify compilation succeeds"
-   ✅ EXCELLENT: "After applying fix: 1) Run './gradlew clean build' (should complete without errors), 2) Run app on device, 3) Navigate to ProfileScreen, 4) Verify no crash occurs when loading user data"
-   ✅ EXCELLENT: "Test fix by running './gradlew app:dependencies' to confirm AGP 8.7.3 is resolved correctly with no version conflicts"
+   [X] ULTRA BAD: "This will work"
+   [X] BAD: "This should fix it"
+   [X] BAD: "The error will be resolved"
+   [OK] ACCEPTABLE: "Run the build to verify"
+   [OK] GOOD: "After applying fix, run './gradlew clean build' to verify compilation succeeds"
+   [OK] EXCELLENT: "After applying fix: 1) Run './gradlew clean build' (should complete without errors), 2) Run app on device, 3) Navigate to ProfileScreen, 4) Verify no crash occurs when loading user data"
+   [OK] EXCELLENT: "Test fix by running './gradlew app:dependencies' to confirm AGP 8.7.3 is resolved correctly with no version conflicts"
    
 6. **Dependencies/Compatibility - MUST validate relationships with version numbers:**
-   ❌ ULTRA BAD: "Update dependencies"
-   ❌ BAD: "Ensure dependencies are compatible"
-   ❌ BAD: "Update related libraries"
-   ❌ BAD: "AGP requires newer Gradle"
-   ✅ ACCEPTABLE: "AGP 8.7.3 requires Gradle 8.9+"
-   ✅ GOOD: "AGP 8.7.3 requires Gradle 8.9+ (current: 8.2) - update gradle/wrapper/gradle-wrapper.properties"
-   ✅ EXCELLENT: "AGP 8.7.3 requires Gradle 8.9+ (current: 8.2). Update gradle/wrapper/gradle-wrapper.properties line 3: change distributionUrl=...gradle-8.2-bin.zip to distributionUrl=...gradle-8.9-bin.zip"
-   ✅ EXCELLENT: "Kotlin 2.0.0 requires kotlin-compose-compiler 2.0.0 (currently 1.9.0). Update app/build.gradle.kts line 78: change kotlinCompilerExtensionVersion = \"1.9.0\" to \"2.0.0\""
+   [X] ULTRA BAD: "Update dependencies"
+   [X] BAD: "Ensure dependencies are compatible"
+   [X] BAD: "Update related libraries"
+   [X] BAD: "AGP requires newer Gradle"
+   [OK] ACCEPTABLE: "AGP 8.7.3 requires Gradle 8.9+"
+   [OK] GOOD: "AGP 8.7.3 requires Gradle 8.9+ (current: 8.2) - update gradle/wrapper/gradle-wrapper.properties"
+   [OK] EXCELLENT: "AGP 8.7.3 requires Gradle 8.9+ (current: 8.2). Update gradle/wrapper/gradle-wrapper.properties line 3: change distributionUrl=...gradle-8.2-bin.zip to distributionUrl=...gradle-8.9-bin.zip"
+   [OK] EXCELLENT: "Kotlin 2.0.0 requires kotlin-compose-compiler 2.0.0 (currently 1.9.0). Update app/build.gradle.kts line 78: change kotlinCompilerExtensionVersion = \"1.9.0\" to \"2.0.0\""
 
 7. **Root Cause Analysis - MUST be precise and technical:**
-   ❌ ULTRA BAD: "Something is wrong with the build"
-   ❌ BAD: "Version conflict"
-   ❌ BAD: "Gradle error"
-   ✅ ACCEPTABLE: "Invalid AGP version 8.10.0"
-   ✅ GOOD: "Invalid AGP version 8.10.0 in gradle/libs.versions.toml line 2 - this version doesn't exist"
-   ✅ EXCELLENT: "Invalid AGP version 8.10.0 declared in gradle/libs.versions.toml:2. The AGP 8.x series only goes up to 8.7.3 (latest stable). Version 8.10.0 doesn't exist, causing Gradle to fail during dependency resolution with error 'Could not find com.android.tools.build:gradle:8.10.0'"
+   [X] ULTRA BAD: "Something is wrong with the build"
+   [X] BAD: "Version conflict"
+   [X] BAD: "Gradle error"
+   [OK] ACCEPTABLE: "Invalid AGP version 8.10.0"
+   [OK] GOOD: "Invalid AGP version 8.10.0 in gradle/libs.versions.toml line 2 - this version doesn't exist"
+   [OK] EXCELLENT: "Invalid AGP version 8.10.0 declared in gradle/libs.versions.toml:2. The AGP 8.x series only goes up to 8.7.3 (latest stable). Version 8.10.0 doesn't exist, causing Gradle to fail during dependency resolution with error 'Could not find com.android.tools.build:gradle:8.10.0'"
 
 8. **Fix Guidelines - MUST be actionable step-by-step instructions:**
-   ❌ ULTRA BAD: "Fix the error"
-   ❌ BAD: "Update the version"
-   ❌ BAD: "Make the code compile"
-   ✅ ACCEPTABLE: "Change AGP to 8.7.3"
-   ✅ GOOD: "Open gradle/libs.versions.toml and change agp version to 8.7.3"
-   ✅ EXCELLENT: "Step 1: Open gradle/libs.versions.toml. Step 2: Navigate to line 2. Step 3: Change agp = \"8.10.0\" to agp = \"8.7.3\". Step 4: Run './gradlew clean build' to verify fix"
+   [X] ULTRA BAD: "Fix the error"
+   [X] BAD: "Update the version"
+   [X] BAD: "Make the code compile"
+   [OK] ACCEPTABLE: "Change AGP to 8.7.3"
+   [OK] GOOD: "Open gradle/libs.versions.toml and change agp version to 8.7.3"
+   [OK] EXCELLENT: "Step 1: Open gradle/libs.versions.toml. Step 2: Navigate to line 2. Step 3: Change agp = \"8.10.0\" to agp = \"8.7.3\". Step 4: Run './gradlew clean build' to verify fix"
 
 9. **Null Safety - MUST identify specific null flow:**
-   ❌ ULTRA BAD: "Null pointer exception"
-   ❌ BAD: "Variable can be null"
-   ✅ ACCEPTABLE: "Property 'user' is null"
-   ✅ GOOD: "Property 'user' is null when accessed at line 45"
-   ✅ EXCELLENT: "Property 'user' (declared as 'var user: User?' at line 15) is null when accessed at line 45 in displayProfile() because it's only initialized in onSuccess() callback (line 30), but displayProfile() is called immediately in onCreate() (line 20) before the API response arrives"
+   [X] ULTRA BAD: "Null pointer exception"
+   [X] BAD: "Variable can be null"
+   [OK] ACCEPTABLE: "Property 'user' is null"
+   [OK] GOOD: "Property 'user' is null when accessed at line 45"
+   [OK] EXCELLENT: "Property 'user' (declared as 'var user: User?' at line 15) is null when accessed at line 45 in displayProfile() because it's only initialized in onSuccess() callback (line 30), but displayProfile() is called immediately in onCreate() (line 20) before the API response arrives"
 
 10. **Deprecation Fixes - MUST provide migration path with alternatives:**
-    ❌ ULTRA BAD: "API is deprecated"
-    ❌ BAD: "Stop using deprecated API"
-    ✅ ACCEPTABLE: "Replace MaterialTheme with Material3 version"
-    ✅ GOOD: "Replace MaterialTheme (Material2) with Material3 theme. Change import from androidx.compose.material to androidx.compose.material3"
-    ✅ EXCELLENT: "Replace deprecated Material2 components (error at MainActivity.kt:25). Before: import androidx.compose.material.MaterialTheme. After: import androidx.compose.material3.MaterialTheme. Also update colors: MaterialTheme.colors.primary → MaterialTheme.colorScheme.primary at line 45. Requires dependency: implementation(\"androidx.compose.material3:material3:1.2.0\") in app/build.gradle.kts"
+    [X] ULTRA BAD: "API is deprecated"
+    [X] BAD: "Stop using deprecated API"
+    [OK] ACCEPTABLE: "Replace MaterialTheme with Material3 version"
+    [OK] GOOD: "Replace MaterialTheme (Material2) with Material3 theme. Change import from androidx.compose.material to androidx.compose.material3"
+    [OK] EXCELLENT: "Replace deprecated Material2 components (error at MainActivity.kt:25). Before: import androidx.compose.material.MaterialTheme. After: import androidx.compose.material3.MaterialTheme. Also update colors: MaterialTheme.colors.primary → MaterialTheme.colorScheme.primary at line 45. Requires dependency: implementation(\"androidx.compose.material3:material3:1.2.0\") in app/build.gradle.kts"
 
 **QUALITY STANDARDS:**
 - Be specific - reference actual variable names, line numbers, function names
@@ -571,9 +571,9 @@ Always respond with valid JSON:
 "${coreDiagnosis.substring(0, 200)}..."
 
 **WHAT TO KEEP:**
-- ✅ The fundamental cause you identified
-- ✅ The error category (${errorDomain})
-- ✅ The general solution approach
+- [OK] The fundamental cause you identified
+- [OK] The error category (${errorDomain})
+- [OK] The general solution approach
 
 **WHAT TO ADD (without changing core diagnosis):**
 ${specificIssues.slice(0, 3).map((issue, i) => `${i + 1}. ${issue}`).join('\n')}
@@ -597,9 +597,9 @@ ENHANCED (same diagnosis + detail):
 }
 
 **FORBIDDEN:**
-- ❌ Changing from ${errorDomain} error to different category
-- ❌ Abandoning your previous reasoning completely
-- ❌ Introducing new error types not in original diagnosis
+- [X] Changing from ${errorDomain} error to different category
+- [X] Abandoning your previous reasoning completely
+- [X] Introducing new error types not in original diagnosis
 
 **NOW ENHANCE (don't replace) YOUR DIAGNOSIS - OUTPUT ONLY VALID JSON:**
 
@@ -856,7 +856,7 @@ Consider using the read_file tool to examine the code at the error location.\n`;
   "confidence": 0.0-1.0 (only when action is null)
 }
 
-⚠️ CRITICAL RULES:
+[WARN] CRITICAL RULES:
 1. fixGuidelines MUST be an array of STRINGS (not objects!)
 2. At least ONE string MUST contain a code example with Before/After blocks
 3. Use \\n for newlines within strings, not actual line breaks`;
@@ -983,7 +983,7 @@ Respond ONLY with valid JSON (no other text):
   "confidence": 0.0-1.0
 }
 
-⚠️ CRITICAL: fixGuidelines is an array of STRINGS (not objects!) and MUST include code examples!`;
+[WARN] CRITICAL: fixGuidelines is an array of STRINGS (not objects!) and MUST include code examples!`;
 
     return prompt;
   }

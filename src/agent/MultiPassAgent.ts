@@ -91,7 +91,7 @@ export class MultiPassAgent extends MinimalReactAgent {
     const analysisStart = perf.startTimer('multi_pass_analysis');
 
     try {
-      console.log(`\n🔍 Starting multi-pass analysis (${this.numHypotheses} hypotheses)...`);
+      console.log(`\n[SEARCH] Starting multi-pass analysis (${this.numHypotheses} hypotheses)...`);
 
       // Step 1: Generate diverse hypotheses
       const hypothesesTimer = perf.startTimer('hypothesis_generation');
@@ -117,10 +117,10 @@ export class MultiPassAgent extends MinimalReactAgent {
 
     } catch (err) {
       analysisStart();
-      console.error('❌ Multi-pass analysis failed:', err);
+      console.error('[X] Multi-pass analysis failed:', err);
       
       // Fallback to single-pass analysis
-      console.log('⚠️ Falling back to single-pass analysis...');
+      console.log('[WARN] Falling back to single-pass analysis...');
       return super.analyze(error);
     }
   }
@@ -133,7 +133,7 @@ export class MultiPassAgent extends MinimalReactAgent {
 
     // Phase 5: Get error category for template selection
     const errorCategory = error.type || 'generic';
-    console.log(`  📋 Using template category: ${errorCategory}`);
+    console.log(`  [LIST] Using template category: ${errorCategory}`);
 
     for (let i = 0; i < this.numHypotheses; i++) {
       // Phase 5: Build template-aware prompt
@@ -155,10 +155,10 @@ export class MultiPassAgent extends MinimalReactAgent {
           hypotheses.push(parsed);
           console.log(`  → Hypothesis ${i + 1}: ${parsed.rootCause.substring(0, 80)}...`);
         } else {
-          console.warn(`⚠️ Skipping malformed hypothesis ${i + 1}`);
+          console.warn(`[WARN] Skipping malformed hypothesis ${i + 1}`);
         }
       } catch (error) {
-        console.warn(`⚠️ Failed to generate hypothesis ${i + 1}:`, error);
+        console.warn(`[WARN] Failed to generate hypothesis ${i + 1}:`, error);
       }
     }
 
@@ -295,7 +295,7 @@ OUTPUT ONLY VALID JSON:`;
 
       } catch (error) {
         const hypothesisId = hypothesis?.id || 'unknown';
-        console.warn(`⚠️ Failed to validate hypothesis ${hypothesisId}:`, error);
+        console.warn(`[WARN] Failed to validate hypothesis ${hypothesisId}:`, error);
         validatedHypotheses.push(hypothesis);
       }
     }
@@ -381,7 +381,7 @@ OUTPUT ONLY VALID JSON:`;
   private selectBestHypothesis(hypotheses: Hypothesis[]): RCAResult {
     // Handle empty hypotheses
     if (!hypotheses || hypotheses.length === 0) {
-      console.warn('⚠️ No hypotheses available to select from');
+      console.warn('[WARN] No hypotheses available to select from');
       return {
         error: '',
         rootCause: 'Unable to generate hypotheses for analysis',
@@ -412,7 +412,7 @@ OUTPUT ONLY VALID JSON:`;
    * Build consensus from multiple hypotheses
    */
   private async buildConsensus(hypotheses: Hypothesis[]): Promise<RCAResult> {
-    console.log('🔄 Building consensus from hypotheses...');
+    console.log('[SYNC] Building consensus from hypotheses...');
 
     // Filter strong hypotheses
     const strongHypotheses = hypotheses.filter(h => h.confidence > 0.5);
@@ -442,7 +442,7 @@ OUTPUT ONLY VALID JSON:`;
       };
 
     } catch (error) {
-      console.warn('⚠️ Consensus building failed, using best hypothesis');
+      console.warn('[WARN] Consensus building failed, using best hypothesis');
       return this.selectBestHypothesis(hypotheses);
     }
   }

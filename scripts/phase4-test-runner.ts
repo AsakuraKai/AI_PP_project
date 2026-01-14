@@ -18,7 +18,7 @@ import { z } from 'zod';
 
 async function main() {
   console.log('\n' + '='.repeat(80));
-  console.log('🚀 PHASE 4: REAL-WORLD TESTING');
+  console.log('[LAUNCH] PHASE 4: REAL-WORLD TESTING');
   console.log('Testing Agent Usability on 10 Diverse Android Errors');
   console.log('='.repeat(80));
   
@@ -34,16 +34,16 @@ async function main() {
     // Test LLM connection
     try {
       await llmClient.connect();
-      console.log('   ✅ LLM connection successful');
+      console.log('   [OK] LLM connection successful');
     } catch (error: any) {
-      console.error('   ❌ LLM connection failed. Is Ollama running?');
+      console.error('   [X] LLM connection failed. Is Ollama running?');
       console.error(`   Error: ${error.message}`);
       console.error('   Run: ollama serve');
       process.exit(1);
     }
     
     // Initialize tools
-    console.log('\n🛠️  Initializing tools...');
+    console.log('\n[BUILD]  Initializing tools...');
     const toolRegistry = ToolRegistry.getInstance();
     
     // Register ReadFileTool
@@ -60,7 +60,7 @@ async function main() {
       z.object({ tool: z.enum(['agp', 'kotlin', 'gradle']), queryType: z.enum(['exists', 'latest-stable', 'latest-any', 'compatible', 'suggest']), version: z.string().optional() })
     );
     
-    console.log('   ✅ Tools registered');
+    console.log('   [OK] Tools registered');
     
     // Initialize agent
     console.log('\n🤖 Initializing RCA Agent...');
@@ -69,12 +69,12 @@ async function main() {
       tools: toolRegistry,
       enableCaching: true
     });
-    console.log('   ✅ Agent initialized');
+    console.log('   [OK] Agent initialized');
     
     // Initialize test suite
-    console.log('\n🧪 Initializing Test Suite...');
+    console.log('\n[TEST] Initializing Test Suite...');
     const testSuite = new Phase4TestSuite(agent);
-    console.log('   ✅ Test Suite ready with 10 test cases');
+    console.log('   [OK] Test Suite ready with 10 test cases');
     
     // Run all tests
     console.log('\n▶️  Starting test execution...\n');
@@ -84,7 +84,7 @@ async function main() {
     
     // Final summary
     console.log('\n' + '='.repeat(80));
-    console.log('✅ TEST EXECUTION COMPLETE');
+    console.log('[OK] TEST EXECUTION COMPLETE');
     console.log('='.repeat(80));
     console.log(`   Total Time: ${Math.round(totalTime / 1000)}s`);
     console.log(`   Tests Passed: ${report.passed_tests}/${report.total_tests}`);
@@ -93,15 +93,15 @@ async function main() {
     
     // Exit with appropriate code
     if (report.failed_tests > 0) {
-      console.log('\n⚠️  Some tests failed. Review results for details.');
+      console.log('\n[WARN]  Some tests failed. Review results for details.');
       process.exit(1);
     } else {
-      console.log('\n✅ All tests passed!');
+      console.log('\n[OK] All tests passed!');
       process.exit(0);
     }
     
   } catch (error: any) {
-    console.error('\n❌ Test execution failed:');
+    console.error('\n[X] Test execution failed:');
     console.error(error);
     process.exit(1);
   }

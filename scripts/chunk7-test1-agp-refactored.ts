@@ -54,11 +54,11 @@ A problem occurred configuring root project 'Lab3'.
 if (require.main === module) {
   runTest1()
     .then(() => {
-      console.log('\n✅ Test 1 complete!');
+      console.log('\n[OK] Test 1 complete!');
       process.exit(0);
     })
     .catch(error => {
-      console.error('\n❌ Test failed:', error);
+      console.error('\n[X] Test failed:', error);
       process.exit(1);
     });
 }

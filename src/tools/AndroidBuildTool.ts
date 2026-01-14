@@ -290,22 +290,22 @@ dependencies {
 
     // Check if it's an Android-specific library
     if (group?.startsWith('com.android') || group?.startsWith('androidx')) {
-      diagnostics.push('📦 Android/AndroidX library detected');
-      diagnostics.push('✅ Ensure Google Maven repository is configured:');
+      diagnostics.push('[PACKAGE] Android/AndroidX library detected');
+      diagnostics.push('[OK] Ensure Google Maven repository is configured:');
       diagnostics.push('   repositories { google() }');
     }
 
     // Check if it's a Kotlin library
     if (group?.includes('kotlin') || group?.includes('jetbrains')) {
-      diagnostics.push('🔧 Kotlin library detected');
-      diagnostics.push('✅ Ensure Maven Central is configured:');
+      diagnostics.push('[TOOL] Kotlin library detected');
+      diagnostics.push('[OK] Ensure Maven Central is configured:');
       diagnostics.push('   repositories { mavenCentral() }');
     }
 
     // Check if it's a third-party library
     if (!group?.startsWith('com.android') && !group?.startsWith('androidx') && !group?.includes('kotlin')) {
       diagnostics.push('📚 Third-party library detected');
-      diagnostics.push('✅ Common repositories to try:');
+      diagnostics.push('[OK] Common repositories to try:');
       diagnostics.push('   repositories {');
       diagnostics.push('       google()');
       diagnostics.push('       mavenCentral()');

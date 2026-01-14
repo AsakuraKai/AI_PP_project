@@ -2,16 +2,16 @@
  * Fix Manager View - Manage pending and applied code fixes
  * 
  * Features:
- * - ✅ Pending fixes queue with code preview
- * - ✅ Code diff visualization
- * - ✅ Apply/reject individual fixes
- * - ✅ Batch operations (apply/reject multiple)
- * - ✅ Applied fixes history
- * - ✅ Success/failure tracking
- * - ✅ Loading skeletons for async content
- * - ✅ ARIA labels for accessibility
- * - ✅ Keyboard navigation support
- * - ✅ Screen reader announcements
+ * - [OK] Pending fixes queue with code preview
+ * - [OK] Code diff visualization
+ * - [OK] Apply/reject individual fixes
+ * - [OK] Batch operations (apply/reject multiple)
+ * - [OK] Applied fixes history
+ * - [OK] Success/failure tracking
+ * - [OK] Loading skeletons for async content
+ * - [OK] ARIA labels for accessibility
+ * - [OK] Keyboard navigation support
+ * - [OK] Screen reader announcements
  */
 
 import { useState, useEffect } from 'react';

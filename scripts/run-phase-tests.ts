@@ -166,16 +166,16 @@ async function main() {
   }
 
   console.log('\n' + '='.repeat(80));
-  console.log(`🚀 PHASE ${phase} VALIDATION TEST RUNNER`);
+  console.log(`[LAUNCH] PHASE ${phase} VALIDATION TEST RUNNER`);
   console.log('='.repeat(80));
 
   const testCases = phase === 1 ? PHASE_1_TESTS : PHASE_2_TESTS;
   const expectedAvg = phase === 1 ? 67.8 : 80.0;
   const target = phase === 1 ? 65 : 75;
 
-  console.log(`\n📋 Test Cases: ${testCases.length}`);
-  console.log(`🎯 Expected Average: ${expectedAvg}%`);
-  console.log(`📊 Phase ${phase} Target: ${target}%`);
+  console.log(`\n[LIST] Test Cases: ${testCases.length}`);
+  console.log(`[TARGET] Expected Average: ${expectedAvg}%`);
+  console.log(`[STATS] Phase ${phase} Target: ${target}%`);
   console.log(`📂 Output: tests/results/phase${phase}/\n`);
   console.log('='.repeat(80));
 
@@ -198,7 +198,7 @@ async function main() {
 
     // Phase-specific analysis
     console.log('\n' + '='.repeat(80));
-    console.log(`📈 PHASE ${phase} ANALYSIS`);
+    console.log(`[UP] PHASE ${phase} ANALYSIS`);
     console.log('='.repeat(80));
 
     const avgUsability = results.reduce((sum, r) => sum + r.metrics.overallUsability, 0) / results.length;
@@ -208,7 +208,7 @@ async function main() {
     console.log(`\nExpected Average: ${expectedAvg}%`);
     console.log(`Actual Average:   ${avgUsability.toFixed(1)}%`);
     console.log(`Deviation:        ${deviation > 0 ? '+' : ''}${deviation.toFixed(1)}%`);
-    console.log(`Target (${target}%):     ${targetMet ? '✅ MET' : '❌ NOT MET'}`);
+    console.log(`Target (${target}%):     ${targetMet ? '[OK] MET' : '[X] NOT MET'}`);
 
     if (phase === 1) {
       console.log('\nPhase 1 Improvements Validated:');
@@ -231,7 +231,7 @@ async function main() {
     const failedCount = results.filter(r => r.status === 'failed').length;
     process.exit(failedCount > 0 || !targetMet ? 1 : 0);
   } catch (error: any) {
-    console.error('\n❌ Test execution failed:');
+    console.error('\n[X] Test execution failed:');
     console.error(error);
     process.exit(1);
   }

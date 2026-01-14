@@ -75,24 +75,24 @@ async function loadChunk8Baseline(): Promise<Map<number, number>> {
     }
     
   } catch (error: any) {
-    console.warn('⚠️  Could not load Chunk 8 baseline:', error.message);
+    console.warn('[WARN]  Could not load Chunk 8 baseline:', error.message);
   }
   
   return baseline;
 }
 
 async function runAllTests(): Promise<void> {
-  console.log('\n🚀 CHUNK 9 - RE-TEST ALL 10 CASES\n');
+  console.log('\n[LAUNCH] CHUNK 9 - RE-TEST ALL 10 CASES\n');
   console.log('='.repeat(80));
   console.log('\nValidating improvements from Chunk 9 architecture changes:\n');
-  console.log('✅ Priority 1: JSON parsing fix (handles DeepSeek-R1 <think> tags)');
-  console.log('✅ Priority 2: Error classification system (6 categories)');
-  console.log('✅ Priority 3: Few-shot examples (39 → 69 total, diverse)');
-  console.log('✅ Priority 4: FileResolver extensions (manifest, proguard, nav)\n');
+  console.log('[OK] Priority 1: JSON parsing fix (handles DeepSeek-R1 <think> tags)');
+  console.log('[OK] Priority 2: Error classification system (6 categories)');
+  console.log('[OK] Priority 3: Few-shot examples (39 → 69 total, diverse)');
+  console.log('[OK] Priority 4: FileResolver extensions (manifest, proguard, nav)\n');
   console.log('='.repeat(80));
   
   // Load Chunk 8 baseline
-  console.log('\n📊 Loading Chunk 8 baseline for comparison...\n');
+  console.log('\n[STATS] Loading Chunk 8 baseline for comparison...\n');
   const baseline = await loadChunk8Baseline();
   
   const tests = [
@@ -153,7 +153,7 @@ async function runAllTests(): Promise<void> {
     
     try {
       // Run test with ts-node
-      console.log('\n🧪 Executing test...');
+      console.log('\n[TEST] Executing test...');
       const startTime = Date.now();
       
       const { stdout, stderr } = await execAsync(
@@ -169,10 +169,10 @@ async function runAllTests(): Promise<void> {
       
       const duration = Date.now() - startTime;
       console.log(stdout);
-      if (stderr) console.error('⚠️  Warnings:', stderr);
+      if (stderr) console.error('[WARN]  Warnings:', stderr);
       
       // Give time for resources to clean up between tests
-      console.log('\n⏳ Cleaning up resources...');
+      console.log('\n[PENDING] Cleaning up resources...');
       await new Promise(resolve => setTimeout(resolve, 2000)); // 2 second delay
       
       // Find latest result file
@@ -216,7 +216,7 @@ async function runAllTests(): Promise<void> {
           chunk8: test.chunk8,
           chunk9: usability,
           improvement,
-          status: improvement > 0 ? '📈' : improvement < 0 ? '📉' : '➡️'
+          status: improvement > 0 ? '[UP]' : improvement < 0 ? '[DOWN]' : '➡️'
         });
         
         // Copy result to Chunk 9 directory with new naming
@@ -231,14 +231,14 @@ async function runAllTests(): Promise<void> {
           }, null, 2)
         );
         
-        console.log(`\n${improvement > 0 ? '✅' : improvement < 0 ? '❌' : '➡️'} Test ${testNumber} completed: ${usability}% usability`);
+        console.log(`\n${improvement > 0 ? '[OK]' : improvement < 0 ? '[X]' : '➡️'} Test ${testNumber} completed: ${usability}% usability`);
         console.log(`   Baseline: ${test.chunk8}% → Chunk 9: ${usability}% (${improvement > 0 ? '+' : ''}${improvement.toFixed(1)}%)`);
         console.log(`   Status: ${status.toUpperCase()}`);
         console.log(`   Duration: ${(duration / 1000).toFixed(1)}s`);
       }
       
     } catch (error: any) {
-      console.error(`\n❌ Test ${testNumber} failed with error:`);
+      console.error(`\n[X] Test ${testNumber} failed with error:`);
       console.error(error.message);
       
       results.push({
@@ -265,18 +265,18 @@ async function runAllTests(): Promise<void> {
         chunk8: test.chunk8,
         chunk9: 0,
         improvement: -test.chunk8,
-        status: '❌'
+        status: '[X]'
       });
     }
   }
   
   // Generate comprehensive comparison report
   console.log('\n' + '='.repeat(80));
-  console.log('\n📊 CHUNK 9 RE-TEST RESULTS - COMPREHENSIVE COMPARISON\n');
+  console.log('\n[STATS] CHUNK 9 RE-TEST RESULTS - COMPREHENSIVE COMPARISON\n');
   console.log('='.repeat(80));
   
   // Comparison table
-  console.log('\n📈 Chunk 8 vs Chunk 9 Comparison:\n');
+  console.log('\n[UP] Chunk 8 vs Chunk 9 Comparison:\n');
   console.log('Test                                  | Chunk 8 | Chunk 9 | Δ      | Status');
   console.log('-'.repeat(85));
   
@@ -300,10 +300,10 @@ async function runAllTests(): Promise<void> {
   const avgLatency = results.reduce((sum, r) => sum + r.metrics.latency_ms, 0) / results.length;
   
   console.log('\n' + '='.repeat(80));
-  console.log('\n📊 AGGREGATE STATISTICS:\n');
+  console.log('\n[STATS] AGGREGATE STATISTICS:\n');
   console.log(`Average Usability (Chunk 8):  ${avgChunk8.toFixed(1)}%`);
   console.log(`Average Usability (Chunk 9):  ${avgChunk9.toFixed(1)}%`);
-  console.log(`Average Improvement:          ${avgImprovement > 0 ? '+' : ''}${avgImprovement.toFixed(1)}% ${avgImprovement > 0 ? '📈' : '📉'}`);
+  console.log(`Average Improvement:          ${avgImprovement > 0 ? '+' : ''}${avgImprovement.toFixed(1)}% ${avgImprovement > 0 ? '[UP]' : '[DOWN]'}`);
   console.log('');
   console.log(`Diagnosis Accuracy:           ${avgDiagnosis.toFixed(1)}%`);
   console.log(`Solution Specificity:         ${avgSolution.toFixed(1)}%`);
@@ -313,17 +313,17 @@ async function runAllTests(): Promise<void> {
   
   // Success evaluation
   console.log('\n' + '='.repeat(80));
-  console.log('\n🎯 CHUNK 9 SUCCESS EVALUATION\n');
+  console.log('\n[TARGET] CHUNK 9 SUCCESS EVALUATION\n');
   
   const passedTests = results.filter(r => r.status === 'passed').length;
   const partialTests = results.filter(r => r.status === 'partial').length;
   const failedTests = results.filter(r => r.status === 'failed').length;
   const improvedTests = comparisons.filter(c => c.improvement > 0).length;
   
-  console.log(`✅ Passed: ${passedTests}/6 tests (target met)`);
-  console.log(`⚠️  Partial: ${partialTests}/6 tests (close to target)`);
-  console.log(`❌ Failed: ${failedTests}/6 tests (below target)`);
-  console.log(`📈 Improved: ${improvedTests}/6 tests`);
+  console.log(`[OK] Passed: ${passedTests}/6 tests (target met)`);
+  console.log(`[WARN]  Partial: ${partialTests}/6 tests (close to target)`);
+  console.log(`[X] Failed: ${failedTests}/6 tests (below target)`);
+  console.log(`[UP] Improved: ${improvedTests}/6 tests`);
   console.log('');
   
   // Overall target evaluation
@@ -332,22 +332,22 @@ async function runAllTests(): Promise<void> {
   const noRegressions = comparisons.every(c => c.improvement >= -5);
   
   if (targetMet && significantImprovement && noRegressions) {
-    console.log('🎉 EXCELLENT! All success criteria met:');
-    console.log(`   ✅ Average usability: ${avgChunk9.toFixed(1)}% (target: 75%+)`);
-    console.log(`   ✅ Improvement: +${avgImprovement.toFixed(1)}% (target: +30%)`);
-    console.log(`   ✅ No significant regressions`);
+    console.log('[SUCCESS] EXCELLENT! All success criteria met:');
+    console.log(`   [OK] Average usability: ${avgChunk9.toFixed(1)}% (target: 75%+)`);
+    console.log(`   [OK] Improvement: +${avgImprovement.toFixed(1)}% (target: +30%)`);
+    console.log(`   [OK] No significant regressions`);
     console.log('\n   Ready to proceed to Phase 4!');
   } else if (avgChunk9 >= 70 || avgImprovement >= 20) {
-    console.log('👍 GOOD PROGRESS - Partial success:');
-    console.log(`   ${targetMet ? '✅' : '⚠️'}  Average usability: ${avgChunk9.toFixed(1)}% (target: 75%+)`);
-    console.log(`   ${significantImprovement ? '✅' : '⚠️'}  Improvement: +${avgImprovement.toFixed(1)}% (target: +30%)`);
-    console.log(`   ${noRegressions ? '✅' : '⚠️'}  No significant regressions`);
+    console.log('[THUMBS_UP] GOOD PROGRESS - Partial success:');
+    console.log(`   ${targetMet ? '[OK]' : '[WARN]'}  Average usability: ${avgChunk9.toFixed(1)}% (target: 75%+)`);
+    console.log(`   ${significantImprovement ? '[OK]' : '[WARN]'}  Improvement: +${avgImprovement.toFixed(1)}% (target: +30%)`);
+    console.log(`   ${noRegressions ? '[OK]' : '[WARN]'}  No significant regressions`);
     console.log('\n   Minor tweaks needed before Phase 4');
   } else {
-    console.log('⚠️  NEEDS IMPROVEMENT:');
-    console.log(`   ${targetMet ? '✅' : '❌'} Average usability: ${avgChunk9.toFixed(1)}% (target: 75%+)`);
-    console.log(`   ${significantImprovement ? '✅' : '❌'} Improvement: +${avgImprovement.toFixed(1)}% (target: +30%)`);
-    console.log(`   ${noRegressions ? '✅' : '❌'} No significant regressions`);
+    console.log('[WARN]  NEEDS IMPROVEMENT:');
+    console.log(`   ${targetMet ? '[OK]' : '[X]'} Average usability: ${avgChunk9.toFixed(1)}% (target: 75%+)`);
+    console.log(`   ${significantImprovement ? '[OK]' : '[X]'} Improvement: +${avgImprovement.toFixed(1)}% (target: +30%)`);
+    console.log(`   ${noRegressions ? '[OK]' : '[X]'} No significant regressions`);
     console.log('\n   Review failures and iterate on improvements');
   }
   
@@ -395,10 +395,10 @@ async function runAllTests(): Promise<void> {
   const failures = results.filter(r => r.status === 'failed');
   if (failures.length > 0) {
     console.log('\n' + '='.repeat(80));
-    console.log('\n🔍 FAILURE ANALYSIS:\n');
+    console.log('\n[SEARCH] FAILURE ANALYSIS:\n');
     
     failures.forEach(f => {
-      console.log(`❌ ${f.test}`);
+      console.log(`[X] ${f.test}`);
       console.log(`   Usability: ${f.metrics.overall_usability}% (target: ${tests.find(t => t.name === f.test)?.target}%)`);
       console.log(`   Diagnosis: ${f.metrics.diagnosis_accuracy}%`);
       console.log(`   Solution: ${f.metrics.solution_specificity}%`);
@@ -411,23 +411,23 @@ async function runAllTests(): Promise<void> {
   
   // Next steps
   console.log('\n' + '='.repeat(80));
-  console.log('\n📝 NEXT STEPS:\n');
+  console.log('\n[NOTE] NEXT STEPS:\n');
   
   if (targetMet && significantImprovement) {
-    console.log('✅ Chunk 9 objectives achieved!');
+    console.log('[OK] Chunk 9 objectives achieved!');
     console.log('');
     console.log('Move to Phase 4: Real-World Testing & Iteration');
     console.log('  - Test on 20+ complex Android projects');
     console.log('  - Validate improvements hold across diverse codebases');
     console.log('  - Fine-tune based on edge cases');
   } else if (avgChunk9 >= 70) {
-    console.log('⚠️  Almost there! Consider quick fixes:');
+    console.log('[WARN]  Almost there! Consider quick fixes:');
     console.log('  1. Review failed tests and identify patterns');
     console.log('  2. Add more few-shot examples for weak categories');
     console.log('  3. Fine-tune category-specific prompts');
     console.log('  4. Re-test after adjustments');
   } else {
-    console.log('❌ Significant improvements needed:');
+    console.log('[X] Significant improvements needed:');
     console.log('  1. Analyze why classification isn\'t helping');
     console.log('  2. Verify few-shot examples are being selected');
     console.log('  3. Check if prompts are too generic');
@@ -435,18 +435,18 @@ async function runAllTests(): Promise<void> {
   }
   
   console.log('\n' + '='.repeat(80));
-  console.log('\n✅ Chunk 9 re-test complete!\n');
+  console.log('\n[OK] Chunk 9 re-test complete!\n');
 }
 
 // Run all tests
 runAllTests()
   .then(() => {
-    console.log('\n✅ All tests completed successfully');
+    console.log('\n[OK] All tests completed successfully');
     // Force exit to ensure all resources are cleaned up
     setTimeout(() => process.exit(0), 1000);
   })
   .catch(error => {
-    console.error('\n❌ Test suite failed:', error);
+    console.error('\n[X] Test suite failed:', error);
     // Force exit even on error
     setTimeout(() => process.exit(1), 1000);
   });

@@ -162,7 +162,7 @@ class Chunk3TestSuite {
    * Run a single test case
    */
   async runTestCase(testCase: TestCase): Promise<TestResult> {
-    console.log(`\n🧪 Testing: ${testCase.name}`);
+    console.log(`\n[TEST] Testing: ${testCase.name}`);
     console.log(`Error: ${testCase.error.message}`);
     console.log(`Location: ${testCase.error.filePath}:${testCase.error.line}`);
 
@@ -189,8 +189,8 @@ class Chunk3TestSuite {
         ? ((improvement / testCase.mvpBaseline.specificity) * 100)
         : 0;
 
-      console.log(`✅ Specificity Score: ${validationResult.specificityScore}/100 (${specificityLevel})`);
-      console.log(`📊 Improvement: +${improvement} points (+${percentageImprovement.toFixed(0)}%)`);
+      console.log(`[OK] Specificity Score: ${validationResult.specificityScore}/100 (${specificityLevel})`);
+      console.log(`[STATS] Improvement: +${improvement} points (+${percentageImprovement.toFixed(0)}%)`);
 
       return {
         testCase: testCase.name,
@@ -208,7 +208,7 @@ class Chunk3TestSuite {
         },
       };
     } catch (error) {
-      console.error(`❌ Test failed: ${error}`);
+      console.error(`[X] Test failed: ${error}`);
       throw error;
     }
   }
@@ -218,7 +218,7 @@ class Chunk3TestSuite {
    */
   async runAllTests(): Promise<void> {
     const testCases = this.getTestCases();
-    console.log(`\n🚀 Running ${testCases.length} test cases for Chunk 3 improvements...\n`);
+    console.log(`\n[LAUNCH] Running ${testCases.length} test cases for Chunk 3 improvements...\n`);
 
     for (const testCase of testCases) {
       try {
@@ -237,7 +237,7 @@ class Chunk3TestSuite {
    */
   generateReport(): void {
     console.log('\n' + '='.repeat(80));
-    console.log('📊 CHUNK 3 IMPROVEMENT REPORT');
+    console.log('[STATS] CHUNK 3 IMPROVEMENT REPORT');
     console.log('='.repeat(80));
 
     // Overall statistics
@@ -246,15 +246,15 @@ class Chunk3TestSuite {
     const avgImprovement = avgSpecificity - avgBaseline;
     const percentImprovement = avgBaseline > 0 ? ((avgImprovement / avgBaseline) * 100) : 0;
 
-    console.log('\n📈 Overall Statistics:');
+    console.log('\n[UP] Overall Statistics:');
     console.log(`   Baseline Average: ${avgBaseline.toFixed(1)}%`);
     console.log(`   Current Average: ${avgSpecificity.toFixed(1)}%`);
     console.log(`   Improvement: +${avgImprovement.toFixed(1)} points (+${percentImprovement.toFixed(0)}%)`);
     console.log(`   Target: 70%+ specificity`);
-    console.log(`   Status: ${avgSpecificity >= 70 ? '✅ TARGET MET' : '⚠️ IN PROGRESS'}`);
+    console.log(`   Status: ${avgSpecificity >= 70 ? '[OK] TARGET MET' : '[WARN] IN PROGRESS'}`);
 
     // Breakdown by dimension
-    console.log('\n📋 Specificity Dimensions:');
+    console.log('\n[LIST] Specificity Dimensions:');
     const dimensions = {
       hasExactFilePath: 'Exact File Paths',
       hasVersionValidation: 'Version Validation',
@@ -267,12 +267,12 @@ class Chunk3TestSuite {
     Object.entries(dimensions).forEach(([key, label]) => {
       const count = this.results.filter(r => r.validationResult.breakdown[key]).length;
       const percentage = (count / this.results.length) * 100;
-      const status = percentage >= 80 ? '✅' : percentage >= 50 ? '⚠️' : '❌';
+      const status = percentage >= 80 ? '[OK]' : percentage >= 50 ? '[WARN]' : '[X]';
       console.log(`   ${status} ${label}: ${count}/${this.results.length} (${percentage.toFixed(0)}%)`);
     });
 
     // Individual test results
-    console.log('\n📝 Individual Test Results:');
+    console.log('\n[NOTE] Individual Test Results:');
     this.results.forEach((result, i) => {
       console.log(`\n   ${i + 1}. ${result.testCase}`);
       console.log(`      Score: ${result.specificityScore}/100 (${result.specificityLevel})`);
@@ -332,7 +332,7 @@ async function main() {
   const suite = new Chunk3TestSuite();
   await suite.runAllTests();
 
-  console.log('\n✅ Testing complete!');
+  console.log('\n[OK] Testing complete!');
 }
 
 // Run if executed directly

@@ -10,14 +10,14 @@
  * - Quick navigation to source file
  * 
  * Phase 4 Enhancements:
- * - ✅ Loading skeletons for table rows
- * - ✅ Keyboard navigation (arrow keys, Enter)
- * - ✅ ARIA labels for accessibility
- * - ✅ Enhanced empty states
- * - ✅ Screen reader support
+ * - [OK] Loading skeletons for table rows
+ * - [OK] Keyboard navigation (arrow keys, Enter)
+ * - [OK] ARIA labels for accessibility
+ * - [OK] Enhanced empty states
+ * - [OK] Screen reader support
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Check, Clock, FileText, Pin, Play, RefreshCw, Search, Trash2, X, AlertCircle } from 'lucide-react';
 import { useErrorQueue, type FilterStatus, type FilterType } from '../hooks/useErrorQueue';
 import { Button } from '../components/ui/button';
@@ -25,6 +25,7 @@ import { Badge } from '../components/ui/badge';
 import { Checkbox } from '../components/ui/checkbox';
 import { TableRowSkeleton } from '../components/ui/skeleton';
 import { EmptyState } from '../components/EmptyState';
+import { AnalysisProgress, type AnalysisProgressProps } from '../components/AnalysisProgress';
 import { handleListKeyboard } from '../lib/accessibility';
 import { cn } from '../lib/utils';
 
@@ -55,9 +56,43 @@ export function ErrorQueue() {
   } = useErrorQueue();
 
   const [focusedIndex, setFocusedIndex] = useState(0);
+  const [analysisProgress, setAnalysisProgress] = useState<AnalysisProgressProps | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const hasSelection = selectedIds.size > 0;
   const allSelected = selectedIds.size === errors.length && errors.length > 0;
+
+  // Listen for analysis progress updates
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      const message = event.data;
+
+      switch (message.command) {
+        case 'analysisStarted':
+          setIsAnalyzing(true);
+          setAnalysisProgress({
+            iteration: 0,
+            maxIterations: message.maxIterations || 6,
+            progress: 0
+          });
+          break;
+
+        case 'analysisProgress':
+          setAnalysisProgress(message.progress);
+          break;
+
+        case 'analysisComplete':
+        case 'analysisError':
+        case 'analysisCancelled':
+          setIsAnalyzing(false);
+          setAnalysisProgress(null);
+          break;
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
 
   return (
     <div className="p-8 space-y-6" role="main" aria-label="Error Queue">
@@ -172,6 +207,13 @@ export function ErrorQueue() {
           </div>
         )}
       </div>
+
+      {/* Analysis Progress Display */}
+      {isAnalyzing && analysisProgress && (
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6" role="region" aria-label="Analysis progress" aria-live="polite">
+          <AnalysisProgress {...analysisProgress} />
+        </div>
+      )}
 
       {/* Error List */}
       {loading ? (

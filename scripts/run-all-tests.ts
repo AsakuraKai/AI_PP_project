@@ -208,7 +208,7 @@ const ALL_TEST_CASES: TestCase[] = [
 
 async function main() {
   console.log('\n' + '='.repeat(80));
-  console.log('🚀 UNIFIED TEST RUNNER - All Test Cases');
+  console.log('[LAUNCH] UNIFIED TEST RUNNER - All Test Cases');
   console.log('='.repeat(80));
 
   // Parse command line arguments
@@ -229,11 +229,11 @@ async function main() {
     : ALL_TEST_CASES;
 
   if (testCases.length === 0) {
-    console.error('❌ No valid test cases selected');
+    console.error('[X] No valid test cases selected');
     process.exit(1);
   }
 
-  console.log(`\n📋 Test Cases: ${testCases.length}`);
+  console.log(`\n[LIST] Test Cases: ${testCases.length}`);
   console.log(`📂 Output: tests/results/\n`);
   console.log('='.repeat(80));
 
@@ -261,7 +261,7 @@ async function main() {
     const failedCount = results.filter(r => r.status === 'failed').length;
     process.exit(failedCount > 0 ? 1 : 0);
   } catch (error: any) {
-    console.error('\n❌ Test execution failed:');
+    console.error('\n[X] Test execution failed:');
     console.error(error);
     process.exit(1);
   }

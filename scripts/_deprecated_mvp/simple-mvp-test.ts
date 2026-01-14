@@ -31,14 +31,14 @@ Could not resolve all files for configuration ':classpath'.
 BUILD FAILED in 937ms
 `;
 
-  console.log('📋 Testing Error from: MVP/gradle/libs.versions.toml');
-  console.log('❌ Issue: AGP version 8.10.0 (invalid - this version does not exist)\n');
+  console.log('[LIST] Testing Error from: MVP/gradle/libs.versions.toml');
+  console.log('[X] Issue: AGP version 8.10.0 (invalid - this version does not exist)\n');
 
   const startTime = Date.now();
 
   try {
     // Step 1: Parse
-    console.log('⚙️  Step 1: Parsing error...');
+    console.log('[CONFIG]  Step 1: Parsing error...');
     const parser = new GradleParser();
     const parsed = parser.parse(gradleError);
 
@@ -46,13 +46,13 @@ BUILD FAILED in 937ms
       throw new Error('Failed to parse error');
     }
 
-    console.log('✅ Parsed successfully');
+    console.log('[OK] Parsed successfully');
     console.log(`   Type: ${parsed.type}`);
     console.log(`   Dependency: ${parsed.metadata?.dependency || 'N/A'}`);
     console.log(`   Version: ${parsed.metadata?.version || 'N/A'}\n`);
 
     // Step 2: Analyze with RCA Agent
-    console.log('⚙️  Step 2: Analyzing with RCA Agent...');
+    console.log('[CONFIG]  Step 2: Analyzing with RCA Agent...');
     console.log('   Model: DeepSeek-R1-Distill-Qwen-7B');
     console.log('   Max Iterations: 3\n');
 
@@ -73,18 +73,18 @@ BUILD FAILED in 937ms
     console.log('║                    ANALYSIS COMPLETE                           ║');
     console.log('╚════════════════════════════════════════════════════════════════╝\n');
 
-    console.log(`⏱️  Duration: ${duration.toFixed(2)}s`);
-    console.log(`🔄 Iterations: ${result.iterations || 0}`);
-    console.log(`📊 Confidence: ${(result.confidence * 100).toFixed(0)}%\n`);
+    console.log(`[TIME]  Duration: ${duration.toFixed(2)}s`);
+    console.log(`[SYNC] Iterations: ${result.iterations || 0}`);
+    console.log(`[STATS] Confidence: ${(result.confidence * 100).toFixed(0)}%\n`);
 
     console.log('═══════════════════════════════════════════════════════════════');
-    console.log('🎯 ROOT CAUSE');
+    console.log('[TARGET] ROOT CAUSE');
     console.log('═══════════════════════════════════════════════════════════════');
     console.log(result.rootCause);
     console.log();
 
     console.log('═══════════════════════════════════════════════════════════════');
-    console.log('🛠️  FIX GUIDELINES');
+    console.log('[BUILD]  FIX GUIDELINES');
     console.log('═══════════════════════════════════════════════════════════════');
     result.fixGuidelines.forEach((fix, idx) => {
       console.log(`${idx + 1}. ${fix}`);
@@ -93,7 +93,7 @@ BUILD FAILED in 937ms
 
     if (result.toolsUsed && result.toolsUsed.length > 0) {
       console.log('═══════════════════════════════════════════════════════════════');
-      console.log('🔧 TOOLS USED');
+      console.log('[TOOL] TOOLS USED');
       console.log('═══════════════════════════════════════════════════════════════');
       console.log(result.toolsUsed.join(', '));
       console.log();
@@ -101,7 +101,7 @@ BUILD FAILED in 937ms
 
     // Verify correctness
     console.log('═══════════════════════════════════════════════════════════════');
-    console.log('🎯 VERIFICATION');
+    console.log('[TARGET] VERIFICATION');
     console.log('═══════════════════════════════════════════════════════════════');
 
     const keywords = ['8.10.0', 'version', 'AGP', 'gradle', 'plugin', 'Android'];
@@ -112,17 +112,17 @@ BUILD FAILED in 937ms
     console.log(`Matched: ${found.join(', ')}`);
 
     const isAccurate = found.length >= 4 && result.confidence >= 0.7;
-    console.log(`\n${isAccurate ? '✅ PASS' : '❌ FAIL'}: ${isAccurate ? 'High accuracy' : 'Low accuracy'}`);
+    console.log(`\n${isAccurate ? '[OK] PASS' : '[X] FAIL'}: ${isAccurate ? 'High accuracy' : 'Low accuracy'}`);
 
     // Performance assessment
     console.log('\n═══════════════════════════════════════════════════════════════');
-    console.log('📊 PERFORMANCE ASSESSMENT');
+    console.log('[STATS] PERFORMANCE ASSESSMENT');
     console.log('═══════════════════════════════════════════════════════════════');
 
     const target = 90;
-    const speedStatus = duration < target ? '✅ Fast' : '⚠️ Slow';
-    const confStatus = result.confidence >= 0.7 ? '✅ High' : '⚠️ Low';
-    const accStatus = isAccurate ? '✅ Accurate' : '❌ Inaccurate';
+    const speedStatus = duration < target ? '[OK] Fast' : '[WARN] Slow';
+    const confStatus = result.confidence >= 0.7 ? '[OK] High' : '[WARN] Low';
+    const accStatus = isAccurate ? '[OK] Accurate' : '[X] Inaccurate';
 
     console.log(`Speed:      ${speedStatus} (${duration.toFixed(2)}s vs ${target}s target)`);
     console.log(`Confidence: ${confStatus} (${(result.confidence * 100).toFixed(0)}% vs 70% target)`);
@@ -133,7 +133,7 @@ BUILD FAILED in 937ms
 
 **Date:** ${new Date().toISOString()}
 **Duration:** ${duration.toFixed(2)}s
-**Status:** ${isAccurate && duration < target && result.confidence >= 0.7 ? '✅ SUCCESS' : '⚠️ PARTIAL SUCCESS'}
+**Status:** ${isAccurate && duration < target && result.confidence >= 0.7 ? '[OK] SUCCESS' : '[WARN] PARTIAL SUCCESS'}
 
 ## Test Case
 - **Error:** Invalid AGP version 8.10.0 in gradle/libs.versions.toml
@@ -159,16 +159,16 @@ ${result.fixGuidelines.map((fix, idx) => `${idx + 1}. ${fix}`).join('\n')}
 
 ## Verdict
 ${isAccurate && duration < target && result.confidence >= 0.7 
-  ? '✅ **EXCELLENT** - All targets met. Parser and agent working perfectly on real-world errors.'
-  : '⚠️ **GOOD** - Agent works but has room for improvement.'}
+  ? '[OK] **EXCELLENT** - All targets met. Parser and agent working perfectly on real-world errors.'
+  : '[WARN] **GOOD** - Agent works but has room for improvement.'}
 
-**Ready for Phase 2:** ${isAccurate && result.confidence >= 0.7 ? 'Yes ✅' : 'Needs tuning ⚠️'}
+**Ready for Phase 2:** ${isAccurate && result.confidence >= 0.7 ? 'Yes [OK]' : 'Needs tuning [WARN]'}
 `;
 
     const outputDir = path.join(__dirname, '..', 'docs', 'REAL-PROJECT-TEST');
     fs.writeFileSync(path.join(outputDir, 'COMPLETE_TEST_RESULTS.md'), summary);
 
-    console.log('\n✅ Summary saved to: docs/REAL-PROJECT-TEST/COMPLETE_TEST_RESULTS.md');
+    console.log('\n[OK] Summary saved to: docs/REAL-PROJECT-TEST/COMPLETE_TEST_RESULTS.md');
 
     // Final verdict
     console.log('\n╔════════════════════════════════════════════════════════════════╗');
@@ -176,18 +176,18 @@ ${isAccurate && duration < target && result.confidence >= 0.7
     console.log('╚════════════════════════════════════════════════════════════════╝');
     
     if (isAccurate && duration < target && result.confidence >= 0.7) {
-      console.log('\n🎉 ✅ EXCELLENT - ALL TARGETS MET');
+      console.log('\n[SUCCESS] [OK] EXCELLENT - ALL TARGETS MET');
       console.log('\n✓ Parser: Production ready');
       console.log('✓ Agent: High accuracy and confidence');
       console.log('✓ Performance: Under target latency');
       console.log('✓ Real-world: Handles actual project errors\n');
       console.log('👉 RECOMMENDATION: Proceed with Phase 2 (VS Code Extension)');
     } else {
-      console.log('\n⚠️ GOOD - Agent works with some areas for improvement');
+      console.log('\n[WARN] GOOD - Agent works with some areas for improvement');
       console.log('\n✓ Parser: Working');
-      console.log(`${result.confidence >= 0.7 ? '✓' : '⚠️'} Confidence: ${(result.confidence * 100).toFixed(0)}%`);
-      console.log(`${duration < target ? '✓' : '⚠️'} Performance: ${duration.toFixed(2)}s`);
-      console.log(`${isAccurate ? '✓' : '⚠️'} Accuracy: Keyword matching\n`);
+      console.log(`${result.confidence >= 0.7 ? '✓' : '[WARN]'} Confidence: ${(result.confidence * 100).toFixed(0)}%`);
+      console.log(`${duration < target ? '✓' : '[WARN]'} Performance: ${duration.toFixed(2)}s`);
+      console.log(`${isAccurate ? '✓' : '[WARN]'} Accuracy: Keyword matching\n`);
       console.log('👉 RECOMMENDATION: Review and tune before Phase 2');
     }
 
@@ -198,11 +198,11 @@ ${isAccurate && duration < target && result.confidence >= 0.7
     console.error('\n╔════════════════════════════════════════════════════════════════╗');
     console.error('║                      TEST FAILED                               ║');
     console.error('╚════════════════════════════════════════════════════════════════╝\n');
-    console.error(`⏱️  Duration before failure: ${duration.toFixed(2)}s`);
-    console.error(`❌ Error: ${error.message}\n`);
+    console.error(`[TIME]  Duration before failure: ${duration.toFixed(2)}s`);
+    console.error(`[X] Error: ${error.message}\n`);
 
     if (error.message.includes('ECONNREFUSED') || error.message.includes('connect')) {
-      console.error('💡 TIP: Make sure Ollama is running:');
+      console.error('[IDEA] TIP: Make sure Ollama is running:');
       console.error('   ollama serve\n');
     }
 

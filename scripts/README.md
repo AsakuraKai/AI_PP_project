@@ -2,13 +2,13 @@
 
 This directory contains scripts for testing and benchmarking the RCA Agent.
 
-**⚡ Updated:** January 2, 2026 - Test infrastructure consolidation (Chunks 1 & 2)
+**[FAST] Updated:** January 2, 2026 - Test infrastructure consolidation (Chunks 1 & 2)
 
 ---
 
-## 🎯 Recent Consolidations
+## [TARGET] Recent Consolidations
 
-### ✅ CHUNK 2: MVP Test Scripts (Jan 2, 2026)
+### [OK] CHUNK 2: MVP Test Scripts (Jan 2, 2026)
 **Consolidated 3 duplicate MVP test scripts → 1 unified test runner**
 
 **Before:**
@@ -38,7 +38,7 @@ See [CHUNK 2 details](_deprecated_mvp/README.md) for migration guide.
 
 ---
 
-## 🚀 Quick Start (New Unified System)
+## [LAUNCH] Quick Start (New Unified System)
 
 ### Run All Tests
 ```bash
@@ -57,7 +57,7 @@ Old test runner files have been moved to `_deprecated_chunk1/`. See [CHUNK1_CONS
 
 ---
 
-## 📝 Scripts Overview
+## [NOTE] Scripts Overview
 
 ### 1. `run-accuracy-tests.ts`
 **Purpose:** Run comprehensive accuracy tests on 10 real Kotlin error cases
@@ -83,7 +83,7 @@ ts-node scripts/run-accuracy-tests.ts
 
 **Output:**
 ```
-🚀 Starting Accuracy Test Suite - Chunk 1.5
+[LAUNCH] Starting Accuracy Test Suite - Chunk 1.5
 
 Testing Requirements:
   ✓ Parse 10 real Kotlin NPE errors
@@ -92,13 +92,13 @@ Testing Requirements:
   ✓ Measure latency (target: <90s average)
   ✓ No crashes or unhandled exceptions
 
-✅ Ollama is running
+[OK] Ollama is running
 
 Running accuracy tests...
 [Test execution...]
 
 ========================================
-📊 DETAILED ACCURACY REPORT
+[STATS] DETAILED ACCURACY REPORT
 ========================================
 
 Overall Metrics:
@@ -111,13 +111,13 @@ Overall Metrics:
   Min Latency: 45.0s
 
 Per-Test Results:
-  ✅ TC001: Lateinit Property Not Initialized
+  [OK] TC001: Lateinit Property Not Initialized
      Latency: 58.0s | Confidence: 0.80
   [... 9 more tests]
 
 Target Achievement:
-  Accuracy Target (60%): ✅ PASS
-  Latency Target (<90s): ✅ PASS
+  Accuracy Target (60%): [OK] PASS
+  Latency Target (<90s): [OK] PASS
 
 ========================================
 Report saved: docs/accuracy-metrics.json
@@ -150,13 +150,13 @@ ts-node scripts/benchmark.ts
 ```
 🏁 Performance Benchmarking - Chunk 1.5
 
-✅ Ollama is running
-📊 Running benchmarks...
+[OK] Ollama is running
+[STATS] Running benchmarks...
 
 Testing 5 error cases...
 
 Running: TC001 - Lateinit Property Not Initialized
-  ✅ Total: 58.00s
+  [OK] Total: 58.00s
      Parse: 15ms
      Analysis: 57.98s
      Memory: 50.00MB
@@ -164,7 +164,7 @@ Running: TC001 - Lateinit Property Not Initialized
 [... 4 more tests]
 
 ========================================
-📊 BENCHMARK RESULTS
+[STATS] BENCHMARK RESULTS
 ========================================
 
 Overall Performance:
@@ -185,16 +185,16 @@ Memory Usage:
   Average: 50.00MB
 
 Target Achievement:
-  Latency <90s: ✅ PASS
+  Latency <90s: [OK] PASS
 
 ========================================
 
-✅ Benchmark complete. Results saved to docs/benchmark-results.json
+[OK] Benchmark complete. Results saved to docs/benchmark-results.json
 ```
 
 ---
 
-## 📊 Output Files
+## [STATS] Output Files
 
 ### `docs/accuracy-metrics.json`
 Complete accuracy test results:
@@ -254,7 +254,7 @@ Performance benchmark results:
 
 ---
 
-## 🚀 Quick Start
+## [LAUNCH] Quick Start
 
 **Step 1: Start Ollama**
 ```bash
@@ -295,7 +295,7 @@ cat docs/benchmark-results.json
 
 ---
 
-## 🎯 Success Targets
+## [TARGET] Success Targets
 
 | Metric | Target | How to Check |
 |--------|--------|--------------|
@@ -307,7 +307,7 @@ cat docs/benchmark-results.json
 
 ---
 
-## 🐛 Troubleshooting
+## [BUG] Troubleshooting
 
 ### Issue: "Ollama not running"
 ```bash
@@ -355,4 +355,4 @@ set OLLAMA_AVAILABLE=true     # CMD
 
 ---
 
-**Ready to validate MVP accuracy and performance!** 🚀
+**Ready to validate MVP accuracy and performance!** [LAUNCH]

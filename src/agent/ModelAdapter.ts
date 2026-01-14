@@ -362,7 +362,7 @@ Provide a root cause analysis with fix guidelines.`;
     };
     
     if (this.config.enableLogging) {
-      console.log(`[ModelAdapter] ✅ Exported ${stats.totalEntries} entries in ${this.config.format} format`);
+      console.log(`[ModelAdapter] [OK] Exported ${stats.totalEntries} entries in ${this.config.format} format`);
     }
     
     return {
@@ -568,7 +568,7 @@ export class ModelFineTuningUtils {
 
 ## Overview
 - **Total Entries**: ${validation.stats.totalEntries}
-- **Validation Status**: ${validation.valid ? '✅ PASSED' : '❌ FAILED'}
+- **Validation Status**: ${validation.valid ? '[OK] PASSED' : '[X] FAILED'}
 
 ## Quality Metrics
 - **Empty Prompts**: ${validation.stats.emptyPrompts}

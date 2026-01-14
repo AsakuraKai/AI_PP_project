@@ -51,12 +51,12 @@ async function main() {
   // Check Ollama
   const isOllamaRunning = await checkOllama();
   if (!isOllamaRunning) {
-    console.error('❌ Ollama is not running. Start it with: ollama serve');
+    console.error('[X] Ollama is not running. Start it with: ollama serve');
     process.exit(1);
   }
 
-  console.log('✅ Ollama is running');
-  console.log('📊 Running benchmarks...\n');
+  console.log('[OK] Ollama is running');
+  console.log('[STATS] Running benchmarks...\n');
 
   // Initialize components
   const llmClient = new OllamaClient();
@@ -86,7 +86,7 @@ async function main() {
       const parseTime = Date.now() - parseStart;
 
       if (!parsedError) {
-        console.log(`  ⚠️  Parser failed\n`);
+        console.log(`  [WARN]  Parser failed\n`);
         failCount++;
         continue;
       }
@@ -109,7 +109,7 @@ async function main() {
         memoryUsed,
       });
 
-      console.log(`  ✅ Total: ${(totalTime / 1000).toFixed(2)}s`);
+      console.log(`  [OK] Total: ${(totalTime / 1000).toFixed(2)}s`);
       console.log(`     Parse: ${parseTime}ms`);
       console.log(`     Analysis: ${(analysisTime / 1000).toFixed(2)}s`);
       console.log(`     Memory: ${(memoryUsed / 1024 / 1024).toFixed(2)}MB\n`);
@@ -117,7 +117,7 @@ async function main() {
       successCount++;
 
     } catch (error) {
-      console.log(`  ❌ Failed: ${(error as Error).message}\n`);
+      console.log(`  [X] Failed: ${(error as Error).message}\n`);
       failCount++;
     }
   }
@@ -131,7 +131,7 @@ async function main() {
   // Save results
   await saveResults(results);
 
-  console.log(`\n✅ Benchmark complete. Results saved to docs/benchmark-results.json`);
+  console.log(`\n[OK] Benchmark complete. Results saved to docs/benchmark-results.json`);
 }
 
 /**
@@ -182,7 +182,7 @@ function calculateStats(
  */
 function displayResults(results: BenchmarkResults) {
   console.log('\n========================================');
-  console.log('📊 BENCHMARK RESULTS');
+  console.log('[STATS] BENCHMARK RESULTS');
   console.log('========================================\n');
 
   console.log('Overall Performance:');
@@ -204,7 +204,7 @@ function displayResults(results: BenchmarkResults) {
 
   console.log('Target Achievement:');
   const meetsLatencyTarget = results.averageLatency < 90000;
-  console.log(`  Latency <90s: ${meetsLatencyTarget ? '✅ PASS' : '❌ FAIL'}`);
+  console.log(`  Latency <90s: ${meetsLatencyTarget ? '[OK] PASS' : '[X] FAIL'}`);
 
   console.log('\n========================================');
 }

@@ -263,7 +263,7 @@ async function runTest(
 }
 
 async function runAllTests(options: CliOptions): Promise<PerformanceReport> {
-  console.log('🚀 Starting Performance Test Suite\n');
+  console.log('[LAUNCH] Starting Performance Test Suite\n');
 
   // Initialize agent
   const ollamaClient = new OllamaClient({
@@ -282,7 +282,7 @@ async function runAllTests(options: CliOptions): Promise<PerformanceReport> {
   if (options.testId) {
     const test = getTestById(options.testId);
     if (!test) {
-      console.error(`❌ Test ${options.testId} not found`);
+      console.error(`[X] Test ${options.testId} not found`);
       process.exit(1);
     }
     testsToRun = [test];
@@ -294,7 +294,7 @@ async function runAllTests(options: CliOptions): Promise<PerformanceReport> {
     testsToRun = PERFORMANCE_TEST_CASES;
   }
 
-  console.log(`📊 Running ${testsToRun.length} tests...\n`);
+  console.log(`[STATS] Running ${testsToRun.length} tests...\n`);
 
   // Run tests
   const results: TestResult[] = [];
@@ -307,7 +307,7 @@ async function runAllTests(options: CliOptions): Promise<PerformanceReport> {
     const result = await runTest(testCase, agent, options);
     results.push(result);
 
-    const statusIcon = result.success ? '✅' : '❌';
+    const statusIcon = result.success ? '[OK]' : '[X]';
     console.log(`  ${statusIcon} ${result.success ? 'PASS' : 'FAIL'} (${result.latencyMs}ms)\n`);
   }
 
@@ -414,7 +414,7 @@ function calculateComplexityStats(complexity: ErrorComplexity, results: TestResu
 
 function displayReport(report: PerformanceReport): void {
   console.log('\n' + '='.repeat(80));
-  console.log('📈 PERFORMANCE TEST REPORT');
+  console.log('[UP] PERFORMANCE TEST REPORT');
   console.log('='.repeat(80));
   console.log(`\nTimestamp: ${report.timestamp}`);
   console.log(`Total Tests: ${report.totalTests}`);
@@ -423,7 +423,7 @@ function displayReport(report: PerformanceReport): void {
   console.log(`Failure: ${report.failureCount} (${((1 - report.successRate) * 100).toFixed(1)}%)`);
 
   console.log('\n' + '-'.repeat(80));
-  console.log('⏱️  LATENCY METRICS');
+  console.log('[TIME]  LATENCY METRICS');
   console.log('-'.repeat(80));
   console.log(`Total Duration: ${(report.totalDurationMs / 1000).toFixed(1)}s`);
   console.log(`Average Latency: ${(report.averageLatencyMs / 1000).toFixed(1)}s`);
@@ -434,7 +434,7 @@ function displayReport(report: PerformanceReport): void {
   console.log(`Average Confidence: ${(report.averageConfidence * 100).toFixed(1)}%`);
 
   console.log('\n' + '-'.repeat(80));
-  console.log('📁 BY CATEGORY');
+  console.log('[FOLDER] BY CATEGORY');
   console.log('-'.repeat(80));
   
   const categories: ErrorCategory[] = ['kotlin', 'gradle', 'compose', 'xml', 'manifest', 'multi-layer'];
@@ -448,7 +448,7 @@ function displayReport(report: PerformanceReport): void {
   }
 
   console.log('\n' + '-'.repeat(80));
-  console.log('🎯 BY COMPLEXITY');
+  console.log('[TARGET] BY COMPLEXITY');
   console.log('-'.repeat(80));
   
   const complexities: ErrorComplexity[] = ['simple', 'medium', 'complex', 'edge-case'];
@@ -462,12 +462,12 @@ function displayReport(report: PerformanceReport): void {
   }
 
   console.log('\n' + '-'.repeat(80));
-  console.log('❌ FAILED TESTS');
+  console.log('[X] FAILED TESTS');
   console.log('-'.repeat(80));
   
   const failures = report.results.filter(r => !r.success);
   if (failures.length === 0) {
-    console.log('\nNo failures! 🎉');
+    console.log('\nNo failures! [SUCCESS]');
   } else {
     for (const failure of failures) {
       console.log(`\n${failure.testId}: ${failure.testName}`);
@@ -497,14 +497,14 @@ async function main(): Promise<void> {
     if (options.output) {
       const outputPath = path.resolve(options.output);
       fs.writeFileSync(outputPath, JSON.stringify(report, null, 2), 'utf-8');
-      console.log(`\n✅ Results exported to: ${outputPath}`);
+      console.log(`\n[OK] Results exported to: ${outputPath}`);
     }
 
     // Exit with appropriate code
     process.exit(report.successRate === 1.0 ? 0 : 1);
 
   } catch (error) {
-    console.error('\n❌ Fatal error:', error);
+    console.error('\n[X] Fatal error:', error);
     process.exit(1);
   }
 }

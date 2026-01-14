@@ -255,7 +255,7 @@ export class MinimalReactAgent {
 
         // Level 1: Lightweight
         {
-          console.log('🔍 Progressive Prompting L1: Lightweight analysis...');
+          console.log('[SEARCH] Progressive Prompting L1: Lightweight analysis...');
           const l1Prompt = await this.promptEngine.buildProgressiveAnalysisPrompt({
             error,
             level: 1,
@@ -281,9 +281,9 @@ export class MinimalReactAgent {
             };
 
             const validation = this.outputValidator.validate(candidate, error);
-            console.log(`📊 Progressive L1 score: ${(validation.score * 100).toFixed(1)}%`);
+            console.log(`[STATS] Progressive L1 score: ${(validation.score * 100).toFixed(1)}%`);
             if (validation.score >= 0.75) {
-              console.log('✅ Progressive L1 sufficient, skipping ReAct loop');
+              console.log('[OK] Progressive L1 sufficient, skipping ReAct loop');
               stopTotal();
 
               // Chunk 5: Generate code fix if enabled
@@ -310,7 +310,7 @@ export class MinimalReactAgent {
 
         // Level 2: Add RAG examples (still one-shot)
         {
-          console.log('🔍 Progressive Prompting L2: Adding relevant examples...');
+          console.log('[SEARCH] Progressive Prompting L2: Adding relevant examples...');
           const l2Prompt = await this.promptEngine.buildProgressiveAnalysisPrompt({
             error,
             level: 2,
@@ -336,9 +336,9 @@ export class MinimalReactAgent {
             };
 
             const validation = this.outputValidator.validate(candidate, error);
-            console.log(`📊 Progressive L2 score: ${(validation.score * 100).toFixed(1)}%`);
+            console.log(`[STATS] Progressive L2 score: ${(validation.score * 100).toFixed(1)}%`);
             if (validation.score >= 0.65) {
-              console.log('✅ Progressive L2 sufficient, skipping ReAct loop');
+              console.log('[OK] Progressive L2 sufficient, skipping ReAct loop');
               stopTotal();
 
               // Chunk 5: Generate code fix if enabled
@@ -394,7 +394,7 @@ export class MinimalReactAgent {
           const stopLLM = this.performanceTracker.startTimer('llm_inference');
           // DEBUG: Log prompt if empty response likely
           if (i === 0) {
-            console.log(`\n🔍 PROMPT SENT TO LLM (first 1000 chars):\n${prompt.substring(0, 1000)}\n...\n(last 500 chars):\n${prompt.substring(Math.max(0, prompt.length - 500))}\n`);
+            console.log(`\n[SEARCH] PROMPT SENT TO LLM (first 1000 chars):\n${prompt.substring(0, 1000)}\n...\n(last 500 chars):\n${prompt.substring(Math.max(0, prompt.length - 500))}\n`);
           }
           
           // Iteration 6 Phase 2: Use generateWithRetry for better reliability
@@ -409,7 +409,7 @@ export class MinimalReactAgent {
           
           // DEBUG: Log raw LLM response
           if (i === 0) {
-            console.log(`\n🔍 RAW LLM RESPONSE (full):\n${llmResponse.text}\n`);
+            console.log(`\n[SEARCH] RAW LLM RESPONSE (full):\n${llmResponse.text}\n`);
           }
 
           response = this.promptEngine.parseResponse(llmResponse.text);
@@ -522,7 +522,7 @@ export class MinimalReactAgent {
           };
           
           const validation = this.outputValidator.validate(preliminaryResult, error);
-          console.log(`📊 Quality score: ${(validation.score * 100).toFixed(1)}% (threshold: 60%)`);
+          console.log(`[STATS] Quality score: ${(validation.score * 100).toFixed(1)}% (threshold: 60%)`);
           console.log(`   Breakdown: fileSpec=${(validation.dimensions.filePathSpecificity * 100).toFixed(0)}% versionSpec=${(validation.dimensions.versionSpecificity * 100).toFixed(0)}% codeExamples=${(validation.dimensions.codeExamples * 100).toFixed(0)}%`);
           
           // If quality is too low, try to regenerate (max 2 attempts)
@@ -534,7 +534,7 @@ export class MinimalReactAgent {
           
           while (!finalValidation.passes && regenerationCount < this.maxRegenerations) {
             regenerationCount++;
-            console.log(`⚠️ Quality below threshold. Regenerating (attempt ${regenerationCount}/${this.maxRegenerations})...`);
+            console.log(`[WARN] Quality below threshold. Regenerating (attempt ${regenerationCount}/${this.maxRegenerations})...`);
             console.log(`   Issues: ${finalValidation.issues.slice(0, 3).join('; ')}`);
             
             // Build regeneration prompt with SPECIFIC feedback
@@ -573,7 +573,7 @@ export class MinimalReactAgent {
               };
               
               finalValidation = this.outputValidator.validate(finalResult, error);
-              console.log(`📊 Regeneration ${regenerationCount} score: ${(finalValidation.score * 100).toFixed(1)}%`);
+              console.log(`[STATS] Regeneration ${regenerationCount} score: ${(finalValidation.score * 100).toFixed(1)}%`);
               console.log(`   Breakdown: fileSpec=${(finalValidation.dimensions.filePathSpecificity * 100).toFixed(0)}% versionSpec=${(finalValidation.dimensions.versionSpecificity * 100).toFixed(0)}% codeExamples=${(finalValidation.dimensions.codeExamples * 100).toFixed(0)}%`);
               
               // Track best result across regenerations
@@ -583,7 +583,7 @@ export class MinimalReactAgent {
                 console.log(`   ✓ New best score: ${(bestScore * 100).toFixed(1)}%`);
               }
             } else {
-              console.log(`⚠️ Regeneration ${regenerationCount} failed to parse, keeping previous version`);
+              console.log(`[WARN] Regeneration ${regenerationCount} failed to parse, keeping previous version`);
               break;
             }
           }
@@ -594,13 +594,13 @@ export class MinimalReactAgent {
           
           // Fix #3: Fallback to original if ALL regenerations were worse
           if (finalValidation.score < validation.score) {
-            console.log(`⚠️ Regenerations worse than original (${(finalValidation.score * 100).toFixed(1)}% < ${(validation.score * 100).toFixed(1)}%), reverting`);
+            console.log(`[WARN] Regenerations worse than original (${(finalValidation.score * 100).toFixed(1)}% < ${(validation.score * 100).toFixed(1)}%), reverting`);
             finalResult = preliminaryResult;
             finalValidation = validation;
           }
           
           if (!finalValidation.passes) {
-            console.log(`⚠️ Quality still below threshold after ${regenerationCount} attempts. Proceeding with best result.`);
+            console.log(`[WARN] Quality still below threshold after ${regenerationCount} attempts. Proceeding with best result.`);
           }
           
           stopTotal();
@@ -608,7 +608,7 @@ export class MinimalReactAgent {
           // Chunk 5: Generate code fix if enabled
           let codeFix: CodeFix | null = null;
           if (this.generateFix) {
-            console.log('🔧 Generating code fix...');
+            console.log('[TOOL] Generating code fix...');
             const stopFixGen = this.performanceTracker.startTimer('fix_generation');
             try {
               codeFix = await this.fixGenerator.generateFix(
@@ -683,7 +683,7 @@ export class MinimalReactAgent {
         // Chunk 5: Generate code fix if enabled (for max iterations case)
         let codeFix: CodeFix | null = null;
         if (this.generateFix && parsed.rootCause) {
-          console.log('🔧 Generating code fix (max iterations)...');
+          console.log('[TOOL] Generating code fix (max iterations)...');
           const stopFixGen = this.performanceTracker.startTimer('fix_generation');
           try {
             codeFix = await this.fixGenerator.generateFix(

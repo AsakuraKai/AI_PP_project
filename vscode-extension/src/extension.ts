@@ -203,13 +203,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         
         if (foundError) {
           vscode.window.showInformationMessage(
-            `✅ Test error added successfully!\n` +
+            `[OK] Test error added successfully!\n` +
             `ID: ${testError.id}\n` +
             `Total errors in queue: ${allErrors.length}\n` +
             `Check RCA Agent view to see if it displays.`
           );
         } else {
-          vscode.window.showErrorMessage('❌ Test error was not added to queue');
+          vscode.window.showErrorMessage('[X] Test error was not added to queue');
         }
       })
     );
