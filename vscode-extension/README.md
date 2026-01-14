@@ -379,12 +379,12 @@ Access settings: File > Preferences > Settings > RCA Agent
 
 ### Supported Models
 
-| Model                                                   | Size  | Notes                                                 |
-| ------------------------------------------------------- | ----- | ----------------------------------------------------- |
-| `hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest` | 4.7GB | **Recommended** - Best reasoning and accuracy for RCA |
-| `deepseek-r1:7b`                                        | 4.7GB | Alternative with strong analytical capabilities       |
+| Model                                                   | Size  |
+|---------------------------------------------------------|-------|
+| `hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest` | 4.7GB |
+| `llama3.1:8b-instruct-q5_K_M`                           | 5.7GB |
 
-**Note:** Smaller 3.8-4.2GB models have limited reasoning capability and may produce less reliable root cause analysis. Recommend using recommended models for best results.
+**Note:** Smaller 3.8-4.2GB models have limited reasoning capability and may produce less reliable root cause analysis. Recommend using bigger and specialized models for better results.
 
 ## Command Reference
 
