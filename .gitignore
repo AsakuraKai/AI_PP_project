@@ -54,6 +54,8 @@ desktop.ini
 .env
 .env.local
 .env.*.local
+gemini-api-key
+start.py
 
 # Logs
 logs/
