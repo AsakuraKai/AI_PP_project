@@ -299,7 +299,7 @@ describe('DocumentSynthesizer', () => {
 
       expect(markdown).toContain('📖 Read File');
       expect(markdown).toContain('[SEARCH] Find Callers (LSP)');
-      expect(markdown).toContain('🗄️ Vector Search');
+      expect(markdown).toContain('[DB] Vector Search');
     });
 
     it('should format custom tool names', () => {

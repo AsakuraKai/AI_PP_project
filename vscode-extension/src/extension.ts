@@ -162,7 +162,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
           placeHolder: 'e.g., NullPointerException at MainActivity.kt:42',
           value: await vscode.env.clipboard.readText() // Pre-fill from clipboard
         });
-        
+
         if (errorText && advancedErrorDetector) {
           await advancedErrorDetector.addManualError(errorText);
         }
@@ -200,7 +200,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         // Check queue
         const allErrors = errorQueueManager.getAllErrors();
         const foundError = allErrors.find(e => e.id === testError.id);
-        
+
         if (foundError) {
           vscode.window.showInformationMessage(
             `[OK] Test error added successfully!\n` +

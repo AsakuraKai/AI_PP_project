@@ -399,9 +399,9 @@ function displayComparisonReport(report: ComparisonReport): void {
   console.log('\n' + '-'.repeat(80));
   console.log('[UP] SUMMARY');
   console.log('-'.repeat(80));
-  console.log(`Improvements: ${report.summary.improvements} ⬆️`);
-  console.log(`Stable:       ${report.summary.stable} ➡️`);
-  console.log(`Degradations: ${report.summary.degradations} ⬇️`);
+  console.log(`Improvements: ${report.summary.improvements} [UP]`);
+  console.log(`Stable:       ${report.summary.stable} [SAME]`);
+  console.log(`Degradations: ${report.summary.degradations} [DOWN]`);
 
   console.log('\n' + '-'.repeat(80));
   console.log('[SEARCH] DETAILED COMPARISON');

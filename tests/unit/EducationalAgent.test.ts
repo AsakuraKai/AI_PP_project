@@ -46,7 +46,7 @@ describe('EducationalAgent', () => {
     const mockGenerateWithRetry = jest.fn();
     const mockIsHealthy = jest.fn().mockResolvedValue(true);
     const mockListModels = jest.fn().mockResolvedValue(['test-model']);
-    
+
     mockLLM = {
       generate: mockGenerate,
       generateWithRetry: mockGenerateWithRetry,
@@ -82,11 +82,11 @@ describe('EducationalAgent', () => {
 
       expect(result.learningNotes).toBeDefined();
       expect(result.learningNotes).toHaveLength(3);
-      
+
       // Check structure of learning notes
       expect(result.learningNotes![0]).toContain('🎓 **What is this error?**');
       expect(result.learningNotes![1]).toContain('[SEARCH] **Why did this happen?**');
-      expect(result.learningNotes![2]).toContain('🛡️ **How to prevent this:**');
+      expect(result.learningNotes![2]).toContain('[PREVENT] **How to prevent this:**');
     });
 
     it('should include beginner-friendly explanations', async () => {
@@ -102,7 +102,7 @@ describe('EducationalAgent', () => {
       const allText = result.learningNotes!.join(' ');
       expect(allText.toLowerCase()).not.toContain('polymorphism');
       expect(allText.toLowerCase()).not.toContain('covariance');
-      
+
       // Should contain simple terms
       const hasPropertyOrVariable = allText.toLowerCase().includes('property') || allText.toLowerCase().includes('variable');
       expect(hasPropertyOrVariable).toBe(true);
@@ -117,10 +117,10 @@ describe('EducationalAgent', () => {
 
       const result = await agent.analyze(sampleError, 'sync');
 
-      const preventionSection = result.learningNotes!.find(note => 
+      const preventionSection = result.learningNotes!.find(note =>
         note.includes('How to prevent')
       );
-      
+
       expect(preventionSection).toBeDefined();
       expect(preventionSection).toContain('1.');
       expect(preventionSection).toContain('2.');
@@ -130,7 +130,7 @@ describe('EducationalAgent', () => {
     it('should handle LLM failures gracefully', async () => {
       // Reset mocks and configure fresh
       mockLLM.generate.mockReset();
-      
+
       // Mock LLM: base analysis succeeds, educational calls fail
       mockLLM.generate
         .mockResolvedValueOnce(mockResponse(JSON.stringify({ rootCause: 'lateinit not initialized', fixGuidelines: ['Initialize'], confidence: 0.8 })))

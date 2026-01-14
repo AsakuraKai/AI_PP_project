@@ -66,7 +66,7 @@ async function main() {
   });
   
   // Initialize MultiPassAgent
-  console.log('🤖 Creating MultiPassAgent with quality validation...');
+  console.log('[INIT] Creating MultiPassAgent with quality validation...');
   const agent = new MultiPassAgent(llm, {
     maxIterations: 5,
     generateFix: true,

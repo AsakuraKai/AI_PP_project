@@ -422,7 +422,7 @@ RESPONSE STYLE:
       if (message.role === 'user') {
         markdown += `### 👤 User\n\n`;
       } else {
-        markdown += `### 🤖 RCA Agent\n\n`;
+        markdown += `### [AGENT] RCA Agent\n\n`;
       }
 
       markdown += `${message.content}\n\n`;
