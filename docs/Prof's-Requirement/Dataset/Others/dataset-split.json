@@ -1,0 +1,194 @@
+{
+    "metadata": {
+        "totalCases": 100,
+        "splits": {
+            "train": {
+                "count": 70,
+                "percentage": 70
+            },
+            "test": {
+                "count": 20,
+                "percentage": 20
+            },
+            "eval": {
+                "count": 10,
+                "percentage": 10
+            }
+        },
+        "createdDate": "2026-01-14",
+        "description": "Dataset split for RCA Agent training, testing, and evaluation. Consolidated and deduplicated.",
+        "modelConstraints": "Optimized for 8B parameter models (e.g., DeepSeek-R1-Distill-Qwen-7B)"
+    },
+    "splits": {
+        "train": [
+            "TC001",
+            "TC002",
+            "TC003",
+            "TC004",
+            "TC005",
+            "TC006",
+            "TC007",
+            "TC008",
+            "AC001",
+            "AC002",
+            "AC003",
+            "AC004",
+            "AC005",
+            "AG001",
+            "AG002",
+            "AG003",
+            "AG004",
+            "AG005",
+            "AX001",
+            "AX002",
+            "AX003",
+            "AM001",
+            "AM002",
+            "AM003",
+            "KT-001",
+            "KT-002",
+            "KT-003",
+            "KT-004",
+            "KT-005",
+            "KT-006",
+            "GR-001",
+            "GR-002",
+            "GR-003",
+            "GR-004",
+            "GR-005",
+            "CP-001",
+            "CP-002",
+            "CP-003",
+            "CP-004",
+            "CP-005",
+            "CP-006",
+            "CP-007",
+            "CP-008",
+            "XML-001",
+            "XML-002",
+            "XML-003",
+            "XML-004",
+            "XML-005",
+            "XML-006",
+            "XML-007",
+            "MF-001",
+            "MF-002",
+            "MF-003",
+            "MF-004",
+            "MF-005",
+            "EXT-001",
+            "EXT-002",
+            "EXT-003",
+            "EXT-004",
+            "EXT-006",
+            "EXT-007",
+            "EXT-008",
+            "EXT-009",
+            "EXT-011",
+            "EXT-012",
+            "EXT-013",
+            "EXT-016",
+            "EXT-017",
+            "EXT-018",
+            "EXT-021"
+        ],
+        "test": [
+            "TC009",
+            "TC010",
+            "AM004",
+            "AM005",
+            "AM006",
+            "AM007",
+            "AC006",
+            "AC007",
+            "ML-001",
+            "ML-002",
+            "ML-003",
+            "ML-004",
+            "EXT-005",
+            "EXT-010",
+            "EXT-014",
+            "EXT-015",
+            "EXT-019",
+            "EXT-020",
+            "EXT-022",
+            "EXT-023"
+        ],
+        "eval": [
+            "EXT-024",
+            "EXT-025",
+            "EXT-027",
+            "EXT-028",
+            "EXT-029",
+            "EXT-030",
+            "ML-005",
+            "AC008",
+            "AC009",
+            "AC010"
+        ]
+    },
+    "distribution": {
+        "train": {
+            "byCategory": {
+                "kotlin": 28,
+                "gradle": 12,
+                "compose": 15,
+                "xml": 8,
+                "manifest": 4,
+                "build": 2,
+                "interop": 1
+            },
+            "byComplexity": {
+                "easy": 21,
+                "medium": 35,
+                "hard": 14
+            }
+        },
+        "test": {
+            "byCategory": {
+                "kotlin": 6,
+                "gradle": 3,
+                "compose": 4,
+                "xml": 3,
+                "manifest": 2,
+                "multi-layer": 2
+            },
+            "byComplexity": {
+                "easy": 6,
+                "medium": 10,
+                "hard": 4
+            }
+        },
+        "eval": {
+            "byCategory": {
+                "kotlin": 2,
+                "gradle": 1,
+                "compose": 1,
+                "xml": 1,
+                "manifest": 2,
+                "build": 2,
+                "interop": 1
+            },
+            "byComplexity": {
+                "easy": 1,
+                "medium": 4,
+                "hard": 5
+            }
+        }
+    },
+    "usage": {
+        "train": "Use for model fine-tuning or few-shot learning examples. Contains diverse error types with balanced difficulty.",
+        "test": "Use for iterative validation during development. Measures accuracy on unseen cases.",
+        "eval": "Final evaluation only. Do not use during training/development. Contains edge cases and complex scenarios."
+    },
+    "notes": [
+        "Train set (70%) includes representative samples from all error categories",
+        "Test set (20%) reserved for development-time validation",
+        "Eval set (10%) contains challenging cases - use only for final assessment",
+        "Distribution ensures no category is overrepresented in any split",
+        "All complexity levels represented across splits",
+        "Edge cases primarily in eval set to test model limits",
+        "Deduplicated: removed redundant .d.ts files and test case duplicates",
+        "All test case IDs match actual definitions in source files"
+    ]
+}

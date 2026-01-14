@@ -23,7 +23,7 @@
     "perf-validate": "ts-node scripts/validate-setup.ts",
     "bench": "ts-node scripts/benchmark.ts",
     "generate-stats": "ts-node scripts/generate-file-structure-stats.ts",
-    "lint": "eslint src/**/*.ts",
+    "lint": "eslint \"src/**/*.ts\" --ignore-pattern \"**/*.d.ts\"",
     "format": "prettier --write src/**/*.ts",
     "_deprecated:phase1-old": "ts-node scripts/phase1-validation.ts",
     "_deprecated:phase1-quick": "ts-node scripts/test-phase1-quick.ts",

@@ -12,14 +12,14 @@ import * as path from 'path';
 
 async function main() {
   console.log('[TEST] Testing single test case with few-shot example loading\n');
-  
+
   // Initialize LLM
   const llmClient = new OllamaClient({
     baseUrl: 'http://localhost:11434',
-    model: 'mistral:7b-instruct-v0.3-q4_K_M',
+    model: 'llama3.1:8b-instruct-q5_K_M',
     timeout: 90000
   });
-  
+
   try {
     await llmClient.connect();
     console.log('[OK] LLM connected\n');
@@ -27,7 +27,7 @@ async function main() {
     console.error('[X] LLM connection failed:', error.message);
     process.exit(1);
   }
-  
+
   // Register tools
   const toolRegistry = ToolRegistry.getInstance();
   toolRegistry.register(
@@ -40,18 +40,18 @@ async function main() {
     new VersionLookupTool(),
     z.object({ tool: z.enum(['agp', 'kotlin', 'gradle']), queryType: z.enum(['exists', 'latest-stable', 'latest-any', 'compatible', 'suggest']), version: z.string().optional() })
   );
-  
+
   // Test ProGuard case
   console.log('📂 Testing Test 9: ProGuard\n');
   const testFixturePath = path.join(__dirname, '../tests/fixtures/test9-proguard');
   console.log(`   Project root: ${testFixturePath}\n`);
-  
+
   const agent = new MinimalReactAgent(llmClient, {
     maxIterations: 3,
     projectRoot: testFixturePath,
     generateFix: true
   });
-  
+
   const result = await agent.analyze({
     type: 'proguard',
     message: 'java.lang.NoSuchMethodError: No virtual method toJson',
@@ -64,7 +64,7 @@ async function main() {
       context: 'Gson reflection methods removed by R8'
     }
   });
-  
+
   console.log('\n[STATS] Result:');
   console.log(JSON.stringify(result, null, 2));
 }

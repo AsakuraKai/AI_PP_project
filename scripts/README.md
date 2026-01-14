@@ -2,7 +2,20 @@
 
 This directory contains scripts for testing and benchmarking the RCA Agent.
 
-**[FAST] Updated:** January 2, 2026 - Test infrastructure consolidation (Chunks 1 & 2)
+**Updated:** January 14, 2026 - Major cleanup and consolidation complete
+
+---
+
+## [OK] Cleanup Summary (Jan 14, 2026)
+
+**Removed:**
+- All compiled TypeScript artifacts (.js, .d.ts, .map files) - now in .gitignore
+- Deprecated original chunk test files (non-refactored versions)
+- Obsolete emoji removal scripts (.ps1, .py)
+- Old model-specific test scripts (llama3)
+- Legacy one-time utility scripts
+
+**Remaining:** 27 active TypeScript files + 3 deprecated folders (for reference)
 
 ---
 
@@ -38,7 +51,48 @@ See [CHUNK 2 details](_deprecated_mvp/README.md) for migration guide.
 
 ---
 
-## [LAUNCH] Quick Start (New Unified System)
+## Active Scripts
+
+### Test Runners
+- **`run-accuracy-tests.ts`** - Comprehensive accuracy tests (10 cases)
+- **`run-all-tests.ts`** - Unified test runner for all cases
+- **`run-phase-tests.ts`** - Phase-specific validation (Phase 1/2)
+- **`phase4-test-runner.ts`** - Phase 4 test execution
+- **`unified-batch-runner.ts`** - Batch test execution with refactored tests
+- **`unified-mvp-test.ts`** - Consolidated MVP test runner
+- **`test-mvp-enhanced.ts`** - Enhanced MVP testing
+- **`test-single-case.ts`** - Single test case runner
+- **`test-ollama-connection.ts`** - Ollama connectivity validator
+
+### Performance & Benchmarking
+- **`benchmark.ts`** - Performance benchmarking (latency, memory)
+- **`run-performance-tests.ts`** - Performance test suite
+- **`performance-comparison.ts`** - Compare performance across runs
+- **`validate-setup.ts`** - Environment and setup validation
+
+### Refactored Test Cases (Used by unified-batch-runner)
+- **`chunk7-test1-agp-refactored.ts`** - Test 1: AGP Version Error
+- **`chunk8-test6-manifest-refactored.ts`** - Test 6: Manifest Permission
+- **`chunk8-test7-gradle-network-refactored.ts`** - Test 7: Gradle Network
+- **`chunk8-test8-build-cache-refactored.ts`** - Test 8: Build Cache
+- **`chunk8-test9-proguard-refactored.ts`** - Test 9: ProGuard
+- **`chunk8-test10-navigation-refactored.ts`** - Test 10: Navigation
+
+### Utilities
+- **`populate-chromadb.ts`** - Populate ChromaDB with examples
+- **`merge-examples-to-json.ts`** - Merge examples to JSON format
+- **`generate-file-structure-stats.ts`** - Generate project structure stats
+- **`verify-message-handlers.ts`** - Verify message handlers
+- **`verify-tools.ts`** - Verify tool implementations
+
+### Deprecated (Archived for Reference)
+- **`_deprecated_chunk1/`** - Old chunk 1 test files
+- **`_deprecated_chunk3/`** - Old chunk 3 test files
+- **`_deprecated_mvp/`** - Old MVP test files
+
+---
+
+## Quick Start (New Unified System)
 
 ### Run All Tests
 ```bash
@@ -82,8 +136,7 @@ ts-node scripts/run-accuracy-tests.ts
 - Environment variable: `OLLAMA_AVAILABLE=true`
 
 **Output:**
-```
-[LAUNCH] Starting Accuracy Test Suite - Chunk 1.5
+``` Starting Accuracy Test Suite - Chunk 1.5
 
 Testing Requirements:
   ✓ Parse 10 real Kotlin NPE errors
@@ -254,7 +307,7 @@ Performance benchmark results:
 
 ---
 
-## [LAUNCH] Quick Start
+## Quick Start
 
 **Step 1: Start Ollama**
 ```bash
@@ -297,13 +350,13 @@ cat docs/benchmark-results.json
 
 ## [TARGET] Success Targets
 
-| Metric | Target | How to Check |
-|--------|--------|--------------|
-| Parse Rate | 100% | Check `parsedSuccessfully` in accuracy-metrics.json |
-| Accuracy | ≥60% | Check `analyzedSuccessfully / totalTests` |
-| Average Latency | <90s | Check `averageLatency` in both files |
-| Max Latency | <120s | Check `maxLatency` |
-| Crashes | 0 | No exceptions during test runs |
+| Metric          | Target | How to Check                                        |
+| --------------- | ------ | --------------------------------------------------- |
+| Parse Rate      | 100%   | Check `parsedSuccessfully` in accuracy-metrics.json |
+| Accuracy        | ≥60%   | Check `analyzedSuccessfully / totalTests`           |
+| Average Latency | <90s   | Check `averageLatency` in both files                |
+| Max Latency     | <120s  | Check `maxLatency`                                  |
+| Crashes         | 0      | No exceptions during test runs                      |
 
 ---
 
@@ -355,4 +408,4 @@ set OLLAMA_AVAILABLE=true     # CMD
 
 ---
 
-**Ready to validate MVP accuracy and performance!** [LAUNCH]
+**Ready to validate MVP accuracy and performance!**

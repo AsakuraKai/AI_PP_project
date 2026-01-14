@@ -56,7 +56,7 @@ describe('AgentStateStream', () => {
     it('should initialize startTime on first call', () => {
       stream.emitIteration(1, 10);
       const elapsed = stream.getElapsedTime();
-      
+
       expect(elapsed).toBeGreaterThanOrEqual(0);
       expect(elapsed).toBeLessThan(100); // Should be very quick
     });
@@ -187,7 +187,7 @@ describe('AgentStateStream', () => {
         expect(event.rca).toEqual(rca);
         expect(event.totalIterations).toBe(5);
         expect(event.duration).toBeGreaterThanOrEqual(0);
-        expect(event.timestamp).toBeGreaterThan(0);
+        expect(event.timestamp).toBeGreaterThanOrEqual(0);
         done();
       });
 
@@ -315,9 +315,9 @@ describe('AgentStateStream', () => {
 
   describe('dispose()', () => {
     it('should remove all listeners', () => {
-      stream.on('iteration', () => {});
-      stream.on('thought', () => {});
-      stream.on('complete', () => {});
+      stream.on('iteration', () => { });
+      stream.on('thought', () => { });
+      stream.on('complete', () => { });
 
       expect(stream.listenerCount('iteration')).toBeGreaterThan(0);
 

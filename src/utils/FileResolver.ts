@@ -650,7 +650,7 @@ export class FileResolver {
     }
 
     // Check for root build.gradle (and .kts variant)
-    let rootBuildGradle = path.join(this.projectRoot, 'build.gradle');
+    const rootBuildGradle = path.join(this.projectRoot, 'build.gradle');
     if (await this.fileExists(rootBuildGradle)) {
       structure.rootBuildGradle = rootBuildGradle;
     } else {
@@ -663,7 +663,7 @@ export class FileResolver {
     }
 
     // Check for settings.gradle
-    let settingsGradle = path.join(this.projectRoot, 'settings.gradle');
+    const settingsGradle = path.join(this.projectRoot, 'settings.gradle');
     if (await this.fileExists(settingsGradle)) {
       structure.settingsGradle = settingsGradle;
       structure.modules = await this.parseModulesFromSettings(settingsGradle);
