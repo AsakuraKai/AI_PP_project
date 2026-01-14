@@ -46,24 +46,24 @@ interface ComparisonData {
 
 async function loadChunk8Baseline(): Promise<Map<number, number>> {
   const baseline = new Map<number, number>();
-  
+
   try {
     // Load Test 1 from Chunk 7
     const chunk7Path = path.join(__dirname, '../docs/_archive/RCA-AGENT-UPDATE-12-25-2025/Backend/TEST_RESULTS');
     const chunk7Files = await fs.readdir(chunk7Path);
     const test1File = chunk7Files.find(f => f.startsWith('test1-agp-version'));
-    
+
     if (test1File) {
       const data = await fs.readFile(path.join(chunk7Path, test1File), 'utf-8');
       const result = JSON.parse(data);
       baseline.set(1, result.metrics.overall_usability);
       console.log(`   Test 1 baseline: ${result.metrics.overall_usability}%`);
     }
-    
+
     // Load Tests 6-10 from Chunk 8
     const chunk8Path = path.join(__dirname, '../tests/results/chunk8');
     const chunk8Files = await fs.readdir(chunk8Path);
-    
+
     for (let i = 6; i <= 10; i++) {
       const testFile = chunk8Files.find(f => f.startsWith(`test${i}-`));
       if (testFile) {
@@ -73,11 +73,11 @@ async function loadChunk8Baseline(): Promise<Map<number, number>> {
         console.log(`   Test ${i} baseline: ${result.metrics.overall_usability}%`);
       }
     }
-    
+
   } catch (error: any) {
     console.warn('[WARN]  Could not load Chunk 8 baseline:', error.message);
   }
-  
+
   return baseline;
 }
 
@@ -90,11 +90,11 @@ async function runAllTests(): Promise<void> {
   console.log('[OK] Priority 3: Few-shot examples (39 → 69 total, diverse)');
   console.log('[OK] Priority 4: FileResolver extensions (manifest, proguard, nav)\n');
   console.log('='.repeat(80));
-  
+
   // Load Chunk 8 baseline
   console.log('\n[STATS] Loading Chunk 8 baseline for comparison...\n');
   const baseline = await loadChunk8Baseline();
-  
+
   const tests = [
     {
       name: 'Test 1: AGP Version Error',
@@ -133,32 +133,32 @@ async function runAllTests(): Promise<void> {
       chunk8: baseline.get(10) || 0
     }
   ];
-  
+
   const results: TestResult[] = [];
   const comparisons: ComparisonData[] = [];
-  
+
   // Create Chunk 9 results directory
   const chunk9Dir = path.join(__dirname, '../tests/results/chunk9');
   await fs.mkdir(chunk9Dir, { recursive: true });
-  
+
   // Run each test sequentially
   for (let i = 0; i < tests.length; i++) {
     const test = tests[i];
     const testNumber = i === 0 ? 1 : i + 5; // Test 1, then 6-10
-    
+
     console.log(`\n[${i + 1}/6] Running ${test.name}...`);
     console.log('-'.repeat(80));
     console.log(`   Chunk 8 baseline: ${test.chunk8}%`);
     console.log(`   Target: ${test.target}%`);
-    
+
     try {
       // Run test with ts-node
       console.log('\n[TEST] Executing test...');
       const startTime = Date.now();
-      
+
       const { stdout, stderr } = await execAsync(
         `npx ts-node scripts/${test.script}`,
-        { 
+        {
           cwd: path.join(__dirname, '..'),
           timeout: 180000, // 3 minutes per test
           maxBuffer: 10 * 1024 * 1024, // 10MB buffer for large outputs
@@ -166,23 +166,23 @@ async function runAllTests(): Promise<void> {
           windowsHide: true // Hide window on Windows to prevent handle issues
         }
       );
-      
+
       const duration = Date.now() - startTime;
       console.log(stdout);
       if (stderr) console.error('[WARN]  Warnings:', stderr);
-      
+
       // Give time for resources to clean up between tests
       console.log('\n[PENDING] Cleaning up resources...');
       await new Promise(resolve => setTimeout(resolve, 2000)); // 2 second delay
-      
+
       // Find latest result file
-      const resultsSourceDir = testNumber === 1 
+      const resultsSourceDir = testNumber === 1
         ? path.join(__dirname, '../docs/_archive/RCA-AGENT-UPDATE-12-25-2025/Backend/TEST_RESULTS')
         : path.join(__dirname, '../tests/results/chunk8');
-      
+
       const files = await fs.readdir(resultsSourceDir);
       const testFiles = files.filter(f => f.startsWith(`test${testNumber}-`));
-      
+
       if (testFiles.length > 0) {
         // Get most recent result
         const latestFile = testFiles.sort().reverse()[0];
@@ -191,16 +191,16 @@ async function runAllTests(): Promise<void> {
           'utf-8'
         );
         const result = JSON.parse(resultData);
-        
+
         // Determine status
         const usability = result.metrics.overall_usability;
         const improvement = usability - test.chunk8;
-        
+
         let status: 'passed' | 'partial' | 'failed';
         if (usability >= test.target) status = 'passed';
         else if (usability >= test.target * 0.75) status = 'partial';
         else status = 'failed';
-        
+
         results.push({
           test: test.name,
           testNumber,
@@ -210,15 +210,15 @@ async function runAllTests(): Promise<void> {
           chunk8_baseline: test.chunk8,
           improvement
         });
-        
+
         comparisons.push({
           test: test.name,
           chunk8: test.chunk8,
           chunk9: usability,
           improvement,
-          status: improvement > 0 ? '[UP]' : improvement < 0 ? '[DOWN]' : '➡️'
+          status: improvement > 0 ? '[UP]' : improvement < 0 ? '[DOWN]' : '[SAME]'
         });
-        
+
         // Copy result to Chunk 9 directory with new naming
         const chunk9FileName = `test${testNumber}-chunk9-retest-${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
         await fs.writeFile(
@@ -230,17 +230,17 @@ async function runAllTests(): Promise<void> {
             improvement
           }, null, 2)
         );
-        
-        console.log(`\n${improvement > 0 ? '[OK]' : improvement < 0 ? '[X]' : '➡️'} Test ${testNumber} completed: ${usability}% usability`);
+
+        console.log(`\n${improvement > 0 ? '[OK]' : improvement < 0 ? '[X]' : '[SAME]'} Test ${testNumber} completed: ${usability}% usability`);
         console.log(`   Baseline: ${test.chunk8}% → Chunk 9: ${usability}% (${improvement > 0 ? '+' : ''}${improvement.toFixed(1)}%)`);
         console.log(`   Status: ${status.toUpperCase()}`);
         console.log(`   Duration: ${(duration / 1000).toFixed(1)}s`);
       }
-      
+
     } catch (error: any) {
       console.error(`\n[X] Test ${testNumber} failed with error:`);
       console.error(error.message);
-      
+
       results.push({
         test: test.name,
         testNumber,
@@ -259,7 +259,7 @@ async function runAllTests(): Promise<void> {
         chunk8_baseline: test.chunk8,
         improvement: -test.chunk8
       });
-      
+
       comparisons.push({
         test: test.name,
         chunk8: test.chunk8,
@@ -269,17 +269,17 @@ async function runAllTests(): Promise<void> {
       });
     }
   }
-  
+
   // Generate comprehensive comparison report
   console.log('\n' + '='.repeat(80));
   console.log('\n[STATS] CHUNK 9 RE-TEST RESULTS - COMPREHENSIVE COMPARISON\n');
   console.log('='.repeat(80));
-  
+
   // Comparison table
   console.log('\n[UP] Chunk 8 vs Chunk 9 Comparison:\n');
   console.log('Test                                  | Chunk 8 | Chunk 9 | Δ      | Status');
   console.log('-'.repeat(85));
-  
+
   comparisons.forEach((comp, idx) => {
     const testNum = idx === 0 ? 1 : idx + 5;
     const delta = comp.improvement >= 0 ? `+${comp.improvement.toFixed(1)}%` : `${comp.improvement.toFixed(1)}%`;
@@ -287,18 +287,18 @@ async function runAllTests(): Promise<void> {
       `Test ${testNum}: ${comp.test.substring(8).padEnd(30)} | ${String(comp.chunk8).padStart(6)}% | ${String(comp.chunk9).padStart(6)}% | ${delta.padStart(7)} | ${comp.status}`
     );
   });
-  
+
   // Aggregate statistics
   const avgChunk8 = comparisons.reduce((sum, c) => sum + c.chunk8, 0) / comparisons.length;
   const avgChunk9 = comparisons.reduce((sum, c) => sum + c.chunk9, 0) / comparisons.length;
   const avgImprovement = avgChunk9 - avgChunk8;
-  
+
   const avgDiagnosis = results.reduce((sum, r) => sum + r.metrics.diagnosis_accuracy, 0) / results.length;
   const avgSolution = results.reduce((sum, r) => sum + r.metrics.solution_specificity, 0) / results.length;
   const avgFileId = results.reduce((sum, r) => sum + r.metrics.file_identification, 0) / results.length;
   const avgCode = results.reduce((sum, r) => sum + r.metrics.code_examples, 0) / results.length;
   const avgLatency = results.reduce((sum, r) => sum + r.metrics.latency_ms, 0) / results.length;
-  
+
   console.log('\n' + '='.repeat(80));
   console.log('\n[STATS] AGGREGATE STATISTICS:\n');
   console.log(`Average Usability (Chunk 8):  ${avgChunk8.toFixed(1)}%`);
@@ -310,27 +310,27 @@ async function runAllTests(): Promise<void> {
   console.log(`File Identification:          ${avgFileId.toFixed(1)}%`);
   console.log(`Code Examples:                ${avgCode.toFixed(1)}%`);
   console.log(`Average Latency:              ${(avgLatency / 1000).toFixed(2)}s`);
-  
+
   // Success evaluation
   console.log('\n' + '='.repeat(80));
   console.log('\n[TARGET] CHUNK 9 SUCCESS EVALUATION\n');
-  
+
   const passedTests = results.filter(r => r.status === 'passed').length;
   const partialTests = results.filter(r => r.status === 'partial').length;
   const failedTests = results.filter(r => r.status === 'failed').length;
   const improvedTests = comparisons.filter(c => c.improvement > 0).length;
-  
+
   console.log(`[OK] Passed: ${passedTests}/6 tests (target met)`);
   console.log(`[WARN]  Partial: ${partialTests}/6 tests (close to target)`);
   console.log(`[X] Failed: ${failedTests}/6 tests (below target)`);
   console.log(`[UP] Improved: ${improvedTests}/6 tests`);
   console.log('');
-  
+
   // Overall target evaluation
   const targetMet = avgChunk9 >= 75;
   const significantImprovement = avgImprovement >= 30;
   const noRegressions = comparisons.every(c => c.improvement >= -5);
-  
+
   if (targetMet && significantImprovement && noRegressions) {
     console.log('[SUCCESS] EXCELLENT! All success criteria met:');
     console.log(`   [OK] Average usability: ${avgChunk9.toFixed(1)}% (target: 75%+)`);
@@ -350,7 +350,7 @@ async function runAllTests(): Promise<void> {
     console.log(`   ${noRegressions ? '[OK]' : '[X]'} No significant regressions`);
     console.log('\n   Review failures and iterate on improvements');
   }
-  
+
   // Save comprehensive report
   const reportPath = path.join(chunk9Dir, 'CHUNK_9_COMPREHENSIVE_REPORT.json');
   await fs.writeFile(reportPath, JSON.stringify({
@@ -379,7 +379,7 @@ async function runAllTests(): Promise<void> {
       significant_improvement: significantImprovement,
       no_regressions: noRegressions,
       overall_status: targetMet && significantImprovement && noRegressions ? 'SUCCESS' :
-                      (avgChunk9 >= 70 || avgImprovement >= 20) ? 'PARTIAL' : 'NEEDS_IMPROVEMENT'
+        (avgChunk9 >= 70 || avgImprovement >= 20) ? 'PARTIAL' : 'NEEDS_IMPROVEMENT'
     },
     test_status: {
       passed: passedTests,
@@ -388,31 +388,31 @@ async function runAllTests(): Promise<void> {
       improved: improvedTests
     }
   }, null, 2));
-  
+
   console.log(`\n💾 Comprehensive report saved to: ${reportPath}`);
-  
+
   // Detailed failure analysis
   const failures = results.filter(r => r.status === 'failed');
   if (failures.length > 0) {
     console.log('\n' + '='.repeat(80));
     console.log('\n[SEARCH] FAILURE ANALYSIS:\n');
-    
+
     failures.forEach(f => {
       console.log(`[X] ${f.test}`);
       console.log(`   Usability: ${f.metrics.overall_usability}% (target: ${tests.find(t => t.name === f.test)?.target}%)`);
       console.log(`   Diagnosis: ${f.metrics.diagnosis_accuracy}%`);
       console.log(`   Solution: ${f.metrics.solution_specificity}%`);
-      console.log(`   Root cause: ${f.metrics.solution_specificity < 50 ? 'Generic solutions' : 
-                                     f.metrics.diagnosis_accuracy < 50 ? 'Poor diagnosis' : 
-                                     'Multiple factors'}`);
+      console.log(`   Root cause: ${f.metrics.solution_specificity < 50 ? 'Generic solutions' :
+        f.metrics.diagnosis_accuracy < 50 ? 'Poor diagnosis' :
+          'Multiple factors'}`);
       console.log('');
     });
   }
-  
+
   // Next steps
   console.log('\n' + '='.repeat(80));
   console.log('\n[NOTE] NEXT STEPS:\n');
-  
+
   if (targetMet && significantImprovement) {
     console.log('[OK] Chunk 9 objectives achieved!');
     console.log('');
@@ -433,7 +433,7 @@ async function runAllTests(): Promise<void> {
     console.log('  3. Check if prompts are too generic');
     console.log('  4. Consider adding validation logic');
   }
-  
+
   console.log('\n' + '='.repeat(80));
   console.log('\n[OK] Chunk 9 re-test complete!\n');
 }

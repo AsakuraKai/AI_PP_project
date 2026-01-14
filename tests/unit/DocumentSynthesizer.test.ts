@@ -297,7 +297,7 @@ describe('DocumentSynthesizer', () => {
 
       const markdown = synthesizer.synthesize(rca, error);
 
-      expect(markdown).toContain('📖 Read File');
+      expect(markdown).toContain('[READ] Read File');
       expect(markdown).toContain('[SEARCH] Find Callers (LSP)');
       expect(markdown).toContain('[DB] Vector Search');
     });

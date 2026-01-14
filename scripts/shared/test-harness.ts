@@ -104,8 +104,8 @@ export class TestHarness {
    * Initialize LLM and Agent (common setup across all tests)
    */
   async initialize(projectRoot: string): Promise<void> {
-    console.log('🤖 Initializing RCA agent...');
-    
+    console.log('[INIT] Initializing RCA agent...');
+
     this.llm = new OllamaClient({
       model: this.config.model!,
       baseUrl: this.config.baseUrl!,
@@ -133,7 +133,7 @@ export class TestHarness {
       await fs.mkdir(path.dirname(filePath), { recursive: true });
       await fs.writeFile(filePath, content);
     }
-    
+
     console.log('[OK] Test project created\n');
   }
 
@@ -245,7 +245,7 @@ export class TestHarness {
 
     // Diagnosis accuracy
     if (expectedDiagnosis && expectedDiagnosis.length > 0) {
-      const matches = expectedDiagnosis.filter(keyword => 
+      const matches = expectedDiagnosis.filter(keyword =>
         rootCause.includes(keyword.toLowerCase())
       );
       diagnosis = Math.min(100, (matches.length / expectedDiagnosis.length) * 100);
@@ -255,7 +255,7 @@ export class TestHarness {
 
     // Solution specificity
     if (expectedSolution && expectedSolution.length > 0) {
-      const matches = expectedSolution.filter(keyword => 
+      const matches = expectedSolution.filter(keyword =>
         fixText.includes(keyword.toLowerCase())
       );
       solution = Math.min(100, (matches.length / expectedSolution.length) * 100);

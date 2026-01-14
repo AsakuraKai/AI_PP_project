@@ -1,59 +1,59 @@
-# ✅ CHUNK 2 UI COMPLETE - Core UI Enhancements
+﻿# [DONE] CHUNK 2 UI COMPLETE - Core UI Enhancements
 
 **Completion Date:** December 19, 2025 (Week 9-10)  
 **Phase:** Phase 1 - MVP UI Enhancements  
 **Milestone:** Core UI Enhancements (Complete Chunk 2)  
-**Status:** ✅ **COMPLETE**
+**Status:** [DONE] **COMPLETE**
 
 ---
 
-## 📊 Executive Summary
+## [CHART] Executive Summary
 
 Successfully completed **Chunk 2 UI implementation** (Chunks 2.1-2.3), enhancing the RCA Agent VS Code extension with comprehensive error visualization, real-time tool execution feedback, and accuracy metrics display. This milestone builds on the MVP foundation from Week 8, transforming the extension into a professional-grade development tool.
 
 **Key Achievements:**
-- 🎨 **30+ error type badges** with color-coded categories (6x increase)
-- 🔄 **6-step progress feedback** showing real-time agent activity
-- 📊 **Comprehensive metrics display** (quality, latency, model)
-- 🔧 **Tool execution transparency** with icon mapping
-- ✅ **Production-ready quality** (zero TypeScript errors, zero ESLint warnings)
+- [DESIGN] **30+ error type badges** with color-coded categories (6x increase)
+- [REFRESH] **6-step progress feedback** showing real-time agent activity
+- [CHART] **Comprehensive metrics display** (quality, latency, model)
+- [TOOL] **Tool execution transparency** with icon mapping
+- [DONE] **Production-ready quality** (zero TypeScript errors, zero ESLint warnings)
 
 **Time Investment:** ~47 hours actual (vs ~56h estimated, **16% under budget**)
 
 ---
 
-## 🎯 Objectives Summary
+## [TARGET] Objectives Summary
 
 ### Chunk 2.1: Error Type Badges (Days 1-3, ~24h actual)
 **Goal:** Visual indicators for different error types
 
 **Deliverables:**
-- ✅ Error type badge display in output
-- ✅ Color-coded badges for 30+ error types
-- ✅ Support for 4 error categories: Kotlin, Gradle, Compose, XML
-- ✅ Badge integration with backend parser types
-- ✅ Professional formatting with emoji indicators
+- [DONE] Error type badge display in output
+- [DONE] Color-coded badges for 30+ error types
+- [DONE] Support for 4 error categories: Kotlin, Gradle, Compose, XML
+- [DONE] Badge integration with backend parser types
+- [DONE] Professional formatting with emoji indicators
 
 ### Chunk 2.2: Tool Execution Feedback (Days 4-5, ~16h actual)
 **Goal:** Show what tools agent is using
 
 **Deliverables:**
-- ✅ Tool execution status in progress notifications
-- ✅ 6-step progress feedback (Parsing → LLM → Tools → Database → Synthesis → Complete)
-- ✅ Tool usage display in output (which tools were used)
-- ✅ Tool icon mapping (📖 read, 🔍 search, 📚 database, 🌐 web)
-- ✅ Iteration count display
+- [DONE] Tool execution status in progress notifications
+- [DONE] 6-step progress feedback (Parsing → LLM → Tools → Database → Synthesis → Complete)
+- [DONE] Tool usage display in output (which tools were used)
+- [DONE] Tool icon mapping ([BOOK] read, [SEARCH] search, [DOCS] database, [WEB] web)
+- [DONE] Iteration count display
 
 ### Chunk 2.3: Accuracy Metrics Display (Days 6-7, ~12h actual)
 **Goal:** Show confidence scores and quality metrics
 
 **Deliverables:**
-- ✅ Quality score display with visual bar chart
-- ✅ Analysis latency/timing display (in seconds)
-- ✅ Model name display (LLM model used)
-- ✅ Optional metrics section (only shows when data available)
-- ✅ Consistent formatting with existing output sections
-- ✅ Reuse existing visualization components (confidence bar)
+- [DONE] Quality score display with visual bar chart
+- [DONE] Analysis latency/timing display (in seconds)
+- [DONE] Model name display (LLM model used)
+- [DONE] Optional metrics section (only shows when data available)
+- [DONE] Consistent formatting with existing output sections
+- [DONE] Reuse existing visualization components (confidence bar)
 
 **Combined Time Investment:** ~52 hours actual (vs ~56h estimated)
 
@@ -101,7 +101,7 @@ interface RCAResult {
 
 ---
 
-## 🎨 Feature 1: Error Type Badges (Chunk 2.1)
+## [DESIGN] Feature 1: Error Type Badges (Chunk 2.1)
 
 ### Implementation
 
@@ -111,20 +111,20 @@ interface RCAResult {
 
 #### Error Categories & Color Coding
 
-**Kotlin Errors (Red 🔴)** - Runtime critical errors
-- `kotlin_npe` → 🔴 Kotlin NPE
-- `kotlin_lateinit` → 🔴 Kotlin Lateinit Error
-- `kotlin_unresolved_reference` → 🔴 Kotlin Unresolved Reference
-- `kotlin_type_mismatch` → 🔴 Kotlin Type Mismatch
-- `kotlin_cast_exception` → 🔴 Kotlin Cast Exception
-- `kotlin_index_out_of_bounds` → 🔴 Kotlin Index Out of Bounds
+**Kotlin Errors (Red [RED])** - Runtime critical errors
+- `kotlin_npe` → [RED] Kotlin NPE
+- `kotlin_lateinit` → [RED] Kotlin Lateinit Error
+- `kotlin_unresolved_reference` → [RED] Kotlin Unresolved Reference
+- `kotlin_type_mismatch` → [RED] Kotlin Type Mismatch
+- `kotlin_cast_exception` → [RED] Kotlin Cast Exception
+- `kotlin_index_out_of_bounds` → [RED] Kotlin Index Out of Bounds
 
-**Gradle Errors (Yellow 🟡)** - Build/dependency errors
-- `gradle_build_failure` → 🟡 Gradle Build Failure
-- `gradle_dependency_resolution` → 🟡 Gradle Dependency Error
-- `gradle_version_conflict` → 🟡 Gradle Version Conflict
-- `gradle_task_failure` → 🟡 Gradle Task Failure
-- `gradle_compilation_error` → 🟡 Gradle Compilation Error
+**Gradle Errors (Yellow [YELLOW])** - Build/dependency errors
+- `gradle_build_failure` → [YELLOW] Gradle Build Failure
+- `gradle_dependency_resolution` → [YELLOW] Gradle Dependency Error
+- `gradle_version_conflict` → [YELLOW] Gradle Version Conflict
+- `gradle_task_failure` → [YELLOW] Gradle Task Failure
+- `gradle_compilation_error` → [YELLOW] Gradle Compilation Error
 
 **Jetpack Compose Errors (Purple 🟣)** - Modern Android UI
 - `compose_remember` → 🟣 Compose Remember Error
@@ -154,8 +154,8 @@ interface RCAResult {
 ### Design Rationale
 
 **Color Coding Strategy:**
-- 🔴 Red: Kotlin runtime errors (critical, immediate attention)
-- 🟡 Yellow: Build/dependency errors (warning, blocks compilation)
+- [RED] Red: Kotlin runtime errors (critical, immediate attention)
+- [YELLOW] Yellow: Build/dependency errors (warning, blocks compilation)
 - 🟣 Purple: Compose framework errors (modern Android UI)
 - 🟠 Orange: XML layout errors (traditional Android UI)
 - ⚪ White: Unknown/uncategorized (fallback)
@@ -168,7 +168,7 @@ interface RCAResult {
 
 ---
 
-## 🔄 Feature 2: Tool Execution Feedback (Chunk 2.2)
+## [REFRESH] Feature 2: Tool Execution Feedback (Chunk 2.2)
 
 ### 6-Step Progress System
 
@@ -183,25 +183,25 @@ async function analyzeWithProgress(parsedError: ParsedError) {
   }, async (progress) => {
     try {
       // Step 1: Parsing (instant)
-      progress.report({ message: '📖 Parsing error...' });
+      progress.report({ message: '[BOOK] Parsing error...' });
       
       // Step 2: LLM initialization (2-5s)
-      progress.report({ message: '🤖 Initializing LLM...' });
+      progress.report({ message: '[BOT] Initializing LLM...' });
       const llm = await OllamaClient.create({ model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest' });
       
       // Step 3: Tool execution (10-30s)
-      progress.report({ message: '🔍 Executing tools...' });
+      progress.report({ message: '[SEARCH] Executing tools...' });
       const agent = new MinimalReactAgent(llm);
       
       // Step 4: Database search (optional, 1-3s)
-      progress.report({ message: '📚 Searching database...' });
+      progress.report({ message: '[DOCS] Searching database...' });
       
       // Step 5: Result synthesis (5-15s)
-      progress.report({ message: '🧠 Synthesizing result...' });
+      progress.report({ message: '[BRAIN] Synthesizing result...' });
       const result = await agent.analyze(parsedError);
       
       // Step 6: Complete
-      progress.report({ message: '✅ Complete!', increment: 100 });
+      progress.report({ message: '[DONE] Complete!', increment: 100 });
       
       showResult(result);
       vscode.window.showInformationMessage('Analysis complete!');
@@ -215,12 +215,12 @@ async function analyzeWithProgress(parsedError: ParsedError) {
 
 **Visual Output:**
 ```
-RCA Agent: 📖 Parsing error...      [Progress: 10%]
-RCA Agent: 🤖 Initializing LLM...   [Progress: 20%]
-RCA Agent: 🔍 Executing tools...    [Progress: 50%]
-RCA Agent: 📚 Searching database... [Progress: 70%]
-RCA Agent: 🧠 Synthesizing result...[Progress: 90%]
-RCA Agent: ✅ Complete!             [Progress: 100%]
+RCA Agent: [BOOK] Parsing error...      [Progress: 10%]
+RCA Agent: [BOT] Initializing LLM...   [Progress: 20%]
+RCA Agent: [SEARCH] Executing tools...    [Progress: 50%]
+RCA Agent: [DOCS] Searching database... [Progress: 70%]
+RCA Agent: [BRAIN] Synthesizing result...[Progress: 90%]
+RCA Agent: [DONE] Complete!             [Progress: 100%]
 ```
 
 ### Tool Icon Mapping
@@ -230,30 +230,30 @@ RCA Agent: ✅ Complete!             [Progress: 100%]
 ```typescript
 function getToolIcon(toolName: string): string {
   const icons: Record<string, string> = {
-    'read_file': '📖',
-    'search_code': '🔍',
-    'vector_search': '📚',
-    'web_search': '🌐',
-    'lsp_find_references': '🔗',
-    'lsp_find_definition': '📍',
+    'read_file': '[BOOK]',
+    'search_code': '[SEARCH]',
+    'vector_search': '[DOCS]',
+    'web_search': '[WEB]',
+    'lsp_find_references': '[LINK]',
+    'lsp_find_definition': '[LOCATION]',
   };
-  return icons[toolName.toLowerCase()] || '🔧';
+  return icons[toolName.toLowerCase()] || '[TOOL]';
 }
 ```
 
 **Usage in Output:**
 ```
-🔧 TOOLS USED:
-   📖 read_file
-   🔍 search_code
-   📚 vector_search
+[TOOL] TOOLS USED:
+   [BOOK] read_file
+   [SEARCH] search_code
+   [DOCS] vector_search
 
-🔄 ITERATIONS: 3
+[REFRESH] ITERATIONS: 3
 ```
 
 ---
 
-## 📊 Feature 3: Accuracy Metrics Display (Chunk 2.3)
+## [CHART] Feature 3: Accuracy Metrics Display (Chunk 2.3)
 
 ### Metrics Display Section
 
@@ -262,7 +262,7 @@ function getToolIcon(toolName: string): string {
 ```typescript
 // CHUNK 2.3: Accuracy metrics display (optional section)
 if (result.qualityScore !== undefined || result.latency !== undefined || result.modelName) {
-  outputChannel.appendLine('\n📊 METRICS:');
+  outputChannel.appendLine('\n[CHART] METRICS:');
   
   if (result.qualityScore !== undefined) {
     const qualityPercent = (result.qualityScore * 100).toFixed(0);
@@ -287,7 +287,7 @@ if (result.qualityScore !== undefined || result.latency !== undefined || result.
 1. **Optional Display:** Only shows section if at least one metric is present
 2. **Bar Reuse:** Reuses `createConfidenceBar()` for quality score (DRY principle)
 3. **Readable Format:** Converts latency from ms to seconds (25918ms → 25.9s)
-4. **Consistent Icons:** Uses 📊 emoji matching existing style
+4. **Consistent Icons:** Uses [CHART] emoji matching existing style
 
 **Benefits:**
 - **Graceful degradation** - Works with partial backend implementation
@@ -297,17 +297,17 @@ if (result.qualityScore !== undefined || result.latency !== undefined || result.
 
 ---
 
-## 🖥️ Complete Output Example
+## [DESKTOP] Complete Output Example
 
 ### Full Analysis with All Chunk 2 Features
 
 ```
-🔴 Kotlin Lateinit Error                        [Chunk 2.1: Category badge]
+[RED] Kotlin Lateinit Error                        [Chunk 2.1: Category badge]
 
-🐛 ERROR: kotlin.UninitializedPropertyAccessException: lateinit property viewModel
+[BUG] ERROR: kotlin.UninitializedPropertyAccessException: lateinit property viewModel
 📁 FILE: MainActivity.kt:42
 
-📝 CODE CONTEXT:                                 [Chunk 1.4: Code context]
+[NOTE] CODE CONTEXT:                                 [Chunk 1.4: Code context]
 ```kotlin
 41: class MainActivity : AppCompatActivity() {
 42:     private lateinit var viewModel: MainViewModel
@@ -320,39 +320,39 @@ if (result.qualityScore !== undefined || result.latency !== undefined || result.
 49: }
 ```
 
-💡 ROOT CAUSE:
+[IDEA] ROOT CAUSE:
 The lateinit property `viewModel` is accessed before being initialized in onCreate().
 
-🛠️  FIX GUIDELINES:
+[FIX]  FIX GUIDELINES:
   1. Initialize viewModel before use: viewModel = ViewModelProvider(this).get(...)
   2. Move viewModel access to after initialization
   3. Consider using nullable property with lazy initialization
 
-✅ CONFIDENCE: 75%                               [Chunk 1.5: Confidence visualization]
+[DONE] CONFIDENCE: 75%                               [Chunk 1.5: Confidence visualization]
    ███████████████░░░░░
    High confidence - likely accurate
 
-🔧 TOOLS USED:                                  [Chunk 2.2: Tool transparency]
-  1. 📖 ReadFileTool
-  2. 🔍 LSPTool
-  3. 📚 VectorSearchTool
+[TOOL] TOOLS USED:                                  [Chunk 2.2: Tool transparency]
+  1. [BOOK] ReadFileTool
+  2. [SEARCH] LSPTool
+  3. [DOCS] VectorSearchTool
 
-🔄 ITERATIONS: 3 reasoning steps               [Chunk 2.2: Reasoning depth]
+[REFRESH] ITERATIONS: 3 reasoning steps               [Chunk 2.2: Reasoning depth]
 
-📊 METRICS:                                     [Chunk 2.3: Accuracy metrics]
+[CHART] METRICS:                                     [Chunk 2.3: Accuracy metrics]
    Quality Score: 72% ██████████████░░░░░░
    Analysis Time: 25.9s
    Model: hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
 
 ────────────────────────────────────────────────
-💡 TIP: This is a placeholder result. Connect to Ollama for real AI-powered analysis.
-📖 Configure: File > Preferences > Settings > RCA Agent
+[IDEA] TIP: This is a placeholder result. Connect to Ollama for real AI-powered analysis.
+[BOOK] Configure: File > Preferences > Settings > RCA Agent
 ❓ Need help? Check the documentation or report issues on GitHub.
 ```
 
 ---
 
-## 📈 Metrics & Performance
+## [GRAPH] Metrics & Performance
 
 ### Code Metrics Summary
 
@@ -364,55 +364,55 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
 | **Display Sections** | 5 | 8 | +60% |
 | **Helper Functions** | 6 | 8 | +33% |
 | **RCAResult Fields** | 10 | 13 | +30% |
-| **TypeScript Errors** | 0 | 0 | ✅ Clean |
-| **ESLint Warnings** | 0 | 0 | ✅ Clean |
+| **TypeScript Errors** | 0 | 0 | [DONE] Clean |
+| **ESLint Warnings** | 0 | 0 | [DONE] Clean |
 
 ### Error Type Coverage
 
 | Category | Error Types | Backend Parser | Badge Color | Status |
 |----------|-------------|----------------|-------------|--------|
-| **Kotlin** | 6 | KotlinParser | 🔴 Red | ✅ Complete |
-| **Gradle** | 5 | GradleParser | 🟡 Yellow | ✅ Complete |
-| **Jetpack Compose** | 10 | JetpackComposeParser | 🟣 Purple | ✅ Complete |
-| **XML** | 8 | XMLParser | 🟠 Orange | ✅ Complete |
-| **Fallback** | 1 | N/A | ⚪ White | ✅ Complete |
-| **Total** | **30+** | **4 parsers** | **5 colors** | ✅ **Full Coverage** |
+| **Kotlin** | 6 | KotlinParser | [RED] Red | [DONE] Complete |
+| **Gradle** | 5 | GradleParser | [YELLOW] Yellow | [DONE] Complete |
+| **Jetpack Compose** | 10 | JetpackComposeParser | 🟣 Purple | [DONE] Complete |
+| **XML** | 8 | XMLParser | 🟠 Orange | [DONE] Complete |
+| **Fallback** | 1 | N/A | ⚪ White | [DONE] Complete |
+| **Total** | **30+** | **4 parsers** | **5 colors** | [DONE] **Full Coverage** |
 
 ### Feature Completeness
 
 | Feature | Chunk | Status | Complexity |
 |---------|-------|--------|-----------|
-| Error badge display (30+ types) | 2.1 | ✅ Complete | Medium |
-| Color-coded categories | 2.1 | ✅ Complete | Low |
-| Progress notifications (6 steps) | 2.2 | ✅ Complete | Medium |
-| Tool usage display | 2.2 | ✅ Complete | Low |
-| Tool icon mapping | 2.2 | ✅ Complete | Low |
-| Iteration count display | 2.2 | ✅ Complete | Low |
-| Quality score display | 2.3 | ✅ Complete | Low |
-| Latency display | 2.3 | ✅ Complete | Low |
-| Model name display | 2.3 | ✅ Complete | Low |
-| Optional metrics section | 2.3 | ✅ Complete | Medium |
-| Component reuse | 2.3 | ✅ Complete | Low |
+| Error badge display (30+ types) | 2.1 | [DONE] Complete | Medium |
+| Color-coded categories | 2.1 | [DONE] Complete | Low |
+| Progress notifications (6 steps) | 2.2 | [DONE] Complete | Medium |
+| Tool usage display | 2.2 | [DONE] Complete | Low |
+| Tool icon mapping | 2.2 | [DONE] Complete | Low |
+| Iteration count display | 2.2 | [DONE] Complete | Low |
+| Quality score display | 2.3 | [DONE] Complete | Low |
+| Latency display | 2.3 | [DONE] Complete | Low |
+| Model name display | 2.3 | [DONE] Complete | Low |
+| Optional metrics section | 2.3 | [DONE] Complete | Medium |
+| Component reuse | 2.3 | [DONE] Complete | Low |
 
 **Overall Chunk 2 Complexity:** Medium (well-structured, maintainable)
 
 ---
 
-## 🔗 Integration Readiness
+## [LINK] Integration Readiness
 
 ### Backend Dependencies (Kai's Work)
 
 **Required for Integration:**
-- ✅ KotlinParser with 6 error types (Chunk 2.1 backend)
-- ✅ GradleParser with 5 error types (Chunk 4.1 backend)
-- ✅ JetpackComposeParser with 10 error types (Chunk 4.1 backend)
-- ✅ XMLParser with 8 error types (Chunk 4.2 backend)
-- ✅ ErrorParser router to select correct parser
-- ✅ MinimalReactAgent with tool execution tracking
-- ✅ Tool Registry with ReadFileTool, LSPTool, etc.
-- ✅ QualityScorer.score() method (Chunk 3.2 backend)
-- ✅ Latency tracking in agent (Chunk 2.3 backend)
-- ✅ Model name exposed from OllamaClient config
+- [DONE] KotlinParser with 6 error types (Chunk 2.1 backend)
+- [DONE] GradleParser with 5 error types (Chunk 4.1 backend)
+- [DONE] JetpackComposeParser with 10 error types (Chunk 4.1 backend)
+- [DONE] XMLParser with 8 error types (Chunk 4.2 backend)
+- [DONE] ErrorParser router to select correct parser
+- [DONE] MinimalReactAgent with tool execution tracking
+- [DONE] Tool Registry with ReadFileTool, LSPTool, etc.
+- [DONE] QualityScorer.score() method (Chunk 3.2 backend)
+- [DONE] Latency tracking in agent (Chunk 2.3 backend)
+- [DONE] Model name exposed from OllamaClient config
 
 **Integration Points:**
 1. Replace `parseError()` mock → `ErrorParser.parse(errorText)`
@@ -423,20 +423,20 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
 6. Wire `result.modelName` → `OllamaClient.modelName` property
 7. Stream progress events from agent → Progress notification updates
 
-**Status:** ✅ **All backend dependencies complete** (Chunks 1-5 backend done)
+**Status:** [DONE] **All backend dependencies complete** (Chunks 1-5 backend done)
 
 ### UI Completion Status
 
 **Completed (Chunks 1.1-2.3):**
-- ✅ Extension activation & command registration (Chunk 1.1)
-- ✅ User input handling with validation (Chunk 1.2)
-- ✅ Output channel display with formatting (Chunk 1.3)
-- ✅ Code context display with syntax highlighting (Chunk 1.4)
-- ✅ Confidence visualization with bar chart (Chunk 1.5)
-- ✅ Enhanced error handling with 4 categories (Chunk 1.5)
-- ✅ 30+ error type badges with color coding (Chunk 2.1)
-- ✅ Tool execution feedback with 6 progress steps (Chunk 2.2)
-- ✅ Accuracy metrics display (Chunk 2.3)
+- [DONE] Extension activation & command registration (Chunk 1.1)
+- [DONE] User input handling with validation (Chunk 1.2)
+- [DONE] Output channel display with formatting (Chunk 1.3)
+- [DONE] Code context display with syntax highlighting (Chunk 1.4)
+- [DONE] Confidence visualization with bar chart (Chunk 1.5)
+- [DONE] Enhanced error handling with 4 categories (Chunk 1.5)
+- [DONE] 30+ error type badges with color coding (Chunk 2.1)
+- [DONE] Tool execution feedback with 6 progress steps (Chunk 2.2)
+- [DONE] Accuracy metrics display (Chunk 2.3)
 
 **Pending (Week 11+):**
 - [ ] Database storage notifications (Chunk 3.1 UI)
@@ -448,63 +448,63 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
 
 ---
 
-## 🧪 Testing & Validation
+## [TEST] Testing & Validation
 
 ### Manual Testing Performed
 
 **Error Badge Testing (Chunk 2.1):**
-- ✅ All 30+ error types display correct badges
-- ✅ Color coding matches category (Kotlin=red, Gradle=yellow, etc.)
-- ✅ Unknown error types show fallback badge (⚪ Unknown Error)
-- ✅ Badge appears at top of output prominently
+- [DONE] All 30+ error types display correct badges
+- [DONE] Color coding matches category (Kotlin=red, Gradle=yellow, etc.)
+- [DONE] Unknown error types show fallback badge (⚪ Unknown Error)
+- [DONE] Badge appears at top of output prominently
 
 **Progress Notification Testing (Chunk 2.2):**
-- ✅ All 6 progress steps display in correct order
-- ✅ Progress notification appears in bottom-right corner
-- ✅ Each step shows appropriate emoji and message
-- ✅ Progress bar animates smoothly
-- ✅ Final "Complete!" message shown
+- [DONE] All 6 progress steps display in correct order
+- [DONE] Progress notification appears in bottom-right corner
+- [DONE] Each step shows appropriate emoji and message
+- [DONE] Progress bar animates smoothly
+- [DONE] Final "Complete!" message shown
 
 **Tool Usage Testing (Chunk 2.2):**
-- ✅ Tool list displays correctly in output
-- ✅ Each tool has correct icon mapping
-- ✅ Section only appears when tools were used
-- ✅ Formatting is clean and readable
+- [DONE] Tool list displays correctly in output
+- [DONE] Each tool has correct icon mapping
+- [DONE] Section only appears when tools were used
+- [DONE] Formatting is clean and readable
 
 **Metrics Testing (Chunk 2.3):**
-- ✅ Quality score displays correctly with bar
-- ✅ Latency converts to seconds correctly
-- ✅ Model name displays properly
-- ✅ Optional section logic works (shows/hides appropriately)
+- [DONE] Quality score displays correctly with bar
+- [DONE] Latency converts to seconds correctly
+- [DONE] Model name displays properly
+- [DONE] Optional section logic works (shows/hides appropriately)
 
 **TypeScript Compilation:**
-- ✅ Extension compiles with zero errors
-- ✅ All type annotations correct
-- ✅ ESLint passes (zero warnings)
+- [DONE] Extension compiles with zero errors
+- [DONE] All type annotations correct
+- [DONE] ESLint passes (zero warnings)
 
 ### Edge Cases Tested
 
 **Badge System:**
-- ✅ Unknown error type → Shows fallback badge
-- ✅ Empty error type → Shows fallback badge
-- ✅ Mixed case error type → Normalized correctly
+- [DONE] Unknown error type → Shows fallback badge
+- [DONE] Empty error type → Shows fallback badge
+- [DONE] Mixed case error type → Normalized correctly
 
 **Tool Feedback:**
-- ✅ Missing toolsUsed field → Section hidden
-- ✅ Empty toolsUsed array → Section hidden
-- ✅ Invalid tool name → Shows fallback icon (🔧)
-- ✅ Missing iterations field → Section hidden
+- [DONE] Missing toolsUsed field → Section hidden
+- [DONE] Empty toolsUsed array → Section hidden
+- [DONE] Invalid tool name → Shows fallback icon ([TOOL])
+- [DONE] Missing iterations field → Section hidden
 
 **Metrics Display:**
-- ✅ All metrics undefined → Section hidden
-- ✅ Only some metrics present → Shows only available ones
-- ✅ Quality score = 0 → Displays as "0%"
-- ✅ Latency = 0 → Displays as "0.0s"
-- ✅ Empty model name → Hides section
+- [DONE] All metrics undefined → Section hidden
+- [DONE] Only some metrics present → Shows only available ones
+- [DONE] Quality score = 0 → Displays as "0%"
+- [DONE] Latency = 0 → Displays as "0.0s"
+- [DONE] Empty model name → Hides section
 
 ---
 
-## 💡 Technical Decisions
+## [IDEA] Technical Decisions
 
 ### Decision 1: Language-Based Color Coding
 
@@ -517,9 +517,9 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
 - **Severity conveyance:** Already handled by confidence score
 
 **Trade-offs:**
-- ✅ Pro: Clear visual hierarchy by domain
-- ✅ Pro: Supports multiple error types per language
-- ❌ Con: Can't distinguish critical vs warning within same language
+- [DONE] Pro: Clear visual hierarchy by domain
+- [DONE] Pro: Supports multiple error types per language
+- [FAIL] Con: Can't distinguish critical vs warning within same language
 - ⚖️ Mitigation: Confidence score handles severity signaling
 
 ### Decision 2: 6-Step Progress System
@@ -533,26 +533,26 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
 - **Balance:** 6 steps is informative without being annoying
 
 **Trade-offs:**
-- ✅ Pro: Builds user trust (not a black box)
-- ✅ Pro: Helps with troubleshooting
-- ❌ Con: Slightly more complex code
+- [DONE] Pro: Builds user trust (not a black box)
+- [DONE] Pro: Helps with troubleshooting
+- [FAIL] Con: Slightly more complex code
 - ⚖️ Balance: 6 steps is sweet spot (not 2, not 20)
 
 ### Decision 3: Specific Tool Icons
 
-**Chosen:** Different emoji for each tool type (📖, 🔍, 📚, 🌐, 🔗, 📍)
+**Chosen:** Different emoji for each tool type ([BOOK], [SEARCH], [DOCS], [WEB], [LINK], [LOCATION])
 
 **Rationale:**
-- **Visual scannability:** Users can quickly spot "🔍 search" vs "📖 read"
+- **Visual scannability:** Users can quickly spot "[SEARCH] search" vs "[BOOK] read"
 - **Professional appearance:** Emoji adds visual interest without clutter
 - **Consistency:** Matches existing badge system
 - **Low cost:** Just a small mapping dictionary
 
 **Trade-offs:**
-- ✅ Pro: Better UX, more scannable output
-- ✅ Pro: Consistent with design language
-- ❌ Con: Must maintain icon mappings as tools are added
-- ⚖️ Mitigation: Fallback icon 🔧 for unknown tools
+- [DONE] Pro: Better UX, more scannable output
+- [DONE] Pro: Consistent with design language
+- [FAIL] Con: Must maintain icon mappings as tools are added
+- ⚖️ Mitigation: Fallback icon [TOOL] for unknown tools
 
 ### Decision 4: Reuse Confidence Bar for Quality
 
@@ -565,14 +565,14 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
 - **Faster implementation:** No new code needed
 
 **Trade-offs:**
-- ✅ Pro: Consistent UI, less code
-- ✅ Pro: Users already familiar with bar interpretation
-- ❌ Con: Can't distinguish visually between quality and confidence
+- [DONE] Pro: Consistent UI, less code
+- [DONE] Pro: Users already familiar with bar interpretation
+- [FAIL] Con: Can't distinguish visually between quality and confidence
 - ⚖️ Mitigation: Clear labels ("Quality Score" vs "CONFIDENCE")
 
 ### Decision 5: Optional Metrics Section
 
-**Chosen:** Only show 📊 METRICS section when data available
+**Chosen:** Only show [CHART] METRICS section when data available
 
 **Rationale:**
 - **Cleaner output:** No empty or "N/A" noise
@@ -580,9 +580,9 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
 - **Progressive enhancement:** UI adapts to backend capabilities
 
 **Trade-offs:**
-- ✅ Pro: Clean, professional appearance
-- ✅ Pro: Works during backend integration (partial data)
-- ❌ Con: Inconsistent output length (section may not appear)
+- [DONE] Pro: Clean, professional appearance
+- [DONE] Pro: Works during backend integration (partial data)
+- [FAIL] Con: Inconsistent output length (section may not appear)
 - ⚖️ Balance: Consistency less important than clarity
 
 ### Decision 6: Latency in Seconds
@@ -595,33 +595,33 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
 - **Consistency:** Always in seconds, no unit switching
 
 **Trade-offs:**
-- ✅ Pro: User-friendly, professional appearance
-- ✅ Pro: Consistent unit across all analyses
-- ❌ Con: Less precise than milliseconds (loses ~100ms detail)
+- [DONE] Pro: User-friendly, professional appearance
+- [DONE] Pro: Consistent unit across all analyses
+- [FAIL] Con: Less precise than milliseconds (loses ~100ms detail)
 - ⚖️ Balance: 0.1s precision sufficient for 20-90s analyses
 
 ---
 
-## 🎨 User Experience Evolution
+## [DESIGN] User Experience Evolution
 
 ### Before Chunk 2 (End of Chunk 1.5)
 ```
-🔍 === ROOT CAUSE ANALYSIS ===
+[SEARCH] === ROOT CAUSE ANALYSIS ===
 
-🐛 ERROR: kotlin.UninitializedPropertyAccessException
+[BUG] ERROR: kotlin.UninitializedPropertyAccessException
 📁 FILE: MainActivity.kt:42
 
-📝 CODE CONTEXT:
+[NOTE] CODE CONTEXT:
 [code snippet]
 
-💡 ROOT CAUSE:
+[IDEA] ROOT CAUSE:
 Property not initialized before use
 
-🛠️  FIX GUIDELINES:
+[FIX]  FIX GUIDELINES:
   1. Initialize the property
   2. Use nullable type
 
-✅ CONFIDENCE: 95%
+[DONE] CONFIDENCE: 95%
    ████████████████████░
 ```
 
@@ -635,20 +635,20 @@ Property not initialized before use
 
 ### After Chunk 2 (All Features)
 ```
-🔴 Kotlin Lateinit Error                        ← NEW: Category badge + color
+[RED] Kotlin Lateinit Error                        ← NEW: Category badge + color
 
 [Progress notification shown during analysis]
-RCA Agent: 📖 Parsing error...
-RCA Agent: 🤖 Initializing LLM...
-RCA Agent: 🔍 Executing tools...
-RCA Agent: 📚 Searching database...
-RCA Agent: 🧠 Synthesizing result...
-RCA Agent: ✅ Complete!
+RCA Agent: [BOOK] Parsing error...
+RCA Agent: [BOT] Initializing LLM...
+RCA Agent: [SEARCH] Executing tools...
+RCA Agent: [DOCS] Searching database...
+RCA Agent: [BRAIN] Synthesizing result...
+RCA Agent: [DONE] Complete!
 
-🐛 ERROR: kotlin.UninitializedPropertyAccessException: lateinit property viewModel
+[BUG] ERROR: kotlin.UninitializedPropertyAccessException: lateinit property viewModel
 📁 FILE: MainActivity.kt:42
 
-📝 CODE CONTEXT:
+[NOTE] CODE CONTEXT:
 ```kotlin
 41: class MainActivity : AppCompatActivity() {
 42:     private lateinit var viewModel: MainViewModel
@@ -660,32 +660,32 @@ RCA Agent: ✅ Complete!
 48: }
 ```
 
-💡 ROOT CAUSE:
+[IDEA] ROOT CAUSE:
 The lateinit property `viewModel` is accessed before being initialized in onCreate().
 
-🛠️  FIX GUIDELINES:
+[FIX]  FIX GUIDELINES:
   1. Initialize viewModel before use: viewModel = ViewModelProvider(this).get(...)
   2. Move viewModel access to after initialization
   3. Consider using nullable property with lazy initialization
 
-✅ CONFIDENCE: 75%
+[DONE] CONFIDENCE: 75%
    ███████████████░░░░░
    High confidence - likely accurate
 
-🔧 TOOLS USED:                                  ← NEW: Tool transparency
-  1. 📖 ReadFileTool
-  2. 🔍 LSPTool
-  3. 📚 VectorSearchTool
+[TOOL] TOOLS USED:                                  ← NEW: Tool transparency
+  1. [BOOK] ReadFileTool
+  2. [SEARCH] LSPTool
+  3. [DOCS] VectorSearchTool
 
-🔄 ITERATIONS: 3 reasoning steps               ← NEW: Reasoning depth
+[REFRESH] ITERATIONS: 3 reasoning steps               ← NEW: Reasoning depth
 
-📊 METRICS:                                     ← NEW: Comprehensive metrics
+[CHART] METRICS:                                     ← NEW: Comprehensive metrics
    Quality Score: 72% ██████████████░░░░░░
    Analysis Time: 25.9s
    Model: hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
 
 ────────────────────────────────────────────────
-💡 TIP: This is a placeholder result. Connect to Ollama for real AI-powered analysis.
+[IDEA] TIP: This is a placeholder result. Connect to Ollama for real AI-powered analysis.
 ```
 
 **Key UX Improvements:**
@@ -700,7 +700,7 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
 
 ---
 
-## ⚠️ Known Limitations & Future Work
+## [WARNING] Known Limitations & Future Work
 
 ### Current Limitations
 
@@ -747,8 +747,8 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
 3. **Latency Interpretation** (Chunk 3.x extension)
    ```typescript
    function getLatencyInterpretation(latency: number): string {
-     if (latency < 15000) return '⚡ Fast';
-     if (latency < 45000) return '✅ Normal';
+     if (latency < 15000) return '[FAST] Fast';
+     if (latency < 45000) return '[DONE] Normal';
      return '🐌 Slow';
    }
    ```
@@ -775,18 +775,18 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
 
 ---
 
-## 📊 Overall Phase 1 UI Progress
+## [CHART] Overall Phase 1 UI Progress
 
 ### Milestone Completion
 
 | Phase | Chunks | Status | Completion |
 |-------|--------|--------|-----------|
-| **MVP UI (Weeks 1-8)** | 1.1-1.5 | ✅ Complete | 100% |
-| **Core Enhancements (Weeks 9-10)** | 2.1-2.3 | ✅ Complete | 100% |
-| **Accuracy Display (Week 10)** | 2.3 | ✅ Complete | 100% |
-| **Database UI (Weeks 11-12)** | 3.1-3.4 | 🔄 Pending | 0% |
-| **Android UI (Weeks 13-14)** | 4.1-4.5 | 🔄 Pending | 0% |
-| **Webview (Weeks 15-16)** | 5.1-5.5 | 🔄 Pending | 0% |
+| **MVP UI (Weeks 1-8)** | 1.1-1.5 | [DONE] Complete | 100% |
+| **Core Enhancements (Weeks 9-10)** | 2.1-2.3 | [DONE] Complete | 100% |
+| **Accuracy Display (Week 10)** | 2.3 | [DONE] Complete | 100% |
+| **Database UI (Weeks 11-12)** | 3.1-3.4 | [REFRESH] Pending | 0% |
+| **Android UI (Weeks 13-14)** | 4.1-4.5 | [REFRESH] Pending | 0% |
+| **Webview (Weeks 15-16)** | 5.1-5.5 | [REFRESH] Pending | 0% |
 
 **Overall Phase 1 UI Progress:** 8/28 chunks complete (**28.6%**)
 
@@ -794,37 +794,37 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
 
 | Goal | Target | Actual | Status |
 |------|--------|--------|--------|
-| **Error type coverage** | 25+ | 30+ | ✅ **Exceeded** |
-| **Progress steps** | 4-5 | 6 | ✅ **Exceeded** |
-| **Accuracy metrics** | 2-3 | 3 | ✅ **Met** |
-| **Code quality** | Zero errors | Zero errors | ✅ **Met** |
-| **Time budget** | 56h | 47h | ✅ **16% under** |
-| **Documentation** | Complete | Complete | ✅ **Met** |
+| **Error type coverage** | 25+ | 30+ | [DONE] **Exceeded** |
+| **Progress steps** | 4-5 | 6 | [DONE] **Exceeded** |
+| **Accuracy metrics** | 2-3 | 3 | [DONE] **Met** |
+| **Code quality** | Zero errors | Zero errors | [DONE] **Met** |
+| **Time budget** | 56h | 47h | [DONE] **16% under** |
+| **Documentation** | Complete | Complete | [DONE] **Met** |
 
 ---
 
 ## 🤝 Team Coordination
 
 ### Sokchea's Work (UI Developer)
-- ✅ Implemented Chunks 2.1-2.3 UI (47 hours)
-- ✅ Extended RCAResult interface with 3 new fields
-- ✅ Created 30+ error badge mappings
-- ✅ Implemented 6-step progress system
-- ✅ Added tool icon mapping system
-- ✅ Implemented optional metrics display
-- ✅ Updated all documentation
-- ✅ Validated TypeScript compilation
-- ✅ Prepared integration contracts
+- [DONE] Implemented Chunks 2.1-2.3 UI (47 hours)
+- [DONE] Extended RCAResult interface with 3 new fields
+- [DONE] Created 30+ error badge mappings
+- [DONE] Implemented 6-step progress system
+- [DONE] Added tool icon mapping system
+- [DONE] Implemented optional metrics display
+- [DONE] Updated all documentation
+- [DONE] Validated TypeScript compilation
+- [DONE] Prepared integration contracts
 
 ### Kai's Work (Backend Developer - Previously Completed)
-- ✅ Backend parsers (Kotlin, Gradle, Compose, XML)
-- ✅ MinimalReactAgent with tool execution tracking
-- ✅ Tool Registry with 6+ tools
-- ✅ QualityScorer with multi-factor scoring
-- ✅ Latency tracking in agent
-- ✅ Model name exposure from OllamaClient
-- ✅ 878 tests passing (99% pass rate)
-- ✅ 95%+ test coverage on new modules
+- [DONE] Backend parsers (Kotlin, Gradle, Compose, XML)
+- [DONE] MinimalReactAgent with tool execution tracking
+- [DONE] Tool Registry with 6+ tools
+- [DONE] QualityScorer with multi-factor scoring
+- [DONE] Latency tracking in agent
+- [DONE] Model name exposure from OllamaClient
+- [DONE] 878 tests passing (99% pass rate)
+- [DONE] 95%+ test coverage on new modules
 
 ### Integration Points for Week 10-11
 1. **ParseError Interface:** Confirm structure matches UI expectations
@@ -835,13 +835,13 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
 6. **Latency Tracking:** Verify agent tracks execution time
 7. **Model Name:** Confirm OllamaClient exposes model name
 
-**Coordination Status:** ✅ **Ready for integration**
+**Coordination Status:** [DONE] **Ready for integration**
 
 ---
 
-## 🎓 Lessons Learned
+## [LEARN] Lessons Learned
 
-### What Went Well ✅
+### What Went Well [DONE]
 
 1. **Clear Interface Contract**
    - `RCAResult` interface made backend integration trivial
@@ -868,7 +868,7 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
    - No critical bugs introduced
    - Zero TypeScript/ESLint errors throughout
 
-### What Could Be Improved 🔄
+### What Could Be Improved [REFRESH]
 
 1. **Badge Maintainability**
    - 30+ error types in one function is unwieldy
@@ -890,7 +890,7 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
    - No interpretation for users unfamiliar with AI analysis times
    - **Fix:** Add latency interpretation in Chunk 3.x
 
-### Surprises 🎉
+### Surprises [SUCCESS]
 
 1. **Emoji Impact**
    - Emoji icons significantly improved perceived UX (informal user feedback)
@@ -914,7 +914,7 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
 
 ---
 
-## 🚀 Next Steps
+## [LAUNCH] Next Steps
 
 ### Immediate (Week 10-11)
 
@@ -945,7 +945,7 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
    - [ ] Database storage notifications (Chunk 3.1)
    - [ ] Similar solutions display (Chunk 3.2)
    - [ ] Cache hit notifications (Chunk 3.3)
-   - [ ] Feedback buttons (👍👎) (Chunk 3.4)
+   - [ ] Feedback buttons ([LIKE][DISLIKE]) (Chunk 3.4)
 
 2. **Metrics Enhancements**
    - [ ] Add latency interpretation ("Fast" / "Normal" / "Slow")
@@ -976,22 +976,22 @@ The lateinit property `viewModel` is accessed before being initialized in onCrea
 
 ---
 
-## 🎯 Conclusion
+## [TARGET] Conclusion
 
-**Chunk 2 UI Implementation: COMPLETE ✅**
+**Chunk 2 UI Implementation: COMPLETE [DONE]**
 
 Successfully enhanced the RCA Agent VS Code extension with comprehensive error visualization, real-time tool execution feedback, and accuracy metrics display. The extension now provides professional-grade transparency into AI agent behavior, building user trust and improving error resolution workflows.
 
 **Key Outcomes:**
-- ✅ **30+ error type badges** with category-based color coding (6x increase)
-- ✅ **6-step progress feedback** showing real-time agent activity (2x increase)
-- ✅ **Tool execution transparency** with icon mapping (new capability)
-- ✅ **Comprehensive metrics display** (quality, latency, model) (new capability)
-- ✅ **Zero regressions** - All existing features still work
-- ✅ **Production-ready quality** - Zero TypeScript errors, zero ESLint warnings
-- ✅ **16% under time budget** - Efficient development (47h vs 56h)
+- [DONE] **30+ error type badges** with category-based color coding (6x increase)
+- [DONE] **6-step progress feedback** showing real-time agent activity (2x increase)
+- [DONE] **Tool execution transparency** with icon mapping (new capability)
+- [DONE] **Comprehensive metrics display** (quality, latency, model) (new capability)
+- [DONE] **Zero regressions** - All existing features still work
+- [DONE] **Production-ready quality** - Zero TypeScript errors, zero ESLint warnings
+- [DONE] **16% under time budget** - Efficient development (47h vs 56h)
 
-**Readiness:** ✅ **Ready for backend integration (Week 10-11) and Chunk 3 UI (Database Integration)**
+**Readiness:** [DONE] **Ready for backend integration (Week 10-11) and Chunk 3 UI (Database Integration)**
 
 The extension now provides:
 1. **Visual error categorization** - 30+ error types with color coding
@@ -1003,7 +1003,7 @@ The extension now provides:
 7. **Model accountability** - Which AI model was used
 8. **Professional appearance** - Consistent, polished UI
 
-**Overall Status:** ✅ **28.6% of Phase 1 UI complete (8/28 chunks)** - On track for Phase 1 completion by Week 16
+**Overall Status:** [DONE] **28.6% of Phase 1 UI complete (8/28 chunks)** - On track for Phase 1 completion by Week 16
 
 ---
 
@@ -1014,17 +1014,17 @@ The extension now provides:
 
 ---
 
-## 📝 Consolidation Notes
+## [NOTE] Consolidation Notes
 
 This document consolidates:
 - **Chunk-2.1-2.2-COMPLETE.md** (Error Badges & Tool Feedback)
 - **Chunk-2.3-COMPLETE.md** (Accuracy Metrics Display)
 
 **Consolidation Benefits:**
-- ✅ Single source of truth for Chunk 2 implementation
-- ✅ Complete feature overview in one document
-- ✅ Comprehensive metrics and testing summary
-- ✅ Unified integration guidance
-- ✅ Easier maintenance and reference
+- [DONE] Single source of truth for Chunk 2 implementation
+- [DONE] Complete feature overview in one document
+- [DONE] Comprehensive metrics and testing summary
+- [DONE] Unified integration guidance
+- [DONE] Easier maintenance and reference
 
 **Original Files Location:** `docs/_archive/milestones/Sokchea-UI/original/chunk-2/`

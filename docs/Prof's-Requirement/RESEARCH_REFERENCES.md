@@ -1,4 +1,4 @@
-# RCA Agent: Local-First AI Debugging Assistant
+﻿# RCA Agent: Local-First AI Debugging Assistant
 
 **Research Paper**  
 **Date:** January 13, 2026  
@@ -293,11 +293,11 @@ Conducted 11 iterations of systematic prompt optimization:
 
 | Method | Accuracy | Latency | Privacy | Cost | Hardware Req |
 |--------|----------|---------|---------|------|--------------|
-| **RCA Agent (Ours)** | **61%** | **48s** | ✅ 100% Local | ✅ $0 | RTX 3070 Ti (8GB) |
-| GPT-4 (Cloud API) | ~75-80% | 15-20s | ❌ Cloud | ❌ ~$0.10/query | None |
-| GitHub Copilot Chat | ~70-75% | 10-15s | ❌ Cloud | ❌ $10/month | None |
-| Manual Debugging | ~90-95% | 10-60min | ✅ Local | ✅ $0 | Developer time |
-| Stack Overflow Search | ~60-70% | 5-20min | ✅ Public | ✅ $0 | None |
+| **RCA Agent (Ours)** | **61%** | **48s** | [DONE] 100% Local | [DONE] $0 | RTX 3070 Ti (8GB) |
+| GPT-4 (Cloud API) | ~75-80% | 15-20s | [FAIL] Cloud | [FAIL] ~$0.10/query | None |
+| GitHub Copilot Chat | ~70-75% | 10-15s | [FAIL] Cloud | [FAIL] $10/month | None |
+| Manual Debugging | ~90-95% | 10-60min | [DONE] Local | [DONE] $0 | Developer time |
+| Stack Overflow Search | ~60-70% | 5-20min | [DONE] Public | [DONE] $0 | None |
 
 **Discussion:**
 

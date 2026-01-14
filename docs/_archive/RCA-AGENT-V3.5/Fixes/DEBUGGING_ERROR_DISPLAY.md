@@ -1,4 +1,4 @@
-# Debugging Error Display Issue
+﻿# Debugging Error Display Issue
 
 ## Issue Summary
 Errors are being detected by the ErrorParser and added to ErrorQueueManager, but they are not appearing in the UI when the RCA webview panel is opened.
@@ -25,7 +25,7 @@ When opening the RCA panel, you should see these logs:
 [RCAWebviewProvider] Webview ready: YES
 [RCAWebviewProvider] ==========================================
 [RCAWebviewProvider] Sending errorQueueData with X errors to webview
-[RCAWebviewProvider] ✅ Sent X existing errors to newly opened webview
+[RCAWebviewProvider] [DONE] Sent X existing errors to newly opened webview
 ```
 
 #### Frontend (Webview Console):

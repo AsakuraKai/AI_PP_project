@@ -20,12 +20,14 @@
 import { useState, useEffect } from 'react';
 import { Check, Clock, FileText, Pin, Play, RefreshCw, Search, Trash2, X, AlertCircle } from 'lucide-react';
 import { useErrorQueue, type FilterStatus, type FilterType } from '../hooks/useErrorQueue';
+import { useVSCode } from '../hooks/useVSCode';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Checkbox } from '../components/ui/checkbox';
 import { TableRowSkeleton } from '../components/ui/skeleton';
 import { EmptyState } from '../components/EmptyState';
 import { AnalysisProgress, type AnalysisProgressProps } from '../components/AnalysisProgress';
+import { AnalysisResult, type AnalysisResultData, type FeedbackStatus } from '../components/AnalysisResult';
 import { handleListKeyboard } from '../lib/accessibility';
 import { cn } from '../lib/utils';
 
@@ -55,9 +57,12 @@ export function ErrorQueue() {
     stats
   } = useErrorQueue();
 
+  const { postMessage } = useVSCode();
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [analysisProgress, setAnalysisProgress] = useState<AnalysisProgressProps | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<AnalysisResultData | null>(null);
+  const [feedbackStatus, setFeedbackStatus] = useState<FeedbackStatus>({ status: 'idle' });
 
   const hasSelection = selectedIds.size > 0;
   const allSelected = selectedIds.size === errors.length && errors.length > 0;
@@ -82,10 +87,30 @@ export function ErrorQueue() {
           break;
 
         case 'analysisComplete':
+          setIsAnalyzing(false);
+          setAnalysisProgress(null);
+          setAnalysisResult(message.result);
+          setFeedbackStatus({ status: 'idle' });
+          break;
+
         case 'analysisError':
         case 'analysisCancelled':
           setIsAnalyzing(false);
           setAnalysisProgress(null);
+          break;
+
+        case 'feedbackResult': {
+          const newConfidence = message?.result?.newConfidence as number | undefined;
+          const msg = message?.result?.message as string | undefined;
+          if (typeof newConfidence === 'number') {
+            setAnalysisResult(prev => prev ? { ...prev, confidence: newConfidence } : prev);
+          }
+          setFeedbackStatus({ status: 'sent', message: msg || 'Thank you for your feedback!' });
+          break;
+        }
+
+        case 'feedbackError':
+          setFeedbackStatus({ status: 'error', message: message.error || 'Feedback failed' });
           break;
       }
     };
@@ -93,6 +118,40 @@ export function ErrorQueue() {
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
   }, []);
+
+  const applyFix = (fixId: string) => {
+    postMessage('applyFixById', { fixId });
+  };
+
+  const exportResult = () => {
+    if (analysisResult) {
+      postMessage('exportResult', { result: analysisResult });
+    }
+  };
+
+  const submitFeedback = (type: 'positive' | 'negative') => {
+    if (!analysisResult || feedbackStatus.status === 'sending') return;
+
+    const meta = analysisResult.feedback;
+    if (!meta?.enabled || !meta.rcaId) {
+      setFeedbackStatus({ status: 'error', message: 'Feedback unavailable (no persisted rcaId)' });
+      return;
+    }
+
+    setFeedbackStatus({ status: 'sending' });
+    postMessage('submitFeedback', {
+      feedbackType: type,
+      rcaId: meta.rcaId,
+      errorHash: meta.errorHash
+    });
+  };
+
+  const resetAnalysis = () => {
+    setAnalysisResult(null);
+    setAnalysisProgress(null);
+    setIsAnalyzing(false);
+    setFeedbackStatus({ status: 'idle' });
+  };
 
   return (
     <div className="p-8 space-y-6" role="main" aria-label="Error Queue">
@@ -289,10 +348,22 @@ export function ErrorQueue() {
       )}
 
       {/* Footer Stats */}
-      {errors.length > 0 && (
+      {errors.length > 0 && !analysisResult && (
         <div className="text-sm text-zinc-500 text-center">
           Showing {stats.filtered} of {stats.total} errors
         </div>
+      )}
+
+      {/* Analysis Results */}
+      {analysisResult && (
+        <AnalysisResult
+          result={analysisResult}
+          feedbackStatus={feedbackStatus}
+          onApplyFix={applyFix}
+          onExport={exportResult}
+          onReset={resetAnalysis}
+          onSubmitFeedback={submitFeedback}
+        />
       )}
     </div>
   );

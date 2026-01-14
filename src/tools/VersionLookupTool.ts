@@ -99,22 +99,22 @@ export interface CompatibilityRule {
 export interface VersionQueryParams {
   /** Tool to query: agp, kotlin, gradle */
   tool: 'agp' | 'kotlin' | 'gradle';
-  
+
   /** Query type - Phase 5: Added 'migration-path' */
   queryType: 'exists' | 'latest-stable' | 'latest-any' | 'compatible' | 'suggest' | 'migration-path';
-  
+
   /** Version to check (for exists/suggest queries) */
   version?: string;
-  
+
   /** Target version (for migration-path query) - Phase 5 */
   targetVersion?: string;
-  
+
   /** Reference version for compatibility check */
   referenceVersion?: string;
-  
+
   /** Reference tool for compatibility check */
   referenceTool?: 'agp' | 'kotlin' | 'gradle';
-  
+
   /** Status filter (stable, rc, beta, alpha) */
   statusFilter?: string[];
 }
@@ -125,38 +125,38 @@ export interface VersionQueryParams {
 export interface VersionLookupResult {
   /** Whether query succeeded */
   success: boolean;
-  
+
   /** Query type that was executed */
   queryType: string;
-  
+
   /** Result data */
   data: {
     /** Version(s) found */
     versions?: string[];
-    
+
     /** Whether version exists */
     exists?: boolean;
-    
+
     /** Compatibility result */
     compatible?: boolean;
-    
+
     /** Compatibility details */
     compatibilityDetails?: string;
-    
+
     /** Suggestions with reasoning */
     suggestions?: Array<{
       version: string;
       reason: string;
       status: string;
     }>;
-    
+
     /** Phase 5: Migration path data */
     migrationPath?: string[];
     steps?: string[];
     breakingChanges?: string[];
     estimatedEffort?: string;
   };
-  
+
   /** Error message if query failed */
   error?: string;
 }
@@ -167,22 +167,22 @@ export interface VersionLookupResult {
 export class VersionLookupTool implements Tool {
   name = 'version_lookup';
   description = 'Query version databases for AGP, Kotlin, and Gradle versions. Check compatibility, find latest versions, and suggest alternatives.';
-  
+
   private agpVersions: AGPVersion[] = [];
   private kotlinVersions: KotlinVersion[] = [];
   private compatibilityRules: CompatibilityRule[] = [];
-  private initialized = false;  
+  private initialized = false;
   // Phase 5: Performance optimization - query result caching
   private queryCache = new Map<string, any>();
   private cacheExpiry = 5 * 60 * 1000; // 5 minutes
-  private cacheTimestamps = new Map<string, number>();  
+  private cacheTimestamps = new Map<string, number>();
   private knowledgePath: string;
-  
+
   constructor(knowledgePath?: string) {
     // Default to src/knowledge relative to project root
     this.knowledgePath = knowledgePath || path.join(__dirname, '..', 'knowledge');
   }
-  
+
   /**
    * Initialize by loading version databases
    */
@@ -190,32 +190,32 @@ export class VersionLookupTool implements Tool {
     if (this.initialized) {
       return;
     }
-    
+
     try {
       // Load AGP versions
       const agpPath = path.join(this.knowledgePath, 'agp-versions.json');
       const agpData = await fs.readFile(agpPath, 'utf-8');
       const agpJson = JSON.parse(agpData);
       this.agpVersions = agpJson.versions;
-      
+
       // Load Kotlin versions
       const kotlinPath = path.join(this.knowledgePath, 'kotlin-versions.json');
       const kotlinData = await fs.readFile(kotlinPath, 'utf-8');
       const kotlinJson = JSON.parse(kotlinData);
       this.kotlinVersions = kotlinJson.versions;
-      
+
       // Load compatibility matrix
       const compatPath = path.join(this.knowledgePath, 'compatibility-matrix.json');
       const compatData = await fs.readFile(compatPath, 'utf-8');
       const compatJson = JSON.parse(compatData);
       this.compatibilityRules = compatJson.compatibilityRules;
-      
+
       this.initialized = true;
     } catch (error) {
       throw new Error(`Failed to initialize VersionLookupTool: ${error}`);
     }
   }
-  
+
   /**
    * Execute tool with parameters
    */
@@ -223,9 +223,9 @@ export class VersionLookupTool implements Tool {
     if (!this.initialized) {
       await this.initialize();
     }
-    
+
     const params = parameters as VersionQueryParams;
-    
+
     // Phase 5: Check cache first
     const cacheKey = JSON.stringify(params);
     const cachedResult = this.getCachedResult(cacheKey);
@@ -233,10 +233,10 @@ export class VersionLookupTool implements Tool {
       console.log(`[VersionLookupTool] Cache hit for ${params.queryType}`);
       return cachedResult;
     }
-    
+
     try {
       let result: VersionLookupResult;
-      
+
       switch (params.queryType) {
         case 'exists':
           result = this.queryExists(params);
@@ -264,12 +264,12 @@ export class VersionLookupTool implements Tool {
             error: `Unknown query type: ${params.queryType}`,
           };
       }
-      
+
       // Phase 5: Cache successful results
       if (result.success) {
         this.setCachedResult(cacheKey, result);
       }
-      
+
       return result;
     } catch (error) {
       return {
@@ -280,7 +280,7 @@ export class VersionLookupTool implements Tool {
       };
     }
   }
-  
+
   /**
    * Check if a version exists
    */
@@ -293,9 +293,9 @@ export class VersionLookupTool implements Tool {
         error: 'Version parameter required for exists query',
       };
     }
-    
+
     const exists = this.versionExists(params.tool, params.version);
-    
+
     return {
       success: true,
       queryType: 'exists',
@@ -305,13 +305,13 @@ export class VersionLookupTool implements Tool {
       },
     };
   }
-  
+
   /**
    * Get latest stable version
    */
   private queryLatestStable(params: VersionQueryParams): VersionLookupResult {
     const latest = this.getLatestStable(params.tool);
-    
+
     if (!latest) {
       return {
         success: false,
@@ -320,7 +320,7 @@ export class VersionLookupTool implements Tool {
         error: `No stable version found for ${params.tool}`,
       };
     }
-    
+
     return {
       success: true,
       queryType: 'latest-stable',
@@ -329,13 +329,13 @@ export class VersionLookupTool implements Tool {
       },
     };
   }
-  
+
   /**
    * Get latest version (any status)
    */
   private queryLatestAny(params: VersionQueryParams): VersionLookupResult {
     const latest = this.getLatestAny(params.tool);
-    
+
     if (!latest) {
       return {
         success: false,
@@ -344,7 +344,7 @@ export class VersionLookupTool implements Tool {
         error: `No version found for ${params.tool}`,
       };
     }
-    
+
     return {
       success: true,
       queryType: 'latest-any',
@@ -353,7 +353,7 @@ export class VersionLookupTool implements Tool {
       },
     };
   }
-  
+
   /**
    * Check version compatibility
    */
@@ -366,14 +366,14 @@ export class VersionLookupTool implements Tool {
         error: 'Version, referenceVersion, and referenceTool required for compatibility query',
       };
     }
-    
+
     const result = this.checkCompatibility(
       params.tool,
       params.version,
       params.referenceTool,
       params.referenceVersion
     );
-    
+
     return {
       success: true,
       queryType: 'compatible',
@@ -383,7 +383,7 @@ export class VersionLookupTool implements Tool {
       },
     };
   }
-  
+
   /**
    * Suggest alternative versions
    */
@@ -396,13 +396,13 @@ export class VersionLookupTool implements Tool {
         error: 'Version parameter required for suggest query',
       };
     }
-    
+
     const suggestions = this.suggestVersions(
       params.tool,
       params.version,
       params.statusFilter
     );
-    
+
     return {
       success: true,
       queryType: 'suggest',
@@ -411,7 +411,7 @@ export class VersionLookupTool implements Tool {
       },
     };
   }
-  
+
   /**
    * Check if version exists in database
    */
@@ -423,13 +423,13 @@ export class VersionLookupTool implements Tool {
     }
     return false;
   }
-  
+
   /**
    * Get latest stable version
    */
   getLatestStable(tool: string): string | null {
     if (tool === 'agp') {
-      const stable = this.agpVersions.filter(v => 
+      const stable = this.agpVersions.filter(v =>
         v.status === 'stable' && !v.deprecated
       );
       return stable.length > 0 ? stable[0].version : null;
@@ -439,7 +439,7 @@ export class VersionLookupTool implements Tool {
     }
     return null;
   }
-  
+
   /**
    * Get latest version (any status)
    */
@@ -452,7 +452,7 @@ export class VersionLookupTool implements Tool {
     }
     return null;
   }
-  
+
   /**
    * Check compatibility between two tools/versions
    */
@@ -463,29 +463,29 @@ export class VersionLookupTool implements Tool {
     version2: string
   ): { compatible: boolean; reason: string } {
     // AGP ↔ Kotlin compatibility
-    if ((tool1 === 'agp' && tool2 === 'kotlin') || 
-        (tool1 === 'kotlin' && tool2 === 'agp')) {
+    if ((tool1 === 'agp' && tool2 === 'kotlin') ||
+      (tool1 === 'kotlin' && tool2 === 'agp')) {
       const agpVer = tool1 === 'agp' ? version1 : version2;
       const kotlinVer = tool1 === 'kotlin' ? version1 : version2;
-      
+
       return this.checkAGPKotlinCompatibility(agpVer, kotlinVer);
     }
-    
+
     // AGP ↔ Gradle compatibility
-    if ((tool1 === 'agp' && tool2 === 'gradle') || 
-        (tool1 === 'gradle' && tool2 === 'agp')) {
+    if ((tool1 === 'agp' && tool2 === 'gradle') ||
+      (tool1 === 'gradle' && tool2 === 'agp')) {
       const agpVer = tool1 === 'agp' ? version1 : version2;
       const gradleVer = tool1 === 'gradle' ? version1 : version2;
-      
+
       return this.checkAGPGradleCompatibility(agpVer, gradleVer);
     }
-    
+
     return {
       compatible: false,
       reason: 'Compatibility check not supported for this tool combination',
     };
   }
-  
+
   /**
    * Check AGP ↔ Kotlin compatibility
    */
@@ -501,7 +501,7 @@ export class VersionLookupTool implements Tool {
         reason: `AGP version ${agpVersion} not found in database`,
       };
     }
-    
+
     // Check minimum Kotlin version
     if (this.compareVersions(kotlinVersion, agpInfo.minKotlinVersion) < 0) {
       return {
@@ -509,7 +509,7 @@ export class VersionLookupTool implements Tool {
         reason: `AGP ${agpVersion} requires Kotlin ${agpInfo.minKotlinVersion}+, but ${kotlinVersion} provided`,
       };
     }
-    
+
     // Check compatibility rules
     const rule = this.compatibilityRules.find(r => r.agpVersion === agpVersion);
     if (rule) {
@@ -519,22 +519,22 @@ export class VersionLookupTool implements Tool {
           reason: `AGP ${agpVersion} requires Kotlin ${rule.minKotlinVersion}+`,
         };
       }
-      
-      if (rule.maxKotlinVersion && 
-          this.compareVersions(kotlinVersion, rule.maxKotlinVersion) > 0) {
+
+      if (rule.maxKotlinVersion &&
+        this.compareVersions(kotlinVersion, rule.maxKotlinVersion) > 0) {
         return {
           compatible: false,
           reason: `AGP ${agpVersion} supports Kotlin up to ${rule.maxKotlinVersion}`,
         };
       }
     }
-    
+
     return {
       compatible: true,
       reason: `AGP ${agpVersion} is compatible with Kotlin ${kotlinVersion}`,
     };
   }
-  
+
   /**
    * Check AGP ↔ Gradle compatibility
    */
@@ -549,28 +549,28 @@ export class VersionLookupTool implements Tool {
         reason: `AGP version ${agpVersion} not found in database`,
       };
     }
-    
+
     if (this.compareVersions(gradleVersion, agpInfo.minGradleVersion) < 0) {
       return {
         compatible: false,
         reason: `AGP ${agpVersion} requires Gradle ${agpInfo.minGradleVersion}+, but ${gradleVersion} provided`,
       };
     }
-    
-    if (agpInfo.maxGradleVersion && 
-        this.compareVersions(gradleVersion, agpInfo.maxGradleVersion) > 0) {
+
+    if (agpInfo.maxGradleVersion &&
+      this.compareVersions(gradleVersion, agpInfo.maxGradleVersion) > 0) {
       return {
         compatible: false,
         reason: `AGP ${agpVersion} supports Gradle up to ${agpInfo.maxGradleVersion}`,
       };
     }
-    
+
     return {
       compatible: true,
       reason: `AGP ${agpVersion} is compatible with Gradle ${gradleVersion}`,
     };
   }
-  
+
   /**
    * Suggest alternative versions
    */
@@ -580,16 +580,16 @@ export class VersionLookupTool implements Tool {
     statusFilter: string[] = ['stable', 'rc']
   ): Array<{ version: string; reason: string; status: string }> {
     const suggestions: Array<{ version: string; reason: string; status: string }> = [];
-    
+
     if (tool === 'agp') {
       // Get filtered versions
-      const filtered = this.agpVersions.filter(v => 
+      const filtered = this.agpVersions.filter(v =>
         !v.deprecated && statusFilter.includes(v.status)
       );
-      
+
       // Check if requested version exists
       const exists = this.agpVersions.find(v => v.version === requestedVersion);
-      
+
       if (!exists) {
         // Version doesn't exist at all
         suggestions.push({
@@ -597,7 +597,7 @@ export class VersionLookupTool implements Tool {
           reason: `Version ${requestedVersion} does not exist. Latest stable is ${filtered[0].version}.`,
           status: filtered[0].status,
         });
-        
+
         // Add alternative options
         if (filtered.length > 1) {
           suggestions.push({
@@ -615,10 +615,10 @@ export class VersionLookupTool implements Tool {
         });
       } else {
         // Version exists but might be deprecated or outdated
-        const newer = filtered.filter(v => 
+        const newer = filtered.filter(v =>
           this.compareVersions(v.version, requestedVersion) > 0
         );
-        
+
         if (newer.length > 0) {
           suggestions.push({
             version: newer[0].version,
@@ -628,12 +628,12 @@ export class VersionLookupTool implements Tool {
         }
       }
     } else if (tool === 'kotlin') {
-      const filtered = this.kotlinVersions.filter(v => 
+      const filtered = this.kotlinVersions.filter(v =>
         statusFilter.includes(v.status)
       );
-      
+
       const exists = this.kotlinVersions.find(v => v.version === requestedVersion);
-      
+
       if (!exists) {
         suggestions.push({
           version: filtered[0].version,
@@ -641,10 +641,10 @@ export class VersionLookupTool implements Tool {
           status: filtered[0].status,
         });
       } else {
-        const newer = filtered.filter(v => 
+        const newer = filtered.filter(v =>
           this.compareVersions(v.version, requestedVersion) > 0
         );
-        
+
         if (newer.length > 0) {
           suggestions.push({
             version: newer[0].version,
@@ -654,10 +654,10 @@ export class VersionLookupTool implements Tool {
         }
       }
     }
-    
+
     return suggestions.slice(0, 3); // Return top 3 suggestions
   }
-  
+
   /**
    * Compare semantic versions
    * Returns: -1 if v1 < v2, 0 if equal, 1 if v1 > v2
@@ -666,21 +666,21 @@ export class VersionLookupTool implements Tool {
     // Remove any pre-release suffixes for comparison
     const clean1 = v1.split('-')[0];
     const clean2 = v2.split('-')[0];
-    
+
     const parts1 = clean1.split('.').map(Number);
     const parts2 = clean2.split('.').map(Number);
-    
+
     for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
       const p1 = parts1[i] || 0;
       const p2 = parts2[i] || 0;
-      
+
       if (p1 < p2) return -1;
       if (p1 > p2) return 1;
     }
-    
+
     return 0;
   }
-  
+
   /**
    * Get all versions for a tool (for testing/debugging)
    */
@@ -696,7 +696,7 @@ export class VersionLookupTool implements Tool {
     }
     return [];
   }
-  
+
   /**
    * Get version info
    */
@@ -708,16 +708,16 @@ export class VersionLookupTool implements Tool {
     }
     return null;
   }
-  
+
   // ========== Phase 5: Performance Optimizations ==========
-  
+
   /**
    * Get cached query result
    */
   private getCachedResult(key: string): VersionLookupResult | null {
     const timestamp = this.cacheTimestamps.get(key);
     if (!timestamp) return null;
-    
+
     const now = Date.now();
     if (now - timestamp > this.cacheExpiry) {
       // Cache expired
@@ -725,10 +725,10 @@ export class VersionLookupTool implements Tool {
       this.cacheTimestamps.delete(key);
       return null;
     }
-    
+
     return this.queryCache.get(key) || null;
   }
-  
+
   /**
    * Cache query result
    */
@@ -736,7 +736,7 @@ export class VersionLookupTool implements Tool {
     this.queryCache.set(key, result);
     this.cacheTimestamps.set(key, Date.now());
   }
-  
+
   /**
    * Clear cache (useful for testing or manual refresh)
    */
@@ -744,7 +744,7 @@ export class VersionLookupTool implements Tool {
     this.queryCache.clear();
     this.cacheTimestamps.clear();
   }
-  
+
   /**
    * Query migration path between versions
    * Phase 5: New feature for upgrade guidance
@@ -758,15 +758,15 @@ export class VersionLookupTool implements Tool {
         error: 'Both version and targetVersion parameters required for migration-path query',
       };
     }
-    
+
     const tool = params.tool;
     const from = params.version;
     const to = params.targetVersion;
-    
+
     // Get version infos
     const fromInfo = this.getVersionInfo(tool, from);
     const toInfo = this.getVersionInfo(tool, to);
-    
+
     if (!fromInfo || !toInfo) {
       return {
         success: false,
@@ -775,46 +775,46 @@ export class VersionLookupTool implements Tool {
         error: `Version not found: ${!fromInfo ? from : to}`,
       };
     }
-    
+
     // Build migration path
     const path: string[] = [];
     const steps: string[] = [];
     const breakingChanges: string[] = [];
-    
+
     // Find intermediate stable versions
     const allVersions = tool === 'agp' ? this.agpVersions : this.kotlinVersions;
     const intermediates = allVersions
-      .filter(v => 
+      .filter(v =>
         v.status === 'stable' &&
         !v.deprecated &&
         this.compareVersions(v.version, from) > 0 &&
         this.compareVersions(v.version, to) <= 0
       )
       .slice(0, 3); // Max 3 intermediate steps
-    
+
     path.push(from);
     intermediates.forEach(v => path.push(v.version));
     if (path[path.length - 1] !== to) {
       path.push(to);
     }
-    
+
     // Generate migration steps
     for (let i = 0; i < path.length - 1; i++) {
       const currentVer = path[i];
       const nextVer = path[i + 1];
       const nextInfo = this.getVersionInfo(tool, nextVer);
-      
+
       steps.push(`Step ${i + 1}: Upgrade from ${currentVer} to ${nextVer}`);
-      
+
       if (nextInfo && 'breakingChanges' in nextInfo && nextInfo.breakingChanges) {
         breakingChanges.push(...nextInfo.breakingChanges.map(bc => `[${nextVer}] ${bc}`));
       }
-      
+
       if (nextInfo && nextInfo.migrationGuide) {
-        steps.push(`  📖 Migration guide: ${nextInfo.migrationGuide}`);
+        steps.push(`  [READ] Migration guide: ${nextInfo.migrationGuide}`);
       }
     }
-    
+
     return {
       success: true,
       queryType: 'migration-path',
@@ -826,13 +826,13 @@ export class VersionLookupTool implements Tool {
       },
     };
   }
-  
+
   /**
    * Estimate migration effort (low/medium/high)
    */
   private estimateMigrationEffort(from: string, to: string, numBreakingChanges: number): string {
     const versionJump = this.compareVersions(to, from);
-    
+
     if (numBreakingChanges === 0) {
       return 'Low - No breaking changes detected';
     } else if (numBreakingChanges <= 2 && versionJump === 0) {

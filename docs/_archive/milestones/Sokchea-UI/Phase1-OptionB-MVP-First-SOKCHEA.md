@@ -1,11 +1,11 @@
-# 🎨 PHASE 1 OPTION B: SOKCHEA'S WORK (UI & Integration)
+﻿# [DESIGN] PHASE 1 OPTION B: SOKCHEA'S WORK (UI & Integration)
 
 > **Role:** UI Developer & Integration Specialist - Connects Kai's backend to VS Code extension
 > **Responsibility:** No business logic - focus purely on UI/UX and wiring
 
 ---
 
-## 📋 Table of Contents
+## [CLIPBOARD] Table of Contents
 1. [Overview](#overview)
 2. [Best Practices & Critical Rules](#-best-practices--critical-rules)
 3. [Development Chunks](#chunk-1-mvp-ui-weeks-1-2)
@@ -17,32 +17,32 @@
 ## Overview
 
 **What Sokchea Does:**
-- ✅ VS Code extension structure and activation
-- ✅ Command registration and user interaction
-- ✅ Display Kai's results in UI (output channels, webviews)
-- ✅ Wire UI events to Kai's backend functions
-- ✅ Create webview panels with HTML/CSS
-- ✅ User-facing documentation
-- ✅ Extension packaging and deployment
+- [DONE] VS Code extension structure and activation
+- [DONE] Command registration and user interaction
+- [DONE] Display Kai's results in UI (output channels, webviews)
+- [DONE] Wire UI events to Kai's backend functions
+- [DONE] Create webview panels with HTML/CSS
+- [DONE] User-facing documentation
+- [DONE] Extension packaging and deployment
 
 **What Sokchea Does NOT Do:**
-- ❌ Business logic or algorithms
-- ❌ Parser implementation
-- ❌ Agent reasoning
-- ❌ Database operations
-- ❌ Tool execution logic
+- [FAIL] Business logic or algorithms
+- [FAIL] Parser implementation
+- [FAIL] Agent reasoning
+- [FAIL] Database operations
+- [FAIL] Tool execution logic
 
 **Key Principle:** Sokchea CALLS Kai's functions, never implements them.
 
 ---
 
-## 🎯 Best Practices & Critical Rules
+## [TARGET] Best Practices & Critical Rules
 
-### 🚨 CRITICAL: Extension Development Rules
+### [ALERT] CRITICAL: Extension Development Rules
 
 #### 1. Resource Management (Memory Leaks Prevention)
 ```typescript
-// ✅ ALWAYS: Dispose resources properly
+// [DONE] ALWAYS: Dispose resources properly
 export function activate(context: vscode.ExtensionContext) {
   const disposables: vscode.Disposable[] = [];
   
@@ -63,7 +63,7 @@ export function deactivate() {
   webviewPanel?.dispose();
 }
 
-// ❌ NEVER: Leave event listeners without disposal
+// [FAIL] NEVER: Leave event listeners without disposal
 class BadWebview {
   constructor() {
     this.panel.webview.onDidReceiveMessage((msg) => {
@@ -75,13 +75,13 @@ class BadWebview {
 
 #### 2. Async/Await - Never Block Extension Host
 ```typescript
-// ❌ NEVER: Synchronous blocking operations
+// [FAIL] NEVER: Synchronous blocking operations
 function badAnalyze() {
   const result = agent.analyzeSync(error); // Freezes VS Code!
   showResult(result);
 }
 
-// ✅ ALWAYS: Use async/await with progress indicators
+// [DONE] ALWAYS: Use async/await with progress indicators
 async function goodAnalyze() {
   await vscode.window.withProgress({
     location: vscode.ProgressLocation.Notification,
@@ -97,7 +97,7 @@ async function goodAnalyze() {
 
 #### 3. Error Handling - User-Friendly Messages
 ```typescript
-// ✅ ALWAYS: Comprehensive error handling with actions
+// [DONE] ALWAYS: Comprehensive error handling with actions
 async function analyzeWithErrorHandling() {
   try {
     const result = await agent.analyze(error);
@@ -128,11 +128,11 @@ async function analyzeWithErrorHandling() {
 
 ---
 
-### 🔒 Security Best Practices
+### [LOCK] Security Best Practices
 
 #### Content Security Policy for Webviews
 ```typescript
-// ✅ CRITICAL: Always set strict CSP for webviews
+// [DONE] CRITICAL: Always set strict CSP for webviews
 function getHtmlContent(webview: vscode.Webview, context: vscode.ExtensionContext): string {
   const nonce = getNonce(); // Generate nonce for inline scripts
   
@@ -169,7 +169,7 @@ function getNonce(): string {
 
 #### Input Validation & Sanitization
 ```typescript
-// ✅ ALWAYS: Validate and sanitize all user input
+// [DONE] ALWAYS: Validate and sanitize all user input
 function sanitizeErrorText(input: string): string {
   // 1. Length validation
   if (input.length > 50000) {
@@ -190,11 +190,11 @@ function sanitizeErrorText(input: string): string {
 
 ---
 
-### ⚡ Performance Optimization
+### [FAST] Performance Optimization
 
 #### Lazy Loading
 ```typescript
-// ✅ BEST PRACTICE: Lazy load heavy dependencies
+// [DONE] BEST PRACTICE: Lazy load heavy dependencies
 export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand('rcaAgent.analyzeError', async () => {
@@ -211,7 +211,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 #### Debouncing & Throttling
 ```typescript
-// ✅ BEST PRACTICE: Debounce expensive operations
+// [DONE] BEST PRACTICE: Debounce expensive operations
 function debounce<T extends (...args: any[]) => any>(
   func: T,
   wait: number
@@ -237,12 +237,12 @@ const debouncedSearch = debounce(async (query: string) => {
 
 #### Efficient Webview Updates
 ```typescript
-// ❌ BAD: Recreating entire HTML on each update
+// [FAIL] BAD: Recreating entire HTML on each update
 function badUpdate(result: RCAResult) {
   webview.html = getFullHtml(result); // Re-renders everything!
 }
 
-// ✅ GOOD: Use message passing for incremental updates
+// [DONE] GOOD: Use message passing for incremental updates
 function goodUpdate(result: RCAResult) {
   webview.postMessage({
     type: 'updateResult',
@@ -256,7 +256,7 @@ function goodUpdate(result: RCAResult) {
 ### ♿ Accessibility Guidelines
 
 ```html
-<!-- ✅ ALWAYS: Include ARIA labels and roles -->
+<!-- [DONE] ALWAYS: Include ARIA labels and roles -->
 <div role="main" aria-label="Root Cause Analysis Results">
   <div role="region" aria-labelledby="error-heading">
     <h2 id="error-heading">Error Details</h2>
@@ -274,7 +274,7 @@ function goodUpdate(result: RCAResult) {
 
 ---
 
-### 🧪 Testing Strategies
+### [TEST] Testing Strategies
 
 #### Unit Testing Pattern
 ```typescript
@@ -327,10 +327,10 @@ suite('Agent Integration Tests', () => {
 
 ---
 
-### 📝 TypeScript Best Practices
+### [NOTE] TypeScript Best Practices
 
 ```typescript
-// ✅ ALWAYS: Use strict type checking
+// [DONE] ALWAYS: Use strict type checking
 // tsconfig.json
 {
   "compilerOptions": {
@@ -340,7 +340,7 @@ suite('Agent Integration Tests', () => {
   }
 }
 
-// ✅ ALWAYS: Define interfaces for all data
+// [DONE] ALWAYS: Define interfaces for all data
 interface RCAResult {
   error: string;
   errorType: string;
@@ -351,7 +351,7 @@ interface RCAResult {
   metadata?: Record<string, unknown>;
 }
 
-// ✅ ALWAYS: Use type guards
+// [DONE] ALWAYS: Use type guards
 function isRCAResult(obj: unknown): obj is RCAResult {
   if (!obj || typeof obj !== 'object') return false;
   const r = obj as Record<string, unknown>;
@@ -364,10 +364,10 @@ function isRCAResult(obj: unknown): obj is RCAResult {
   );
 }
 
-// ❌ NEVER: Use 'any' type
+// [FAIL] NEVER: Use 'any' type
 function bad(data: any) { } // Loses type safety!
 
-// ✅ ALWAYS: Use proper types or generics
+// [DONE] ALWAYS: Use proper types or generics
 function good<T>(data: T): T { return data; }
 ```
 
@@ -377,7 +377,7 @@ function good<T>(data: T): T { return data; }
 
 #### Interface Contracts
 ```typescript
-// ✅ CRITICAL: Define clear contracts with Kai
+// [DONE] CRITICAL: Define clear contracts with Kai
 // contracts/agent.contract.ts
 
 export interface ParsedError {
@@ -399,7 +399,7 @@ export interface IReactAgent {
 
 #### Dependency Injection
 ```typescript
-// ✅ BEST PRACTICE: Use DI for testability
+// [DONE] BEST PRACTICE: Use DI for testability
 class RCAExtension {
   constructor(
     private parser: IErrorParser,  // Kai's implementation
@@ -426,38 +426,38 @@ class RCAExtension {
 ### 🚫 Common Pitfalls to Avoid
 
 ```typescript
-// ❌ NEVER: Implement business logic (that's Kai's job!)
+// [FAIL] NEVER: Implement business logic (that's Kai's job!)
 function parseKotlinError(errorText: string) {
   // DON'T DO THIS - use Kai's parser!
   const match = errorText.match(/at (.+):(\d+)/);
   return { filePath: match[1], line: parseInt(match[2]) };
 }
 
-// ✅ ALWAYS: Call Kai's functions
+// [DONE] ALWAYS: Call Kai's functions
 import { KotlinNPEParser } from './utils/KotlinNPEParser'; // Kai's code
 function parseError(errorText: string) {
   const parser = new KotlinNPEParser(); // Kai's class
   return parser.parse(errorText); // Kai's method
 }
 
-// ❌ NEVER: Hardcode paths
+// [FAIL] NEVER: Hardcode paths
 const iconPath = 'C:\\Users\\Sokchea\\project\\icon.png';
 
-// ✅ ALWAYS: Use context URIs
+// [DONE] ALWAYS: Use context URIs
 const iconPath = vscode.Uri.joinPath(
   context.extensionUri,
   'media',
   'icon.png'
 );
 
-// ❌ NEVER: Ignore disposal
+// [FAIL] NEVER: Ignore disposal
 let panel: vscode.WebviewPanel | undefined;
 function showWebview() {
   panel = vscode.window.createWebviewPanel(...);
   // Panel lives forever!
 }
 
-// ✅ ALWAYS: Track and dispose
+// [DONE] ALWAYS: Track and dispose
 let currentPanel: vscode.WebviewPanel | undefined;
 function showWebview() {
   if (currentPanel) {
@@ -473,10 +473,10 @@ function showWebview() {
 
 ---
 
-### 📊 Debugging & Logging
+### [CHART] Debugging & Logging
 
 ```typescript
-// ✅ BEST PRACTICE: Use output channel for debugging
+// [DONE] BEST PRACTICE: Use output channel for debugging
 const debugChannel = vscode.window.createOutputChannel('RCA Agent Debug');
 
 function log(level: 'info' | 'warn' | 'error', message: string, data?: unknown) {
@@ -501,7 +501,7 @@ log('error', 'Agent failed', { error: error.message, stack: error.stack });
 
 ---
 
-### ✅ Quick Reference Checklist
+### [DONE] Quick Reference Checklist
 
 **Before Each Commit:**
 - [ ] All resources disposed properly
@@ -515,36 +515,36 @@ log('error', 'Agent failed', { error: error.message, stack: error.stack });
 - [ ] Logging added for debugging
 - [ ] Paths use context URIs (not hardcoded)
 
-**DO's ✅**
-- ✅ Dispose all resources
-- ✅ Use async/await
-- ✅ Validate user input
-- ✅ Set strict CSP
-- ✅ Use message passing for webviews
-- ✅ Add ARIA labels
-- ✅ Call Kai's functions
-- ✅ Write tests
-- ✅ Log errors
+**DO's [DONE]**
+- [DONE] Dispose all resources
+- [DONE] Use async/await
+- [DONE] Validate user input
+- [DONE] Set strict CSP
+- [DONE] Use message passing for webviews
+- [DONE] Add ARIA labels
+- [DONE] Call Kai's functions
+- [DONE] Write tests
+- [DONE] Log errors
 
-**DON'Ts ❌**
-- ❌ Implement business logic
-- ❌ Block extension host
-- ❌ Hardcode paths
-- ❌ Skip disposal
-- ❌ Use `any` type
-- ❌ Recreate HTML on updates
-- ❌ Skip input validation
-- ❌ Leave listeners un-disposed
+**DON'Ts [FAIL]**
+- [FAIL] Implement business logic
+- [FAIL] Block extension host
+- [FAIL] Hardcode paths
+- [FAIL] Skip disposal
+- [FAIL] Use `any` type
+- [FAIL] Recreate HTML on updates
+- [FAIL] Skip input validation
+- [FAIL] Leave listeners un-disposed
 
 ---
 
-## 🔧 Prerequisites & Environment Setup (Day 0 - Sokchea's Setup)
+## [TOOL] Prerequisites & Environment Setup (Day 0 - Sokchea's Setup)
 
 > **Your Role:** Set up VS Code extension development environment and UI tools.
 
 ---
 
-### 📦 Required Manual Installations
+### [PACKAGE] Required Manual Installations
 
 **Priority 1: Core Development Tools**
 
@@ -578,16 +578,16 @@ log('error', 'Agent failed', { error: error.message, stack: error.stack });
 
 ---
 
-### ⌨️ Terminal-Based Setup
+### [KEYBOARD] Terminal-Based Setup
 
 **Step 1: Verify Node.js Installation**
 ```bash
 # Open PowerShell or Command Prompt
 node --version
-# Expected: v18.x.x or higher ✅
+# Expected: v18.x.x or higher [DONE]
 
 npm --version
-# Expected: v9.x.x or higher ✅
+# Expected: v9.x.x or higher [DONE]
 ```
 
 **Step 2: Install Global NPM Tools (VS Code Extension Development)**
@@ -609,16 +609,16 @@ npm install -g prettier
 
 # Verify installations
 yo --version
-# Expected: 4.x.x ✅
+# Expected: 4.x.x [DONE]
 
 generator-code --version
-# Expected: Should not error ✅
+# Expected: Should not error [DONE]
 
 tsc --version
-# Expected: 5.x.x ✅
+# Expected: 5.x.x [DONE]
 
 eslint --version
-# Expected: 8.x.x ✅
+# Expected: 8.x.x [DONE]
 ```
 
 **Step 3: Configure npm (Optional but Recommended)**
@@ -656,45 +656,45 @@ code --list-extensions
 
 ---
 
-### ✅ Sokchea's Validation Checklist
+### [DONE] Sokchea's Validation Checklist
 
 **Run these commands to verify your setup:**
 
 ```bash
 # 1. Node.js check
 node --version
-# ✅ Should show v18+ or v20+
+# [DONE] Should show v18+ or v20+
 
 # 2. npm check
 npm --version
-# ✅ Should show v9+ or v10+
+# [DONE] Should show v9+ or v10+
 
 # 3. TypeScript check
 tsc --version
-# ✅ Should show version 5.x
+# [DONE] Should show version 5.x
 
 # 4. Yeoman check
 yo --version
-# ✅ Should show version
+# [DONE] Should show version
 
 # 5. VS Code check
 code --version
-# ✅ Should show VS Code version
+# [DONE] Should show VS Code version
 
 # 6. Git check
 git --version
-# ✅ Should show git version
+# [DONE] Should show git version
 
 # 7. ESLint check
 eslint --version
-# ✅ Should show version
+# [DONE] Should show version
 ```
 
-**All checks passed?** ✅ You're ready for Day 1!
+**All checks passed?** [DONE] You're ready for Day 1!
 
 ---
 
-### 🧪 Test VS Code Extension Generator
+### [TEST] Test VS Code Extension Generator
 
 **Quick test to ensure everything works:**
 
@@ -722,7 +722,7 @@ code .
 
 # Press F5 to run extension in debug mode
 # A new VS Code window should open with "[Extension Development Host]" in title
-# ✅ Success!
+# [DONE] Success!
 
 # Cleanup
 cd ..
@@ -731,7 +731,7 @@ rmdir /s test-extension
 
 ---
 
-### 🚨 Common Issues & Solutions (Sokchea-Specific)
+### [ALERT] Common Issues & Solutions (Sokchea-Specific)
 
 **Issue 1: `yo: command not found` after installation**
 ```bash
@@ -782,20 +782,20 @@ npm config set registry https://registry.npmjs.org/
 
 ---
 
-### ⏱️ Sokchea's Setup Time Estimate
+### [TIMER] Sokchea's Setup Time Estimate
 
 | Task | Time | Priority |
 |------|------|----------|
-| Download & install software | 30-60min | 🔥 Critical |
-| Terminal setup (npm packages) | 15-30min | 🔥 Critical |
-| VS Code extensions | 10-15min | 🔥 Critical |
-| Test extension generator | 10-15min | 🔥 Critical |
-| Optional tools (Postman, etc.) | 15-30min | 🟡 Optional |
+| Download & install software | 30-60min | [HOT] Critical |
+| Terminal setup (npm packages) | 15-30min | [HOT] Critical |
+| VS Code extensions | 10-15min | [HOT] Critical |
+| Test extension generator | 10-15min | [HOT] Critical |
+| Optional tools (Postman, etc.) | 15-30min | [YELLOW] Optional |
 | **Total** | **1.5-2.5h** | **Do before Day 1** |
 
 ---
 
-### 📚 Recommended Reading (Before Day 1)
+### [DOCS] Recommended Reading (Before Day 1)
 
 **Essential (1-2 hours):**
 - VS Code Extension API: https://code.visualstudio.com/api
@@ -829,7 +829,7 @@ ollama list && node --version
 
 ---
 
-### ✅ Ready for Day 1?
+### [DONE] Ready for Day 1?
 
 **Checklist before starting Chunk 1.1:**
 - [x] Node.js 18+ installed and verified
@@ -842,17 +842,17 @@ ollama list && node --version
 - [x] VS Code `code` command works in terminal
 - [x] Synced with Kai on setup status
 
-**All checked?** ✅ Start Day 1 - Extension Bootstrap!
+**All checked?** [DONE] Start Day 1 - Extension Bootstrap!
 
 ---
 
 ## CHUNK 1: MVP UI (Weeks 1-2)
 
-### CHUNK 1.1: Extension Bootstrap (Days 1-3, ~24h) ✅ COMPLETE
+### CHUNK 1.1: Extension Bootstrap (Days 1-3, ~24h) [DONE] COMPLETE
 
 **Goal:** Get basic extension working with command registration
 
-**Status:** ✅ **COMPLETE** (December 17, 2025)
+**Status:** [DONE] **COMPLETE** (December 17, 2025)
 
 **Tasks:**
 - [x] Create VS Code extension project
@@ -988,11 +988,11 @@ function log(level: 'info' | 'warn' | 'error', message: string, data?: unknown) 
 
 ---
 
-### CHUNK 1.2: User Input Handling (Days 4-6, ~24h) ✅ COMPLETE
+### CHUNK 1.2: User Input Handling (Days 4-6, ~24h) [DONE] COMPLETE
 
 **Goal:** Get error text from user and pass to Kai's parser
 
-**Status:** ✅ **COMPLETE** (December 17, 2025) - Placeholder parser implemented
+**Status:** [DONE] **COMPLETE** (December 17, 2025) - Placeholder parser implemented
 
 **Tasks:**
 - [x] Get error text from selected text in editor
@@ -1113,11 +1113,11 @@ function sanitizeErrorText(input: string): string {
 
 ---
 
-### CHUNK 1.3: Output Display (Days 7-9, ~24h) ✅ COMPLETE
+### CHUNK 1.3: Output Display (Days 7-9, ~24h) [DONE] COMPLETE
 
 **Goal:** Show Kai's agent results in output channel
 
-**Status:** ✅ **COMPLETE** (December 17, 2025) - Mock results implemented
+**Status:** [DONE] **COMPLETE** (December 17, 2025) - Mock results implemented
 
 **Tasks:**
 - [x] Create output channel for RCA results
@@ -1199,7 +1199,7 @@ async function analyzeWithProgress(parsedError: ParsedError) {
         vscode.window.showErrorMessage(`Analysis failed: ${error.message}`);
       }
       
-      outputChannel.appendLine(`❌ Error: ${error.message}`);
+      outputChannel.appendLine(`[FAIL] Error: ${error.message}`);
       outputChannel.show(true);
     }
   });
@@ -1232,17 +1232,17 @@ function showResult(result: RCAResult) {
 
 ---
 
-### CHUNK 1.4: Code Context Display (Days 10-12, ~24h) ✅ COMPLETE
+### CHUNK 1.4: Code Context Display (Days 10-12, ~24h) [DONE] COMPLETE
 
 **Goal:** Show code snippets that agent read
 
-**Status:** ✅ **COMPLETE** (December 19, 2025)
+**Status:** [DONE] **COMPLETE** (December 19, 2025)
 
 **Tasks:**
-- [x] ✅ Display file reading status
-- [x] ✅ Show code snippet in output
-- [x] ✅ Format code with syntax highlighting (```kotlin markers)
-- [x] ✅ Handle file reading errors gracefully
+- [x] [DONE] Display file reading status
+- [x] [DONE] Show code snippet in output
+- [x] [DONE] Format code with syntax highlighting (```kotlin markers)
+- [x] [DONE] Handle file reading errors gracefully
 
 **Implementation Details:**
 
@@ -1266,66 +1266,66 @@ await vscode.window.withProgress(
 ```typescript
 if (result.codeSnippet && result.codeSnippet.length > 0 && 
     result.codeSnippet !== '// Code snippet will be provided by agent') {
-  outputChannel.appendLine('📝 CODE CONTEXT:');
+  outputChannel.appendLine('[NOTE] CODE CONTEXT:');
   outputChannel.appendLine('```kotlin');
   outputChannel.appendLine(result.codeSnippet);
   outputChannel.appendLine('```\n');
   log('info', 'Code snippet displayed', { snippetLength: result.codeSnippet.length });
 } else {
-  outputChannel.appendLine('⚠️  CODE CONTEXT: File could not be read (using error message only)\n');
+  outputChannel.appendLine('[WARNING]  CODE CONTEXT: File could not be read (using error message only)\n');
   log('warn', 'No code snippet available');
 }
 ```
 
 #### Error Handling for File Reading
 - Detects when file reading fails
-- Shows "⚠️ CODE CONTEXT: File could not be read" message
+- Shows "[WARNING] CODE CONTEXT: File could not be read" message
 - Continues analysis even if file read fails
 - Logs warnings for troubleshooting
 
 **Features Delivered:**
-- ✅ Progress notification shows file reading step
-- ✅ Code snippets displayed with syntax highlighting
-- ✅ Warning shown when file cannot be read
-- ✅ Syntax highlighting markers (```kotlin) present
-- ✅ Analysis continues without code snippet
-- ✅ Debug logging for snippet availability
+- [DONE] Progress notification shows file reading step
+- [DONE] Code snippets displayed with syntax highlighting
+- [DONE] Warning shown when file cannot be read
+- [DONE] Syntax highlighting markers (```kotlin) present
+- [DONE] Analysis continues without code snippet
+- [DONE] Debug logging for snippet availability
 
 **Tests:**
-- [x] ✅ Code snippet displayed correctly
-- [x] ✅ Syntax highlighting markers present
-- [x] ✅ Handles missing code snippets gracefully
-- [x] ✅ Warning message shown for failed file reads
-- [x] ✅ Progress notifications show file reading step
+- [x] [DONE] Code snippet displayed correctly
+- [x] [DONE] Syntax highlighting markers present
+- [x] [DONE] Handles missing code snippets gracefully
+- [x] [DONE] Warning message shown for failed file reads
+- [x] [DONE] Progress notifications show file reading step
 
 ---
 
-### CHUNK 1.5: MVP Polish (Days 13-14, ~16h) ✅ COMPLETE
+### CHUNK 1.5: MVP Polish (Days 13-14, ~16h) [DONE] COMPLETE
 
 **Goal:** Improve output formatting and error handling
 
-**Status:** ✅ **COMPLETE** (December 20, 2025)
+**Status:** [DONE] **COMPLETE** (December 20, 2025)
 
 **Tasks:**
-- [x] ✅ Better output formatting
-  - [x] ✅ Use markdown-style formatting
-  - [x] ✅ Add emoji for visual appeal (🔍 🐛 📁 📝 💡 🛠️ ✅)
-  - [x] ✅ Consistent section separators (60-char lines)
+- [x] [DONE] Better output formatting
+  - [x] [DONE] Use markdown-style formatting
+  - [x] [DONE] Add emoji for visual appeal ([SEARCH] [BUG] 📁 [NOTE] [IDEA] [FIX] [DONE])
+  - [x] [DONE] Consistent section separators (60-char lines)
   
-- [x] ✅ Confidence visualization
-  - [x] ✅ Visual confidence bar (20-char █/░)
-  - [x] ✅ Confidence interpretation text
+- [x] [DONE] Confidence visualization
+  - [x] [DONE] Visual confidence bar (20-char █/░)
+  - [x] [DONE] Confidence interpretation text
   
-- [x] ✅ Enhanced error handling (4 categories)
-  - [x] ✅ Ollama connection errors (with troubleshooting steps)
-  - [x] ✅ Timeout errors (with suggestions)
-  - [x] ✅ Parse errors (with tips)
-  - [x] ✅ Generic errors (with stack traces)
+- [x] [DONE] Enhanced error handling (4 categories)
+  - [x] [DONE] Ollama connection errors (with troubleshooting steps)
+  - [x] [DONE] Timeout errors (with suggestions)
+  - [x] [DONE] Parse errors (with tips)
+  - [x] [DONE] Generic errors (with stack traces)
   
-- [x] ✅ Improved UX
-  - [x] ✅ Action buttons for each error type
-  - [x] ✅ Inline help (no internet needed)
-  - [x] ✅ Professional footer with tips
+- [x] [DONE] Improved UX
+  - [x] [DONE] Action buttons for each error type
+  - [x] [DONE] Inline help (no internet needed)
+  - [x] [DONE] Professional footer with tips
 
 **Implementation Details:**
 
@@ -1349,7 +1349,7 @@ function getConfidenceInterpretation(confidence: number): string {
 
 **Example Output:**
 ```
-✅ CONFIDENCE: 75%
+[DONE] CONFIDENCE: 75%
    ███████████████░░░░░
    Medium confidence - verify suggestion
 ```
@@ -1363,12 +1363,12 @@ function getConfidenceInterpretation(confidence: number): string {
 
 **1. Ollama Connection Error:**
 ```
-❌ Could not connect to Ollama. Is it running?
+[FAIL] Could not connect to Ollama. Is it running?
 [Start Ollama] [Installation Guide] [Check Logs]
 
-❌ ERROR: Could not connect to Ollama
+[FAIL] ERROR: Could not connect to Ollama
 
-🔧 TROUBLESHOOTING STEPS:
+[TOOL] TROUBLESHOOTING STEPS:
 1. Install Ollama: https://ollama.ai/
 2. Start Ollama: Run "ollama serve" in terminal
 3. Pull model: Run "ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest"
@@ -1377,12 +1377,12 @@ function getConfidenceInterpretation(confidence: number): string {
 
 **2. Timeout Error:**
 ```
-⏱️ Analysis timed out. Try increasing timeout or using a smaller model.
+[TIMER] Analysis timed out. Try increasing timeout or using a smaller model.
 [Open Settings] [View Logs]
 
-⏱️ ERROR: Analysis timed out
+[TIMER] ERROR: Analysis timed out
 
-💡 SUGGESTIONS:
+[IDEA] SUGGESTIONS:
 • Increase timeout in settings
 • Use a faster/smaller model (e.g., hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest)
 • Check your network connection
@@ -1390,12 +1390,12 @@ function getConfidenceInterpretation(confidence: number): string {
 
 **3. Parse Error:**
 ```
-⚠️ Could not parse error. Is this a Kotlin/Android error?
+[WARNING] Could not parse error. Is this a Kotlin/Android error?
 [View Debug Logs] [Report Issue]
 
-⚠️ ERROR: Could not parse error message
+[WARNING] ERROR: Could not parse error message
 
-💡 TIPS:
+[IDEA] TIPS:
 • Ensure error is from Kotlin/Android code
 • Include full stack trace if possible
 • Check debug logs for more details
@@ -1403,12 +1403,12 @@ function getConfidenceInterpretation(confidence: number): string {
 
 **4. Generic Error:**
 ```
-❌ Analysis failed: [error message]
+[FAIL] Analysis failed: [error message]
 [View Logs] [Retry]
 
-❌ ERROR: [error message]
+[FAIL] ERROR: [error message]
 
-📋 Stack Trace:
+[CLIPBOARD] Stack Trace:
 [full stack trace]
 ```
 
@@ -1417,15 +1417,15 @@ function getConfidenceInterpretation(confidence: number): string {
 **Enhanced Footer:**
 ```
 ────────────────────────────────────────────────────────────
-💡 TIP: This is a placeholder result. Connect to Ollama for real AI-powered analysis.
-📖 Configure: File > Preferences > Settings > RCA Agent
+[IDEA] TIP: This is a placeholder result. Connect to Ollama for real AI-powered analysis.
+[BOOK] Configure: File > Preferences > Settings > RCA Agent
 ❓ Need help? Check the documentation or report issues on GitHub.
 ```
 
 **Better Success Notifications:**
 ```typescript
 vscode.window.showInformationMessage(
-  '✅ Analysis complete! Check the RCA Agent output.',
+  '[DONE] Analysis complete! Check the RCA Agent output.',
   'View Output'
 ).then(selection => {
   if (selection === 'View Output') {
@@ -1437,7 +1437,7 @@ vscode.window.showInformationMessage(
 #### D. Professional UX Touches
 
 **Visual Hierarchy:**
-- Consistent emoji set (🔍 🐛 📁 📝 💡 🛠️ ✅)
+- Consistent emoji set ([SEARCH] [BUG] 📁 [NOTE] [IDEA] [FIX] [DONE])
 - 60-character horizontal lines (────) for section separators
 - Blank lines between sections for readability
 - Clear section headers
@@ -1454,19 +1454,19 @@ vscode.window.showInformationMessage(
 - Reduces cognitive load
 
 **Features Delivered:**
-- ✅ Confidence visualization with 20-char bar
-- ✅ 4 error handling categories with action buttons
-- ✅ Professional output formatting
-- ✅ Enhanced footer with tips
-- ✅ Better success notifications
-- ✅ Inline troubleshooting help
+- [DONE] Confidence visualization with 20-char bar
+- [DONE] 4 error handling categories with action buttons
+- [DONE] Professional output formatting
+- [DONE] Enhanced footer with tips
+- [DONE] Better success notifications
+- [DONE] Inline troubleshooting help
 
 **Tests:**
-- [x] ✅ Confidence bar renders correctly
-- [x] ✅ All 4 error types display properly
-- [x] ✅ Action buttons functional
-- [x] ✅ Footer shows helpful information
-- [x] ✅ Notifications user-friendly
+- [x] [DONE] Confidence bar renders correctly
+- [x] [DONE] All 4 error types display properly
+- [x] [DONE] Action buttons functional
+- [x] [DONE] Footer shows helpful information
+- [x] [DONE] Notifications user-friendly
 
 **Implementation Example:**
 ```typescript
@@ -1474,23 +1474,23 @@ function showResult(result: RCAResult) {
   outputChannel.clear();
   
   // Use emoji and formatting
-  outputChannel.appendLine('🔍 === ROOT CAUSE ANALYSIS ===\n');
-  outputChannel.appendLine(`🐛 ERROR: ${result.error}`);
+  outputChannel.appendLine('[SEARCH] === ROOT CAUSE ANALYSIS ===\n');
+  outputChannel.appendLine(`[BUG] ERROR: ${result.error}`);
   outputChannel.appendLine(`📁 FILE: ${result.filePath}:${result.line}\n`);
   
   if (result.codeSnippet) {
-    outputChannel.appendLine('📝 CODE CONTEXT:');
+    outputChannel.appendLine('[NOTE] CODE CONTEXT:');
     outputChannel.appendLine(result.codeSnippet);
     outputChannel.appendLine('');
   }
   
-  outputChannel.appendLine(`💡 ROOT CAUSE:\n${result.rootCause}\n`);
-  outputChannel.appendLine(`🛠️  FIX GUIDELINES:`);
+  outputChannel.appendLine(`[IDEA] ROOT CAUSE:\n${result.rootCause}\n`);
+  outputChannel.appendLine(`[FIX]  FIX GUIDELINES:`);
   result.fixGuidelines.forEach((guideline, index) => {
     outputChannel.appendLine(`  ${index + 1}. ${guideline}`);
   });
   
-  outputChannel.appendLine(`\n✅ CONFIDENCE: ${(result.confidence * 100).toFixed(0)}%`);
+  outputChannel.appendLine(`\n[DONE] CONFIDENCE: ${(result.confidence * 100).toFixed(0)}%`);
   
   // Add helpful footer
   outputChannel.appendLine('\n---');
@@ -1514,7 +1514,7 @@ function handleError(error: any) {
     vscode.window.showErrorMessage(`Analysis failed: ${error.message}`);
   }
   
-  outputChannel.appendLine(`❌ Error: ${error.message}`);
+  outputChannel.appendLine(`[FAIL] Error: ${error.message}`);
   outputChannel.show(true);
 }
 ```
@@ -1527,19 +1527,19 @@ function handleError(error: any) {
 
 ---
 
-## CHUNK 2: Core UI Enhancements (Week 3) ✅ COMPLETE
+## CHUNK 2: Core UI Enhancements (Week 3) [DONE] COMPLETE
 
 **Completion Date:** December 19, 2025 (Week 9-10)  
-**Status:** ✅ **PRODUCTION READY**  
+**Status:** [DONE] **PRODUCTION READY**  
 **Time Investment:** ~47 hours actual (vs ~56h estimated, **16% under budget**)  
 **Goal:** Enhanced error visualization, real-time tool execution feedback, and accuracy metrics display
 
 **Key Achievements:**
-- 🎨 **30+ error type badges** with color-coded categories (6x increase)
-- 🔄 **6-step progress feedback** showing real-time agent activity
-- 📊 **Comprehensive metrics display** (quality, latency, model)
-- 🔧 **Tool execution transparency** with icon mapping
-- ✅ **Production-ready quality** (zero TypeScript errors, zero ESLint warnings)
+- [DESIGN] **30+ error type badges** with color-coded categories (6x increase)
+- [REFRESH] **6-step progress feedback** showing real-time agent activity
+- [CHART] **Comprehensive metrics display** (quality, latency, model)
+- [TOOL] **Tool execution transparency** with icon mapping
+- [DONE] **Production-ready quality** (zero TypeScript errors, zero ESLint warnings)
 
 **File Modified:** `vscode-extension/src/extension.ts` (~630 lines, +160 lines from Chunk 1 end)
 
@@ -1551,32 +1551,32 @@ function handleError(error: any) {
 
 ---
 
-### CHUNK 2.1: Error Type Badges (Days 1-3, ~24h actual) ✅ COMPLETE
+### CHUNK 2.1: Error Type Badges (Days 1-3, ~24h actual) [DONE] COMPLETE
 
 **Goal:** Visual indicators for 30+ different error types across 4 categories
 
-**Completion Status:** ✅ **COMPLETE**
+**Completion Status:** [DONE] **COMPLETE**
 
 **Tasks Completed:**
-- [x] ✅ Display error type badge in output (30+ types)
-- [x] ✅ Color-code error categories:
-  - [x] ✅ Red (🔴) for Kotlin errors (NPE, lateinit, type mismatch, etc.) - 6 types
-  - [x] ✅ Yellow (🟡) for Gradle errors (build, dependency, version conflict) - 5 types
-  - [x] ✅ Purple (🟣) for Jetpack Compose errors (remember, state, recomposition) - 10 types
-  - [x] ✅ Orange (🟠) for XML errors (inflation, attributes, views) - 8 types
-  - [x] ✅ White (⚪) for unknown/fallback errors - 1 type
+- [x] [DONE] Display error type badge in output (30+ types)
+- [x] [DONE] Color-code error categories:
+  - [x] [DONE] Red ([RED]) for Kotlin errors (NPE, lateinit, type mismatch, etc.) - 6 types
+  - [x] [DONE] Yellow ([YELLOW]) for Gradle errors (build, dependency, version conflict) - 5 types
+  - [x] [DONE] Purple (🟣) for Jetpack Compose errors (remember, state, recomposition) - 10 types
+  - [x] [DONE] Orange (🟠) for XML errors (inflation, attributes, views) - 8 types
+  - [x] [DONE] White (⚪) for unknown/fallback errors - 1 type
   
-- [x] ✅ Wire to Kai's expanded `ErrorParser` (26+ error types)
-- [x] ✅ Update output formatting with prominent badges
-- [x] ✅ Implement `getErrorBadge()` helper function
+- [x] [DONE] Wire to Kai's expanded `ErrorParser` (26+ error types)
+- [x] [DONE] Update output formatting with prominent badges
+- [x] [DONE] Implement `getErrorBadge()` helper function
 
 **Implementation Example:**
 ```typescript
 function getErrorBadge(errorType: string): string {
   const badges: Record<string, string> = {
-    'npe': '🔴 NullPointerException',
+    'npe': '[RED] NullPointerException',
     'lateinit': '🟠 Lateinit Error',
-    'gradle_build': '🟡 Build Error',
+    'gradle_build': '[YELLOW] Build Error',
     'unresolved_reference': '🔵 Unresolved Reference',
     'type_mismatch': '🟣 Type Mismatch',
   };
@@ -1596,37 +1596,37 @@ function showResult(result: RCAResult) {
 ```
 
 **Tests Completed:**
-- [x] ✅ Badges display correctly for 30+ error types
-- [x] ✅ Colors are visually distinct and category-appropriate
-- [x] ✅ Unknown errors have fallback badge (⚪ Unknown Error)
-- [x] ✅ Badge appears prominently at top of output
-- [x] ✅ All Android-specific error types covered (Compose, XML, Manifest)
+- [x] [DONE] Badges display correctly for 30+ error types
+- [x] [DONE] Colors are visually distinct and category-appropriate
+- [x] [DONE] Unknown errors have fallback badge (⚪ Unknown Error)
+- [x] [DONE] Badge appears prominently at top of output
+- [x] [DONE] All Android-specific error types covered (Compose, XML, Manifest)
 
 **Test Results:** Manual testing 30/30 error types (100% coverage)
 
 ---
 
-### CHUNK 2.2: Tool Execution Feedback (Days 4-5, ~16h actual) ✅ COMPLETE
+### CHUNK 2.2: Tool Execution Feedback (Days 4-5, ~16h actual) [DONE] COMPLETE
 
 **Goal:** Show what tools agent is using with 6-step progress system
 
-**Completion Status:** ✅ **COMPLETE**
+**Completion Status:** [DONE] **COMPLETE**
 
 **Tasks Completed:**
-- [x] ✅ Display tool execution status with 6-step progress:
-  - [x] ✅ "📖 Parsing error..." (10% progress)
-  - [x] ✅ "🤖 Initializing LLM..." (20% progress)
-  - [x] ✅ "🔍 Executing tools..." (50% progress)
-  - [x] ✅ "📚 Searching database..." (70% progress)
-  - [x] ✅ "🧠 Synthesizing result..." (90% progress)
-  - [x] ✅ "✅ Complete!" (100% progress)
+- [x] [DONE] Display tool execution status with 6-step progress:
+  - [x] [DONE] "[BOOK] Parsing error..." (10% progress)
+  - [x] [DONE] "[BOT] Initializing LLM..." (20% progress)
+  - [x] [DONE] "[SEARCH] Executing tools..." (50% progress)
+  - [x] [DONE] "[DOCS] Searching database..." (70% progress)
+  - [x] [DONE] "[BRAIN] Synthesizing result..." (90% progress)
+  - [x] [DONE] "[DONE] Complete!" (100% progress)
   
-- [x] ✅ Show tool list in output with icons
-- [x] ✅ Implement tool icon mapping (📖 read, 🔍 search, 📚 database, 🌐 web, etc.)
-- [x] ✅ Display iteration count (reasoning depth)
-- [x] ✅ Wire to Kai's `ToolRegistry` and agent tool execution
-- [x] ✅ Implement `analyzeWithProgress()` function
-- [x] ✅ Implement `getToolIcon()` helper function
+- [x] [DONE] Show tool list in output with icons
+- [x] [DONE] Implement tool icon mapping ([BOOK] read, [SEARCH] search, [DOCS] database, [WEB] web, etc.)
+- [x] [DONE] Display iteration count (reasoning depth)
+- [x] [DONE] Wire to Kai's `ToolRegistry` and agent tool execution
+- [x] [DONE] Implement `analyzeWithProgress()` function
+- [x] [DONE] Implement `getToolIcon()` helper function
 
 **Implementation Example:**
 ```typescript
@@ -1655,31 +1655,31 @@ function analyzeWithProgress(agent: MinimalReactAgent, error: ParsedError) {
 ```
 
 **Tests Completed:**
-- [x] ✅ Progress notifications show all 6 steps in sequence
-- [x] ✅ Tool list formatted with correct icons
-- [x] ✅ Iteration count displays correctly
-- [x] ✅ Progress bar animates smoothly (10% → 100%)
-- [x] ✅ Final "Complete!" message shown
+- [x] [DONE] Progress notifications show all 6 steps in sequence
+- [x] [DONE] Tool list formatted with correct icons
+- [x] [DONE] Iteration count displays correctly
+- [x] [DONE] Progress bar animates smoothly (10% → 100%)
+- [x] [DONE] Final "Complete!" message shown
 
 **Test Results:** Manual testing 6/6 progress steps (100% working)
 
 ---
 
-### CHUNK 2.3: Accuracy Metrics Display (Days 6-7, ~12h actual) ✅ COMPLETE
+### CHUNK 2.3: Accuracy Metrics Display (Days 6-7, ~12h actual) [DONE] COMPLETE
 
 **Goal:** Show quality scores, latency, and model information
 
-**Completion Status:** ✅ **COMPLETE**
+**Completion Status:** [DONE] **COMPLETE**
 
 **Tasks Completed:**
-- [x] ✅ Display quality score with visual bar chart (reused `createConfidenceBar()`)
-- [x] ✅ Show analysis latency in readable format (ms → seconds)
-- [x] ✅ Display LLM model name used for analysis
-- [x] ✅ Implement optional metrics section (only shows when data available)
-- [x] ✅ Wire to Kai's `QualityScorer.score()` output
-- [x] ✅ Wire to agent's latency tracking
-- [x] ✅ Wire to `OllamaClient.modelName` property
-- [x] ✅ Extended `RCAResult` interface with optional metrics fields
+- [x] [DONE] Display quality score with visual bar chart (reused `createConfidenceBar()`)
+- [x] [DONE] Show analysis latency in readable format (ms → seconds)
+- [x] [DONE] Display LLM model name used for analysis
+- [x] [DONE] Implement optional metrics section (only shows when data available)
+- [x] [DONE] Wire to Kai's `QualityScorer.score()` output
+- [x] [DONE] Wire to agent's latency tracking
+- [x] [DONE] Wire to `OllamaClient.modelName` property
+- [x] [DONE] Extended `RCAResult` interface with optional metrics fields
 
 **Implementation Example:**
 ```typescript
@@ -1692,7 +1692,7 @@ function showResult(result: RCAResult) {
   const filledLength = Math.round(confidence * barLength);
   const bar = '█'.repeat(filledLength) + '░'.repeat(barLength - filledLength);
   
-  outputChannel.appendLine(`\n✅ CONFIDENCE: ${(confidence * 100).toFixed(0)}%`);
+  outputChannel.appendLine(`\n[DONE] CONFIDENCE: ${(confidence * 100).toFixed(0)}%`);
   outputChannel.appendLine(`   ${bar}`);
   
   // Confidence interpretation
@@ -1707,32 +1707,32 @@ function showResult(result: RCAResult) {
 ```
 
 **Tests Completed:**
-- [x] ✅ Quality score displays correctly with bar chart
-- [x] ✅ Latency converts to seconds (25918ms → 25.9s)
-- [x] ✅ Model name displays correctly (e.g., 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest')
-- [x] ✅ Optional section only shows when metrics available
-- [x] ✅ Visual bar renders properly (reuses existing component)
-- [x] ✅ Graceful degradation with partial backend data
+- [x] [DONE] Quality score displays correctly with bar chart
+- [x] [DONE] Latency converts to seconds (25918ms → 25.9s)
+- [x] [DONE] Model name displays correctly (e.g., 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest')
+- [x] [DONE] Optional section only shows when metrics available
+- [x] [DONE] Visual bar renders properly (reuses existing component)
+- [x] [DONE] Graceful degradation with partial backend data
 
 **Test Results:** Manual testing 3/3 metrics (100% working)
 
 **Integration Status:**
-- ✅ All backend dependencies complete (Kai's Chunks 1-5 backend done)
-- ✅ Ready for full integration testing
-- ✅ Type interfaces aligned with backend contracts
-- ✅ Zero TypeScript errors, zero ESLint warnings
+- [DONE] All backend dependencies complete (Kai's Chunks 1-5 backend done)
+- [DONE] Ready for full integration testing
+- [DONE] Type interfaces aligned with backend contracts
+- [DONE] Zero TypeScript errors, zero ESLint warnings
 
 **Code Quality:**
-- **TypeScript Errors:** 0 ✅
-- **ESLint Warnings:** 0 ✅
+- **TypeScript Errors:** 0 [DONE]
+- **ESLint Warnings:** 0 [DONE]
 - **Component Reuse:** High (DRY principle maintained)
 - **Resource Disposal:** Proper (no memory leaks)
 
 ---
 
-## CHUNK 3: Database UI (Weeks 4-5) ✅ COMPLETE
+## CHUNK 3: Database UI (Weeks 4-5) [DONE] COMPLETE
 
-**Status:** ✅ **PRODUCTION READY**  
+**Status:** [DONE] **PRODUCTION READY**  
 **Completion Date:** December 19, 2025  
 **Developer:** Sokchea (UI/Integration Specialist)  
 **Extension Size:** ~1,359 lines total (extension.ts)  
@@ -1740,27 +1740,27 @@ function showResult(result: RCAResult) {
 **Integration:** All 4 sub-chunks complete with backend wiring  
 
 **Achievement Summary:**
-- ✅ Storage notifications with RCA ID tracking
-- ✅ Similar solutions search and display
-- ✅ Cache hit optimization (<5s vs 26s+)
-- ✅ User feedback system (👍/👎/Skip)
-- ✅ Complete database-backed intelligent debugging system
+- [DONE] Storage notifications with RCA ID tracking
+- [DONE] Similar solutions search and display
+- [DONE] Cache hit optimization (<5s vs 26s+)
+- [DONE] User feedback system ([LIKE]/[DISLIKE]/Skip)
+- [DONE] Complete database-backed intelligent debugging system
 
-### CHUNK 3.1: Storage Notifications (Days 1-3, ~24h) ✅ COMPLETE
+### CHUNK 3.1: Storage Notifications (Days 1-3, ~24h) [DONE] COMPLETE
 
 **Goal:** Show when RCAs are stored in database
 
-**Status:** ✅ **COMPLETE** (December 19, 2025)
+**Status:** [DONE] **COMPLETE** (December 19, 2025)
 
 **Tasks:**
-- [x] ✅ Display "Storing result..." notification
-- [x] ✅ Show storage success/failure
-- [x] ✅ Wire to Kai's `ChromaDBClient.addRCA()`
-- [x] ✅ Handle storage errors gracefully
-- [x] ✅ Display RCA ID tracking (first 8 chars)
-- [x] ✅ Retry option for failed storage
-- [x] ✅ Troubleshooting steps on storage failure
-- [x] ✅ Storage confirmation section in output
+- [x] [DONE] Display "Storing result..." notification
+- [x] [DONE] Show storage success/failure
+- [x] [DONE] Wire to Kai's `ChromaDBClient.addRCA()`
+- [x] [DONE] Handle storage errors gracefully
+- [x] [DONE] Display RCA ID tracking (first 8 chars)
+- [x] [DONE] Retry option for failed storage
+- [x] [DONE] Troubleshooting steps on storage failure
+- [x] [DONE] Storage confirmation section in output
 
 **Implementation Example:**
 ```typescript
@@ -1795,30 +1795,30 @@ async function analyzeAndStore(agent, error) {
 ```
 
 **Tests:**
-- [x] ✅ Storage notification displayed
-- [x] ✅ Success message shown on save
-- [x] ✅ Error handled if ChromaDB unavailable
-- [x] ✅ RCA ID displayed correctly
-- [x] ✅ Retry option works
-- [x] ✅ Non-blocking: Analysis displays even if storage fails
+- [x] [DONE] Storage notification displayed
+- [x] [DONE] Success message shown on save
+- [x] [DONE] Error handled if ChromaDB unavailable
+- [x] [DONE] RCA ID displayed correctly
+- [x] [DONE] Retry option works
+- [x] [DONE] Non-blocking: Analysis displays even if storage fails
 
 ---
 
-### CHUNK 3.2: Similar Solutions Display (Days 4-6, ~24h) ✅ COMPLETE
+### CHUNK 3.2: Similar Solutions Display (Days 4-6, ~24h) [DONE] COMPLETE
 
 **Goal:** Show past similar solutions to user
 
-**Status:** ✅ **COMPLETE** (December 19, 2025)
+**Status:** [DONE] **COMPLETE** (December 19, 2025)
 
 **Tasks:**
-- [x] ✅ Display "Searching past solutions..." status
-- [x] ✅ Show similar errors found (if any)
-- [x] ✅ Format similarity scores (1 - distance) × 100%
-- [x] ✅ Wire to Kai's `ChromaDBClient.searchSimilar()`
-- [x] ✅ Display BEFORE new analysis
-- [x] ✅ Handle case with no similar solutions
-- [x] ✅ User action buttons (View Now/Continue)
-- [x] ✅ Detailed solution formatting (error, root cause, confidence)
+- [x] [DONE] Display "Searching past solutions..." status
+- [x] [DONE] Show similar errors found (if any)
+- [x] [DONE] Format similarity scores (1 - distance) × 100%
+- [x] [DONE] Wire to Kai's `ChromaDBClient.searchSimilar()`
+- [x] [DONE] Display BEFORE new analysis
+- [x] [DONE] Handle case with no similar solutions
+- [x] [DONE] User action buttons (View Now/Continue)
+- [x] [DONE] Detailed solution formatting (error, root cause, confidence)
 
 **Implementation Example:**
 ```typescript
@@ -1829,7 +1829,7 @@ async function analyzeWithSimilaritySearch(agent, db, error) {
   const similarRCAs = await db.searchSimilar(error.message, 3); // Kai's method
   
   if (similarRCAs.length > 0) {
-    outputChannel.appendLine('📚 SIMILAR PAST SOLUTIONS:\n');
+    outputChannel.appendLine('[DOCS] SIMILAR PAST SOLUTIONS:\n');
     similarRCAs.forEach((rca, index) => {
       outputChannel.appendLine(`${index + 1}. ${rca.error_message}`);
       outputChannel.appendLine(`   Root Cause: ${rca.root_cause}`);
@@ -1845,31 +1845,31 @@ async function analyzeWithSimilaritySearch(agent, db, error) {
 ```
 
 **Tests:**
-- [x] ✅ Similar solutions displayed before new analysis
-- [x] ✅ Formatted nicely with separators
-- [x] ✅ Handles case with no similar solutions
-- [x] ✅ Similarity percentage displayed correctly
-- [x] ✅ Action buttons work
-- [x] ✅ No blocking on database unavailable
+- [x] [DONE] Similar solutions displayed before new analysis
+- [x] [DONE] Formatted nicely with separators
+- [x] [DONE] Handles case with no similar solutions
+- [x] [DONE] Similarity percentage displayed correctly
+- [x] [DONE] Action buttons work
+- [x] [DONE] No blocking on database unavailable
 
 ---
 
-### CHUNK 3.3: Cache Hit Notifications (Days 7-9, ~24h) ✅ COMPLETE
+### CHUNK 3.3: Cache Hit Notifications (Days 7-9, ~24h) [DONE] COMPLETE
 
 **Goal:** Show when result comes from cache
 
-**Status:** ✅ **COMPLETE** (December 19, 2025)
+**Status:** [DONE] **COMPLETE** (December 19, 2025)
 
 **Tasks:**
-- [x] ✅ Display "⚡ Found in cache!" notification
-- [x] ✅ Show cached result instantly (<5s)
-- [x] ✅ Indicate result is from cache (not new analysis)
-- [x] ✅ Wire to Kai's `RCACache.get()`
-- [x] ✅ Add "time ago" display for cache timestamps
-- [x] ✅ Automatic cache storage after new analyses
-- [x] ✅ Cache indicator in output channel
-- [x] ✅ "No LLM inference needed" message
-- [x] ✅ Fall back to full analysis on cache miss
+- [x] [DONE] Display "[FAST] Found in cache!" notification
+- [x] [DONE] Show cached result instantly (<5s)
+- [x] [DONE] Indicate result is from cache (not new analysis)
+- [x] [DONE] Wire to Kai's `RCACache.get()`
+- [x] [DONE] Add "time ago" display for cache timestamps
+- [x] [DONE] Automatic cache storage after new analyses
+- [x] [DONE] Cache indicator in output channel
+- [x] [DONE] "No LLM inference needed" message
+- [x] [DONE] Fall back to full analysis on cache miss
 
 **Implementation Location:** `vscode-extension/src/extension.ts`  
 **Functions Added:** `checkCache`, `storeInCache`, `calculateTimeAgo`, `generateMockErrorHash`, `getMockCachedResult`  
@@ -1883,8 +1883,8 @@ async function analyzeWithCache(agent, cache, db, error) {
   const cached = cache.get(errorHash); // Kai's method
   
   if (cached) {
-    vscode.window.showInformationMessage('⚡ Found in cache! (instant result)');
-    outputChannel.appendLine('⚡ CACHED RESULT (analyzed previously)\n');
+    vscode.window.showInformationMessage('[FAST] Found in cache! (instant result)');
+    outputChannel.appendLine('[FAST] CACHED RESULT (analyzed previously)\n');
     showResult(cached);
     return;
   }
@@ -1910,23 +1910,23 @@ async function analyzeWithCache(agent, cache, db, error) {
 
 ---
 
-### CHUNK 3.4: Feedback Buttons (Days 10-12, ~24h) ✅ COMPLETE
+### CHUNK 3.4: Feedback Buttons (Days 10-12, ~24h) [DONE] COMPLETE
 
 **Goal:** "Helpful/Not Helpful" buttons for user feedback
 
-**Status:** ✅ **COMPLETE** (December 19, 2025)
+**Status:** [DONE] **COMPLETE** (December 19, 2025)
 
 **Tasks:**
-- [x] ✅ Add "👍 Yes, helpful!" button to output
-- [x] ✅ Add "👎 Not helpful" button to output
-- [x] ✅ Add "Skip" option
-- [x] ✅ Wire buttons to Kai's `FeedbackHandler`
-- [x] ✅ Show thank you message on positive feedback
-- [x] ✅ Optional comment box on negative feedback
-- [x] ✅ Display feedback stats showing impact
-- [x] ✅ Feedback confirmation in output channel
-- [x] ✅ Works for both new and cached results
-- [x] ✅ Feedback errors don't block workflow
+- [x] [DONE] Add "[LIKE] Yes, helpful!" button to output
+- [x] [DONE] Add "[DISLIKE] Not helpful" button to output
+- [x] [DONE] Add "Skip" option
+- [x] [DONE] Wire buttons to Kai's `FeedbackHandler`
+- [x] [DONE] Show thank you message on positive feedback
+- [x] [DONE] Optional comment box on negative feedback
+- [x] [DONE] Display feedback stats showing impact
+- [x] [DONE] Feedback confirmation in output channel
+- [x] [DONE] Works for both new and cached results
+- [x] [DONE] Feedback errors don't block workflow
 
 **Implementation Location:** `vscode-extension/src/extension.ts`  
 **Functions Added:** `showFeedbackPrompt`, `handlePositiveFeedback`, `handleNegativeFeedback`  
@@ -1939,24 +1939,24 @@ function showResultWithFeedback(result: RCAResult, rcaId: string, errorHash: str
   
   // Add feedback section
   outputChannel.appendLine('\n---');
-  outputChannel.appendLine('💬 FEEDBACK');
+  outputChannel.appendLine('[CHAT] FEEDBACK');
   outputChannel.appendLine('Was this analysis helpful? Your feedback helps improve future analyses.');
   
   // Show feedback buttons
   vscode.window.showInformationMessage(
     'Was this RCA helpful?',
-    '👍 Yes, helpful!',
-    '👎 Not helpful',
+    '[LIKE] Yes, helpful!',
+    '[DISLIKE] Not helpful',
     'Skip'
   ).then(async selection => {
     const feedbackHandler = new FeedbackHandler(db, cache); // Kai's class
     
-    if (selection === '👍 Yes, helpful!') {
+    if (selection === '[LIKE] Yes, helpful!') {
       await feedbackHandler.handlePositive(rcaId, errorHash); // Kai's method
-      vscode.window.showInformationMessage('✅ Thank you! This will improve future analyses.', 'View Stats');
-    } else if (selection === '👎 Not helpful') {
+      vscode.window.showInformationMessage('[DONE] Thank you! This will improve future analyses.', 'View Stats');
+    } else if (selection === '[DISLIKE] Not helpful') {
       await feedbackHandler.handleNegative(rcaId, errorHash); // Kai's method
-      vscode.window.showInformationMessage('📝 Feedback noted. We\'ll try to improve!', 'View Details');
+      vscode.window.showInformationMessage('[NOTE] Feedback noted. We\'ll try to improve!', 'View Details');
       
       // Optional: Ask for details
       const comment = await vscode.window.showInputBox({
@@ -1965,7 +1965,7 @@ function showResultWithFeedback(result: RCAResult, rcaId: string, errorHash: str
       });
       
       if (comment) {
-        outputChannel.appendLine(`💬 Your comment: ${comment}`);
+        outputChannel.appendLine(`[CHAT] Your comment: ${comment}`);
       }
     }
   });
@@ -2002,19 +2002,19 @@ function showResultWithFeedback(result: RCAResult, rcaId: string, errorHash: str
 - **Past solutions:** Searchable knowledge base
 
 **Testing Complete:**
-- ✅ All storage workflows tested
-- ✅ Similar solutions display verified
-- ✅ Cache hit/miss scenarios validated
-- ✅ Feedback buttons functional
-- ✅ End-to-end integration tested
+- [DONE] All storage workflows tested
+- [DONE] Similar solutions display verified
+- [DONE] Cache hit/miss scenarios validated
+- [DONE] Feedback buttons functional
+- [DONE] End-to-end integration tested
 
 **Extension transformed** from stateless analyzer to intelligent, self-improving debugging assistant with persistent knowledge base.
 
 ---
 
-## CHUNK 4: Android UI (Weeks 6-8) ✅ COMPLETE
+## CHUNK 4: Android UI (Weeks 6-8) [DONE] COMPLETE
 
-**Status:** ✅ **PRODUCTION READY**  
+**Status:** [DONE] **PRODUCTION READY**  
 **Completion Date:** December 19, 2025 (Week 12)  
 **Developer:** Sokchea (UI Implementation)  
 **Phase:** 4 - Android-Specific UI
@@ -2030,15 +2030,15 @@ function showResultWithFeedback(result: RCAResult, rcaId: string, errorHash: str
 
 ---
 
-### CHUNK 4.1: Compose Error Badge (Days 1-4, ~32h) ✅ COMPLETE
+### CHUNK 4.1: Compose Error Badge (Days 1-4, ~32h) [DONE] COMPLETE
 
 **Goal:** Visual indicators for Compose errors
 
 **Tasks:**
-- [x] ✅ Compose error badge (🟣 Compose icon)
-- [x] ✅ Display Compose-specific hints
-- [x] ✅ Format remember/recomposition errors nicely
-- [x] ✅ Wire to Kai's `JetpackComposeParser`
+- [x] [DONE] Compose error badge (🟣 Compose icon)
+- [x] [DONE] Display Compose-specific hints
+- [x] [DONE] Format remember/recomposition errors nicely
+- [x] [DONE] Wire to Kai's `JetpackComposeParser`
 
 **Delivered:**
 - Compose error detection system (10 error types)
@@ -2053,9 +2053,9 @@ function showResultWithFeedback(result: RCAResult, rcaId: string, errorHash: str
 function getErrorBadge(errorType: string): string {
   const badges: Record<string, string> = {
     // ... existing badges ...
-    'compose_remember': '🎨 Compose - Remember Error',
-    'compose_recomposition': '🎨 Compose - Recomposition Issue',
-    'compose_launched_effect': '🎨 Compose - LaunchedEffect Error',
+    'compose_remember': '[DESIGN] Compose - Remember Error',
+    'compose_recomposition': '[DESIGN] Compose - Recomposition Issue',
+    'compose_launched_effect': '[DESIGN] Compose - LaunchedEffect Error',
   };
   return badges[errorType] || '⚪ Unknown Error';
 }
@@ -2065,7 +2065,7 @@ function showResult(result: RCAResult) {
   
   // Add Compose-specific hints
   if (result.errorType.startsWith('compose_')) {
-    outputChannel.appendLine('\n💡 COMPOSE TIP:');
+    outputChannel.appendLine('\n[IDEA] COMPOSE TIP:');
     
     if (result.errorType === 'compose_remember') {
       outputChannel.appendLine('   Use remember { mutableStateOf() } for state in composables');
@@ -2083,16 +2083,16 @@ function showResult(result: RCAResult) {
 
 ---
 
-### CHUNK 4.2: XML Error Display (Days 5-7, ~24h) ✅ COMPLETE
+### CHUNK 4.2: XML Error Display (Days 5-7, ~24h) [DONE] COMPLETE
 
 **Goal:** Show XML layout errors clearly
 
 **Tasks:**
-- [x] ✅ XML error badge (🟠 Orange badge)
-- [x] ✅ Display XML code snippets
-- [x] ✅ Show line numbers in XML files
-- [x] ✅ Format XML attribute suggestions
-- [x] ✅ Wire to Kai's `XMLParser`
+- [x] [DONE] XML error badge (🟠 Orange badge)
+- [x] [DONE] Display XML code snippets
+- [x] [DONE] Show line numbers in XML files
+- [x] [DONE] Format XML attribute suggestions
+- [x] [DONE] Wire to Kai's `XMLParser`
 
 **Delivered:**
 - XML layout error detection (8 error types)
@@ -2109,7 +2109,7 @@ function showResult(result: RCAResult) {
   
   // XML-specific formatting
   if (result.language === 'xml') {
-    outputChannel.appendLine('\n📄 XML LAYOUT:');
+    outputChannel.appendLine('\n[FILE] XML LAYOUT:');
     outputChannel.appendLine(`   File: ${result.filePath}`);
     outputChannel.appendLine(`   Line: ${result.line}`);
     
@@ -2121,7 +2121,7 @@ function showResult(result: RCAResult) {
     
     // XML attribute suggestions
     if (result.suggestedAttributes) {
-      outputChannel.appendLine('\n✏️  SUGGESTED ATTRIBUTES:');
+      outputChannel.appendLine('\n[EDIT]  SUGGESTED ATTRIBUTES:');
       result.suggestedAttributes.forEach(attr => {
         outputChannel.appendLine(`   ${attr}`);
       });
@@ -2138,20 +2138,20 @@ function showResult(result: RCAResult) {
 
 ---
 
-### CHUNK 4.3: Gradle Conflict Visualization (Days 8-11, ~32h) ✅ COMPLETE
+### CHUNK 4.3: Gradle Conflict Visualization (Days 8-11, ~32h) [DONE] COMPLETE
 
 **Goal:** Show Gradle dependency conflicts clearly
 
 **Tasks:**
-- [x] ✅ Gradle error badge (🟡 Yellow badge)
-- [x] ✅ Display dependency conflicts visually
-- [x] ✅ Format version recommendations
-- [x] ✅ Show Kai's build fix suggestions
-- [x] ✅ Wire to Kai's `AndroidBuildTool`
+- [x] [DONE] Gradle error badge ([YELLOW] Yellow badge)
+- [x] [DONE] Display dependency conflicts visually
+- [x] [DONE] Format version recommendations
+- [x] [DONE] Show Kai's build fix suggestions
+- [x] [DONE] Wire to Kai's `AndroidBuildTool`
 
 **Delivered:**
 - Gradle build error detection (5 error types)
-- Yellow badge visual indicators (🟡)
+- Yellow badge visual indicators ([YELLOW])
 - Dependency conflict visualization
 - Version recommendation system
 - Executable fix commands
@@ -2165,7 +2165,7 @@ function showResult(result: RCAResult) {
   
   // Gradle-specific formatting
   if (result.errorType.includes('gradle')) {
-    outputChannel.appendLine('\n📦 GRADLE BUILD:');
+    outputChannel.appendLine('\n[PACKAGE] GRADLE BUILD:');
     
     if (result.metadata?.module && result.metadata?.conflictingVersions) {
       const { module, conflictingVersions } = result.metadata;
@@ -2177,7 +2177,7 @@ function showResult(result: RCAResult) {
       });
       
       if (result.recommendedFix) {
-        outputChannel.appendLine('\n🔧 RECOMMENDED FIX:');
+        outputChannel.appendLine('\n[TOOL] RECOMMENDED FIX:');
         outputChannel.appendLine(result.recommendedFix);
       }
     }
@@ -2193,20 +2193,20 @@ function showResult(result: RCAResult) {
 
 ---
 
-### CHUNK 4.4: Manifest & Docs Display (Days 12-15, ~32h) ✅ COMPLETE
+### CHUNK 4.4: Manifest & Docs Display (Days 12-15, ~32h) [DONE] COMPLETE
 
 **Goal:** Show manifest errors and Android documentation
 
 **Tasks:**
-- [x] ✅ Manifest error badge (🟢 Green badge)
-- [x] ✅ Display Kai's manifest analysis
-- [x] ✅ Show Kai's docs search results
-- [x] ✅ Format permission suggestions
-- [x] ✅ Link to relevant documentation
+- [x] [DONE] Manifest error badge ([GREEN] Green badge)
+- [x] [DONE] Display Kai's manifest analysis
+- [x] [DONE] Show Kai's docs search results
+- [x] [DONE] Format permission suggestions
+- [x] [DONE] Link to relevant documentation
 
 **Delivered:**
 - Android Manifest error detection (5 error types)
-- Green badge visual indicators (🟢)
+- Green badge visual indicators ([GREEN])
 - Manifest-specific notifications
 - Permission suggestion templates
 - Component declaration guidance
@@ -2221,18 +2221,18 @@ function showResult(result: RCAResult) {
   
   // Manifest-specific formatting
   if (result.errorType.includes('manifest')) {
-    outputChannel.appendLine('\n📋 ANDROID MANIFEST:');
+    outputChannel.appendLine('\n[CLIPBOARD] ANDROID MANIFEST:');
     
     if (result.metadata?.requiredPermission) {
       outputChannel.appendLine(`   Missing Permission: ${result.metadata.requiredPermission}`);
-      outputChannel.appendLine('\n✏️  ADD TO AndroidManifest.xml:');
+      outputChannel.appendLine('\n[EDIT]  ADD TO AndroidManifest.xml:');
       outputChannel.appendLine(`   <uses-permission android:name="${result.metadata.requiredPermission}" />`);
     }
   }
   
   // Documentation results
   if (result.docResults && result.docResults.length > 0) {
-    outputChannel.appendLine('\n📚 RELEVANT DOCUMENTATION:');
+    outputChannel.appendLine('\n[DOCS] RELEVANT DOCUMENTATION:');
     result.docResults.forEach((doc, index) => {
       outputChannel.appendLine(`   ${index + 1}. ${doc.title}`);
       outputChannel.appendLine(`      ${doc.summary}`);
@@ -2253,16 +2253,16 @@ function showResult(result: RCAResult) {
 
 ---
 
-### CHUNK 4.5: Android Testing & Polish (Days 16-18, ~24h) ✅ COMPLETE
+### CHUNK 4.5: Android Testing & Polish (Days 16-18, ~24h) [DONE] COMPLETE
 
 **Goal:** Test all Android UI components
 
 **Tasks:**
-- [x] ✅ Test all Android error badges
-- [x] ✅ Test all Android-specific formatting
-- [x] ✅ Test with real Android errors
-- [x] ✅ Polish Android UI elements
-- [x] ✅ Document Android-specific features
+- [x] [DONE] Test all Android error badges
+- [x] [DONE] Test all Android-specific formatting
+- [x] [DONE] Test with real Android errors
+- [x] [DONE] Polish Android UI elements
+- [x] [DONE] Document Android-specific features
 
 **Delivered:**
 - Comprehensive Android support (38+ error types)
@@ -2274,20 +2274,20 @@ function showResult(result: RCAResult) {
 - Complete testing validation
 
 **Tests:**
-- [x] ✅ All Android badges work (Compose 10/10, XML 8/8, Gradle 5/5, Manifest 5/5)
-- [x] ✅ Compose/XML/Gradle/Manifest errors display correctly
-- [x] ✅ User can understand Android-specific output
-- [x] ✅ No visual bugs or formatting issues
-- [x] ✅ Cross-framework transitions smooth
-- [x] ✅ Edge cases handled gracefully
+- [x] [DONE] All Android badges work (Compose 10/10, XML 8/8, Gradle 5/5, Manifest 5/5)
+- [x] [DONE] Compose/XML/Gradle/Manifest errors display correctly
+- [x] [DONE] User can understand Android-specific output
+- [x] [DONE] No visual bugs or formatting issues
+- [x] [DONE] Cross-framework transitions smooth
+- [x] [DONE] Edge cases handled gracefully
 
 ---
 
-## CHUNK 5: Webview UI, Educational Mode & Final Polish (Weeks 9-13) ✅ COMPLETE
+## CHUNK 5: Webview UI, Educational Mode & Final Polish (Weeks 9-13) [DONE] COMPLETE
 
-**Status:** ✅ **PRODUCTION READY**  
+**Status:** [DONE] **PRODUCTION READY**  
 **Completion Date:** December 19, 2025 (Weeks 13-14)  
-**Priority:** 🔥 CRITICAL - Phase 1 UI complete  
+**Priority:** [HOT] CRITICAL - Phase 1 UI complete  
 **Goal:** Interactive webview panel, educational mode, performance metrics, accessibility, documentation  
 **Achievement:** +504 lines extension code, RCAWebview.ts (~820 lines), 38+ error types with educational content, full WCAG 2.1 AA accessibility, complete documentation
 
@@ -2303,20 +2303,20 @@ function showResult(result: RCAResult) {
 
 ---
 
-### CHUNK 5.1: Webview Panel (Days 1-5, ~40h) ✅ COMPLETE
+### CHUNK 5.1: Webview Panel (Days 1-5, ~40h) [DONE] COMPLETE
 
 **Completion Date:** December 19, 2025  
 **Goal:** Replace output channel with interactive webview
 
 **Tasks:**
-- [x] ✅ Create webview panel (`RCAWebview.ts` - ~820 lines)
+- [x] [DONE] Create webview panel (`RCAWebview.ts` - ~820 lines)
 - [ ] Design HTML/CSS layout
   - [ ] Header with status
   - [ ] Progress bar
   - [ ] Iteration display
   - [ ] Result sections
   
-- [ ] Message passing (extension ↔ webview)
+- [ ] Message passing (extension [H_ARROW] webview)
 - [ ] Wire to Kai's `AgentStateStream`
 - [ ] Display Kai's synthesized reports
 
@@ -2428,7 +2428,7 @@ export class RCAWebview {
 </head>
 <body>
   <div class="header">
-    <h1>🔍 Root Cause Analysis</h1>
+    <h1>[SEARCH] Root Cause Analysis</h1>
     <p id="status">Initializing...</p>
   </div>
   
@@ -2472,24 +2472,24 @@ export class RCAWebview {
         const rca = message.rca;
         const resultHtml = \`
           <div class="result-section">
-            <h2>🐛 Error</h2>
+            <h2>[BUG] Error</h2>
             <p>\${rca.error}</p>
           </div>
           
           <div class="result-section">
-            <h2>💡 Root Cause</h2>
+            <h2>[IDEA] Root Cause</h2>
             <p>\${rca.rootCause}</p>
           </div>
           
           <div class="result-section">
-            <h2>🛠️ Fix Guidelines</h2>
+            <h2>[FIX] Fix Guidelines</h2>
             \${rca.fixGuidelines.map(guideline => 
               \`<div class="fix-guideline">\${guideline}</div>\`
             ).join('')}
           </div>
           
           <div class="result-section">
-            <p>✅ Confidence: \${(rca.confidence * 100).toFixed(0)}%</p>
+            <p>[DONE] Confidence: \${(rca.confidence * 100).toFixed(0)}%</p>
           </div>
         \`;
         
@@ -2527,43 +2527,43 @@ async function analyzeWithWebview(error: ParsedError) {
 }
 ```
 
-**Tests:** ✅ 13/13 PASSED
-- [x] ✅ Webview panel creates successfully
-- [x] ✅ Panel opens in correct view column (Beside)
-- [x] ✅ Progress bar animates smoothly
-- [x] ✅ Iterations display in real-time
-- [x] ✅ Final result renders correctly
-- [x] ✅ Error state displays properly
-- [x] ✅ Theme integration (light/dark/high-contrast)
-- [x] ✅ Resource disposal works correctly
-- [x] ✅ Copy button functionality
-- [x] ✅ Confidence bar displays with gradient
-- [x] ✅ Code snippets format correctly
-- [x] ✅ Error badges show with correct colors
-- [x] ✅ No memory leaks on close
+**Tests:** [DONE] 13/13 PASSED
+- [x] [DONE] Webview panel creates successfully
+- [x] [DONE] Panel opens in correct view column (Beside)
+- [x] [DONE] Progress bar animates smoothly
+- [x] [DONE] Iterations display in real-time
+- [x] [DONE] Final result renders correctly
+- [x] [DONE] Error state displays properly
+- [x] [DONE] Theme integration (light/dark/high-contrast)
+- [x] [DONE] Resource disposal works correctly
+- [x] [DONE] Copy button functionality
+- [x] [DONE] Confidence bar displays with gradient
+- [x] [DONE] Code snippets format correctly
+- [x] [DONE] Error badges show with correct colors
+- [x] [DONE] No memory leaks on close
 
-**Deliverable:** ✅ Professional interactive webview with real-time progress visualization
+**Deliverable:** [DONE] Professional interactive webview with real-time progress visualization
 
 ---
 
-### CHUNK 5.2: Educational Mode UI (Days 6-10, ~40h) ✅ COMPLETE
+### CHUNK 5.2: Educational Mode UI (Days 6-10, ~40h) [DONE] COMPLETE
 
 **Completion Date:** December 19, 2025  
 **Goal:** Display educational content in webview
 
 **Tasks:**
-- [x] ✅ Educational mode toggle (Command + Keybinding: Ctrl+Shift+E)
-  - [x] ✅ Command registration
-  - [x] ✅ User notifications on toggle
-  - [x] ✅ State persistence
-- [x] ✅ "🎓 Learning Note" sections (~260 lines generation logic)
-- [x] ✅ Display Kai's educational content (38+ error types)
-  - [x] ✅ What/Why/How structure
-  - [x] ✅ Context-aware content per error type
-  - [x] ✅ Default content for unknown errors
-- [x] ✅ Format tips and examples
-- [x] ✅ "Why This Error Happened" section
-- [x] ✅ Wire to Kai's `EducationalAgent`
+- [x] [DONE] Educational mode toggle (Command + Keybinding: Ctrl+Shift+E)
+  - [x] [DONE] Command registration
+  - [x] [DONE] User notifications on toggle
+  - [x] [DONE] State persistence
+- [x] [DONE] "[LEARN] Learning Note" sections (~260 lines generation logic)
+- [x] [DONE] Display Kai's educational content (38+ error types)
+  - [x] [DONE] What/Why/How structure
+  - [x] [DONE] Context-aware content per error type
+  - [x] [DONE] Default content for unknown errors
+- [x] [DONE] Format tips and examples
+- [x] [DONE] "Why This Error Happened" section
+- [x] [DONE] Wire to Kai's `EducationalAgent`
 
 **Educational Content Coverage:**
 - **Kotlin Core:** 2 types (NPE, lateinit)
@@ -2579,7 +2579,7 @@ async function analyzeWithWebview(error: ParsedError) {
 function showEducationalResult(rca: RCADocument) {
   const educationalHtml = `
     <div class="result-section">
-      <h2>🎓 Learning Notes</h2>
+      <h2>[LEARN] Learning Notes</h2>
       ${rca.learningNotes.map(note => `
         <div class="learning-note">
           ${note}
@@ -2606,40 +2606,40 @@ function showEducationalResult(rca: RCADocument) {
 }
 ```
 
-**Tests:** ✅ 10/10 PASSED
-- [x] ✅ Toggle command registered
-- [x] ✅ Keybinding works (Ctrl+Shift+E)
-- [x] ✅ State persists across analyses
-- [x] ✅ Notification shows on toggle
-- [x] ✅ Generates notes for NPE/lateinit/Compose/XML/Gradle/Manifest errors
-- [x] ✅ Default content for unknown errors
-- [x] ✅ Beginner-friendly language
-- [x] ✅ Clear What/Why/How structure
-- [x] ✅ Markdown formatting correct
-- [x] ✅ Actionable advice provided
+**Tests:** [DONE] 10/10 PASSED
+- [x] [DONE] Toggle command registered
+- [x] [DONE] Keybinding works (Ctrl+Shift+E)
+- [x] [DONE] State persists across analyses
+- [x] [DONE] Notification shows on toggle
+- [x] [DONE] Generates notes for NPE/lateinit/Compose/XML/Gradle/Manifest errors
+- [x] [DONE] Default content for unknown errors
+- [x] [DONE] Beginner-friendly language
+- [x] [DONE] Clear What/Why/How structure
+- [x] [DONE] Markdown formatting correct
+- [x] [DONE] Actionable advice provided
 
-**Deliverable:** ✅ Comprehensive educational content for 38+ error types
+**Deliverable:** [DONE] Comprehensive educational content for 38+ error types
 
 ---
 
-### CHUNK 5.3: Performance Display (Days 11-14, ~32h) ✅ COMPLETE
+### CHUNK 5.3: Performance Display (Days 11-14, ~32h) [DONE] COMPLETE
 
 **Completion Date:** December 19, 2025  
 **Goal:** Optional performance metrics display
 
 **Tasks:**
-- [x] ✅ Performance metrics toggle (Command + Keybinding: Ctrl+Shift+P)
-  - [x] ✅ Command registration
-  - [x] ✅ Configuration property integration
-  - [x] ✅ State persistence across sessions
-- [x] ✅ Performance metrics section with collapsible display
-  - [x] ✅ Total time breakdown
-  - [x] ✅ LLM inference time
-  - [x] ✅ Tool execution time
-  - [x] ✅ Cache hit rate
-  - [x] ✅ Token usage (prompt + completion)
-- [x] ✅ Subtle styling (opacity 0.7, professional appearance)
-- [x] ✅ Wire to Kai's `PerformanceTracker`
+- [x] [DONE] Performance metrics toggle (Command + Keybinding: Ctrl+Shift+P)
+  - [x] [DONE] Command registration
+  - [x] [DONE] Configuration property integration
+  - [x] [DONE] State persistence across sessions
+- [x] [DONE] Performance metrics section with collapsible display
+  - [x] [DONE] Total time breakdown
+  - [x] [DONE] LLM inference time
+  - [x] [DONE] Tool execution time
+  - [x] [DONE] Cache hit rate
+  - [x] [DONE] Token usage (prompt + completion)
+- [x] [DONE] Subtle styling (opacity 0.7, professional appearance)
+- [x] [DONE] Wire to Kai's `PerformanceTracker`
 
 **Implementation Example:**
 ```typescript
@@ -2647,7 +2647,7 @@ function showEducationalResult(rca: RCADocument) {
 function showPerformanceMetrics(metrics: PerformanceMetrics) {
   const metricsHtml = `
     <div class="result-section" style="opacity: 0.7; font-size: 0.9em;">
-      <h3>⚡ Performance Metrics</h3>
+      <h3>[FAST] Performance Metrics</h3>
       <ul>
         <li>Total Time: ${metrics.totalTime}ms</li>
         <li>LLM Inference: ${metrics.llmTime}ms</li>
@@ -2661,115 +2661,115 @@ function showPerformanceMetrics(metrics: PerformanceMetrics) {
 }
 ```
 
-**Tests:** ✅ 8/8 PASSED
-- [x] ✅ Toggle command registered
-- [x] ✅ Keybinding works (Ctrl+Shift+P)
-- [x] ✅ Configuration property works
-- [x] ✅ State persists across sessions
-- [x] ✅ Metrics panel appears when enabled
-- [x] ✅ All metrics display correctly
-- [x] ✅ Toggle button hides/shows panel
-- [x] ✅ Styling is subtle and professional
+**Tests:** [DONE] 8/8 PASSED
+- [x] [DONE] Toggle command registered
+- [x] [DONE] Keybinding works (Ctrl+Shift+P)
+- [x] [DONE] Configuration property works
+- [x] [DONE] State persists across sessions
+- [x] [DONE] Metrics panel appears when enabled
+- [x] [DONE] All metrics display correctly
+- [x] [DONE] Toggle button hides/shows panel
+- [x] [DONE] Styling is subtle and professional
 
-**Deliverable:** ✅ Optional performance metrics display with minimal UI distraction
+**Deliverable:** [DONE] Optional performance metrics display with minimal UI distraction
 
 ---
 
-### CHUNK 5.4: UI Polish (Days 15-19, ~40h) ✅ COMPLETE
+### CHUNK 5.4: UI Polish (Days 15-19, ~40h) [DONE] COMPLETE
 
 **Completion Date:** December 19, 2025  
 **Goal:** Final UI improvements and testing
 
 **Tasks:**
-- [x] ✅ Loading states optimization
-  - [x] ✅ Skeleton loader CSS with gradient animation
-  - [x] ✅ `showLoadingSkeleton()` function
-  - [x] ✅ Smooth transitions between states
-  - [x] ✅ Visual feedback during analysis
+- [x] [DONE] Loading states optimization
+  - [x] [DONE] Skeleton loader CSS with gradient animation
+  - [x] [DONE] `showLoadingSkeleton()` function
+  - [x] [DONE] Smooth transitions between states
+  - [x] [DONE] Visual feedback during analysis
   
-- [x] ✅ Error states
-  - [x] ✅ Enhanced error display with friendly messages
-  - [x] ✅ Retry button functionality
-  - [x] ✅ Error details expansion
-  - [x] ✅ User-actionable error messages
+- [x] [DONE] Error states
+  - [x] [DONE] Enhanced error display with friendly messages
+  - [x] [DONE] Retry button functionality
+  - [x] [DONE] Error details expansion
+  - [x] [DONE] User-actionable error messages
   
-- [x] ✅ Accessibility improvements (WCAG 2.1 AA Compliant)
-  - [x] ✅ ARIA roles (banner, progressbar, log, main, region, alert, status)
-  - [x] ✅ ARIA properties (aria-live, aria-labelledby, aria-valuenow, etc.)
-  - [x] ✅ Keyboard navigation with tab order
-  - [x] ✅ Focus indicators visible in all themes (2px solid border)
-  - [x] ✅ Screen reader support with semantic HTML
-  - [x] ✅ Live regions for dynamic content
+- [x] [DONE] Accessibility improvements (WCAG 2.1 AA Compliant)
+  - [x] [DONE] ARIA roles (banner, progressbar, log, main, region, alert, status)
+  - [x] [DONE] ARIA properties (aria-live, aria-labelledby, aria-valuenow, etc.)
+  - [x] [DONE] Keyboard navigation with tab order
+  - [x] [DONE] Focus indicators visible in all themes (2px solid border)
+  - [x] [DONE] Screen reader support with semantic HTML
+  - [x] [DONE] Live regions for dynamic content
   
-- [x] ✅ UI responsiveness
-  - [x] ✅ Window resize handling
-  - [x] ✅ Flexible layouts
-  - [x] ✅ Theme compatibility (light/dark/high-contrast)
+- [x] [DONE] UI responsiveness
+  - [x] [DONE] Window resize handling
+  - [x] [DONE] Flexible layouts
+  - [x] [DONE] Theme compatibility (light/dark/high-contrast)
   
-- [x] ✅ Test all UI components
-  - [x] ✅ Different error types (Kotlin, Compose, XML, Gradle, Manifest)
-  - [x] ✅ Different screen sizes
-  - [x] ✅ All VS Code themes (light, dark, high-contrast)
+- [x] [DONE] Test all UI components
+  - [x] [DONE] Different error types (Kotlin, Compose, XML, Gradle, Manifest)
+  - [x] [DONE] Different screen sizes
+  - [x] [DONE] All VS Code themes (light, dark, high-contrast)
 
-**Tests:** ✅ 8/8 PASSED (Accessibility)
-- [x] ✅ ARIA labels present on all elements
-- [x] ✅ ARIA roles correct (7 types)
-- [x] ✅ ARIA live regions announce updates
-- [x] ✅ Screen reader reads content correctly
-- [x] ✅ Tab order is logical
-- [x] ✅ Focus indicators visible in all themes
-- [x] ✅ All interactive elements reachable
-- [x] ✅ Escape key closes webview (VS Code default)
+**Tests:** [DONE] 8/8 PASSED (Accessibility)
+- [x] [DONE] ARIA labels present on all elements
+- [x] [DONE] ARIA roles correct (7 types)
+- [x] [DONE] ARIA live regions announce updates
+- [x] [DONE] Screen reader reads content correctly
+- [x] [DONE] Tab order is logical
+- [x] [DONE] Focus indicators visible in all themes
+- [x] [DONE] All interactive elements reachable
+- [x] [DONE] Escape key closes webview (VS Code default)
 
 **Additional Testing:**
-- [x] ✅ All loading states work
-- [x] ✅ Error states are clear
-- [x] ✅ Keyboard navigation complete
-- [x] ✅ Responsive layout validated
+- [x] [DONE] All loading states work
+- [x] [DONE] Error states are clear
+- [x] [DONE] Keyboard navigation complete
+- [x] [DONE] Responsive layout validated
 
-**Deliverable:** ✅ Fully accessible, polished UI meeting WCAG 2.1 AA standards
+**Deliverable:** [DONE] Fully accessible, polished UI meeting WCAG 2.1 AA standards
 
 ---
 
-### CHUNK 5.5: Documentation & Packaging (Days 20-24, ~40h) ✅ COMPLETE
+### CHUNK 5.5: Documentation & Packaging (Days 20-24, ~40h) [DONE] COMPLETE
 
 **Completion Date:** December 19, 2025  
 **Goal:** User documentation and extension packaging
 
 **Tasks:**
-- [x] ✅ User guide (`README.md` - ~203 lines, complete rewrite +136 lines)
-  - [x] ✅ Features overview with badges (10 features)
-  - [x] ✅ Installation instructions (Ollama, ChromaDB, VSIX)
-  - [x] ✅ Usage guide with keyboard shortcuts table
-  - [x] ✅ Configuration reference (all settings documented)
-  - [x] ✅ Supported models comparison table
-  - [x] ✅ Troubleshooting section (5 common issues)
-  - [x] ✅ Supported error types (38+ types listed)
-  - [x] ✅ Feedback mechanism explanation
-  - [x] ✅ Privacy & security statement
-  - [x] ✅ Development setup guide
-  - [x] ✅ Roadmap and license
+- [x] [DONE] User guide (`README.md` - ~203 lines, complete rewrite +136 lines)
+  - [x] [DONE] Features overview with badges (10 features)
+  - [x] [DONE] Installation instructions (Ollama, ChromaDB, VSIX)
+  - [x] [DONE] Usage guide with keyboard shortcuts table
+  - [x] [DONE] Configuration reference (all settings documented)
+  - [x] [DONE] Supported models comparison table
+  - [x] [DONE] Troubleshooting section (5 common issues)
+  - [x] [DONE] Supported error types (38+ types listed)
+  - [x] [DONE] Feedback mechanism explanation
+  - [x] [DONE] Privacy & security statement
+  - [x] [DONE] Development setup guide
+  - [x] [DONE] Roadmap and license
   
-- [x] ✅ Educational mode guide (`EDUCATIONAL_MODE.md` - ~320 lines new)
-  - [x] ✅ What is Educational Mode
-  - [x] ✅ Quick start guide (3 steps)
-  - [x] ✅ Error type coverage with code examples
-  - [x] ✅ Best practices for each framework
-  - [x] ✅ 3-phase learning strategy (Beginner/Intermediate/Advanced)
-  - [x] ✅ Coverage statistics
-  - [x] ✅ Tips & tricks section (5 tips)
-  - [x] ✅ Example workflow with student perspective
-  - [x] ✅ FAQ (7 questions answered)
-  - [x] ✅ Feedback guidelines
+- [x] [DONE] Educational mode guide (`EDUCATIONAL_MODE.md` - ~320 lines new)
+  - [x] [DONE] What is Educational Mode
+  - [x] [DONE] Quick start guide (3 steps)
+  - [x] [DONE] Error type coverage with code examples
+  - [x] [DONE] Best practices for each framework
+  - [x] [DONE] 3-phase learning strategy (Beginner/Intermediate/Advanced)
+  - [x] [DONE] Coverage statistics
+  - [x] [DONE] Tips & tricks section (5 tips)
+  - [x] [DONE] Example workflow with student perspective
+  - [x] [DONE] FAQ (7 questions answered)
+  - [x] [DONE] Feedback guidelines
   
-- [x] ✅ Extension packaging preparation
-  - [x] ✅ package.json fully configured
-  - [x] ✅ All commands defined (4 total)
-  - [x] ✅ All keybindings configured (4 total)
-  - [x] ✅ All configuration properties set (2 total)
-  - [x] ✅ Activation events registered
-  - [x] ✅ Metadata complete
-  - [x] ✅ Extension ready for `.vsix` packaging
+- [x] [DONE] Extension packaging preparation
+  - [x] [DONE] package.json fully configured
+  - [x] [DONE] All commands defined (4 total)
+  - [x] [DONE] All keybindings configured (4 total)
+  - [x] [DONE] All configuration properties set (2 total)
+  - [x] [DONE] Activation events registered
+  - [x] [DONE] Metadata complete
+  - [x] [DONE] Extension ready for `.vsix` packaging
 
 **README.md Structure:**
 ```markdown
@@ -2778,11 +2778,11 @@ function showPerformanceMetrics(metrics: PerformanceMetrics) {
 AI-powered debugging assistant that analyzes your errors and suggests fixes.
 
 ## Features
-- 🔍 Automatic error analysis
-- 💡 Root cause identification
-- 🛠️ Fix guidelines
-- 🎓 Educational mode for learning
-- 📚 Learns from your errors
+- [SEARCH] Automatic error analysis
+- [IDEA] Root cause identification
+- [FIX] Fix guidelines
+- [LEARN] Educational mode for learning
+- [DOCS] Learns from your errors
 
 ## Installation
 1. Download `rca-agent-2.0.vsix`
@@ -2815,7 +2815,7 @@ Enable educational mode for beginner-friendly explanations.
 See [EDUCATIONAL_MODE.md](EDUCATIONAL_MODE.md) for details.
 
 ## Feedback
-Click "👍 Helpful" or "👎 Not Helpful" to improve future analyses.
+Click "[LIKE] Helpful" or "[DISLIKE] Not Helpful" to improve future analyses.
 
 ## License
 MIT
@@ -2835,25 +2835,25 @@ vsce package
 code --install-extension rca-agent-2.0.vsix
 ```
 
-**Tests:** ✅ 10/10 PASSED (Documentation)
-- [x] ✅ README renders correctly on GitHub
-- [x] ✅ All markdown formatting valid
-- [x] ✅ Code examples syntax-highlighted
-- [x] ✅ Tables render properly
-- [x] ✅ Installation instructions accurate
-- [x] ✅ Troubleshooting covers common issues
-- [x] ✅ Configuration examples correct
-- [x] ✅ EDUCATIONAL_MODE.md comprehensive
-- [x] ✅ Error type coverage complete (38+ types)
-- [x] ✅ Learning strategy well-documented
+**Tests:** [DONE] 10/10 PASSED (Documentation)
+- [x] [DONE] README renders correctly on GitHub
+- [x] [DONE] All markdown formatting valid
+- [x] [DONE] Code examples syntax-highlighted
+- [x] [DONE] Tables render properly
+- [x] [DONE] Installation instructions accurate
+- [x] [DONE] Troubleshooting covers common issues
+- [x] [DONE] Configuration examples correct
+- [x] [DONE] EDUCATIONAL_MODE.md comprehensive
+- [x] [DONE] Error type coverage complete (38+ types)
+- [x] [DONE] Learning strategy well-documented
 
-**Deliverable:** ✅ Complete documentation (+643 lines) ready for users
+**Deliverable:** [DONE] Complete documentation (+643 lines) ready for users
 
 ---
 
-### ✅ CHUNK 5 COMPLETION SUMMARY
+### [DONE] CHUNK 5 COMPLETION SUMMARY
 
-**Status:** ✅ **ALL 5 SUB-CHUNKS COMPLETE** (December 19, 2025)
+**Status:** [DONE] **ALL 5 SUB-CHUNKS COMPLETE** (December 19, 2025)
 
 **Code Delivered:**
 - RCAWebview.ts: ~820 lines (new file)
@@ -2887,7 +2887,7 @@ code --install-extension rca-agent-2.0.vsix
 - Documentation: Complete user guide + educational guide
 - Testing: 13 webview tests + 10 educational + 8 accessibility + 8 performance + 10 documentation = 49 UI tests
 
-**🎉 Phase 1 UI Implementation: 100% COMPLETE**
+**[SUCCESS] Phase 1 UI Implementation: 100% COMPLETE**
 
 ---
 
@@ -2940,32 +2940,32 @@ code --install-extension rca-agent-2.0.vsix
 ## Success Metrics
 
 ### Phase 1 Complete When:
-- ✅ Extension activates and registers commands
-- ✅ Can parse errors and display results
-- ✅ Webview UI works smoothly
-- ✅ Educational mode displays learning notes
-- ✅ Feedback buttons functional
-- ✅ All Android error types display correctly
-- ✅ Extension packaged as `.vsix`
-- ✅ Documentation complete
-- ✅ Installs and works on fresh VS Code
-- ✅ You actually use it during development
+- [DONE] Extension activates and registers commands
+- [DONE] Can parse errors and display results
+- [DONE] Webview UI works smoothly
+- [DONE] Educational mode displays learning notes
+- [DONE] Feedback buttons functional
+- [DONE] All Android error types display correctly
+- [DONE] Extension packaged as `.vsix`
+- [DONE] Documentation complete
+- [DONE] Installs and works on fresh VS Code
+- [DONE] You actually use it during development
 
 ### Code Quality Metrics:
-- ✅ Zero ESLint warnings
-- ✅ TypeScript strict mode enabled
-- ✅ 80%+ test coverage
-- ✅ All tests passing
-- ✅ No memory leaks (all disposables cleaned)
-- ✅ No hardcoded paths
-- ✅ Proper error handling throughout
-- ✅ Input validation on all user inputs
-- ✅ CSP set for all webviews
-- ✅ ARIA labels for accessibility
+- [DONE] Zero ESLint warnings
+- [DONE] TypeScript strict mode enabled
+- [DONE] 80%+ test coverage
+- [DONE] All tests passing
+- [DONE] No memory leaks (all disposables cleaned)
+- [DONE] No hardcoded paths
+- [DONE] Proper error handling throughout
+- [DONE] Input validation on all user inputs
+- [DONE] CSP set for all webviews
+- [DONE] ARIA labels for accessibility
 
 ---
 
-## 📚 Implementation Strategy Summary
+## [DOCS] Implementation Strategy Summary
 
 ### Week-by-Week Focus
 
@@ -3051,12 +3051,12 @@ tool.execute(params) → Promise<ToolResult>
 ```
 
 **What Sokchea NEVER Does:**
-- ❌ Implement parsing logic
-- ❌ Implement agent reasoning
-- ❌ Implement database operations
-- ❌ Implement tool execution
-- ❌ Implement any algorithms
-- ❌ Duplicate Kai's code
+- [FAIL] Implement parsing logic
+- [FAIL] Implement agent reasoning
+- [FAIL] Implement database operations
+- [FAIL] Implement tool execution
+- [FAIL] Implement any algorithms
+- [FAIL] Duplicate Kai's code
 
 ### Communication Protocol
 
@@ -3081,7 +3081,7 @@ tool.execute(params) → Promise<ToolResult>
 
 ---
 
-## 🎓 Learning Resources
+## [LEARN] Learning Resources
 
 ### VS Code Extension Development
 - [VS Code Extension API](https://code.visualstudio.com/api)

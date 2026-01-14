@@ -1,7 +1,7 @@
-# Phase 3 - Integration Notes
+﻿# Phase 3 - Integration Notes
 
 **Created:** January 9, 2026  
-**Status:** 🔄 In Progress
+**Status:** [REFRESH] In Progress
 
 ---
 
@@ -19,10 +19,10 @@ This document outlines the integration between the Phase 3 frontend views and th
 ┌─────────────────┐          ┌──────────────────┐          ┌─────────────────┐
 │  Webview (React)│          │  Extension.ts    │          │  Backend        │
 │                 │          │                  │          │  Services       │
-│  - Views        │ ─────▶   │  - Message       │ ─────▶   │  - StateManager │
+│  - Views        │ ─────[PLAY]   │  - Message       │ ─────[PLAY]   │  - StateManager │
 │  - Hooks        │  postMsg │    Handlers      │  calls   │  - Analysis     │
 │  - Components   │          │  - Event         │          │  - Fix          │
-│                 │ ◀─────   │    Listeners     │ ◀─────   │  - Metrics      │
+│                 │ [BACK]─────   │    Listeners     │ [BACK]─────   │  - Metrics      │
 └─────────────────┘  message └──────────────────┘  events  └─────────────────┘
 ```
 
@@ -880,4 +880,4 @@ describe('View Integration', () => {
 
 **Document Version:** 1.0  
 **Last Updated:** January 9, 2026  
-**Status:** 🔄 In Progress (Backend handlers pending)
+**Status:** [REFRESH] In Progress (Backend handlers pending)

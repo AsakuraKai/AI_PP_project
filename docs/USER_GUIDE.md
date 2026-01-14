@@ -1,4 +1,4 @@
-# RCA Agent User Guide
+﻿# RCA Agent User Guide
 
 **Version:** 2.0.0  
 **Last Updated:** January 5, 2026
@@ -69,7 +69,7 @@ Before using RCA Agent, you'll need:
 
 ## Core Features
 
-### 🔍 Intelligent Error Detection
+### [SEARCH] Intelligent Error Detection
 
 RCA Agent automatically scans your workspace for errors and displays them in the error queue:
 
@@ -78,7 +78,7 @@ RCA Agent automatically scans your workspace for errors and displays them in the
 - **Medium**: Warnings, lint issues
 - **Low**: Code style suggestions
 
-### 🧠 Root Cause Analysis
+### [BRAIN] Root Cause Analysis
 
 Unlike simple error messages, RCA Agent identifies the **underlying cause** of problems:
 
@@ -86,7 +86,7 @@ Unlike simple error messages, RCA Agent identifies the **underlying cause** of p
 - **Why it happened**: Underlying causes and contributing factors
 - **How to fix it**: Step-by-step actionable instructions
 
-### 💡 Actionable Fix Guidelines
+### [IDEA] Actionable Fix Guidelines
 
 Every analysis includes:
 - Specific file locations and line numbers
@@ -94,7 +94,7 @@ Every analysis includes:
 - Version recommendations
 - Links to relevant documentation
 
-### 📚 Educational Mode
+### [DOCS] Educational Mode
 
 Learn while debugging:
 - Beginner-friendly explanations
@@ -102,7 +102,7 @@ Learn while debugging:
 - Common patterns and best practices
 - Prevention tips for future issues
 
-### 🗂️ Smart Learning
+### [FOLDER] Smart Learning
 
 RCA Agent learns from your project:
 - Stores past analyses in ChromaDB (optional)
@@ -162,7 +162,7 @@ RCA Agent learns from your project:
 ### Method 2: Quick Actions (Lightbulb)
 
 1. **Click on an error** in your code
-2. Look for the **💡 lightbulb** icon
+2. Look for the **[IDEA] lightbulb** icon
 3. Click it and select **"Analyze with RCA Agent"**
 4. Instant analysis appears in the panel
 
@@ -189,7 +189,7 @@ RCA Agent learns from your project:
 ### Settings & Configuration
 
 Access settings via:
-1. Click **⚙️ Settings** in panel header
+1. Click **[SETTINGS] Settings** in panel header
 2. Or go to VS Code Settings → Extensions → RCA Agent
 
 #### Key Settings:
@@ -270,7 +270,7 @@ Enable/disable features safely:
 
 ### Common Issues
 
-#### ❌ "Cannot connect to Ollama"
+#### [FAIL] "Cannot connect to Ollama"
 
 **Symptoms:** Panel shows connection error, no analysis possible
 
@@ -291,7 +291,7 @@ Enable/disable features safely:
 
 ---
 
-#### ❌ "Model not found"
+#### [FAIL] "Model not found"
 
 **Symptoms:** Error message about missing model
 
@@ -311,7 +311,7 @@ Enable/disable features safely:
 
 ---
 
-#### ❌ "Analysis timed out"
+#### [FAIL] "Analysis timed out"
 
 **Symptoms:** Analysis gets stuck or times out after 60 seconds
 
@@ -331,7 +331,7 @@ Enable/disable features safely:
 
 ---
 
-#### ❌ "No workspace open"
+#### [FAIL] "No workspace open"
 
 **Symptoms:** Panel shows "Open a workspace first"
 
@@ -344,7 +344,7 @@ Enable/disable features safely:
 
 ---
 
-#### ❌ Panel not showing/blank
+#### [FAIL] Panel not showing/blank
 
 **Symptoms:** Panel opens but shows nothing
 
@@ -358,7 +358,7 @@ Enable/disable features safely:
 
 ---
 
-#### ⚠️ Slow analysis performance
+#### [WARNING] Slow analysis performance
 
 **Symptoms:** Analysis takes >60 seconds
 
@@ -425,40 +425,40 @@ When reporting issues, include:
 
 ## Tips & Best Practices
 
-### 🎯 Writing Effective Queries
+### [TARGET] Writing Effective Queries
 
 **Good Examples:**
-- ✅ "Why does my app crash when clicking the login button?"
-- ✅ "How do I fix this null pointer exception in MainActivity.kt line 42?"
-- ✅ "What's causing this Gradle sync failure with AGP 8.0?"
+- [DONE] "Why does my app crash when clicking the login button?"
+- [DONE] "How do I fix this null pointer exception in MainActivity.kt line 42?"
+- [DONE] "What's causing this Gradle sync failure with AGP 8.0?"
 
 **Less Effective:**
-- ❌ "My app doesn't work" (too vague)
-- ❌ "Fix this" (provide context)
-- ❌ "Error" (be specific about what error)
+- [FAIL] "My app doesn't work" (too vague)
+- [FAIL] "Fix this" (provide context)
+- [FAIL] "Error" (be specific about what error)
 
-### 📋 Error Queue Management
+### [CLIPBOARD] Error Queue Management
 
 - **Clear regularly:** Remove fixed errors to keep queue clean
 - **Prioritize:** Focus on Critical and High priority errors first
 - **Batch similar:** Analyze related errors together for context
 - **Use filters:** Filter by file, type, or priority
 
-### 🚀 Performance Tips
+### [LAUNCH] Performance Tips
 
 - **Keep context small:** Analyze specific errors, not entire files
 - **Use caching:** Let ChromaDB remember past solutions
 - **Close unused tools:** Free up resources for Ollama
 - **Update regularly:** Keep Ollama and models up to date
 
-### 📚 Learning Mode
+### [DOCS] Learning Mode
 
 - **Enable educational mode** for beginners
 - **Read the "Why" sections** to understand root causes
 - **Follow prevention tips** to avoid future issues
 - **Save useful analyses** to your notes
 
-### 🔧 Customization
+### [TOOL] Customization
 
 - **Adjust temperature:** Lower (0.3-0.5) for consistent fixes, higher (0.7-0.9) for creative solutions
 - **Tune max tokens:** Increase for detailed analyses, decrease for quick answers
@@ -489,14 +489,14 @@ Coming soon:
 
 We'd love to hear from you!
 
-- **⭐ Star us on GitHub:** [AI_PP_project](https://github.com/AsakuraKai/AI_PP_project)
-- **🐛 Report bugs:** [Create an issue](https://github.com/AsakuraKai/AI_PP_project/issues/new)
-- **💡 Suggest features:** [Feature requests](https://github.com/AsakuraKai/AI_PP_project/issues/new?labels=enhancement)
+- **[STAR] Star us on GitHub:** [AI_PP_project](https://github.com/AsakuraKai/AI_PP_project)
+- **[BUG] Report bugs:** [Create an issue](https://github.com/AsakuraKai/AI_PP_project/issues/new)
+- **[IDEA] Suggest features:** [Feature requests](https://github.com/AsakuraKai/AI_PP_project/issues/new?labels=enhancement)
 - **🤝 Contribute:** [Contributing guidelines](../docs/CONTRIBUTING.md)
 
 ---
 
-**Happy Debugging! 🎉**
+**Happy Debugging! [SUCCESS]**
 
 Need more help? Check out:
 - [Developer Guide](DEVELOPER_GUIDE.md) - For extending RCA Agent

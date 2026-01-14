@@ -1,4 +1,4 @@
-# Chunk 3: Message Passing Layer
+﻿# Chunk 3: Message Passing Layer
 
 **Priority:** HIGH | **Phase:** Communication & Data Flow | **Est. Time:** 3-4 hours  
 **Depends On:** Chunk 2 (Extension Entry Point)  
@@ -15,12 +15,12 @@
 
 ## Objectives
 
-- ✅ Map all message commands (Webview → Extension)
-- ✅ Map all message responses (Extension → Webview)
-- ✅ Verify message handlers exist for all commands
-- ✅ Ensure response data matches frontend expectations
-- ✅ Fix any missing handlers
-- ✅ Test message flow end-to-end
+- [DONE] Map all message commands (Webview → Extension)
+- [DONE] Map all message responses (Extension → Webview)
+- [DONE] Verify message handlers exist for all commands
+- [DONE] Ensure response data matches frontend expectations
+- [DONE] Fix any missing handlers
+- [DONE] Test message flow end-to-end
 
 ## Files to Analyze
 
@@ -51,14 +51,14 @@ Create a mapping document:
 - **Payload:** { command: 'analyzeError', error: ErrorInfo }
 - **Handler:** RCAWebviewProvider._handleAnalyzeError()
 - **Response:** { command: 'analysisComplete', result: RCAResult }
-- **Status:** ✅ Implemented / ❌ Missing / ⚠️ Partial
+- **Status:** [DONE] Implemented / [FAIL] Missing / [WARNING] Partial
 
 ### Command: getErrorQueue
 - **Sent by:** useErrorQueue hook
 - **Payload:** { command: 'getErrorQueue' }
 - **Handler:** RCAWebviewProvider._handleGetErrorQueue()
 - **Response:** { command: 'errorQueueData', errors: ErrorItem[] }
-- **Status:** ✅ Implemented / ❌ Missing / ⚠️ Partial
+- **Status:** [DONE] Implemented / [FAIL] Missing / [WARNING] Partial
 
 // ... repeat for ALL commands
 ```
@@ -118,7 +118,7 @@ Create a mapping document:
    
    // In RCAWebviewProvider._handleMessage():
    case 'someCommand':
-     // ❌ No implementation
+     // [FAIL] No implementation
      break;
    
    // FIX: Implement handler
@@ -174,11 +174,11 @@ Create a mapping document:
 
 ## Validation Criteria
 
-- ✅ All commands have handlers
-- ✅ All handlers return expected responses
-- ✅ Error cases handled gracefully
-- ✅ No silent failures
-- ✅ Message flow tested end-to-end
+- [DONE] All commands have handlers
+- [DONE] All handlers return expected responses
+- [DONE] Error cases handled gracefully
+- [DONE] No silent failures
+- [DONE] Message flow tested end-to-end
 
 ## Post-Chunk Verification
 
@@ -219,7 +219,7 @@ git tag chunk-3-complete -m "Chunk 3: Message Passing Layer - Complete"
 
 **Date:** [Date]
 **Duration:** [Time]
-**Status:** 🔴 Not Started | 🟡 In Progress | 🟢 Complete
+**Status:** [RED] Not Started | [YELLOW] In Progress | [GREEN] Complete
 
 ### Objectives
 - [ ] Map all message commands
@@ -229,8 +229,8 @@ git tag chunk-3-complete -m "Chunk 3: Message Passing Layer - Complete"
 ### Message Matrix
 | Command | Handler | Status |
 |---------|---------|--------|
-| analyzeError | _handleAnalyzeError | ✅ |
-| getErrorQueue | _handleGetErrorQueue | ❌ |
+| analyzeError | _handleAnalyzeError | [DONE] |
+| getErrorQueue | _handleGetErrorQueue | [FAIL] |
 
 ### Issues Found
 1. **Missing Handler for X**

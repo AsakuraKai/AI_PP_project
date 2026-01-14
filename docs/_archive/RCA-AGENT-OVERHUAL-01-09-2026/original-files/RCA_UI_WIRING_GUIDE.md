@@ -1,4 +1,4 @@
-# RCA Agent UI Wiring Guide
+﻿# RCA Agent UI Wiring Guide
 
 > **Document Purpose**: Complete reference for future UI implementation  
 > **Created**: January 8, 2026  
@@ -188,7 +188,7 @@ The following UI components have been completely removed:
      Collapse                                                   
                                                                   
      
-                             ↕ Message Passing                       
+                             [V_ARROW] Message Passing                       
     
            Backend Services (vscode-extension/src/services/)       
                                                                    
@@ -210,7 +210,7 @@ The following UI components have been completely removed:
      - checkOllamaAvailability()                               
         
     
-                             ↕                                       
+                             [V_ARROW]                                       
     
            Core Backend (src/ - Kai's Implementation)              
     
@@ -264,7 +264,7 @@ The following UI components have been completely removed:
     
 
 
-                               ↕ VS Code APIs
+                               [V_ARROW] VS Code APIs
 
 
                   VS Code Editor & Environment                        
@@ -477,7 +477,7 @@ App.tsx (Main Entry Point)
    - Show: Error message, retry button
    - Wire to: `AnalysisService.analyzeError()` (retry)
 
-**Message Handlers** (Webview ↔ Extension):
+**Message Handlers** (Webview [H_ARROW] Extension):
 
 ```typescript
 // Messages FROM webview TO extension
@@ -1829,7 +1829,7 @@ showPerformanceMetrics({
 
 ---
 
-#### **13. TerminalTool** ⌨
+#### **13. TerminalTool** [KEYBOARD]
 **Location**: `vscode-extension/src/tools/TerminalTool.ts`
 
 **Purpose**: Execute terminal commands
@@ -2274,11 +2274,11 @@ The agent uses a **tool-based architecture** (ReAct paradigm) where the LLM deci
 ```
 Iteration 2:
    read_file("app/MainActivity.kt", lines: 45-60)
-  ⏱ 125ms
+  [TIMER] 125ms
    Read 15 lines
   
    search_in_files("NullPointerException")
-  ⏱ 450ms
+  [TIMER] 450ms
    Found 3 matches
 ```
 

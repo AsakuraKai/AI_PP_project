@@ -63,7 +63,7 @@ async function testMVPCaseWithEnhancedPrompts() {
     });
 
     // Initialize agent with enhanced prompts (automatic via PromptEngine)
-    console.log('🤖 Initializing agent with enhanced prompts...');
+    console.log('[INIT] Initializing agent with enhanced prompts...');
     const agent = new MinimalReactAgent(llm, {
       maxIterations: 3,
     });
@@ -75,7 +75,7 @@ async function testMVPCaseWithEnhancedPrompts() {
     const duration = ((Date.now() - startTime) / 1000).toFixed(2);
 
     console.log('[OK] Analysis complete!\n');
-    console.log('=' . repeat(80));
+    console.log('='.repeat(80));
     console.log('[STATS] RESULTS');
     console.log('='.repeat(80));
 
@@ -108,7 +108,7 @@ async function testMVPCaseWithEnhancedPrompts() {
     const specificityLevel = validator.getSpecificityLevel(validationResult.specificityScore);
 
     console.log(`\n[STATS] Specificity Score: ${validationResult.specificityScore}/100 (${specificityLevel})`);
-    
+
     console.log('\n[OK] Strengths:');
     validationResult.strengths.forEach(s => console.log(`   ${s}`));
 
@@ -167,7 +167,7 @@ async function testMVPCaseWithEnhancedPrompts() {
     console.log('[TARGET] FINAL ASSESSMENT');
     console.log('='.repeat(80));
 
-    const allTargetsMet = 
+    const allTargetsMet =
       validationResult.specificityScore >= 70 &&
       validationResult.breakdown.hasExactFilePath &&
       validationResult.breakdown.hasVersionValidation &&

@@ -27,9 +27,9 @@ interface TestMetrics {
 async function runTest9ProGuard(): Promise<void> {
   console.log('\n[TEST] CHUNK 8 - TEST 9: R8/PROGUARD RULE MISSING\n');
   console.log('='.repeat(80));
-  
+
   const projectRoot = path.join(__dirname, '../tests/fixtures/test9-proguard');
-  
+
   // Test project structure
   const testFiles = {
     'app/build.gradle': `plugins {
@@ -61,7 +61,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0'
 }`,
-    
+
     'app/proguard-rules.pro': `# Add project specific ProGuard rules here.
 # You can control the set of applied configuration files using the
 # proguardFiles setting in build.gradle.
@@ -69,7 +69,7 @@ dependencies {
 -keep class * {
     public private *;
 }`,
-    
+
     'app/src/main/kotlin/ApiService.kt': `package com.example.proguardtest
 
 import retrofit2.Call
@@ -87,7 +87,7 @@ data class User(
     val name: String,
     val email: String
 )`,
-    
+
     'app/src/main/kotlin/MainActivity.kt': `package com.example.proguardtest
 
 import android.os.Bundle
@@ -110,18 +110,18 @@ class MainActivity : AppCompatActivity() {
     }
 }`
   };
-  
+
   // Create test project
   console.log('[FOLDER] Creating test project...');
   await fs.mkdir(projectRoot, { recursive: true });
-  
+
   for (const [filename, content] of Object.entries(testFiles)) {
     const filePath = path.join(projectRoot, filename);
     await fs.mkdir(path.dirname(filePath), { recursive: true });
     await fs.writeFile(filePath, content);
   }
   console.log('[OK] Test project created\n');
-  
+
   // ProGuard error log
   const errorLog = `FATAL EXCEPTION: main
 Process: com.example.proguardtest, PID: 12345
@@ -137,27 +137,27 @@ In DEBUG builds, the app works perfectly fine.
 
 R8 has obfuscated/removed the ApiService interface methods because it thinks they're unused.
 Need to add ProGuard rules to keep Retrofit interfaces.`;
-  
+
   // Initialize agent
-  console.log('🤖 Initializing RCA agent...');
+  console.log('[INIT] Initializing RCA agent...');
   const llm = new OllamaClient({
     model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest',
     baseUrl: 'http://localhost:11434',
     timeout: 120000
   });
-  
+
   const agent = new MinimalReactAgent(llm, {
     maxIterations: 5,
     generateFix: true,
     projectRoot: projectRoot
   });
-  
+
   console.log('[OK] Agent initialized\n');
-  
+
   // Run analysis
   console.log('[SEARCH] Running RCA analysis...\n');
   const startTime = Date.now();
-  
+
   try {
     const result = await agent.analyze({
       type: 'runtime_nosuchmethod',
@@ -168,12 +168,12 @@ Need to add ProGuard rules to keep Retrofit interfaces.`;
       column: 0,
       language: 'kotlin'
     });
-    
+
     const latency = Date.now() - startTime;
-    
+
     console.log('\n' + '='.repeat(80));
     console.log('[STATS] TEST 9 RESULTS\n');
-    
+
     console.log('[SEARCH] AGENT OUTPUT:\n');
     console.log('Root Cause:', result.rootCause);
     console.log('\nFix Guidelines:', result.fixGuidelines);
@@ -181,11 +181,11 @@ Need to add ProGuard rules to keep Retrofit interfaces.`;
       console.log('\nCode Fix:', result.codeFix.explanation);
     }
     console.log('\nConfidence:', result.confidence);
-    console.log('Latency:', `${latency}ms (${(latency/1000).toFixed(2)}s)`);
-    
+    console.log('Latency:', `${latency}ms (${(latency / 1000).toFixed(2)}s)`);
+
     // Calculate metrics
     const metrics = calculateMetrics(result, latency);
-    
+
     console.log('\n[UP] DETAILED METRICS:\n');
     console.log(`Diagnosis Accuracy:      ${metrics.diagnosis_accuracy}% ${getStatusEmoji(metrics.diagnosis_accuracy, 90)}`);
     console.log(`Solution Specificity:    ${metrics.solution_specificity}% ${getStatusEmoji(metrics.solution_specificity, 70)}`);
@@ -194,15 +194,15 @@ Need to add ProGuard rules to keep Retrofit interfaces.`;
     console.log(`Version Suggestions:     N/A (not applicable for ProGuard errors)`);
     console.log(`Overall Usability:       ${metrics.overall_usability}% ${getStatusEmoji(metrics.overall_usability, 75)}`);
     console.log(`Confidence:              ${(metrics.confidence * 100).toFixed(0)}%`);
-    console.log(`Latency:                 ${(metrics.latency_ms/1000).toFixed(2)}s ${getStatusEmoji(metrics.latency_ms < 20000 ? 100 : 50, 80)}`);
-    
+    console.log(`Latency:                 ${(metrics.latency_ms / 1000).toFixed(2)}s ${getStatusEmoji(metrics.latency_ms < 20000 ? 100 : 50, 80)}`);
+
     // Save results
     const resultsDir = path.join(__dirname, '../tests/results/chunk8');
     await fs.mkdir(resultsDir, { recursive: true });
-    
+
     const timestamp = new Date().toISOString().replace(/:/g, '-');
     const resultsFile = path.join(resultsDir, `test9-proguard-${timestamp}.json`);
-    
+
     await fs.writeFile(resultsFile, JSON.stringify({
       test: 'Test 9: R8/ProGuard Rule Missing',
       timestamp: new Date().toISOString(),
@@ -211,13 +211,13 @@ Need to add ProGuard rules to keep Retrofit interfaces.`;
       errorLog,
       projectRoot
     }, null, 2));
-    
+
     console.log(`\n💾 Results saved to: ${resultsFile}`);
-    
+
     // Summary
     console.log('\n' + '='.repeat(80));
     console.log('[NOTE] TEST 9 SUMMARY\n');
-    
+
     if (metrics.overall_usability >= 75) {
       console.log('[OK] TEST PASSED - Usability target exceeded!');
     } else if (metrics.overall_usability >= 60) {
@@ -225,11 +225,11 @@ Need to add ProGuard rules to keep Retrofit interfaces.`;
     } else {
       console.log('[X] TEST FAILED - Usability below acceptable threshold');
     }
-    
+
     console.log(`\nTarget: 75%+ usability`);
     console.log(`Actual: ${metrics.overall_usability}%`);
     console.log(`Difference: ${metrics.overall_usability >= 75 ? '+' : ''}${(metrics.overall_usability - 75).toFixed(1)}%`);
-    
+
   } catch (error) {
     console.error('[X] Test failed with error:', error);
     throw error;
@@ -241,33 +241,33 @@ function calculateMetrics(result: any, latency: number): TestMetrics {
   let solution = 0;
   let fileId = 0;
   let codeEx = 0;
-  
+
   // Diagnosis: Should identify R8/ProGuard obfuscation
   const rootCause = result.rootCause?.toLowerCase() || '';
   if (rootCause.includes('proguard') || rootCause.includes('r8')) diagnosis += 35;
   if (rootCause.includes('obfuscat') || rootCause.includes('minif')) diagnosis += 30;
   if (rootCause.includes('release') && rootCause.includes('build')) diagnosis += 20;
   if (rootCause.includes('keep') || rootCause.includes('rule')) diagnosis += 15;
-  
+
   // Solution: Should mention proguard-rules.pro and specific rules
   const fix = (Array.isArray(result.fixGuidelines) ? result.fixGuidelines.join(' ') : result.fixGuidelines || '').toLowerCase();
   if (fix.includes('proguard-rules.pro')) solution += 35;
   if (fix.includes('-keep') || fix.includes('keep class')) solution += 30;
   if (fix.includes('retrofit') || fix.includes('apiservice')) solution += 20;
   if (fix.includes('interface') || fix.includes('annotation')) solution += 15;
-  
+
   // File identification: Should specify proguard-rules.pro
   if (fix.includes('proguard-rules.pro') || fix.includes('app/proguard-rules.pro')) fileId += 100;
   else if (fix.includes('proguard')) fileId += 50;
-  
+
   // Code examples: Should show exact ProGuard rules
   const code = result.codeFix?.diff || result.fixGuidelines?.join(' ') || '';
   if (code.includes('-keep')) codeEx += 40;
   if (code.includes('interface') || code.includes('**')) codeEx += 30;
   if (code.includes('Retrofit') || code.includes('retrofit2')) codeEx += 30;
-  
+
   const overall = (diagnosis + solution + fileId + codeEx) / 4;
-  
+
   return {
     diagnosis_accuracy: Math.min(100, diagnosis),
     solution_specificity: Math.min(100, solution),

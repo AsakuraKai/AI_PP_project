@@ -1,31 +1,31 @@
-# 🚀 Quick Start: Error Detection System
+﻿# [LAUNCH] Quick Start: Error Detection System
 
 > **Automatic error detection - No setup required!**
 
 ---
 
-## 📋 What You Get
+## [CLIPBOARD] What You Get
 
 The RCA Agent now **automatically detects 26+ error types** from Android/Kotlin projects with **zero configuration**:
 
-✅ **Kotlin Errors:** lateinit, NPE, unresolved references, type mismatches  
-✅ **Gradle Errors:** Dependency conflicts, version mismatches, build failures  
-✅ **Jetpack Compose Errors:** Remember issues, recomposition problems  
-✅ **XML Errors:** Layout inflation, missing resources  
-✅ **Plus:** TypeScript, JavaScript, ESLint errors
+[DONE] **Kotlin Errors:** lateinit, NPE, unresolved references, type mismatches  
+[DONE] **Gradle Errors:** Dependency conflicts, version mismatches, build failures  
+[DONE] **Jetpack Compose Errors:** Remember issues, recomposition problems  
+[DONE] **XML Errors:** Layout inflation, missing resources  
+[DONE] **Plus:** TypeScript, JavaScript, ESLint errors
 
-### 🎯 Automatic Detection (Enabled by Default)
+### [TARGET] Automatic Detection (Enabled by Default)
 
 - **Build Logs:** Automatically monitored when you build your project
 - **Terminal Output:** Automatically captured when terminals close
 - **VS Code Diagnostics:** Real-time detection as you code
 - **Startup Scan:** Scans recent build logs (last 24 hours) when workspace opens
 
-**Just build your project and errors appear automatically!** 🎉
+**Just build your project and errors appear automatically!** [SUCCESS]
 
 ---
 
-## 🔍 How It Works
+## [SEARCH] How It Works
 
 ### Fully Automatic Detection
 
@@ -40,23 +40,23 @@ The RCA Agent now **automatically detects 26+ error types** from Android/Kotlin 
 
 **That's it!** No commands, no configuration needed.
 
-### 🎨 Real-Time UI Updates (NEW!)
+### [DESIGN] Real-Time UI Updates (NEW!)
 
 The RCA Agent now features a **fully dynamic UI** with:
 
-- ⚡ **Instant visual feedback** when errors are detected
-- 📈 **Animated statistics** that smoothly update in real-time
-- 🎯 **Live activity feed** showing what's happening as it happens
-- ✅ **Auto-refreshing metrics** when analyses complete
+- [FAST] **Instant visual feedback** when errors are detected
+- [GRAPH] **Animated statistics** that smoothly update in real-time
+- [TARGET] **Live activity feed** showing what's happening as it happens
+- [DONE] **Auto-refreshing metrics** when analyses complete
 - 💫 **Smooth animations** with trend indicators
 
-**Watch the stats come alive!** Numbers animate smoothly when they change, and you'll see pulse effects and trend arrows (▲▼) showing increases/decreases.
+**Watch the stats come alive!** Numbers animate smoothly when they change, and you'll see pulse effects and trend arrows ([UP][DOWN]) showing increases/decreases.
 
 See [DYNAMIC_UI_UPDATES.md](./DYNAMIC_UI_UPDATES.md) for full details on the dynamic UI system.
 
 ---
 
-## 📊 Additional Detection Methods
+## [CHART] Additional Detection Methods
 
 While automatic detection works great, you can also manually capture errors:
 
@@ -91,7 +91,7 @@ While automatic detection works great, you can also manually capture errors:
 
 ---
 
-## 📊 View Your Errors
+## [CHART] View Your Errors
 
 ### Open Error Queue
 
@@ -108,7 +108,7 @@ Pending: 4, Analyzing: 1, Complete: 0, Failed: 0
 
 ---
 
-## 🧪 Test It Now
+## [TEST] Test It Now
 
 ### Quick Test (30 seconds)
 
@@ -127,7 +127,7 @@ Pending: 4, Analyzing: 1, Complete: 0, Failed: 0
 
 ---
 
-## ⚙️ Configuration (Optional)
+## [SETTINGS] Configuration (Optional)
 
 **All features are enabled by default!** But you can customize if needed:
 
@@ -169,7 +169,7 @@ Only needed if you prefer manual control:
 
 ---
 
-## 🎓 What Gets Detected
+## [LEARN] What Gets Detected
 
 ### Kotlin Errors (6 types)
 - `lateinit property not initialized`
@@ -192,7 +192,7 @@ Only needed if you prefer manual control:
 - Excessive recomposition
 - LaunchedEffect problems
 - It's working!** If you don't see errors, it means:
-- No build errors exist (your code is clean ✅)
+- No build errors exist (your code is clean [DONE])
 - Build logs are older than 24 hours
 - No terminal output had recognizable errors
 
@@ -202,7 +202,7 @@ Only needed if you prefer manual control:
 
 **Check logs:**
 1. `Help` → `Toggle Developer Tools` → `Console` tab
-2. Look for: `[ErrorQueueManager] ✅ Advanced error detection fully activated`
+2. Look for: `[ErrorQueueManager] [DONE] Advanced error detection fully activated`
 3. You should see: `Terminal output monitoring initialized`, `Build log monitoring initialized`
 
 ### Disable if needed
@@ -231,14 +231,14 @@ If automatic detection causes issues:
 - [ ] Errors automatically appear in RCA panel (if any exist)
 - [ ] Terminal output automatically captured when terminal closes
 
-**Everything automatic - no manual steps required!** 🎉
+**Everything automatic - no manual steps required!** [SUCCESS]
 **Solution 2:** Check console
 - `Help` → `Toggle Developer Tools` → `Console` tab
 - Look for "[ErrorQueueManager]" logs
 
 ---
 
-## 📖 Learn More
+## [BOOK] Learn More
 
 - **Full Documentation:** [ERROR_PARSER_INTEGRATION.md](./api/ERROR_PARSER_INTEGRATION.md)
 - **Backend System:** [ERROR_DETECTION_SYSTEM.md](./api/ERROR_DETECTION_SYSTEM.md)
@@ -246,7 +246,7 @@ If automatic detection causes issues:
 
 ---
 
-## ✅ Success Checklist
+## [DONE] Success Checklist
 
 - [ ] Advanced detection enabled in settings
 - [ ] Built project and saw notification

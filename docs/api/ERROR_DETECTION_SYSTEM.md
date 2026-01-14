@@ -1,4 +1,4 @@
-# 🔍 Error Detection System - Backend Documentation
+﻿# [SEARCH] Error Detection System - Backend Documentation
 
 > **Module:** Error Detection & Parsing Pipeline  
 > **Version:** 1.0.0 | **Last Updated:** January 13, 2026  
@@ -6,7 +6,7 @@
 
 ---
 
-## 📋 Table of Contents
+## [CLIPBOARD] Table of Contents
 
 1. [Overview](#overview)
 2. [Architecture](#architecture)
@@ -59,12 +59,12 @@ The Error Detection System is the entry point for all error analysis in the RCA 
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
 │  ┌──────────────┐    ┌───────────────────┐    ┌─────────────────────────┐   │
-│  │  Raw Error   │───▶│ Language Detector │───▶│    Error Parser         │   │
+│  │  Raw Error   │───[PLAY]│ Language Detector │───[PLAY]│    Error Parser         │   │
 │  │    Text      │    │  (Heuristics)     │    │    (Router)             │   │
 │  └──────────────┘    └───────────────────┘    └───────────┬─────────────┘   │
 │                                                           │                  │
 │                      ┌────────────────────────────────────┼──────────────┐   │
-│                      │                                    ▼              │   │
+│                      │                                    [DOWN]              │   │
 │                      │  ┌──────────────────────────────────────────────┐ │   │
 │                      │  │           LANGUAGE-SPECIFIC PARSERS          │ │   │
 │                      │  ├──────────┬──────────┬──────────┬─────────────┤ │   │
@@ -73,7 +73,7 @@ The Error Detection System is the entry point for all error analysis in the RCA 
 │                      │  │ (6 types)│ (5 types)│ (8 types)│ (7 types)   │ │   │
 │                      │  └──────────┴──────────┴──────────┴─────────────┘ │   │
 │                      │                       │                           │   │
-│                      │                       ▼                           │   │
+│                      │                       [DOWN]                           │   │
 │                      │  ┌──────────────────────────────────────────────┐ │   │
 │                      │  │              BASE PARSER                     │ │   │
 │                      │  │  • File path extraction                      │ │   │
@@ -82,14 +82,14 @@ The Error Detection System is the entry point for all error analysis in the RCA 
 │                      │  └──────────────────────────────────────────────┘ │   │
 │                      └──────────────────────────────────────────────────────┘   │
 │                                                           │                  │
-│                                                           ▼                  │
+│                                                           [DOWN]                  │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │                         ParsedError                                  │    │
 │  │  { type, message, filePath, line, language, metadata, stackTrace }   │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                           │                  │
 │                      ┌────────────────────────────────────┼──────────────┐   │
-│                      │                                    ▼              │   │
+│                      │                                    [DOWN]              │   │
 │                      │  ┌──────────────────────────────────────────────┐ │   │
 │                      │  │           POST-PROCESSING                    │ │   │
 │                      │  ├──────────────────┬───────────────────────────┤ │   │
@@ -1015,25 +1015,25 @@ cache.setForError(parsedError, result);
 └────┬────┘    └──────┬───────┘    └───────┬───────┘    └──────┬──────┘    └────┬─────┘
      │                │                    │                   │                │
      │  errorText     │                    │                   │                │
-     │───────────────────────────────────▶│                   │                │
+     │───────────────────────────────────[PLAY]│                   │                │
      │                │                    │                   │                │
      │                │   detect(text)     │                   │                │
-     │                │◀───────────────────│                   │                │
+     │                │[BACK]───────────────────│                   │                │
      │                │                    │                   │                │
      │                │   "kotlin"         │                   │                │
-     │                │───────────────────▶│                   │                │
+     │                │───────────────────[PLAY]│                   │                │
      │                │                    │                   │                │
      │                │                    │  parse(text)      │                │
-     │                │                    │──────────────────▶│                │
+     │                │                    │──────────────────[PLAY]│                │
      │                │                    │                   │                │
      │                │                    │                   │  match patterns│
-     │                │                    │                   │◀──────────────▶│
+     │                │                    │                   │[BACK]──────────────[PLAY]│
      │                │                    │                   │                │
      │                │                    │   ParsedError     │                │
-     │                │                    │◀──────────────────│                │
+     │                │                    │[BACK]──────────────────│                │
      │                │                    │                   │                │
      │                │                    │                   │                │
-     │◀──────────────────────────────────────────────────────────────────────────│
+     │[BACK]──────────────────────────────────────────────────────────────────────────│
      │        ParsedError { type, message, filePath, line, ... }                │
 ```
 
@@ -1194,4 +1194,4 @@ private parseNewErrorType(text: string): ParsedError | null {
 
 > **Last Updated:** January 13, 2026  
 > **Maintainer:** Backend Team  
-> **Status:** Production Ready ✅
+> **Status:** Production Ready [DONE]

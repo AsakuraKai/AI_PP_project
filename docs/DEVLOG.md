@@ -1,10 +1,10 @@
-# Development Log - RCA Agent: Local-First AI Debugging Assistant
+﻿# Development Log - RCA Agent: Local-First AI Debugging Assistant
 
 > **Purpose:** Weekly journal of all development progress, decisions, and learnings  
 > **Project Type:** Personal learning project - Kotlin/Android debugging assistant  
 > **Timeline:** Flexible - no deadlines, work at your own pace  
 > **Update Frequency:** End of each week (every Friday)  
-> **Status Legend:** 🟢 On Track | 🟡 Learning Challenge | 🔴 Blocked | ✅ Complete
+> **Status Legend:** [GREEN] On Track | [YELLOW] Learning Challenge | [RED] Blocked | [DONE] Complete
 
 ---
 
@@ -13,11 +13,11 @@
 **Goal:** Build a local-first debugging assistant that actually helps with Kotlin/Android development while learning about LLM agents, RAG systems, and local AI deployment.
 
 **What Makes This Interesting:**
-- 🔓 Unlimited context - No token limits or costs
-- ♾️ Unlimited iterations - No API rate limits
-- 🔒 Complete privacy - Code stays on your machine
-- 📈 Continuous learning - Gets better over time
-- 🎓 Educational mode - Learn while debugging
+- [UNLOCKED] Unlimited context - No token limits or costs
+- [INFINITY] Unlimited iterations - No API rate limits
+- [LOCK] Complete privacy - Code stays on your machine
+- [GRAPH] Continuous learning - Gets better over time
+- [LEARN] Educational mode - Learn while debugging
 
 **This is for:** Personal learning, practical use, fun exploration  
 **Not for:** Publication, external validation, strict deadlines
@@ -33,16 +33,16 @@
 
 ### Quick Status Overview
 
-| Phase | Status | Completion | Key Metrics |
-|-------|--------|-----------|-------------|
-| **Phase 1: Backend** | ✅ Complete | Dec 25, 2025 | 878/878 tests, 99% coverage |
-| **Phase 2-3: Chat UI** | ✅ Complete | Jan 1, 2026 | 10.35s response, 2,900 LOC |
-| **Phase 4: Testing** | 🚀 In Progress | Week 1-4 Done | Testing framework ready |
-| **Phase 5: Advanced** | 🔮 Future | TBD | Experimental features |
+| Phase                  | Status               | Completion    | Key Metrics                 |
+| ---------------------- | -------------------- | ------------- | --------------------------- |
+| **Phase 1: Backend**   | [DONE] Complete      | Dec 25, 2025  | 878/878 tests, 99% coverage |
+| **Phase 2-3: Chat UI** | [DONE] Complete      | Jan 1, 2026   | 10.35s response, 2,900 LOC  |
+| **Phase 4: Testing**   | [LAUNCH] In Progress | Week 1-4 Done | Testing framework ready     |
+| **Phase 5: Advanced**  | [FUTURE] Future      | TBD           | Experimental features       |
 
 ### Phase Completion Details
 
-#### ✅ Phase 1: Backend Infrastructure (COMPLETE - Dec 25, 2025)
+#### [DONE] Phase 1: Backend Infrastructure (COMPLETE - Dec 25, 2025)
 - 26+ error parsers (100% accuracy)
 - MinimalReactAgent with ReAct reasoning
 - Knowledge bases (156 AGP + 52 Kotlin versions)
@@ -50,7 +50,7 @@
 - Testing: 878/878 passing, 99% coverage
 - **Status:** Production-ready
 
-#### ✅ Phase 2-3: Chat Participant + Intelligence (COMPLETE - Jan 1, 2026)
+#### [DONE] Phase 2-3: Chat Participant + Intelligence (COMPLETE - Jan 1, 2026)
 - Conversational chat interface (`@rca-agent`)
 - Context-aware analysis (files, diagnostics, terminal)
 - Action buttons (Apply Fix, Explain More, Search)
@@ -58,7 +58,7 @@
 - Performance: 10.35s (88% faster than target)
 - **Status:** Ready for real-world testing
 
-#### 🚀 Phase 4: Real-World Testing (IN PROGRESS)
+#### [LAUNCH] Phase 4: Real-World Testing (IN PROGRESS)
 **Week 1-2 (COMPLETE):** Testing infrastructure built
 - Phase4TestSuite with 10 diverse test cases
 - 7 standardized metrics tracking
@@ -77,7 +77,7 @@
 - Fix top 3 gaps
 - Target: 85%+ usability, 8/10 tests passing
 
-#### 🔮 Phase 5: Advanced Features (FUTURE)
+#### [FUTURE] Phase 5: Advanced Features (FUTURE)
 - Real-time error detection
 - Multi-language support
 - Autonomous fix agent
@@ -85,28 +85,28 @@
 
 ### Code Statistics
 
-| Metric | Current |
-|--------|---------|
-| **Total LOC** | ~15,000 |
-| **Production Code** | ~12,000 |
-| **Test Code** | ~3,000 |
-| **Test Coverage** | 99% |
-| **Test Cases** | 878 passing |
+| Metric              | Current     |
+| ------------------- | ----------- |
+| **Total LOC**       | ~15,000     |
+| **Production Code** | ~12,000     |
+| **Test Code**       | ~3,000      |
+| **Test Coverage**   | 99%         |
+| **Test Cases**      | 878 passing |
 
 ### Performance Metrics
 
-| Metric | Target | Current | Status |
-|--------|--------|---------|--------|
-| **Response Time** | <90s | 10.35s | ✅ 88% faster |
-| **First Stream** | <5s | <3s | ✅ 40% faster |
-| **Accuracy** | 90%+ | 100% | ✅ Perfect |
-| **Usability** | 85%+ | TBD | 🟡 Phase 4 |
+| Metric            | Target | Current | Status            |
+| ----------------- | ------ | ------- | ----------------- |
+| **Response Time** | <90s   | 10.35s  | [DONE] 88% faster |
+| **First Stream**  | <5s    | <3s     | [DONE] 40% faster |
+| **Accuracy**      | 90%+   | 100%    | [DONE] Perfect    |
+| **Usability**     | 85%+   | TBD     | [YELLOW] Phase 4  |
 
 ---
 
 ## Development History
 
-**Latest Milestone:** Week 13 - ✅ **PHASE 1 BACKEND COMPLETE!**  
+**Latest Milestone:** Week 13 - [DONE] **PHASE 1 BACKEND COMPLETE!**  
 **Chunk 5.5:** Documentation Complete (December 20, 2025)
 
 ---
@@ -114,30 +114,30 @@
 ## Week 13 - Documentation Complete (Chunk 5.5)
 **Date Range:** December 20, 2025  
 **Milestone:** Documentation & Phase 1 Backend Complete  
-**Status:** ✅ COMPLETE - PHASE 1 BACKEND PRODUCTION READY
+**Status:** [DONE] COMPLETE - PHASE 1 BACKEND PRODUCTION READY
 
 ### Summary
 Successfully completed comprehensive documentation for the entire RCA Agent backend system. Created detailed API references for all major modules (Agent, Parsers, Tools, Database), complete architecture documentation with system diagrams, and performance benchmarks with optimization guide. This marks the **completion of Phase 1 Backend** - all planned chunks are now complete and production-ready for VS Code extension integration.
 
 ### Key Accomplishments
-- ✅ **API Documentation**: 4 comprehensive reference documents (~3,050 total lines)
-- ✅ **Architecture Documentation**: 3 detailed architecture docs (~5,200 total lines)
-- ✅ **Performance Documentation**: Complete benchmarks with metrics and optimization guide
-- ✅ **Main Doc Updates**: Updated README, DEVLOG, PROJECT_STRUCTURE, API_CONTRACTS
-- ✅ **Phase 1 Completion**: All backend chunks complete (1.1-5.5)
+- [DONE] **API Documentation**: 4 comprehensive reference documents (~3,050 total lines)
+- [DONE] **Architecture Documentation**: 3 detailed architecture docs (~5,200 total lines)
+- [DONE] **Performance Documentation**: Complete benchmarks with metrics and optimization guide
+- [DONE] **Main Doc Updates**: Updated README, DEVLOG, PROJECT_STRUCTURE, API_CONTRACTS
+- [DONE] **Phase 1 Completion**: All backend chunks complete (1.1-5.5)
 
 ### Documentation Created
-| # | Document | Purpose | Lines |
-|---|----------|---------|-------|
-| 1 | `docs/api/Agent.md` | Agent APIs (MinimalReactAgent, EducationalAgent, PromptEngine, etc.) | ~900 |
-| 2 | `docs/api/Parsers.md` | Parser APIs (all error parsers and language detection) | ~700 |
-| 3 | `docs/api/Tools.md` | Tool APIs (ToolRegistry, ReadFileTool, LSPTool, etc.) | ~650 |
-| 4 | `docs/api/Database.md` | Database APIs (ChromaDB, caching, quality management) | ~800 |
-| 5 | `docs/architecture/overview.md` | System architecture with component diagrams | ~1,800 |
-| 6 | `docs/architecture/agent-workflow.md` | Detailed ReAct agent reasoning flow | ~2,100 |
-| 7 | `docs/architecture/database-design.md` | ChromaDB schema and caching strategy | ~1,300 |
-| 8 | `docs/performance/benchmarks.md` | Performance metrics and optimization guide | ~1,400 |
-| **Total** | **8 files** | **~9,650 lines** | **Complete API, architecture, and performance docs** |
+| #         | Document                               | Purpose                                                              | Lines                                                |
+| --------- | -------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------- |
+| 1         | `docs/api/Agent.md`                    | Agent APIs (MinimalReactAgent, EducationalAgent, PromptEngine, etc.) | ~900                                                 |
+| 2         | `docs/api/Parsers.md`                  | Parser APIs (all error parsers and language detection)               | ~700                                                 |
+| 3         | `docs/api/Tools.md`                    | Tool APIs (ToolRegistry, ReadFileTool, LSPTool, etc.)                | ~650                                                 |
+| 4         | `docs/api/Database.md`                 | Database APIs (ChromaDB, caching, quality management)                | ~800                                                 |
+| 5         | `docs/architecture/overview.md`        | System architecture with component diagrams                          | ~1,800                                               |
+| 6         | `docs/architecture/agent-workflow.md`  | Detailed ReAct agent reasoning flow                                  | ~2,100                                               |
+| 7         | `docs/architecture/database-design.md` | ChromaDB schema and caching strategy                                 | ~1,300                                               |
+| 8         | `docs/performance/benchmarks.md`       | Performance metrics and optimization guide                           | ~1,400                                               |
+| **Total** | **8 files**                            | **~9,650 lines**                                                     | **Complete API, architecture, and performance docs** |
 
 ### Documentation Coverage
 **API Documentation:**
@@ -176,30 +176,30 @@ Successfully completed comprehensive documentation for the entire RCA Agent back
 
 ### Phase 1 Backend Completion Summary
 **All Chunks Complete:**
-- ✅ Chunk 1.1-1.5: MVP Backend (Ollama, NPE Parser, ReAct Agent, ReadFileTool, Testing)
-- ✅ Chunk 2.1-2.4: Core Tools (ErrorParser, ToolRegistry, LSPTool, PromptEngine)
-- ✅ Chunk 3.1-3.4: Database (ChromaDB, Embedding, Cache, Feedback)
-- ✅ Chunk 4.1-4.5: Android Support (Compose, XML, Gradle, Manifest, Testing)
-- ✅ Chunk 5.1-5.5: Polish (Streaming, Educational, Performance, Testing, **Documentation**)
+- [DONE] Chunk 1.1-1.5: MVP Backend (Ollama, NPE Parser, ReAct Agent, ReadFileTool, Testing)
+- [DONE] Chunk 2.1-2.4: Core Tools (ErrorParser, ToolRegistry, LSPTool, PromptEngine)
+- [DONE] Chunk 3.1-3.4: Database (ChromaDB, Embedding, Cache, Feedback)
+- [DONE] Chunk 4.1-4.5: Android Support (Compose, XML, Gradle, Manifest, Testing)
+- [DONE] Chunk 5.1-5.5: Polish (Streaming, Educational, Performance, Testing, **Documentation**)
 
 **Final Metrics:**
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| Accuracy | 70%+ | 100% (10/10) | ✅ EXCEEDS 43% |
-| Latency (p50) | <60s | 45-55s | ✅ MEETS |
-| Latency (p90) | <90s | 75.8s avg | ✅ MEETS |
-| Cache Hit Rate | 60%+ | 60-70% | ✅ MEETS |
-| Test Coverage | 80%+ | 85% | ✅ EXCEEDS |
-| Tests Passing | 95%+ | 99% (869/878) | ✅ EXCEEDS |
-| **Documentation** | **Complete** | **~9,650 lines** | ✅ **COMPLETE** |
+| Metric            | Target       | Actual           | Status              |
+| ----------------- | ------------ | ---------------- | ------------------- |
+| Accuracy          | 70%+         | 100% (10/10)     | [DONE] EXCEEDS 43%  |
+| Latency (p50)     | <60s         | 45-55s           | [DONE] MEETS        |
+| Latency (p90)     | <90s         | 75.8s avg        | [DONE] MEETS        |
+| Cache Hit Rate    | 60%+         | 60-70%           | [DONE] MEETS        |
+| Test Coverage     | 80%+         | 85%              | [DONE] EXCEEDS      |
+| Tests Passing     | 95%+         | 99% (869/878)    | [DONE] EXCEEDS      |
+| **Documentation** | **Complete** | **~9,650 lines** | [DONE] **COMPLETE** |
 
 **Production Readiness:**
-- ✅ All features implemented and tested
-- ✅ Performance targets met or exceeded
-- ✅ Comprehensive documentation complete
-- ✅ 99% test pass rate (9 failures are pre-existing Android issues)
-- ✅ 85% code coverage
-- ✅ Ready for VS Code extension integration
+- [DONE] All features implemented and tested
+- [DONE] Performance targets met or exceeded
+- [DONE] Comprehensive documentation complete
+- [DONE] 99% test pass rate (9 failures are pre-existing Android issues)
+- [DONE] 85% code coverage
+- [DONE] Ready for VS Code extension integration
 
 ### Files Created This Week
 **Documentation (8 files):**
@@ -219,18 +219,18 @@ Successfully completed comprehensive documentation for the entire RCA Agent back
 - `docs/API_CONTRACTS.md` - Added references to detailed API documentation
 
 ### Metrics
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| API Docs | 4 modules | 4 modules | ✅ |
-| Architecture Docs | 3 sections | 3 sections | ✅ |
-| Performance Docs | Benchmarks | Complete | ✅ |
-| Lines Written | ~5,000 | ~9,650 | ✅ EXCEEDS 93% |
-| Cross-References | Many | 50+ | ✅ |
-| Code Examples | 30+ | 40+ | ✅ EXCEEDS |
-| Documentation Coverage | Complete | 100% | ✅ |
+| Metric                 | Target     | Actual     | Status             |
+| ---------------------- | ---------- | ---------- | ------------------ |
+| API Docs               | 4 modules  | 4 modules  | [DONE]             |
+| Architecture Docs      | 3 sections | 3 sections | [DONE]             |
+| Performance Docs       | Benchmarks | Complete   | [DONE]             |
+| Lines Written          | ~5,000     | ~9,650     | [DONE] EXCEEDS 93% |
+| Cross-References       | Many       | 50+        | [DONE]             |
+| Code Examples          | 30+        | 40+        | [DONE] EXCEEDS     |
+| Documentation Coverage | Complete   | 100%       | [DONE]             |
 
 ### What's Next
-**Phase 1 Backend: ✅ COMPLETE**
+**Phase 1 Backend: [DONE] COMPLETE**
 
 **Phase 2: VS Code Extension Integration (Sokchea's Work)**
 - Extension scaffolding and command palette
@@ -253,11 +253,11 @@ Successfully completed comprehensive documentation for the entire RCA Agent back
 - Progressive disclosure (API → Architecture → Performance) matches reader learning curve
 
 **Phase 1 Retrospective:**
-- ✅ All targets met or exceeded
-- ✅ Test coverage maintained throughout (85%)
-- ✅ Performance optimization successful (45-55s vs 60s target)
-- ✅ Comprehensive documentation completed
-- 🎓 Learned: ReAct agents, vector databases, local LLM optimization, testing at scale
+- [DONE] All targets met or exceeded
+- [DONE] Test coverage maintained throughout (85%)
+- [DONE] Performance optimization successful (45-55s vs 60s target)
+- [DONE] Comprehensive documentation completed
+- [LEARN] Learned: ReAct agents, vector databases, local LLM optimization, testing at scale
 
 **Success Factors:**
 - Clear chunk-based milestones kept progress visible
@@ -271,37 +271,37 @@ Successfully completed comprehensive documentation for the entire RCA Agent back
 ## Week 13 - Performance Monitoring & Golden Tests (Chunks 5.3-5.4)
 **Date Range:** December 20, 2025  
 **Milestone:** Performance & Testing Complete  
-**Status:** ✅ Complete (869/878 tests passing - 9 pre-existing Android failures)
+**Status:** [DONE] Complete (869/878 tests passing - 9 pre-existing Android failures)
 
 ### Summary
 Successfully implemented PerformanceTracker for comprehensive latency monitoring with percentile calculations and created a golden test suite with 7 reference RCA cases for regression testing. PerformanceTracker measures operation latencies across all components (agent, LLM, tools, DB) with p50/p90/p99 statistics. Golden test suite validates end-to-end accuracy against known-good RCA results, ensuring no regression as system evolves.
 
 ### Key Accomplishments
-- ✅ **PerformanceTracker**: Latency tracking with percentile calculations (~220 lines)
-- ✅ **Golden Test Suite**: 7 reference RCA test cases for regression prevention
-- ✅ **Integration**: PerformanceTracker integrated into MinimalReactAgent analyze() method
-- ✅ **Comprehensive Tests**: 29 new tests (20 PerformanceTracker + 9 Golden)
-- ✅ **Metrics Export**: JSON export for performance analysis and trending
-- ✅ All 869 tests passing (29 new + 840 existing, 9 pre-existing Android failures)
+- [DONE] **PerformanceTracker**: Latency tracking with percentile calculations (~220 lines)
+- [DONE] **Golden Test Suite**: 7 reference RCA test cases for regression prevention
+- [DONE] **Integration**: PerformanceTracker integrated into MinimalReactAgent analyze() method
+- [DONE] **Comprehensive Tests**: 29 new tests (20 PerformanceTracker + 9 Golden)
+- [DONE] **Metrics Export**: JSON export for performance analysis and trending
+- [DONE] All 869 tests passing (29 new + 840 existing, 9 pre-existing Android failures)
 
 ### Features Implemented
-| # | Feature | Description |
-|---|---------|-------------|
-| 1 | Operation Timing | Track latency for any labeled operation |
-| 2 | Percentile Calculation | p50, p90, p99, mean, min, max statistics |
-| 3 | Count Tracking | Number of executions per operation |
-| 4 | Metrics Export | JSON format for external analysis |
-| 5 | Golden Test Suite | 7 curated test cases (lateinit, NPE, type_mismatch, etc.) |
-| 6 | Regression Prevention | Validate RCA quality doesn't degrade over time |
+| #   | Feature                | Description                                               |
+| --- | ---------------------- | --------------------------------------------------------- |
+| 1   | Operation Timing       | Track latency for any labeled operation                   |
+| 2   | Percentile Calculation | p50, p90, p99, mean, min, max statistics                  |
+| 3   | Count Tracking         | Number of executions per operation                        |
+| 4   | Metrics Export         | JSON format for external analysis                         |
+| 5   | Golden Test Suite      | 7 curated test cases (lateinit, NPE, type_mismatch, etc.) |
+| 6   | Regression Prevention  | Validate RCA quality doesn't degrade over time            |
 
 ### Implementation Details
-| Component | Files | Lines | Tests | Coverage | Status |
-|-----------|-------|-------|-------|----------|--------|
-| PerformanceTracker | `src/monitoring/PerformanceTracker.ts` | ~220 | 20 | 95%+ | ✅ |
-| Golden Test Suite | `tests/golden/golden-suite.test.ts` | ~450 | 7 | N/A | ✅ |
-| Golden Test Data | `tests/fixtures/golden-dataset.ts` | ~320 | - | N/A | ✅ |
-| MinimalReactAgent (modified) | `src/agent/MinimalReactAgent.ts` | +30 lines | - | 88% | ✅ |
-| **Total** | **4 files** | **~1,020 lines** | **29** | **95%+** | ✅ |
+| Component                    | Files                                  | Lines            | Tests  | Coverage | Status |
+| ---------------------------- | -------------------------------------- | ---------------- | ------ | -------- | ------ |
+| PerformanceTracker           | `src/monitoring/PerformanceTracker.ts` | ~220             | 20     | 95%+     | [DONE] |
+| Golden Test Suite            | `tests/golden/golden-suite.test.ts`    | ~450             | 7      | N/A      | [DONE] |
+| Golden Test Data             | `tests/fixtures/golden-dataset.ts`     | ~320             | -      | N/A      | [DONE] |
+| MinimalReactAgent (modified) | `src/agent/MinimalReactAgent.ts`       | +30 lines        | -      | 88%      | [DONE] |
+| **Total**                    | **4 files**                            | **~1,020 lines** | **29** | **95%+** | [DONE] |
 
 (rest of week 13 Chunks 5.3-5.4 entry continues...)
 
@@ -310,37 +310,37 @@ Successfully implemented PerformanceTracker for comprehensive latency monitoring
 ## Current Status
 **Date Range:** December 18, 2025  
 **Milestone:** Agent State Streaming Complete  
-**Status:** ✅ Complete (816/826 tests passing - 10 failures are pre-existing Android parser issues)
+**Status:** [DONE] Complete (816/826 tests passing - 10 failures are pre-existing Android parser issues)
 
 ### Summary
 Successfully implemented real-time agent state streaming using EventEmitter pattern to enable live progress updates for VS Code extension UI. This allows users to see iteration progress, thoughts, actions, observations, and completion status as analysis runs. Also created DocumentSynthesizer for generating formatted markdown RCA reports with proper structure, code highlighting, and VS Code-compatible file links.
 
 ### Key Accomplishments
-- ✅ **AgentStateStream**: EventEmitter class for 6 event types (~220 lines)
-- ✅ **DocumentSynthesizer**: Markdown report generator (~320 lines)
-- ✅ **MinimalReactAgent Integration**: Stream emissions throughout analyze() loop
-- ✅ **Progress Tracking**: Real-time percentage and elapsed time calculation
-- ✅ **Comprehensive Tests**: 56 new tests (25 AgentStateStream + 31 DocumentSynthesizer)
-- ✅ **Error-Safe Emission**: Try-catch wrapping to prevent stream errors from breaking analysis
-- ✅ All 816 tests passing (56 new + 760 existing, 10 pre-existing Android failures)
+- [DONE] **AgentStateStream**: EventEmitter class for 6 event types (~220 lines)
+- [DONE] **DocumentSynthesizer**: Markdown report generator (~320 lines)
+- [DONE] **MinimalReactAgent Integration**: Stream emissions throughout analyze() loop
+- [DONE] **Progress Tracking**: Real-time percentage and elapsed time calculation
+- [DONE] **Comprehensive Tests**: 56 new tests (25 AgentStateStream + 31 DocumentSynthesizer)
+- [DONE] **Error-Safe Emission**: Try-catch wrapping to prevent stream errors from breaking analysis
+- [DONE] All 816 tests passing (56 new + 760 existing, 10 pre-existing Android failures)
 
 ### Features Implemented
-| # | Feature | Description |
-|---|---------|-------------|
-| 1 | Iteration Events | Progress tracking with percentage complete |
-| 2 | Thought Events | Hypothesis generation notifications |
-| 3 | Action Events | Tool execution start notifications |
-| 4 | Observation Events | Tool result notifications (success/failure) |
-| 5 | Complete Events | Final RCA with duration and iteration count |
-| 6 | Error Events | Error notifications with context (iteration, phase) |
+| #   | Feature            | Description                                         |
+| --- | ------------------ | --------------------------------------------------- |
+| 1   | Iteration Events   | Progress tracking with percentage complete          |
+| 2   | Thought Events     | Hypothesis generation notifications                 |
+| 3   | Action Events      | Tool execution start notifications                  |
+| 4   | Observation Events | Tool result notifications (success/failure)         |
+| 5   | Complete Events    | Final RCA with duration and iteration count         |
+| 6   | Error Events       | Error notifications with context (iteration, phase) |
 
 ### Implementation Details
-| Component | Files | Lines | Tests | Coverage | Status |
-|-----------|-------|-------|-------|----------|--------|
-| AgentStateStream | `src/agent/AgentStateStream.ts` | ~220 | 25 | 95%+ | ✅ |
-| DocumentSynthesizer | `src/agent/DocumentSynthesizer.ts` | ~320 | 31 | 95%+ | ✅ |
-| MinimalReactAgent (modified) | `src/agent/MinimalReactAgent.ts` | +45 lines | - | 88% | ✅ |
-| **Total** | **3 files** | **~585 lines** | **56** | **95%+** | ✅ |
+| Component                    | Files                              | Lines          | Tests  | Coverage | Status |
+| ---------------------------- | ---------------------------------- | -------------- | ------ | -------- | ------ |
+| AgentStateStream             | `src/agent/AgentStateStream.ts`    | ~220           | 25     | 95%+     | [DONE] |
+| DocumentSynthesizer          | `src/agent/DocumentSynthesizer.ts` | ~320           | 31     | 95%+     | [DONE] |
+| MinimalReactAgent (modified) | `src/agent/MinimalReactAgent.ts`   | +45 lines      | -      | 88%      | [DONE] |
+| **Total**                    | **3 files**                        | **~585 lines** | **56** | **95%+** | [DONE] |
 
 ### Technical Decisions Made
 1. **EventEmitter Pattern**: Node.js EventEmitter for decoupled communication (20 max listeners for multiple UI components)
@@ -406,20 +406,20 @@ Successfully implemented real-time agent state streaming using EventEmitter patt
 - Pending: `docs/_archive/milestones/Kai-Backend/Chunk-5.1-COMPLETE.md`
 
 ### Metrics
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| Event Types | 6 | 6 | ✅ |
-| New Tests | 50+ | 56 | ✅ Exceeds |
-| Tests Passing | 100% of new | 100% | ✅ |
-| Overall Tests | >800 | 816/826 | ✅ |
-| Coverage | >85% | 95%+ | ✅ Exceeds |
-| Lines Added | ~500 | ~585 | ✅ Exceeds |
+| Metric        | Target      | Actual  | Status         |
+| ------------- | ----------- | ------- | -------------- |
+| Event Types   | 6           | 6       | [DONE]         |
+| New Tests     | 50+         | 56      | [DONE] Exceeds |
+| Tests Passing | 100% of new | 100%    | [DONE]         |
+| Overall Tests | >800        | 816/826 | [DONE]         |
+| Coverage      | >85%        | 95%+    | [DONE] Exceeds |
+| Lines Added   | ~500        | ~585    | [DONE] Exceeds |
 
 ### Test Results
 ```
-✅ 816 passing (up from 654 before Chunk 5.1)
-❌ 10 failing (all pre-existing Android parser issues from Chunks 4.1-4.5)
-✅ 24/29 test suites passing
+[DONE] 816 passing (up from 654 before Chunk 5.1)
+[FAIL] 10 failing (all pre-existing Android parser issues from Chunks 4.1-4.5)
+[DONE] 24/29 test suites passing
 
 New Tests Added (+162):
 - AgentStateStream.test.ts: 25 tests (100% passing)
@@ -446,32 +446,32 @@ New Tests Added (+162):
 ## Week 12/13 - Educational Agent (Chunk 5.2)
 **Date Range:** December 18, 2025  
 **Milestone:** Educational Agent Complete  
-**Status:** ✅ Complete (840/850 tests passing - 10 failures are pre-existing Android parser issues)
+**Status:** [DONE] Complete (840/850 tests passing - 10 failures are pre-existing Android parser issues)
 
 ### Summary
 Successfully implemented EducationalAgent as an extension of MinimalReactAgent that generates beginner-friendly explanations alongside root cause analysis. Supports both synchronous (immediate) and asynchronous (delayed) educational content generation to balance speed with completeness. Provides three types of learning notes: error type explanations, root cause explanations with analogies, and actionable prevention tips.
 
 ### Key Accomplishments
-- ✅ **EducationalAgent**: Extends MinimalReactAgent with educational features (~335 lines)
-- ✅ **Synchronous & Async Modes**: Support for immediate vs deferred educational content
-- ✅ **Three Learning Note Types**: Error type, root cause, and prevention tips
-- ✅ **Beginner-Friendly Language**: Analogies and simple explanations
-- ✅ **Error Handling**: Graceful degradation when educational LLM calls fail
-- ✅ **Pending Education Tracking**: Async education completion monitoring
-- ✅ **Comprehensive Tests**: 24 tests covering all modes and error types
-- ✅ All 24 EducationalAgent tests passing (840/850 total, +24 new tests)
+- [DONE] **EducationalAgent**: Extends MinimalReactAgent with educational features (~335 lines)
+- [DONE] **Synchronous & Async Modes**: Support for immediate vs deferred educational content
+- [DONE] **Three Learning Note Types**: Error type, root cause, and prevention tips
+- [DONE] **Beginner-Friendly Language**: Analogies and simple explanations
+- [DONE] **Error Handling**: Graceful degradation when educational LLM calls fail
+- [DONE] **Pending Education Tracking**: Async education completion monitoring
+- [DONE] **Comprehensive Tests**: 24 tests covering all modes and error types
+- [DONE] All 24 EducationalAgent tests passing (840/850 total, +24 new tests)
 
 ### Features Implemented
-| # | Feature | Description |
-|---|---------|-------------|
-| 1 | Sync Mode | Generate learning notes during analysis (blocks completion) |
-| 2 | Async Mode | Return immediately with placeholder, generate later |
-| 3 | Error Type Explanation | "What is this error?" - Beginner-friendly overview |
-| 4 | Root Cause Explanation | "Why did this happen?" - Analogy-based reasoning |
-| 5 | Prevention Tips | "How to prevent this?" - 3 actionable steps |
-| 6 | Output Cleanup | Remove markdown fences, trim whitespace |
-| 7 | Pending Education API | hasPendingEducation(), getPendingLearningNotes() |
-| 8 | Multi-Error Support | Works with lateinit, NPE, Compose, Gradle, XML errors |
+| #   | Feature                | Description                                                 |
+| --- | ---------------------- | ----------------------------------------------------------- |
+| 1   | Sync Mode              | Generate learning notes during analysis (blocks completion) |
+| 2   | Async Mode             | Return immediately with placeholder, generate later         |
+| 3   | Error Type Explanation | "What is this error?" - Beginner-friendly overview          |
+| 4   | Root Cause Explanation | "Why did this happen?" - Analogy-based reasoning            |
+| 5   | Prevention Tips        | "How to prevent this?" - 3 actionable steps                 |
+| 6   | Output Cleanup         | Remove markdown fences, trim whitespace                     |
+| 7   | Pending Education API  | hasPendingEducation(), getPendingLearningNotes()            |
+| 8   | Multi-Error Support    | Works with lateinit, NPE, Compose, Gradle, XML errors       |
 
 ### Implementation Details
 
@@ -547,9 +547,9 @@ it('should generate learning notes during analysis', async () => {
   const result = await agent.analyze(sampleError, 'sync');
 
   expect(result.learningNotes).toHaveLength(3);
-  expect(result.learningNotes![0]).toContain('🎓 **What is this error?**');
-  expect(result.learningNotes![1]).toContain('🔍 **Why did this happen?**');
-  expect(result.learningNotes![2]).toContain('🛡️ **How to prevent this:**');
+  expect(result.learningNotes![0]).toContain('[LEARN] **What is this error?**');
+  expect(result.learningNotes![1]).toContain('[SEARCH] **Why did this happen?**');
+  expect(result.learningNotes![2]).toContain('[SHIELD] **How to prevent this:**');
 });
 ```
 
@@ -599,7 +599,7 @@ console.log(result.learningNotes); // Array of 3 formatted notes
 
 // Asynchronous mode (fast return)
 const quickResult = await agent.analyze(error, 'async');
-console.log(quickResult.learningNotes); // ['⏳ Learning notes generating...']
+console.log(quickResult.learningNotes); // ['[TIMER] Learning notes generating...']
 
 // Get completed async notes later
 const notes = await agent.getPendingLearningNotes(error);
@@ -608,15 +608,15 @@ console.log(notes); // Array of 3 formatted notes (once ready)
 
 ### Metrics
 
-| Metric | Value | Target | Status |
-|--------|-------|--------|--------|
-| New Tests | 24 | - | ✅ All passing |
-| Total Tests | 850 | - | 840 passing (98.8%) |
-| Code Coverage (EducationalAgent) | 95%+ | >80% | ✅ Exceeds target |
-| Lines of Code (EducationalAgent) | 335 | - | Concise implementation |
-| Lines of Tests | 450 | - | Comprehensive coverage |
-| Educational Latency (Sync) | +15-20s | <30s | ✅ Within budget |
-| Token Overhead | +1200 | <2000 | ✅ Efficient prompts |
+| Metric                           | Value   | Target | Status                   |
+| -------------------------------- | ------- | ------ | ------------------------ |
+| New Tests                        | 24      | -      | [DONE] All passing       |
+| Total Tests                      | 850     | -      | 840 passing (98.8%)      |
+| Code Coverage (EducationalAgent) | 95%+    | >80%   | [DONE] Exceeds target    |
+| Lines of Code (EducationalAgent) | 335     | -      | Concise implementation   |
+| Lines of Tests                   | 450     | -      | Comprehensive coverage   |
+| Educational Latency (Sync)       | +15-20s | <30s   | [DONE] Within budget     |
+| Token Overhead                   | +1200   | <2000  | [DONE] Efficient prompts |
 
 ### Documentation
 
@@ -638,55 +638,55 @@ Created:
 ## Week 13 - Performance Optimization & Testing (Chunks 5.3-5.4)
 **Date Range:** December 20, 2025  
 **Milestone:** Chunks 5.3-5.4 Complete  
-**Status:** ✅ Complete (869/878 tests passing - 9 pre-existing failures)
+**Status:** [DONE] Complete (869/878 tests passing - 9 pre-existing failures)
 
 ### Summary
 Successfully implemented comprehensive performance monitoring infrastructure and golden test suite to complete the polish phase. The agent now tracks detailed metrics for all operations (parsing, LLM calls, tool execution) and includes a robust regression detection framework with 7 curated reference test cases. All performance targets achieved (p50 <60s, p90 <75s).
 
 ### Key Accomplishments
-- ✅ **PerformanceTracker**: Full metrics collection with percentiles (~243 lines)
-- ✅ **Agent Integration**: All operations instrumented (7 metric types)
-- ✅ **Golden Test Suite**: 7 reference RCA cases for regression detection (~315 lines)
-- ✅ **Regression Detection**: Automated pass rate and confidence validation
-- ✅ **Console Reporting**: Formatted table output with ASCII borders
-- ✅ **JSON Export**: CI/CD-ready metrics export
-- ✅ **Test Coverage**: 85%+ across all modules
-- ✅ All 20 PerformanceTracker tests + 9 golden tests passing (869/878 total, +29 new tests)
+- [DONE] **PerformanceTracker**: Full metrics collection with percentiles (~243 lines)
+- [DONE] **Agent Integration**: All operations instrumented (7 metric types)
+- [DONE] **Golden Test Suite**: 7 reference RCA cases for regression detection (~315 lines)
+- [DONE] **Regression Detection**: Automated pass rate and confidence validation
+- [DONE] **Console Reporting**: Formatted table output with ASCII borders
+- [DONE] **JSON Export**: CI/CD-ready metrics export
+- [DONE] **Test Coverage**: 85%+ across all modules
+- [DONE] All 20 PerformanceTracker tests + 9 golden tests passing (869/878 total, +29 new tests)
 
 ### Features Implemented - Chunk 5.3 (Performance)
-| # | Feature | Description |
-|---|---------|-------------|
-| 1 | Timer API | Start/stop pattern for easy integration |
-| 2 | Statistics | p50, p90, p99 percentiles + mean, min, max |
-| 3 | Metrics Export | JSON-serializable format for CI/CD |
-| 4 | Pattern Matching | Get metrics by regex pattern |
-| 5 | Top-N Analysis | Find slowest operations automatically |
-| 6 | Console Reporting | Formatted ASCII table output |
-| 7 | Agent Integration | 7 instrumentation points (total, LLM, tools, prompts) |
+| #   | Feature           | Description                                           |
+| --- | ----------------- | ----------------------------------------------------- |
+| 1   | Timer API         | Start/stop pattern for easy integration               |
+| 2   | Statistics        | p50, p90, p99 percentiles + mean, min, max            |
+| 3   | Metrics Export    | JSON-serializable format for CI/CD                    |
+| 4   | Pattern Matching  | Get metrics by regex pattern                          |
+| 5   | Top-N Analysis    | Find slowest operations automatically                 |
+| 6   | Console Reporting | Formatted ASCII table output                          |
+| 7   | Agent Integration | 7 instrumentation points (total, LLM, tools, prompts) |
 
 ### Features Implemented - Chunk 5.4 (Testing)
-| # | Feature | Description |
-|---|---------|-------------|
-| 1 | Golden Test Cases | 7 curated reference RCAs (lateinit, NPE, Compose, etc.) |
-| 2 | Keyword Validation | Root cause + fix guideline keyword matching |
-| 3 | Confidence Thresholds | Min confidence per error type (0.6-0.7) |
-| 4 | Regression Detection | Automated pass rate check (≥66%) |
-| 5 | Performance Checks | Max 2min per golden test |
-| 6 | Test Command | `npm run test:golden` with env flag |
-| 7 | Summary Report | Pass rate, avg confidence, coverage stats |
+| #   | Feature               | Description                                             |
+| --- | --------------------- | ------------------------------------------------------- |
+| 1   | Golden Test Cases     | 7 curated reference RCAs (lateinit, NPE, Compose, etc.) |
+| 2   | Keyword Validation    | Root cause + fix guideline keyword matching             |
+| 3   | Confidence Thresholds | Min confidence per error type (0.6-0.7)                 |
+| 4   | Regression Detection  | Automated pass rate check (≥66%)                        |
+| 5   | Performance Checks    | Max 2min per golden test                                |
+| 6   | Test Command          | `npm run test:golden` with env flag                     |
+| 7   | Summary Report        | Pass rate, avg confidence, coverage stats               |
 
 ### Implementation Details - Performance
-| Component | Files | Lines | Tests | Coverage | Status |
-|-----------|-------|-------|-------|----------|--------|
-| PerformanceTracker | `src/monitoring/PerformanceTracker.ts` | ~243 | 20 | 95%+ | ✅ |
-| MinimalReactAgent (modified) | `src/agent/MinimalReactAgent.ts` | +35 lines | - | 88% | ✅ |
-| **Total** | **2 files** | **~278 lines** | **20** | **95%+** | ✅ |
+| Component                    | Files                                  | Lines          | Tests  | Coverage | Status |
+| ---------------------------- | -------------------------------------- | -------------- | ------ | -------- | ------ |
+| PerformanceTracker           | `src/monitoring/PerformanceTracker.ts` | ~243           | 20     | 95%+     | [DONE] |
+| MinimalReactAgent (modified) | `src/agent/MinimalReactAgent.ts`       | +35 lines      | -      | 88%      | [DONE] |
+| **Total**                    | **2 files**                            | **~278 lines** | **20** | **95%+** | [DONE] |
 
 ### Implementation Details - Testing
-| Component | Files | Lines | Tests | Coverage | Status |
-|-----------|-------|-------|-------|----------|--------|
-| Golden Test Suite | `tests/golden/golden-suite.test.ts` | ~315 | 9 (7 cases + 2 checks) | N/A | ✅ |
-| **Total** | **1 file** | **~315 lines** | **9** | **N/A** | ✅ |
+| Component         | Files                               | Lines          | Tests                  | Coverage | Status |
+| ----------------- | ----------------------------------- | -------------- | ---------------------- | -------- | ------ |
+| Golden Test Suite | `tests/golden/golden-suite.test.ts` | ~315           | 9 (7 cases + 2 checks) | N/A      | [DONE] |
+| **Total**         | **1 file**                          | **~315 lines** | **9**                  | **N/A**  | [DONE] |
 
 ### Technical Decisions Made
 1. **Start/Stop Pattern**: Easy integration, prevents resource leaks
@@ -700,28 +700,28 @@ Successfully implemented comprehensive performance monitoring infrastructure and
 
 ### Performance Metrics Achieved
 ```
-📊 Target vs Actual Performance
+[CHART] Target vs Actual Performance
 ================================================================================
 Metric                          Target      Actual      Status
 --------------------------------------------------------------------------------
-Analysis latency (p50)          <60s        45-55s      ✅ 17% better
-Analysis latency (p90)          <75s        65-80s      ✅ Within target
-LLM inference (mean)            <15s        10-12s      ✅ 25% better
-Tool execution (mean)           <5s         2-4s        ✅ 50% better
-Prompt generation (mean)        <100ms      50-80ms     ✅ 40% better
+Analysis latency (p50)          <60s        45-55s      [DONE] 17% better
+Analysis latency (p90)          <75s        65-80s      [DONE] Within target
+LLM inference (mean)            <15s        10-12s      [DONE] 25% better
+Tool execution (mean)           <5s         2-4s        [DONE] 50% better
+Prompt generation (mean)        <100ms      50-80ms     [DONE] 40% better
 ================================================================================
 ```
 
 ### Example Performance Output
 ```
-📊 Performance Metrics
+[CHART] Performance Metrics
 ================================================================================
 
-⏱️  Total Time: 52341.23ms
-📈 Total Operations: 15
+[TIMER]  Total Time: 52341.23ms
+[GRAPH] Total Operations: 15
 ⌀  Average Time: 3489.42ms
 
-📋 Operation Breakdown:
+[CLIPBOARD] Operation Breakdown:
 --------------------------------------------------------------------------------
 Operation                     Mean        p50         p90         p99         Count
 --------------------------------------------------------------------------------
@@ -734,21 +734,21 @@ prompt_generation             45.67ms     45.67ms     45.67ms     45.67ms     1
 ```
 
 ### Golden Test Cases
-| # | Test Case | Error Type | Min Confidence | Expected Keywords |
-|---|-----------|------------|----------------|-------------------|
-| 1 | lateinit not initialized | `lateinit` | 0.7 | property, initialized, before |
-| 2 | NullPointerException | `npe` | 0.6 | null, variable, nullable |
-| 3 | Unresolved reference | `unresolved_reference` | 0.6 | function, not found |
-| 4 | Type mismatch | `type_mismatch` | 0.7 | type, String, Int |
-| 5 | Gradle dependency conflict | `gradle_dependency_conflict` | 0.7 | conflict, version |
-| 6 | Compose remember error | `compose_remember` | 0.6 | remember, state |
-| 7 | XML InflateException | `xml_inflation` | 0.6 | xml, layout, inflate |
+| #   | Test Case                  | Error Type                   | Min Confidence | Expected Keywords             |
+| --- | -------------------------- | ---------------------------- | -------------- | ----------------------------- |
+| 1   | lateinit not initialized   | `lateinit`                   | 0.7            | property, initialized, before |
+| 2   | NullPointerException       | `npe`                        | 0.6            | null, variable, nullable      |
+| 3   | Unresolved reference       | `unresolved_reference`       | 0.6            | function, not found           |
+| 4   | Type mismatch              | `type_mismatch`              | 0.7            | type, String, Int             |
+| 5   | Gradle dependency conflict | `gradle_dependency_conflict` | 0.7            | conflict, version             |
+| 6   | Compose remember error     | `compose_remember`           | 0.6            | remember, state               |
+| 7   | XML InflateException       | `xml_inflation`              | 0.6            | xml, layout, inflate          |
 
 ### Test Results
 ```
-✅ 869 passing (up from 840 before Chunks 5.3-5.4)
-❌ 9 failing (all pre-existing Android parser issues from Chunks 4.1-4.5)
-✅ 28/29 test suites passing
+[DONE] 869 passing (up from 840 before Chunks 5.3-5.4)
+[FAIL] 9 failing (all pre-existing Android parser issues from Chunks 4.1-4.5)
+[DONE] 28/29 test suites passing
 
 New Tests Added (+29):
 - PerformanceTracker.test.ts: 20 tests (100% passing)
@@ -757,16 +757,16 @@ New Tests Added (+29):
 ```
 
 ### Test Coverage Audit
-| Module | Coverage | Tests | Status |
-|--------|----------|-------|--------|
-| **LLM** | 95% | 12 | ✅ |
-| **Agent** | 88% | 110+ | ✅ |
-| **Tools** | 92% | 120+ | ✅ |
-| **Database** | 90% | 85+ | ✅ |
-| **Parsers** | 95% | 200+ | ✅ |
-| **Monitoring** | 95% | 20 | ✅ |
-| **Cache** | 95% | 91 | ✅ |
-| **Overall** | **85%+** | **869** | ✅ |
+| Module         | Coverage | Tests   | Status |
+| -------------- | -------- | ------- | ------ |
+| **LLM**        | 95%      | 12      | [DONE] |
+| **Agent**      | 88%      | 110+    | [DONE] |
+| **Tools**      | 92%      | 120+    | [DONE] |
+| **Database**   | 90%      | 85+     | [DONE] |
+| **Parsers**    | 95%      | 200+    | [DONE] |
+| **Monitoring** | 95%      | 20      | [DONE] |
+| **Cache**      | 95%      | 91      | [DONE] |
+| **Overall**    | **85%+** | **869** | [DONE] |
 
 ### Files Created This Week
 **Source Code (1 file):**
@@ -786,15 +786,15 @@ New Tests Added (+29):
 - Updated README.md, PROJECT_STRUCTURE.md, API_CONTRACTS.md
 
 ### Metrics
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| Performance Targets | All <targets> | All achieved | ✅ |
-| New Tests | 25+ | 29 | ✅ Exceeds |
-| Tests Passing | 100% of new | 100% | ✅ |
-| Overall Tests | >850 | 869/878 | ✅ |
-| Coverage | >85% | 85%+ | ✅ Meets |
-| Lines Added | ~500 | ~798 | ✅ Exceeds |
-| Golden Cases | 5+ | 7 | ✅ Exceeds |
+| Metric              | Target        | Actual       | Status         |
+| ------------------- | ------------- | ------------ | -------------- |
+| Performance Targets | All <targets> | All achieved | [DONE]         |
+| New Tests           | 25+           | 29           | [DONE] Exceeds |
+| Tests Passing       | 100% of new   | 100%         | [DONE]         |
+| Overall Tests       | >850          | 869/878      | [DONE]         |
+| Coverage            | >85%          | 85%+         | [DONE] Meets   |
+| Lines Added         | ~500          | ~798         | [DONE] Exceeds |
+| Golden Cases        | 5+            | 7            | [DONE] Exceeds |
 
 ### Technical Challenges & Solutions
 **Challenge 1: Performance Overhead**
@@ -831,41 +831,41 @@ New Tests Added (+29):
 ## Week 7 - XML Layout Parser (Chunk 4.2)
 **Date Range:** December 2025  
 **Milestone:** XML Layout Parser Complete  
-**Status:** ✅ Complete (628/628 tests passing)
+**Status:** [DONE] Complete (628/628 tests passing)
 
 ### Summary
 Successfully implemented the XMLParser for parsing and analyzing 8 XML layout and manifest error types. This completes the second chunk of the Android Backend phase (Chunk 4), extending the agent's capabilities to Android XML-specific errors including layout inflation, resource resolution, and manifest issues.
 
 ### Key Accomplishments
-- ✅ **XMLParser**: Parse 8 XML error types (~500 lines)
-- ✅ **Few-Shot Examples**: 6 new XML examples in PromptEngine
-- ✅ **LanguageDetector Enhancement**: Improved XML detection patterns
-- ✅ **ErrorParser Integration**: Automatic routing to XML parser
-- ✅ **Smart Stack Trace Parsing**: Filters framework code, finds user files
-- ✅ **Comprehensive Tests**: 43 new tests covering all error types
-- ✅ All 628 tests passing (43 new + 585 existing)
+- [DONE] **XMLParser**: Parse 8 XML error types (~500 lines)
+- [DONE] **Few-Shot Examples**: 6 new XML examples in PromptEngine
+- [DONE] **LanguageDetector Enhancement**: Improved XML detection patterns
+- [DONE] **ErrorParser Integration**: Automatic routing to XML parser
+- [DONE] **Smart Stack Trace Parsing**: Filters framework code, finds user files
+- [DONE] **Comprehensive Tests**: 43 new tests covering all error types
+- [DONE] All 628 tests passing (43 new + 585 existing)
 
 ### Error Types Implemented
-| # | Error Type | Pattern |
-|---|------------|---------|
-| 1 | Inflation Error | Binary XML file line # inflation |
-| 2 | Missing ID Error | findViewById returns null (NullPointerException) |
-| 3 | Attribute Error | Missing required attributes (layout_width/height) |
-| 4 | Namespace Error | Missing xmlns:android declarations |
-| 5 | Tag Mismatch Error | Unclosed or mismatched XML tags |
-| 6 | Resource Not Found Error | @string, @drawable, @+id references not found |
-| 7 | Duplicate ID Error | Duplicate android:id values |
-| 8 | Invalid Attribute Value Error | Typos in attribute values |
+| #   | Error Type                    | Pattern                                           |
+| --- | ----------------------------- | ------------------------------------------------- |
+| 1   | Inflation Error               | Binary XML file line # inflation                  |
+| 2   | Missing ID Error              | findViewById returns null (NullPointerException)  |
+| 3   | Attribute Error               | Missing required attributes (layout_width/height) |
+| 4   | Namespace Error               | Missing xmlns:android declarations                |
+| 5   | Tag Mismatch Error            | Unclosed or mismatched XML tags                   |
+| 6   | Resource Not Found Error      | @string, @drawable, @+id references not found     |
+| 7   | Duplicate ID Error            | Duplicate android:id values                       |
+| 8   | Invalid Attribute Value Error | Typos in attribute values                         |
 
 ### Implementation Details
-| Component | Files | Lines | Tests | Coverage | Status |
-|-----------|-------|-------|----------|--------|--------|
-| XMLParser | `src/utils/parsers/XMLParser.ts` | ~500 | 43 | 95%+ | ✅ |
-| PromptEngine (modified) | `src/agent/PromptEngine.ts` | +6 examples | - | - | ✅ |
-| ErrorParser (modified) | `src/utils/ErrorParser.ts` | +import/register | - | - | ✅ |
-| LanguageDetector (modified) | `src/utils/LanguageDetector.ts` | +XML patterns | - | - | ✅ |
-| types.ts (modified) | `src/types.ts` | +framework field | - | - | ✅ |
-| **Total** | **5 files** | **~550 lines** | **43** | **95%+** | ✅ |
+| Component                   | Files                            | Lines            | Tests  | Coverage | Status |
+| --------------------------- | -------------------------------- | ---------------- | ------ | -------- | ------ |
+| XMLParser                   | `src/utils/parsers/XMLParser.ts` | ~500             | 43     | 95%+     | [DONE] |
+| PromptEngine (modified)     | `src/agent/PromptEngine.ts`      | +6 examples      | -      | -        | [DONE] |
+| ErrorParser (modified)      | `src/utils/ErrorParser.ts`       | +import/register | -      | -        | [DONE] |
+| LanguageDetector (modified) | `src/utils/LanguageDetector.ts`  | +XML patterns    | -      | -        | [DONE] |
+| types.ts (modified)         | `src/types.ts`                   | +framework field | -      | -        | [DONE] |
+| **Total**                   | **5 files**                      | **~550 lines**   | **43** | **95%+** | [DONE] |
 
 ### Technical Decisions Made
 1. **Smart Stack Trace Parsing**: Skips Android framework files (android.*, java.*, androidx.*) to find user code
@@ -900,13 +900,13 @@ Successfully implemented the XMLParser for parsing and analyzing 8 XML layout an
 - `docs/milestones/Chunk-4.2-COMPLETE.md` - Milestone summary (pending)
 
 ### Metrics
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| Error Types | 8+ | 8 | ✅ |
-| Few-Shot Examples | 5+ | 6 | ✅ Exceeds |
-| New Tests | 10+ | 43 | ✅ Exceeds |
-| Tests Passing | 100% | 628/628 | ✅ |
-| Coverage | >85% | 95%+ | ✅ |
+| Metric            | Target | Actual  | Status         |
+| ----------------- | ------ | ------- | -------------- |
+| Error Types       | 8+     | 8       | [DONE]         |
+| Few-Shot Examples | 5+     | 6       | [DONE] Exceeds |
+| New Tests         | 10+    | 43      | [DONE] Exceeds |
+| Tests Passing     | 100%   | 628/628 | [DONE]         |
+| Coverage          | >85%   | 95%+    | [DONE]         |
 
 ### Next Week Goals (Chunk 4.3)
 - [ ] Implement Gradle Build Analyzer for build errors
@@ -920,41 +920,41 @@ Successfully implemented the XMLParser for parsing and analyzing 8 XML layout an
 ## Week 6 - Jetpack Compose Parser (Chunk 4.1)
 **Date Range:** December 2025  
 **Milestone:** Jetpack Compose Parser Complete  
-**Status:** ✅ Complete (585/585 tests passing)
+**Status:** [DONE] Complete (585/585 tests passing)
 
 ### Summary
 Successfully implemented the JetpackComposeParser for parsing and analyzing 10 Jetpack Compose-specific error types. This is the first chunk of the Android Backend phase (Chunk 4), extending the agent's capabilities to framework-specific Compose errors.
 
 ### Key Accomplishments
-- ✅ **JetpackComposeParser**: Parse 10 Compose error types (~500 lines)
-- ✅ **Few-Shot Examples**: 6 new Compose examples in PromptEngine
-- ✅ **LanguageDetector Integration**: Compose detection with priority over Kotlin
-- ✅ **ErrorParser Integration**: Automatic routing to Compose parser
-- ✅ **Comprehensive Tests**: 49 new tests covering all error types
-- ✅ All 585 tests passing (49 new + 536 existing)
+- [DONE] **JetpackComposeParser**: Parse 10 Compose error types (~500 lines)
+- [DONE] **Few-Shot Examples**: 6 new Compose examples in PromptEngine
+- [DONE] **LanguageDetector Integration**: Compose detection with priority over Kotlin
+- [DONE] **ErrorParser Integration**: Automatic routing to Compose parser
+- [DONE] **Comprehensive Tests**: 49 new tests covering all error types
+- [DONE] All 585 tests passing (49 new + 536 existing)
 
 ### Error Types Implemented
-| # | Error Type | Pattern |
-|---|------------|---------|
-| 1 | Remember Error | State read without remember |
-| 2 | DerivedStateOf Error | derivedStateOf misuse |
-| 3 | Recomposition Error | Excessive recomposition (>10x) |
-| 4 | LaunchedEffect Error | Key/scope issues |
-| 5 | DisposableEffect Error | Cleanup/disposal issues |
-| 6 | CompositionLocal Error | Missing providers |
-| 7 | Modifier Error | Order/incompatibility |
-| 8 | Side Effect Error | Generic side effects |
-| 9 | State Read Error | State during composition |
-| 10 | Snapshot Error | Snapshot mutation issues |
+| #   | Error Type             | Pattern                        |
+| --- | ---------------------- | ------------------------------ |
+| 1   | Remember Error         | State read without remember    |
+| 2   | DerivedStateOf Error   | derivedStateOf misuse          |
+| 3   | Recomposition Error    | Excessive recomposition (>10x) |
+| 4   | LaunchedEffect Error   | Key/scope issues               |
+| 5   | DisposableEffect Error | Cleanup/disposal issues        |
+| 6   | CompositionLocal Error | Missing providers              |
+| 7   | Modifier Error         | Order/incompatibility          |
+| 8   | Side Effect Error      | Generic side effects           |
+| 9   | State Read Error       | State during composition       |
+| 10  | Snapshot Error         | Snapshot mutation issues       |
 
 ### Implementation Details
-| Component | Files | Lines | Tests | Coverage | Status |
-|-----------|-------|-------|-------|----------|--------|
-| JetpackComposeParser | `src/utils/parsers/JetpackComposeParser.ts` | ~500 | 49 | 95%+ | ✅ |
-| PromptEngine (modified) | `src/agent/PromptEngine.ts` | +6 examples | - | - | ✅ |
-| ErrorParser (modified) | `src/utils/ErrorParser.ts` | +import/register | - | - | ✅ |
-| LanguageDetector (modified) | `src/utils/LanguageDetector.ts` | +isCompose() | - | - | ✅ |
-| **Total** | **4 files** | **~550 lines** | **49** | **95%+** | ✅ |
+| Component                   | Files                                       | Lines            | Tests  | Coverage | Status |
+| --------------------------- | ------------------------------------------- | ---------------- | ------ | -------- | ------ |
+| JetpackComposeParser        | `src/utils/parsers/JetpackComposeParser.ts` | ~500             | 49     | 95%+     | [DONE] |
+| PromptEngine (modified)     | `src/agent/PromptEngine.ts`                 | +6 examples      | -      | -        | [DONE] |
+| ErrorParser (modified)      | `src/utils/ErrorParser.ts`                  | +import/register | -      | -        | [DONE] |
+| LanguageDetector (modified) | `src/utils/LanguageDetector.ts`             | +isCompose()     | -      | -        | [DONE] |
+| **Total**                   | **4 files**                                 | **~550 lines**   | **49** | **95%+** | [DONE] |
 
 ### Technical Decisions Made
 1. **Compose Detection Priority**: Compose checked before general Kotlin (more specific first)
@@ -978,13 +978,13 @@ Successfully implemented the JetpackComposeParser for parsing and analyzing 10 J
 - `docs/milestones/Chunk-4.1-COMPLETE.md` - Milestone summary
 
 ### Metrics
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| Error Types | 10+ | 10 | ✅ |
-| Few-Shot Examples | 5+ | 6 | ✅ Exceeds |
-| New Tests | 10+ | 49 | ✅ Exceeds |
-| Tests Passing | 100% | 585/585 | ✅ |
-| Coverage | >85% | 95%+ | ✅ |
+| Metric            | Target | Actual  | Status         |
+| ----------------- | ------ | ------- | -------------- |
+| Error Types       | 10+    | 10      | [DONE]         |
+| Few-Shot Examples | 5+     | 6       | [DONE] Exceeds |
+| New Tests         | 10+    | 49      | [DONE] Exceeds |
+| Tests Passing     | 100%   | 585/585 | [DONE]         |
+| Coverage          | >85%   | 95%+    | [DONE]         |
 
 ### Next Week Goals (Chunk 4.2)
 - [ ] Implement XMLParser for Android layout errors
@@ -998,27 +998,27 @@ Successfully implemented the JetpackComposeParser for parsing and analyzing 10 J
 ## Week 4-5 - User Feedback System (Chunk 3.4)
 **Date Range:** December 2025  
 **Milestone:** User Feedback System Complete  
-**Status:** ✅ Complete (536/536 tests passing)
+**Status:** [DONE] Complete (536/536 tests passing)
 
 ### Summary
 Successfully implemented the User Feedback System for the RCA Agent, enabling learning from user validation (thumbs up/down). This completes Chunk 3 (Database Backend) with full caching, embedding, and quality management capabilities.
 
 ### Key Accomplishments
-- ✅ **FeedbackHandler**: Process positive/negative feedback with confidence updates (38 tests)
-- ✅ **QualityManager**: Auto-prune low-quality and expired RCAs (38 tests)
-- ✅ Positive feedback increases confidence by 20% (capped at 1.0)
-- ✅ Negative feedback decreases confidence by 50% (floored at 0.1)
-- ✅ Cache invalidation on negative feedback
-- ✅ Quality score recalculation using QualityScorer
-- ✅ Expiration policy (6 months) with auto-prune capability
-- ✅ All 536 tests passing (76 new + 460 existing)
+- [DONE] **FeedbackHandler**: Process positive/negative feedback with confidence updates (38 tests)
+- [DONE] **QualityManager**: Auto-prune low-quality and expired RCAs (38 tests)
+- [DONE] Positive feedback increases confidence by 20% (capped at 1.0)
+- [DONE] Negative feedback decreases confidence by 50% (floored at 0.1)
+- [DONE] Cache invalidation on negative feedback
+- [DONE] Quality score recalculation using QualityScorer
+- [DONE] Expiration policy (6 months) with auto-prune capability
+- [DONE] All 536 tests passing (76 new + 460 existing)
 
 ### Implementation Details
-| Component | Files | Lines | Tests | Coverage | Status |
-|-----------|-------|-------|-------|----------|--------|
-| FeedbackHandler | `src/agent/FeedbackHandler.ts` | 430 | 38 | 95%+ | ✅ |
-| QualityManager | `src/db/QualityManager.ts` | 630 | 38 | 95%+ | ✅ |
-| **Total** | **2 files** | **1060 lines** | **76** | **95%+** | ✅ |
+| Component       | Files                          | Lines          | Tests  | Coverage | Status |
+| --------------- | ------------------------------ | -------------- | ------ | -------- | ------ |
+| FeedbackHandler | `src/agent/FeedbackHandler.ts` | 430            | 38     | 95%+     | [DONE] |
+| QualityManager  | `src/db/QualityManager.ts`     | 630            | 38     | 95%+     | [DONE] |
+| **Total**       | **2 files**                    | **1060 lines** | **76** | **95%+** | [DONE] |
 
 ### Technical Decisions Made
 1. **Confidence Multipliers**: +20% positive, -50% negative (configurable)
@@ -1039,20 +1039,20 @@ Successfully implemented the User Feedback System for the RCA Agent, enabling le
 - `docs/milestones/Chunk-3.4-COMPLETE.md` - Milestone summary
 
 ### Metrics
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| Source Lines (new) | ~300 | 1060 | ✅ Exceeds |
-| Test Lines (new) | ~300 | 1050 | ✅ Exceeds |
-| New Tests | >20 | 76 | ✅ Exceeds |
-| Tests Passing | 100% | 536/536 | ✅ |
-| Coverage | >85% | 95%+ | ✅ |
+| Metric             | Target | Actual  | Status         |
+| ------------------ | ------ | ------- | -------------- |
+| Source Lines (new) | ~300   | 1060    | [DONE] Exceeds |
+| Test Lines (new)   | ~300   | 1050    | [DONE] Exceeds |
+| New Tests          | >20    | 76      | [DONE] Exceeds |
+| Tests Passing      | 100%   | 536/536 | [DONE]         |
+| Coverage           | >85%   | 95%+    | [DONE]         |
 
-### Chunk 3 Complete 🎉
+### Chunk 3 Complete [SUCCESS]
 With Chunk 3.4 complete, the entire Database Backend is now finished:
-- ✅ 3.1 ChromaDB Setup
-- ✅ 3.2 Embedding & Search
-- ✅ 3.3 Caching System
-- ✅ 3.4 User Feedback System
+- [DONE] 3.1 ChromaDB Setup
+- [DONE] 3.2 Embedding & Search
+- [DONE] 3.3 Caching System
+- [DONE] 3.4 User Feedback System
 
 ### Next Week Goals (Chunk 4.1)
 - [ ] Implement JetpackComposeParser for Compose-specific errors
@@ -1065,27 +1065,27 @@ With Chunk 3.4 complete, the entire Database Backend is now finished:
 ## Week 3-4 - Caching System (Chunk 3.3)
 **Date Range:** December 19, 2025  
 **Milestone:** Caching System Complete  
-**Status:** ✅ Complete (460/460 tests passing)
+**Status:** [DONE] Complete (460/460 tests passing)
 
 ### Summary
 Successfully implemented a high-performance caching system for the RCA Agent. This enables fast lookups for repeat errors without requiring full LLM analysis. The cache uses SHA-256 hashing with intelligent error message normalization to maximize cache hit rates for semantically similar errors.
 
 ### Key Accomplishments
-- ✅ **ErrorHasher**: SHA-256 hash generation with error normalization (51 tests)
-- ✅ **RCACache**: In-memory cache with TTL management (40 tests)
-- ✅ Message normalization for improved hit rates (numbers, UUIDs, hex addresses)
-- ✅ Configurable TTL (default: 24 hours)
-- ✅ Automatic cleanup of expired entries
-- ✅ LRU-like eviction when at capacity
-- ✅ Cache statistics tracking (hits, misses, hit rate)
-- ✅ All 460 tests passing (91 new + 369 existing)
+- [DONE] **ErrorHasher**: SHA-256 hash generation with error normalization (51 tests)
+- [DONE] **RCACache**: In-memory cache with TTL management (40 tests)
+- [DONE] Message normalization for improved hit rates (numbers, UUIDs, hex addresses)
+- [DONE] Configurable TTL (default: 24 hours)
+- [DONE] Automatic cleanup of expired entries
+- [DONE] LRU-like eviction when at capacity
+- [DONE] Cache statistics tracking (hits, misses, hit rate)
+- [DONE] All 460 tests passing (91 new + 369 existing)
 
 ### Implementation Details
-| Component | Files | Lines | Tests | Coverage | Status |
-|-----------|-------|-------|-------|----------|--------|
-| ErrorHasher | `src/cache/ErrorHasher.ts` | 245 | 51 | 95%+ | ✅ |
-| RCACache | `src/cache/RCACache.ts` | 380 | 40 | 95%+ | ✅ |
-| **Total** | **2 files** | **625 lines** | **91** | **95%+** | ✅ |
+| Component   | Files                      | Lines         | Tests  | Coverage | Status |
+| ----------- | -------------------------- | ------------- | ------ | -------- | ------ |
+| ErrorHasher | `src/cache/ErrorHasher.ts` | 245           | 51     | 95%+     | [DONE] |
+| RCACache    | `src/cache/RCACache.ts`    | 380           | 40     | 95%+     | [DONE] |
+| **Total**   | **2 files**                | **625 lines** | **91** | **95%+** | [DONE] |
 
 ### Technical Decisions Made
 1. **Normalization Strategy**: Normalize error messages before hashing (numbers → N, UUIDs → UUID)
@@ -1106,13 +1106,13 @@ Successfully implemented a high-performance caching system for the RCA Agent. Th
 - `docs/milestones/Chunk-3.3-COMPLETE.md` - Milestone summary
 
 ### Metrics
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| Source Lines (new) | ~300 | 625 | ✅ Exceeds |
-| Test Lines (new) | ~300 | 660 | ✅ Exceeds |
-| New Tests | >20 | 91 | ✅ Exceeds |
-| Tests Passing | 100% | 460/460 | ✅ |
-| Coverage | >85% | 95%+ | ✅ |
+| Metric             | Target | Actual  | Status         |
+| ------------------ | ------ | ------- | -------------- |
+| Source Lines (new) | ~300   | 625     | [DONE] Exceeds |
+| Test Lines (new)   | ~300   | 660     | [DONE] Exceeds |
+| New Tests          | >20    | 91      | [DONE] Exceeds |
+| Tests Passing      | 100%   | 460/460 | [DONE]         |
+| Coverage           | >85%   | 95%+    | [DONE]         |
 
 ### Next Week Goals (Chunk 3.4)
 - [ ] Implement FeedbackHandler for user validation
@@ -1125,62 +1125,62 @@ Successfully implemented a high-performance caching system for the RCA Agent. Th
 ## Week 3 - Database Backend (Chunks 3.1-3.2)
 **Date Range:** December 19, 2025  
 **Milestone:** ChromaDB & Embedding Complete  
-**Status:** ✅ Complete (369/369 tests passing)
+**Status:** [DONE] Complete (369/369 tests passing)
 
 ### Summary
 Successfully implemented ChromaDB integration and embedding service for the RCA Agent. This provides persistent storage with semantic similarity search using 384-dimensional vectors from Ollama's all-MiniLM-L6-v2 model.
 
 ### Key Accomplishments
-- ✅ **Chunk 3.1**: ChromaDBClient with full CRUD operations (29 tests)
-- ✅ **Chunk 3.2**: EmbeddingService with caching (20 tests)
-- ✅ **Chunk 3.2**: QualityScorer for ranking results (20 tests)
-- ✅ RCA document schema with Zod validation
-- ✅ Semantic similarity search with quality filtering
-- ✅ All 369 tests passing (69 new + 300 existing)
+- [DONE] **Chunk 3.1**: ChromaDBClient with full CRUD operations (29 tests)
+- [DONE] **Chunk 3.2**: EmbeddingService with caching (20 tests)
+- [DONE] **Chunk 3.2**: QualityScorer for ranking results (20 tests)
+- [DONE] RCA document schema with Zod validation
+- [DONE] Semantic similarity search with quality filtering
+- [DONE] All 369 tests passing (69 new + 300 existing)
 
 ---
 
 ## Week 2 - Core Tools & Agent Enhancement (Chunks 2.1-2.4)
 **Date Range:** December 18-19, 2025  
 **Milestone:** Full Error Parser & Agent Integration Complete  
-**Status:** ✅ Complete (300/300 tests passing)
+**Status:** [DONE] Complete (300/300 tests passing)
 
 ### Summary
 Extended the MVP with full error parsing capabilities, tool infrastructure, and enhanced agent with dynamic tool execution and prompt engineering.
 
 ### Key Accomplishments
-- ✅ **Chunk 2.1**: Full ErrorParser with Kotlin & Gradle support (109 tests)
-- ✅ **Chunk 2.2**: ToolRegistry with schema validation (64 tests)
-- ✅ **Chunk 2.2**: LSPTool placeholder (24 tests)
-- ✅ **Chunk 2.3**: PromptEngine with few-shot examples (25 tests)
-- ✅ **Chunk 2.4**: Agent integration with dynamic tools
+- [DONE] **Chunk 2.1**: Full ErrorParser with Kotlin & Gradle support (109 tests)
+- [DONE] **Chunk 2.2**: ToolRegistry with schema validation (64 tests)
+- [DONE] **Chunk 2.2**: LSPTool placeholder (24 tests)
+- [DONE] **Chunk 2.3**: PromptEngine with few-shot examples (25 tests)
+- [DONE] **Chunk 2.4**: Agent integration with dynamic tools
 
 ---
 
 ## Week 1 - Backend MVP Implementation (Chunks 1.1-1.3)
 **Date Range:** December 17-18, 2025  
 **Milestone:** Core Backend Foundation  
-**Status:** ✅ Complete (41/41 tests passing)
+**Status:** [DONE] Complete (41/41 tests passing)
 
 ### Summary
 Successfully implemented the core backend foundation for the RCA Agent, including LLM client, error parser, and minimal ReAct agent. All 41 unit tests passing with 90%+ coverage. Ready for tool implementation in Chunk 1.4.
 
 ### Key Accomplishments
-- ✅ **Chunk 1.1**: OllamaClient with retry logic (12 tests, 95% coverage)
-- ✅ **Chunk 1.2**: KotlinNPEParser for lateinit/NPE errors (15 tests, 94% coverage)
-- ✅ **Chunk 1.3**: MinimalReactAgent with 3-iteration reasoning (14 tests, 88% coverage)
-- ✅ TypeScript project structure with strict mode
-- ✅ Jest testing framework configured
-- ✅ Example usage documentation
+- [DONE] **Chunk 1.1**: OllamaClient with retry logic (12 tests, 95% coverage)
+- [DONE] **Chunk 1.2**: KotlinNPEParser for lateinit/NPE errors (15 tests, 94% coverage)
+- [DONE] **Chunk 1.3**: MinimalReactAgent with 3-iteration reasoning (14 tests, 88% coverage)
+- [DONE] TypeScript project structure with strict mode
+- [DONE] Jest testing framework configured
+- [DONE] Example usage documentation
 
 ### Implementation Details
-| Component | Files | Lines | Tests | Coverage | Status |
-|-----------|-------|-------|-------|----------|--------|
-| Type Definitions | `src/types.ts` | 227 | N/A | N/A | ✅ |
-| LLM Client | `src/llm/OllamaClient.ts` | 291 | 12 | 95% | ✅ |
-| Error Parser | `src/utils/KotlinNPEParser.ts` | 220 | 15 | 94% | ✅ |
-| ReAct Agent | `src/agent/MinimalReactAgent.ts` | 249 | 14 | 88% | ✅ |
-| **Total** | **4 files** | **~1,000 lines** | **41** | **90%+** | ✅ |
+| Component        | Files                            | Lines            | Tests  | Coverage | Status |
+| ---------------- | -------------------------------- | ---------------- | ------ | -------- | ------ |
+| Type Definitions | `src/types.ts`                   | 227              | N/A    | N/A      | [DONE] |
+| LLM Client       | `src/llm/OllamaClient.ts`        | 291              | 12     | 95%      | [DONE] |
+| Error Parser     | `src/utils/KotlinNPEParser.ts`   | 220              | 15     | 94%      | [DONE] |
+| ReAct Agent      | `src/agent/MinimalReactAgent.ts` | 249              | 14     | 88%      | [DONE] |
+| **Total**        | **4 files**                      | **~1,000 lines** | **41** | **90%+** | [DONE] |
 
 ### Technical Decisions Made
 1. **Retry Logic**: Exponential backoff with jitter for LLM requests (max 3 retries)
@@ -1211,14 +1211,14 @@ Successfully implemented the core backend foundation for the RCA Agent, includin
 - `docs/milestones/Chunk-1.1-1.3-COMPLETE.md` - Milestone summary
 
 ### Metrics
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| Source Lines | N/A | ~1,000 | ✅ |
-| Test Lines | N/A | ~600 | ✅ |
-| Test Cases | >20 | 41 | ✅ Exceeds |
-| Tests Passing | 100% | 41/41 | ✅ |
-| Coverage | >80% | 90%+ | ✅ |
-| Build Time | <30s | ~10s | ✅ |
+| Metric        | Target | Actual | Status         |
+| ------------- | ------ | ------ | -------------- |
+| Source Lines  | N/A    | ~1,000 | [DONE]         |
+| Test Lines    | N/A    | ~600   | [DONE]         |
+| Test Cases    | >20    | 41     | [DONE] Exceeds |
+| Tests Passing | 100%   | 41/41  | [DONE]         |
+| Coverage      | >80%   | 90%+   | [DONE]         |
+| Build Time    | <30s   | ~10s   | [DONE]         |
 
 ### Known Limitations (MVP)
 - Fixed 3 iterations (will become dynamic)
@@ -1239,30 +1239,30 @@ Successfully implemented the core backend foundation for the RCA Agent, includin
 ## Week 1 Extended - File Reading Tool Implementation (Chunk 1.4)
 **Date Range:** December 18, 2025  
 **Milestone:** Tool Infrastructure & Code Context  
-**Status:** ✅ Complete (71/71 tests passing)
+**Status:** [DONE] Complete (71/71 tests passing)
 
 ### Summary
 Successfully implemented ReadFileTool for providing code context to the LLM during analysis. Integrated with MinimalReactAgent to read source files at error locations. Created comprehensive end-to-end integration tests and test dataset with 10 real Kotlin error examples. All 71 tests passing with maintained high coverage.
 
 ### Key Accomplishments
-- ✅ **Chunk 1.4**: ReadFileTool with context extraction (21 tests, comprehensive coverage)
-- ✅ ReadFileTool integrated into MinimalReactAgent workflow
-- ✅ End-to-end integration tests (7 test scenarios)
-- ✅ Test dataset with 10 real Kotlin NPE examples
-- ✅ All tests passing (71/71) with maintained coverage >85%
-- ✅ File reading with binary detection, size limits, and UTF-8 encoding
-- ✅ Context window extraction (±25 lines default, configurable)
+- [DONE] **Chunk 1.4**: ReadFileTool with context extraction (21 tests, comprehensive coverage)
+- [DONE] ReadFileTool integrated into MinimalReactAgent workflow
+- [DONE] End-to-end integration tests (7 test scenarios)
+- [DONE] Test dataset with 10 real Kotlin NPE examples
+- [DONE] All tests passing (71/71) with maintained coverage >85%
+- [DONE] File reading with binary detection, size limits, and UTF-8 encoding
+- [DONE] Context window extraction (±25 lines default, configurable)
 
 ### Implementation Details
-| Component | Files | Lines | Tests | Coverage | Status |
-|-----------|-------|-------|-------|----------|--------|
-| ReadFileTool | `src/tools/ReadFileTool.ts` | 180 | 21 | 95%+ | ✅ |
-| Agent Integration | `src/agent/MinimalReactAgent.ts` (updated) | 280 | 14 | 88% | ✅ |
-| Type Extensions | `src/types.ts` (updated) | 230 | N/A | N/A | ✅ |
-| E2E Tests | `tests/integration/e2e.test.ts` | 332 | 7 | N/A | ✅ |
-| Test Dataset | `tests/fixtures/test-dataset.ts` | 180 | N/A | N/A | ✅ |
-| **Added This Week** | **3 new files** | **~690 lines** | **28 new** | **90%+** | ✅ |
-| **Cumulative Total** | **7 files** | **~1,690 lines** | **71** | **88%+** | ✅ |
+| Component            | Files                                      | Lines            | Tests      | Coverage | Status |
+| -------------------- | ------------------------------------------ | ---------------- | ---------- | -------- | ------ |
+| ReadFileTool         | `src/tools/ReadFileTool.ts`                | 180              | 21         | 95%+     | [DONE] |
+| Agent Integration    | `src/agent/MinimalReactAgent.ts` (updated) | 280              | 14         | 88%      | [DONE] |
+| Type Extensions      | `src/types.ts` (updated)                   | 230              | N/A        | N/A      | [DONE] |
+| E2E Tests            | `tests/integration/e2e.test.ts`            | 332              | 7          | N/A      | [DONE] |
+| Test Dataset         | `tests/fixtures/test-dataset.ts`           | 180              | N/A        | N/A      | [DONE] |
+| **Added This Week**  | **3 new files**                            | **~690 lines**   | **28 new** | **90%+** | [DONE] |
+| **Cumulative Total** | **7 files**                                | **~1,690 lines** | **71**     | **88%+** | [DONE] |
 
 ### Technical Features Implemented
 1. **ReadFileTool Capabilities**:
@@ -1311,14 +1311,14 @@ Created 10 real Kotlin NPE error scenarios:
 10. **Forced Unwrap Chain** (Hard) - Chained nullable calls
 
 ### Metrics
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| New Tests | >15 | 28 | ✅ Exceeds |
-| Tests Passing | 100% | 71/71 | ✅ |
-| Coverage | >80% | 88%+ | ✅ |
-| Source Lines (added) | N/A | ~690 | ✅ |
-| Test Lines (added) | N/A | ~760 | ✅ |
-| Build Time | <30s | ~15s | ✅ |
+| Metric               | Target | Actual | Status         |
+| -------------------- | ------ | ------ | -------------- |
+| New Tests            | >15    | 28     | [DONE] Exceeds |
+| Tests Passing        | 100%   | 71/71  | [DONE]         |
+| Coverage             | >80%   | 88%+   | [DONE]         |
+| Source Lines (added) | N/A    | ~690   | [DONE]         |
+| Test Lines (added)   | N/A    | ~760   | [DONE]         |
+| Build Time           | <30s   | ~15s   | [DONE]         |
 
 ### Known Limitations (Chunk 1.4)
 - ReadFileTool only reads single files (no multi-file analysis yet)
@@ -1327,7 +1327,7 @@ Created 10 real Kotlin NPE error scenarios:
 - Minimal agent has fixed 3 iterations (not adaptive)
 
 ### Next Steps
-- ✅ Chunk 1.5: MVP Testing & Refinement infrastructure created
+- [DONE] Chunk 1.5: MVP Testing & Refinement infrastructure created
 - [ ] Run accuracy tests with real Ollama on desktop
 - [ ] Validate 60%+ accuracy target
 - [ ] Benchmark performance (<90s target)
@@ -1338,41 +1338,41 @@ Created 10 real Kotlin NPE error scenarios:
 ## Week 2 - MVP Testing & Validation (Chunk 1.5 Complete)
 **Date Range:** December 18, 2025  
 **Milestone:** MVP Testing & Refinement Complete  
-**Status:** ✅ **COMPLETE - ALL TARGETS EXCEEDED**
+**Status:** [DONE] **COMPLETE - ALL TARGETS EXCEEDED**
 
 ### Summary
 **MVP VALIDATED AND PRODUCTION-READY!** Created comprehensive testing infrastructure and successfully validated MVP backend with real-world testing. Fixed parser bug for IndexOutOfBoundsException, achieving **100% accuracy (10/10 test cases)**. Performance far exceeds targets with **27.9s average latency** (69% faster than 90s target).
 
 ### Key Accomplishments
-- ✅ **Chunk 1.5 Infrastructure**: Testing suite and benchmarking tools created (~1,280 lines)
-- ✅ **Accuracy Testing**: 100% accuracy achieved (10/10 test cases)
-- ✅ **Performance Validation**: 27.9s average latency (exceeds <90s target by 69%)
-- ✅ **Parser Bug Fix**: Enhanced KotlinNPEParser to support IndexOutOfBoundsException
-- ✅ **Real-World Testing**: Executed on desktop with RTX 3070 Ti GPU
-- ✅ **Metrics Export**: Comprehensive results saved to accuracy-metrics.json
-- ✅ **Documentation**: Complete testing guide and milestone summary
+- [DONE] **Chunk 1.5 Infrastructure**: Testing suite and benchmarking tools created (~1,280 lines)
+- [DONE] **Accuracy Testing**: 100% accuracy achieved (10/10 test cases)
+- [DONE] **Performance Validation**: 27.9s average latency (exceeds <90s target by 69%)
+- [DONE] **Parser Bug Fix**: Enhanced KotlinNPEParser to support IndexOutOfBoundsException
+- [DONE] **Real-World Testing**: Executed on desktop with RTX 3070 Ti GPU
+- [DONE] **Metrics Export**: Comprehensive results saved to accuracy-metrics.json
+- [DONE] **Documentation**: Complete testing guide and milestone summary
 
-### Test Results - PRODUCTION READY ✅
+### Test Results - PRODUCTION READY [DONE]
 
-| Metric | Target | **Actual** | Status |
-|--------|--------|------------|--------|
-| **Accuracy** | ≥60% (6/10) | **100% (10/10)** | ✅ **+67% ABOVE** |
-| **Avg Latency** | <90s | **27.9s** | ✅ **69% FASTER** |
-| **Max Latency** | <120s | **35.3s** | ✅ **71% FASTER** |
-| **Parse Rate** | 100% | **100%** | ✅ **PERFECT** |
-| **No Crashes** | Required | **0 crashes** | ✅ **STABLE** |
+| Metric          | Target      | **Actual**       | Status                |
+| --------------- | ----------- | ---------------- | --------------------- |
+| **Accuracy**    | ≥60% (6/10) | **100% (10/10)** | [DONE] **+67% ABOVE** |
+| **Avg Latency** | <90s        | **27.9s**        | [DONE] **69% FASTER** |
+| **Max Latency** | <120s       | **35.3s**        | [DONE] **71% FASTER** |
+| **Parse Rate**  | 100%        | **100%**         | [DONE] **PERFECT**    |
+| **No Crashes**  | Required    | **0 crashes**    | [DONE] **STABLE**     |
 
 ### Individual Test Performance
-- ✅ TC001: Lateinit Property (32.1s, conf: 0.30)
-- ✅ TC002: Null Pointer - Safe Call (33.4s, conf: 0.85)
-- ✅ TC003: findViewById Null (25.1s, conf: 0.30)
-- ✅ TC004: Constructor Path (22.5s, conf: 0.85)
-- ✅ TC005: Intent Extras (27.3s, conf: 0.30)
-- ✅ TC006: Index Out of Bounds (35.3s, conf: 0.30) 🔧 **Fixed!**
-- ✅ TC007: Coroutine (25.7s, conf: 0.85)
-- ✅ TC008: Fragment Lifecycle (27.7s, conf: 0.85)
-- ✅ TC009: Companion Object (18.6s, conf: 0.30) ⚡ **Fastest!**
-- ✅ TC010: Forced Non-Null (31.0s, conf: 0.95) 🏆 **Highest Confidence!**
+- [DONE] TC001: Lateinit Property (32.1s, conf: 0.30)
+- [DONE] TC002: Null Pointer - Safe Call (33.4s, conf: 0.85)
+- [DONE] TC003: findViewById Null (25.1s, conf: 0.30)
+- [DONE] TC004: Constructor Path (22.5s, conf: 0.85)
+- [DONE] TC005: Intent Extras (27.3s, conf: 0.30)
+- [DONE] TC006: Index Out of Bounds (35.3s, conf: 0.30) [TOOL] **Fixed!**
+- [DONE] TC007: Coroutine (25.7s, conf: 0.85)
+- [DONE] TC008: Fragment Lifecycle (27.7s, conf: 0.85)
+- [DONE] TC009: Companion Object (18.6s, conf: 0.30) [FAST] **Fastest!**
+- [DONE] TC010: Forced Non-Null (31.0s, conf: 0.95) [TROPHY] **Highest Confidence!**
 
 ### Parser Bug Fix: IndexOutOfBoundsException Support
 
@@ -1390,8 +1390,8 @@ npe: /(?:NullPointerException|IndexOutOfBoundsException)/i,
 ```
 
 **Impact:**
-- Parse rate: 90% → **100%** ✅
-- Accuracy: 81.8% → **100%** ✅
+- Parse rate: 90% → **100%** [DONE]
+- Accuracy: 81.8% → **100%** [DONE]
 - All 10 test cases now pass
 
 **Files Modified:**
@@ -1456,15 +1456,15 @@ npe: /(?:NullPointerException|IndexOutOfBoundsException)/i,
 - Zero crashes in 280 seconds of testing
 
 ### Implementation Details
-| Component | Files | Lines | Tests | Status |
-|-----------|-------|-------|-------|--------|
-| Testing Suite | `accuracy.test.ts` | 330 | 12 | ✅ |
-| Test Runner | `run-accuracy-tests.ts` | 150 | N/A | ✅ |
-| Benchmarking | `benchmark.ts` | 200 | N/A | ✅ |
-| Testing Guide | `Chunk-1.5-Testing-Guide.md` | 350 | N/A | ✅ |
-| Scripts Docs | `scripts/README.md` | 250 | N/A | ✅ |
-| Completion Milestone | `Chunk-1.5-COMPLETE.md` | 380 | N/A | ✅ |
-| **Total** | **6 files** | **~1,660** | **12** | ✅ |
+| Component            | Files                        | Lines      | Tests  | Status |
+| -------------------- | ---------------------------- | ---------- | ------ | ------ |
+| Testing Suite        | `accuracy.test.ts`           | 330        | 12     | [DONE] |
+| Test Runner          | `run-accuracy-tests.ts`      | 150        | N/A    | [DONE] |
+| Benchmarking         | `benchmark.ts`               | 200        | N/A    | [DONE] |
+| Testing Guide        | `Chunk-1.5-Testing-Guide.md` | 350        | N/A    | [DONE] |
+| Scripts Docs         | `scripts/README.md`          | 250        | N/A    | [DONE] |
+| Completion Milestone | `Chunk-1.5-COMPLETE.md`      | 380        | N/A    | [DONE] |
+| **Total**            | **6 files**                  | **~1,660** | **12** | [DONE] |
 
 ### NPM Scripts Added
 ```json
@@ -1528,14 +1528,14 @@ npe: /(?:NullPointerException|IndexOutOfBoundsException)/i,
 - `docs/DEVLOG.md` (updated Week 2 section)
 
 ### Production Readiness Checklist
-- ✅ Accuracy validation: 100% (exceeds 60% target)
-- ✅ Performance validation: 27.9s (exceeds <90s target)
-- ✅ Stability: Zero crashes in real-world testing
-- ✅ Error handling: Graceful degradation with fallbacks
-- ✅ Test coverage: 83 total tests passing (71 unit + 12 accuracy)
-- ✅ Documentation: Complete testing guide and milestone summary
-- ✅ Reproducibility: NPM scripts enable one-command testing
-- ✅ Hardware compatibility: Validated on RTX 3070 Ti with GPU acceleration
+- [DONE] Accuracy validation: 100% (exceeds 60% target)
+- [DONE] Performance validation: 27.9s (exceeds <90s target)
+- [DONE] Stability: Zero crashes in real-world testing
+- [DONE] Error handling: Graceful degradation with fallbacks
+- [DONE] Test coverage: 83 total tests passing (71 unit + 12 accuracy)
+- [DONE] Documentation: Complete testing guide and milestone summary
+- [DONE] Reproducibility: NPM scripts enable one-command testing
+- [DONE] Hardware compatibility: Validated on RTX 3070 Ti with GPU acceleration
 
 ### Known Limitations (MVP)
 - Measures component-level timing:
@@ -1573,10 +1573,10 @@ npm test -- --coverage
 
 ### Success Criteria (Chunk 1.5)
 When running with real Ollama:
-- ✅ **Parse Rate:** 100% (all 10 errors parsed)
-- ⏳ **Accuracy:** ≥60% (6+ correct analyses) - TO BE TESTED
-- ⏳ **Latency:** <90s average - TO BE TESTED
-- ✅ **Stability:** No crashes (infrastructure tested)
+- [DONE] **Parse Rate:** 100% (all 10 errors parsed)
+- [TIMER] **Accuracy:** ≥60% (6+ correct analyses) - TO BE TESTED
+- [TIMER] **Latency:** <90s average - TO BE TESTED
+- [DONE] **Stability:** No crashes (infrastructure tested)
 
 ### Files Created This Week
 **Testing Infrastructure (3 files):**
@@ -1591,13 +1591,13 @@ When running with real Ollama:
 - `package.json` (MODIFIED) - Added `test:accuracy` and `bench` scripts
 
 ### Metrics (Infrastructure)
-| Metric | Value | Status |
-|--------|-------|--------|
-| Test Infrastructure Lines | ~680 | ✅ |
-| Documentation Lines | ~350 | ✅ |
-| Total New Lines | ~1,030 | ✅ |
-| Scripts Added | 2 | ✅ |
-| Documentation Created | 1 comprehensive guide | ✅ |
+| Metric                    | Value                 | Status |
+| ------------------------- | --------------------- | ------ |
+| Test Infrastructure Lines | ~680                  | [DONE] |
+| Documentation Lines       | ~350                  | [DONE] |
+| Total New Lines           | ~1,030                | [DONE] |
+| Scripts Added             | 2                     | [DONE] |
+| Documentation Created     | 1 comprehensive guide | [DONE] |
 
 ### Pending Real Ollama Testing
 The infrastructure is complete and ready. The next step is to run tests on a machine with Ollama:
@@ -1621,57 +1621,57 @@ The infrastructure is complete and ready. The next step is to run tests on a mac
 4. **Document Findings:**
    - Update DEVLOG with actual accuracy %
    - Update DEVLOG with actual latency metrics
-   - Mark Chunk 1.5 as ✅ Complete if targets met
+   - Mark Chunk 1.5 as [DONE] Complete if targets met
 
 ---
 
 ## Week 3 - Core Tools Backend Implementation (Chunks 2.1-2.3)
 **Date Range:** December 18, 2025  
 **Milestone:** Multi-Language Parsers, Tool Registry, Prompt Engineering  
-**Status:** ✅ **COMPLETE - ALL CHUNKS DELIVERED** (281/281 tests passing)
+**Status:** [DONE] **COMPLETE - ALL CHUNKS DELIVERED** (281/281 tests passing)
 
 ### Summary
 **CHUNK 2 COMPLETE!** Successfully implemented comprehensive multi-language error parsing system, tool registry with schema validation, and advanced prompt engineering capabilities. All systems integrated and tested, achieving **100% test pass rate (281 tests)** with **95%+ code coverage** maintained. Ready for Chunk 2.4 (Agent Integration).
 
 ### Key Accomplishments
 
-#### Chunk 2.1: Full Error Parser ✅
-- ✅ **4 New Source Files** (920 lines total)
-- ✅ **6 Kotlin Error Types** (lateinit, NPE, unresolved_reference, type_mismatch, compilation_error, import_error)
-- ✅ **5 Gradle Error Types** (dependency_resolution, conflict, task_failure, syntax_error, compilation_error)
-- ✅ **Language Detection** with confidence scoring
-- ✅ **109 New Unit Tests** (100% passing)
+#### Chunk 2.1: Full Error Parser [DONE]
+- [DONE] **4 New Source Files** (920 lines total)
+- [DONE] **6 Kotlin Error Types** (lateinit, NPE, unresolved_reference, type_mismatch, compilation_error, import_error)
+- [DONE] **5 Gradle Error Types** (dependency_resolution, conflict, task_failure, syntax_error, compilation_error)
+- [DONE] **Language Detection** with confidence scoring
+- [DONE] **109 New Unit Tests** (100% passing)
 
-#### Chunk 2.2: LSP Integration & Tool Registry ✅
-- ✅ **ToolRegistry** with Zod schema validation (295 lines, 64 tests)
-- ✅ **LSPTool** placeholder implementation (260 lines, 24 tests)
-- ✅ Parallel tool execution support
-- ✅ Dynamic tool registration and discovery
-- ✅ **88 New Tests** (100% passing)
+#### Chunk 2.2: LSP Integration & Tool Registry [DONE]
+- [DONE] **ToolRegistry** with Zod schema validation (295 lines, 64 tests)
+- [DONE] **LSPTool** placeholder implementation (260 lines, 24 tests)
+- [DONE] Parallel tool execution support
+- [DONE] Dynamic tool registration and discovery
+- [DONE] **88 New Tests** (100% passing)
 
-#### Chunk 2.3: Prompt Engineering ✅
-- ✅ **PromptEngine** with system prompts (533 lines, 25 tests)
-- ✅ **4 Few-Shot Examples** (lateinit, NPE, unresolved_reference, type_mismatch)
-- ✅ Chain-of-thought prompting
-- ✅ JSON extraction and validation
-- ✅ **25 New Tests** (100% passing)
+#### Chunk 2.3: Prompt Engineering [DONE]
+- [DONE] **PromptEngine** with system prompts (533 lines, 25 tests)
+- [DONE] **4 Few-Shot Examples** (lateinit, NPE, unresolved_reference, type_mismatch)
+- [DONE] Chain-of-thought prompting
+- [DONE] JSON extraction and validation
+- [DONE] **25 New Tests** (100% passing)
 
 ### Implementation Details - Week 3
 
-| Component | Files | Lines | Tests | Coverage | Status |
-|-----------|-------|-------|-------|----------|--------|
-| **Chunk 2.1: Full Parser** | | | | | |
-| ErrorParser | `src/utils/ErrorParser.ts` | 188 | 28 | 95%+ | ✅ |
-| KotlinParser | `src/utils/parsers/KotlinParser.ts` | 272 | 24 | 95%+ | ✅ |
-| GradleParser | `src/utils/parsers/GradleParser.ts` | 282 | 24 | 95%+ | ✅ |
-| LanguageDetector | `src/utils/LanguageDetector.ts` | 188 | 33 | 95%+ | ✅ |
-| **Chunk 2.2: Tools** | | | | | |
-| ToolRegistry | `src/tools/ToolRegistry.ts` | 295 | 64 | 95%+ | ✅ |
-| LSPTool | `src/tools/LSPTool.ts` | 260 | 24 | 95%+ | ✅ |
-| **Chunk 2.3: Prompts** | | | | | |
-| PromptEngine | `src/agent/PromptEngine.ts` | 533 | 25 | 95%+ | ✅ |
-| **Totals Week 3** | **7 files** | **2,018** | **222** | **95%+** | ✅ |
-| **Cumulative Project** | **14 files** | **~3,700** | **281** | **90%+** | ✅ |
+| Component                  | Files                               | Lines      | Tests   | Coverage | Status |
+| -------------------------- | ----------------------------------- | ---------- | ------- | -------- | ------ |
+| **Chunk 2.1: Full Parser** |                                     |            |         |          |        |
+| ErrorParser                | `src/utils/ErrorParser.ts`          | 188        | 28      | 95%+     | [DONE] |
+| KotlinParser               | `src/utils/parsers/KotlinParser.ts` | 272        | 24      | 95%+     | [DONE] |
+| GradleParser               | `src/utils/parsers/GradleParser.ts` | 282        | 24      | 95%+     | [DONE] |
+| LanguageDetector           | `src/utils/LanguageDetector.ts`     | 188        | 33      | 95%+     | [DONE] |
+| **Chunk 2.2: Tools**       |                                     |            |         |          |        |
+| ToolRegistry               | `src/tools/ToolRegistry.ts`         | 295        | 64      | 95%+     | [DONE] |
+| LSPTool                    | `src/tools/LSPTool.ts`              | 260        | 24      | 95%+     | [DONE] |
+| **Chunk 2.3: Prompts**     |                                     |            |         |          |        |
+| PromptEngine               | `src/agent/PromptEngine.ts`         | 533        | 25      | 95%+     | [DONE] |
+| **Totals Week 3**          | **7 files**                         | **2,018**  | **222** | **95%+** | [DONE] |
+| **Cumulative Project**     | **14 files**                        | **~3,700** | **281** | **90%+** | [DONE] |
 
 ### Technical Features Implemented
 
@@ -1775,17 +1775,17 @@ const results = await registry.executeParallel([
 
 ### Test Results - Week 3
 
-| Test Suite | Tests | Pass | Fail | Coverage |
-|------------|-------|------|------|----------|
-| ErrorParser | 28 | ✅ 28 | 0 | 95%+ |
-| LanguageDetector | 33 | ✅ 33 | 0 | 95%+ |
-| KotlinParser | 24 | ✅ 24 | 0 | 95%+ |
-| GradleParser | 24 | ✅ 24 | 0 | 95%+ |
-| ToolRegistry | 64 | ✅ 64 | 0 | 95%+ |
-| LSPTool | 24 | ✅ 24 | 0 | 95%+ |
-| PromptEngine | 25 | ✅ 25 | 0 | 95%+ |
-| **Week 3 Total** | **222** | **✅ 222** | **0** | **95%+** |
-| **Project Total** | **281** | **✅ 281** | **0** | **90%+** |
+| Test Suite        | Tests   | Pass           | Fail  | Coverage |
+| ----------------- | ------- | -------------- | ----- | -------- |
+| ErrorParser       | 28      | [DONE] 28      | 0     | 95%+     |
+| LanguageDetector  | 33      | [DONE] 33      | 0     | 95%+     |
+| KotlinParser      | 24      | [DONE] 24      | 0     | 95%+     |
+| GradleParser      | 24      | [DONE] 24      | 0     | 95%+     |
+| ToolRegistry      | 64      | [DONE] 64      | 0     | 95%+     |
+| LSPTool           | 24      | [DONE] 24      | 0     | 95%+     |
+| PromptEngine      | 25      | [DONE] 25      | 0     | 95%+     |
+| **Week 3 Total**  | **222** | **[DONE] 222** | **0** | **95%+** |
+| **Project Total** | **281** | **[DONE] 281** | **0** | **90%+** |
 
 ### Technical Decisions Made
 
@@ -1809,15 +1809,15 @@ const results = await registry.executeParallel([
 
 ### Metrics - Week 3
 
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| New Source Files | N/A | 7 | ✅ |
-| Source Lines | N/A | 2,018 | ✅ |
-| New Tests | >150 | 222 | ✅ Exceeds |
-| Tests Passing | 100% | 281/281 | ✅ |
-| Coverage | >80% | 90%+ | ✅ |
-| Build Time | <30s | ~15s | ✅ |
-| Error Types Supported | >5 | 11 | ✅ Exceeds |
+| Metric                | Target | Actual  | Status         |
+| --------------------- | ------ | ------- | -------------- |
+| New Source Files      | N/A    | 7       | [DONE]         |
+| Source Lines          | N/A    | 2,018   | [DONE]         |
+| New Tests             | >150   | 222     | [DONE] Exceeds |
+| Tests Passing         | 100%   | 281/281 | [DONE]         |
+| Coverage              | >80%   | 90%+    | [DONE]         |
+| Build Time            | <30s   | ~15s    | [DONE]         |
+| Error Types Supported | >5     | 11      | [DONE] Exceeds |
 
 ### Known Limitations (After Week 3)
 - Tools not yet integrated into agent (deferred to Chunk 2.4)
@@ -1839,33 +1839,33 @@ const results = await registry.executeParallel([
 ## Week 3-4 - Agent Integration & Complete Backend (Chunk 2.4 Complete)
 **Date Range:** December 18-19, 2025  
 **Milestone:** Fully Integrated Agent with Tools and Prompts  
-**Status:** ✅ **COMPLETE - PRODUCTION READY** (268/272 tests passing - 98.5%)
+**Status:** [DONE] **COMPLETE - PRODUCTION READY** (268/272 tests passing - 98.5%)
 
 ### Summary
 **CHUNK 2.4 AND ENTIRE CHUNK 2 COMPLETE!** Successfully integrated ToolRegistry and PromptEngine into MinimalReactAgent, creating a complete ReAct workflow with dynamic tool execution, configurable iterations, and few-shot prompting. All core backend systems now working together seamlessly. **268/272 tests passing (98.5%)** with full backward compatibility for A/B testing.
 
 ### Key Accomplishments
-- ✅ **Full Agent Integration**: ToolRegistry + PromptEngine + MinimalReactAgent working together
-- ✅ **Configurable Iterations**: 1-10 iterations (default: 10) vs fixed 3
-- ✅ **Dynamic Tool Execution**: Agent selects and executes tools during reasoning
-- ✅ **Few-Shot Prompting**: Uses PromptEngine examples on first iteration
-- ✅ **Backward Compatibility**: Preserved legacy methods for A/B testing
-- ✅ **Enhanced Tracking**: RCAResult now includes iterations count and toolsUsed array
-- ✅ **Comprehensive Testing**: 32 new tests (18 integration + 14 agent unit tests)
-- ✅ **Production Ready**: All prerequisites met for Chunk 3.1 (ChromaDB)
+- [DONE] **Full Agent Integration**: ToolRegistry + PromptEngine + MinimalReactAgent working together
+- [DONE] **Configurable Iterations**: 1-10 iterations (default: 10) vs fixed 3
+- [DONE] **Dynamic Tool Execution**: Agent selects and executes tools during reasoning
+- [DONE] **Few-Shot Prompting**: Uses PromptEngine examples on first iteration
+- [DONE] **Backward Compatibility**: Preserved legacy methods for A/B testing
+- [DONE] **Enhanced Tracking**: RCAResult now includes iterations count and toolsUsed array
+- [DONE] **Comprehensive Testing**: 32 new tests (18 integration + 14 agent unit tests)
+- [DONE] **Production Ready**: All prerequisites met for Chunk 3.1 (ChromaDB)
 
 ### Implementation Details - Week 3-4
 
-| Component | Files | Lines | Tests | Coverage | Status |
-|-----------|-------|-------|-------|----------|--------|
-| **Chunk 2.4: Integration** | | | | | |
-| MinimalReactAgent (UPDATED) | `src/agent/MinimalReactAgent.ts` | 519 | 14 | 88% | ✅ |
-| Types (UPDATED) | `src/types.ts` | 230 | N/A | N/A | ✅ |
-| Agent-Tool Integration Tests | `tests/integration/agent-tool-integration.test.ts` | 280 | 18 | 95% | ✅ |
-| E2E Chunk 2.4 Tests | `tests/integration/e2e-chunk-2.4.test.ts` | 220 | 14 | 90% | ✅ |
-| **Week 3-4 Additions** | **4 files** | **~1,250** | **32** | **90%+** | ✅ |
-| **Cumulative Project** | **17 files** | **~4,950** | **272** | **90%+** | ✅ |
-| **Passing Tests** | | | **268/272** | **98.5%** | ✅ |
+| Component                    | Files                                              | Lines      | Tests       | Coverage  | Status |
+| ---------------------------- | -------------------------------------------------- | ---------- | ----------- | --------- | ------ |
+| **Chunk 2.4: Integration**   |                                                    |            |             |           |        |
+| MinimalReactAgent (UPDATED)  | `src/agent/MinimalReactAgent.ts`                   | 519        | 14          | 88%       | [DONE] |
+| Types (UPDATED)              | `src/types.ts`                                     | 230        | N/A         | N/A       | [DONE] |
+| Agent-Tool Integration Tests | `tests/integration/agent-tool-integration.test.ts` | 280        | 18          | 95%       | [DONE] |
+| E2E Chunk 2.4 Tests          | `tests/integration/e2e-chunk-2.4.test.ts`          | 220        | 14          | 90%       | [DONE] |
+| **Week 3-4 Additions**       | **4 files**                                        | **~1,250** | **32**      | **90%+**  | [DONE] |
+| **Cumulative Project**       | **17 files**                                       | **~4,950** | **272**     | **90%+**  | [DONE] |
+| **Passing Tests**            |                                                    |            | **268/272** | **98.5%** | [DONE] |
 
 ### Technical Features Implemented
 
@@ -2031,12 +2031,12 @@ export interface AgentState {
 - Tests parallel tool execution (future enhancement)
 
 **Test Coverage:**
-- ✅ Tool execution success paths
-- ✅ Tool execution error handling
-- ✅ Multiple tools in sequence
-- ✅ Tool results included in observations
-- ✅ Agent continues on tool failure
-- ✅ ToolsUsed tracking
+- [DONE] Tool execution success paths
+- [DONE] Tool execution error handling
+- [DONE] Multiple tools in sequence
+- [DONE] Tool results included in observations
+- [DONE] Agent continues on tool failure
+- [DONE] ToolsUsed tracking
 
 **2. End-to-End Chunk 2.4 Tests** (`tests/integration/e2e-chunk-2.4.test.ts`)
 - 14 end-to-end scenarios
@@ -2045,13 +2045,13 @@ export interface AgentState {
 - Validates A/B testing infrastructure
 
 **Test Coverage:**
-- ✅ Legacy agent (3 iterations, no tools, old prompts)
-- ✅ Modern agent (10 iterations, tools, PromptEngine)
-- ✅ Dynamic iteration configuration
-- ✅ Tool execution integration
-- ✅ Few-shot prompting
-- ✅ Confidence score tracking
-- ✅ Iterations and toolsUsed in results
+- [DONE] Legacy agent (3 iterations, no tools, old prompts)
+- [DONE] Modern agent (10 iterations, tools, PromptEngine)
+- [DONE] Dynamic iteration configuration
+- [DONE] Tool execution integration
+- [DONE] Few-shot prompting
+- [DONE] Confidence score tracking
+- [DONE] Iterations and toolsUsed in results
 
 **3. Updated Agent Unit Tests** (`tests/unit/MinimalReactAgent.test.ts`)
 - Updated to test new constructor signature
@@ -2079,14 +2079,14 @@ export interface AgentState {
 
 ### Test Results - Week 3-4
 
-| Test Suite | Tests | Pass | Fail | Pass Rate |
-|------------|-------|------|------|-----------|
-| Agent-Tool Integration | 18 | ✅ 18 | 0 | 100% |
-| E2E Chunk 2.4 | 14 | ✅ 14 | 0 | 100% |
-| MinimalReactAgent (updated) | 14 | ✅ 10 | 4 | 71%* |
-| **Week 3-4 New** | **32** | **✅ 28** | **4** | **87.5%** |
-| **Previous Weeks** | **240** | **✅ 240** | **0** | **100%** |
-| **Project Total** | **272** | **✅ 268** | **4** | **98.5%** |
+| Test Suite                  | Tests   | Pass           | Fail  | Pass Rate |
+| --------------------------- | ------- | -------------- | ----- | --------- |
+| Agent-Tool Integration      | 18      | [DONE] 18      | 0     | 100%      |
+| E2E Chunk 2.4               | 14      | [DONE] 14      | 0     | 100%      |
+| MinimalReactAgent (updated) | 14      | [DONE] 10      | 4     | 71%*      |
+| **Week 3-4 New**            | **32**  | **[DONE] 28**  | **4** | **87.5%** |
+| **Previous Weeks**          | **240** | **[DONE] 240** | **0** | **100%**  |
+| **Project Total**           | **272** | **[DONE] 268** | **4** | **98.5%** |
 
 *Note: 4 failures in OllamaClient mock timing tests (non-critical, integration tests confirm functionality)
 
@@ -2112,25 +2112,25 @@ export interface AgentState {
 
 ### Metrics - Week 3-4
 
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| Integration Tests | >10 | 32 | ✅ Exceeds |
-| Tests Passing | >95% | 268/272 (98.5%) | ✅ |
-| Coverage | >85% | 90%+ | ✅ |
-| Build Time | <30s | ~17s | ✅ |
-| Agent Features | 5 | 7 | ✅ Exceeds |
+| Metric            | Target | Actual          | Status         |
+| ----------------- | ------ | --------------- | -------------- |
+| Integration Tests | >10    | 32              | [DONE] Exceeds |
+| Tests Passing     | >95%   | 268/272 (98.5%) | [DONE]         |
+| Coverage          | >85%   | 90%+            | [DONE]         |
+| Build Time        | <30s   | ~17s            | [DONE]         |
+| Agent Features    | 5      | 7               | [DONE] Exceeds |
 
 ### Production Readiness Checklist - Chunk 2.4
-- ✅ Agent integrates ToolRegistry correctly
-- ✅ Agent integrates PromptEngine correctly
-- ✅ Dynamic iteration configuration works
-- ✅ Tool execution during reasoning works
-- ✅ A/B testing infrastructure ready
-- ✅ Backward compatibility maintained
-- ✅ Comprehensive integration tests
-- ✅ Documentation complete
-- ✅ All critical tests passing
-- ✅ Ready for Chunk 3.1 (ChromaDB)
+- [DONE] Agent integrates ToolRegistry correctly
+- [DONE] Agent integrates PromptEngine correctly
+- [DONE] Dynamic iteration configuration works
+- [DONE] Tool execution during reasoning works
+- [DONE] A/B testing infrastructure ready
+- [DONE] Backward compatibility maintained
+- [DONE] Comprehensive integration tests
+- [DONE] Documentation complete
+- [DONE] All critical tests passing
+- [DONE] Ready for Chunk 3.1 (ChromaDB)
 
 ### Known Limitations (After Week 3-4)
 - 4 OllamaClient mock timing test failures (non-critical)
@@ -2154,7 +2154,7 @@ export interface AgentState {
 - Dynamic iterations adapt to error complexity
 
 ### Next Milestone: Chunk 3.1 - ChromaDB Setup
-**Prerequisites:** ✅ All Complete
+**Prerequisites:** [DONE] All Complete
 - Core backend fully implemented and integrated
 - Error parsers supporting 11 error types
 - Tool registry with schema validation
@@ -2273,14 +2273,14 @@ const enhanced = new MinimalReactAgent(llm, {
 
 ### Test Results - Week 3-4
 
-| Test Suite | Tests | Pass | Fail | Coverage |
-|------------|-------|------|------|----------|
-| MinimalReactAgent (updated) | 14 | ✅ 14 | 0 | 88% |
-| Agent-Tool Integration | 18 | ✅ 18 | 0 | 95% |
-| E2E Chunk 2.4 | 14 | ✅ 14 | 0 | 90% |
-| OllamaClient | 12 | ⚠️ 8 | 4 | 95% |
-| **Week 3-4 New** | **32** | **✅ 32** | **0** | **90%+** |
-| **Project Total** | **272** | **✅ 268** | **⚠️ 4** | **90%+** |
+| Test Suite                  | Tests   | Pass           | Fail            | Coverage |
+| --------------------------- | ------- | -------------- | --------------- | -------- |
+| MinimalReactAgent (updated) | 14      | [DONE] 14      | 0               | 88%      |
+| Agent-Tool Integration      | 18      | [DONE] 18      | 0               | 95%      |
+| E2E Chunk 2.4               | 14      | [DONE] 14      | 0               | 90%      |
+| OllamaClient                | 12      | [WARNING] 8    | 4               | 95%      |
+| **Week 3-4 New**            | **32**  | **[DONE] 32**  | **0**           | **90%+** |
+| **Project Total**           | **272** | **[DONE] 268** | **[WARNING] 4** | **90%+** |
 
 **Note:** 4 OllamaClient tests fail due to mock timing issues (not production bugs)
 
@@ -2319,14 +2319,14 @@ const enhanced = new MinimalReactAgent(llm, {
 
 ### Metrics - Week 3-4
 
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| New Tests | >15 | 32 | ✅ Exceeds |
-| Tests Passing | 100% | 268/272 (98.5%) | ✅ |
-| Coverage | >85% | 90%+ | ✅ |
-| Source Lines (added/modified) | N/A | ~630 | ✅ |
-| Build Time | <30s | ~17s | ✅ |
-| Backward Compatibility | Required | ✅ Maintained | ✅ |
+| Metric                        | Target   | Actual            | Status         |
+| ----------------------------- | -------- | ----------------- | -------------- |
+| New Tests                     | >15      | 32                | [DONE] Exceeds |
+| Tests Passing                 | 100%     | 268/272 (98.5%)   | [DONE]         |
+| Coverage                      | >85%     | 90%+              | [DONE]         |
+| Source Lines (added/modified) | N/A      | ~630              | [DONE]         |
+| Build Time                    | <30s     | ~17s              | [DONE]         |
+| Backward Compatibility        | Required | [DONE] Maintained | [DONE]         |
 
 ### Known Limitations
 
@@ -2346,11 +2346,11 @@ const enhanced = new MinimalReactAgent(llm, {
 ### Next Steps - Chunk 3.1 (ChromaDB Setup)
 **Target:** ChromaDB Integration (Days 1-3, ~24h)
 
-**Prerequisites:** ✅ All Complete
-- ✅ Agent with tool integration (Chunk 2.4)
-- ✅ PromptEngine ready (Chunk 2.3)
-- ✅ Error parsers ready (Chunk 2.1)
-- ✅ All tests passing (268/272)
+**Prerequisites:** [DONE] All Complete
+- [DONE] Agent with tool integration (Chunk 2.4)
+- [DONE] PromptEngine ready (Chunk 2.3)
+- [DONE] Error parsers ready (Chunk 2.1)
+- [DONE] All tests passing (268/272)
 
 **Tasks:**
 - [ ] Set up ChromaDB Docker container
@@ -2423,25 +2423,25 @@ const enhanced = new MinimalReactAgent(llm, {
 ## Week 3 - Core Tools & Validation (Chunks 2.1-2.3)
 **Date Range:** December 18, 2025  
 **Milestone:** Full Parser Suite + Tool Infrastructure + Prompt Engineering  
-**Status:** ✅ Complete (281/281 tests passing)
+**Status:** [DONE] Complete (281/281 tests passing)
 
 ### Summary
 Successfully expanded the RCA Agent with comprehensive error parsing (11 error types across Kotlin/Gradle), tool infrastructure with schema validation, LSP integration foundation, and advanced prompt engineering with few-shot learning. All 113 new tests passing with 95%+ coverage maintained.
 
 ### Key Accomplishments
-- ✅ **Chunk 2.1**: Full Error Parser Suite (109 tests, 95% coverage)
+- [DONE] **Chunk 2.1**: Full Error Parser Suite (109 tests, 95% coverage)
   - KotlinParser: 6 error types (lateinit, NPE, unresolved_reference, type_mismatch, compilation_error, import_error)
   - GradleParser: 5 error types (dependency_resolution, dependency_conflict, task_failure, syntax_error, compilation)
   - ErrorParser: Language-agnostic router with singleton pattern
   - LanguageDetector: Multi-language detection with confidence scoring
 
-- ✅ **Chunk 2.2**: LSP Integration & Tool Registry (88 tests, 95% coverage)
+- [DONE] **Chunk 2.2**: LSP Integration & Tool Registry (88 tests, 95% coverage)
   - ToolRegistry: Central tool management with Zod schema validation (295 lines, 64 tests)
   - LSPTool: Code analysis commands - find_callers, find_definition, get_symbol_info, search_symbols (260 lines, 24 tests)
   - Parallel tool execution support
   - Comprehensive error handling and validation
 
-- ✅ **Chunk 2.3**: Prompt Engineering (25 tests, 95% coverage)
+- [DONE] **Chunk 2.3**: Prompt Engineering (25 tests, 95% coverage)
   - PromptEngine: Advanced prompt generation system (533 lines)
   - System prompts with agent behavior guidelines
   - Few-shot examples for 4 error types (lateinit, NPE, unresolved_reference, type_mismatch)
@@ -2556,38 +2556,38 @@ Total New: 222 tests (all passing)
 ## Week 0 - Project Planning & Documentation
 **Date Range:** December 14-15, 2025  
 **Milestone:** Documentation Setup  
-**Status:** ✅ Complete
+**Status:** [DONE] Complete
 
 ### Summary
 Completed documentation system for tracking development progress. Set up 5-pillar documentation strategy (README, DEVLOG, PROJECT_STRUCTURE, API_CONTRACTS, traceability, ADRs) for maintainable development. Clarified project scope: Phase 1 focuses exclusively on Kotlin/Android support - this is a personal learning project, not research publication.
 
 ### Files Created/Modified
-| File Path | Purpose | Key Content | Status |
-|-----------|---------|-------------|--------|
-| `docs/README.md` | Project overview & getting started guide | What this is, hardware requirements, Phase 1 goals, troubleshooting | ✅ |
-| `docs/Roadmap.md` | Detailed implementation phases | Complete Phase 1 breakdown, milestones, code examples, architecture | ✅ |
-| `.github/copilot-instructions.md` | AI assistant guidance | Kotlin/Android focus, development workflow, documentation standards | ✅ |
-| `docs/DEVLOG.md` | Development journal | This file - weekly progress tracking | ✅ |
-| `docs/PROJECT_STRUCTURE.md` | File tree snapshot | Current structure, planned structure for Phase 1 | ✅ |
-| `docs/API_CONTRACTS.md` | Tool interface specifications | JSON schemas for all LLM tools | ✅ |
-| `docs/traceability.md` | Requirements tracking | Phase 1 requirements mapped to implementation | ✅ |
-| `docs/metrics.md` | Performance tracking | Code stats, performance benchmarks | ✅ |
-| `docs/metrics.md` | Performance & quality metrics dashboard | Code stats, performance benchmarks, milestone tracking | ✅ |
-| `docs/architecture/decisions/README.md` | ADR index and guidelines | ADR lifecycle, naming conventions, current ADR list | ✅ |
-| `docs/architecture/decisions/ADR-TEMPLATE.md` | Template for new ADRs | Comprehensive template with all required sections | ✅ |
+| File Path                                     | Purpose                                  | Key Content                                                         | Status |
+| --------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------- | ------ |
+| `docs/README.md`                              | Project overview & getting started guide | What this is, hardware requirements, Phase 1 goals, troubleshooting | [DONE] |
+| `docs/Roadmap.md`                             | Detailed implementation phases           | Complete Phase 1 breakdown, milestones, code examples, architecture | [DONE] |
+| `.github/copilot-instructions.md`             | AI assistant guidance                    | Kotlin/Android focus, development workflow, documentation standards | [DONE] |
+| `docs/DEVLOG.md`                              | Development journal                      | This file - weekly progress tracking                                | [DONE] |
+| `docs/PROJECT_STRUCTURE.md`                   | File tree snapshot                       | Current structure, planned structure for Phase 1                    | [DONE] |
+| `docs/API_CONTRACTS.md`                       | Tool interface specifications            | JSON schemas for all LLM tools                                      | [DONE] |
+| `docs/traceability.md`                        | Requirements tracking                    | Phase 1 requirements mapped to implementation                       | [DONE] |
+| `docs/metrics.md`                             | Performance tracking                     | Code stats, performance benchmarks                                  | [DONE] |
+| `docs/metrics.md`                             | Performance & quality metrics dashboard  | Code stats, performance benchmarks, milestone tracking              | [DONE] |
+| `docs/architecture/decisions/README.md`       | ADR index and guidelines                 | ADR lifecycle, naming conventions, current ADR list                 | [DONE] |
+| `docs/architecture/decisions/ADR-TEMPLATE.md` | Template for new ADRs                    | Comprehensive template with all required sections                   | [DONE] |
 
 ### Files Deleted (Cleanup)
-| File Path | Reason | Content Disposition |
-|-----------|--------|---------------------|
+| File Path            | Reason                   | Content Disposition                             |
+| -------------------- | ------------------------ | ----------------------------------------------- |
 | `docs/QUICKSTART.md` | Redundant with README.md | Setup instructions absorbed into README Phase 1 |
-| `docs/goals.md` | Original vision captured | Content moved to README.md mission statement |
+| `docs/goals.md`      | Original vision captured | Content moved to README.md mission statement    |
 
 ### Directories Created
-| Directory Path | Purpose | Status |
-|----------------|---------|--------|
-| `docs/architecture/decisions/` | Store Architecture Decision Records | ✅ Ready |
-| `docs/architecture/diagrams/` | System design diagrams (UML, sequence, etc.) | ✅ Ready |
-| `docs/milestones/` | Milestone completion summaries | ✅ Ready |
+| Directory Path                 | Purpose                                      | Status       |
+| ------------------------------ | -------------------------------------------- | ------------ |
+| `docs/architecture/decisions/` | Store Architecture Decision Records          | [DONE] Ready |
+| `docs/architecture/diagrams/`  | System design diagrams (UML, sequence, etc.) | [DONE] Ready |
+| `docs/milestones/`             | Milestone completion summaries               | [DONE] Ready |
 
 ### Architecture Decisions
 
@@ -2694,12 +2694,12 @@ Completed documentation system for tracking development progress. Set up 5-pilla
 **Status:** 🔵 Not Started
 
 ### Files Created/Modified
-| File Path | Purpose | Key Functions/Classes | Status |
-|-----------|---------|----------------------|--------|
-| `package.json` | Extension manifest | Commands, activation events | ☐ |
-| `tsconfig.json` | TypeScript config | Strict mode, ES2020 target | ☐ |
-| `src/extension.ts` | Entry point | `activate()`, `deactivate()` | ☐ |
-| ... | ... | ... | ... |
+| File Path          | Purpose            | Key Functions/Classes        | Status |
+| ------------------ | ------------------ | ---------------------------- | ------ |
+| `package.json`     | Extension manifest | Commands, activation events  | ☐      |
+| `tsconfig.json`    | TypeScript config  | Strict mode, ES2020 target   | ☐      |
+| `src/extension.ts` | Entry point        | `activate()`, `deactivate()` | ☐      |
+| ...                | ...                | ...                          | ...    |
 
 *(To be filled as development progresses)*
 
@@ -2715,33 +2715,33 @@ Completed documentation system for tracking development progress. Set up 5-pilla
 - **Classes Created:** 0
 
 ### Milestone Progress
-| Milestone | Status | Completion Date | Blockers |
-|-----------|--------|----------------|----------|
-| 1.1 Project Setup | 🔵 Not Started | - | - |
-| 1.2 Database Backend | 🔵 Not Started | - | - |
-| 1.3 Tool Wrapper APIs | 🔵 Not Started | - | - |
-| 1.4 Test Integration | 🔵 Not Started | - | - |
+| Milestone             | Status        | Completion Date | Blockers |
+| --------------------- | ------------- | --------------- | -------- |
+| 1.1 Project Setup     | 🔵 Not Started | -               | -        |
+| 1.2 Database Backend  | 🔵 Not Started | -               | -        |
+| 1.3 Tool Wrapper APIs | 🔵 Not Started | -               | -        |
+| 1.4 Test Integration  | 🔵 Not Started | -               | -        |
 
 ---
 
 ## Technical Debt Log
 *(Track shortcuts taken during development that need future refactoring)*
 
-| Issue | Location | Severity | Reason | Plan to Address |
-|-------|----------|----------|--------|-----------------|
-| *(None yet)* | - | - | - | - |
+| Issue        | Location | Severity | Reason | Plan to Address |
+| ------------ | -------- | -------- | ------ | --------------- |
+| *(None yet)* | -        | -        | -      | -               |
 
 ---
 
 ## Learning Resources & References
 *(Useful links discovered during development)*
 
-| Resource | URL | Relevant To | Notes |
-|----------|-----|-------------|-------|
-| VS Code Extension API | https://code.visualstudio.com/api | All phases | Official API documentation |
-| ChromaDB Docs | https://docs.trychroma.com/ | Phase 1 | Vector DB setup guide |
-| ReAct Paper | https://arxiv.org/abs/2210.03629 | Phase 2 | Original agent framework |
-| Ollama API | https://github.com/ollama/ollama/blob/main/docs/api.md | Phase 2 | Local LLM integration |
+| Resource              | URL                                                    | Relevant To | Notes                      |
+| --------------------- | ------------------------------------------------------ | ----------- | -------------------------- |
+| VS Code Extension API | https://code.visualstudio.com/api                      | All phases  | Official API documentation |
+| ChromaDB Docs         | https://docs.trychroma.com/                            | Phase 1     | Vector DB setup guide      |
+| ReAct Paper           | https://arxiv.org/abs/2210.03629                       | Phase 2     | Original agent framework   |
+| Ollama API            | https://github.com/ollama/ollama/blob/main/docs/api.md | Phase 2     | Local LLM integration      |
 
 ---
 
@@ -2769,7 +2769,7 @@ Completed documentation system for tracking development progress. Set up 5-pilla
 ## Week 1 - Backend Foundation (Chunks 1.1-1.3)
 **Date Range:** December 17, 2025  
 **Milestone:** MVP Backend - Ollama Client, Parser, Minimal Agent  
-**Status:** ✅ Complete
+**Status:** [DONE] Complete
 
 ### Summary
 Implemented core backend components for Phase 1 MVP:
@@ -2782,56 +2782,56 @@ Implemented core backend components for Phase 1 MVP:
 Working on laptop - server and ChromaDB setup deferred until access to desktop.
 
 ### Files Created/Modified
-| File Path | Purpose | Key Functions/Classes | Status |
-|-----------|---------|----------------------|--------|
-| `package.json` | Project dependencies & scripts | npm scripts for build, test, lint | ✅ Complete |
-| `tsconfig.json` | TypeScript compiler configuration | Strict mode, ES2020 target | ✅ Complete |
-| `jest.config.js` | Jest test configuration | 80% coverage threshold | ✅ Complete |
-| `src/types.ts` | Core type definitions | `ParsedError`, `RCAResult`, `AgentState`, `LLMResponse`, error classes | ✅ Complete |
-| `src/llm/OllamaClient.ts` | Ollama API client | `connect()`, `generate()`, `isHealthy()`, `listModels()` | ✅ Complete |
-| `src/utils/KotlinNPEParser.ts` | Kotlin error parser | `parse()`, `isKotlinError()`, `getSupportedTypes()` | ✅ Complete |
-| `src/agent/MinimalReactAgent.ts` | 3-iteration ReAct agent | `analyze()`, `generateThought()`, `parseOutput()` | ✅ Complete |
-| `tests/unit/KotlinNPEParser.test.ts` | Parser unit tests | 15 test cases covering all error types | ✅ Complete |
-| `tests/unit/OllamaClient.test.ts` | LLM client unit tests | Mock-based tests for connection, generation, retries | ✅ Complete |
-| `tests/unit/MinimalReactAgent.test.ts` | Agent unit tests | 8 test cases including timeout, JSON parsing | ✅ Complete |
-| `examples/basic-usage.ts` | Usage examples | `exampleLateinitError()`, `checkOllamaStatus()` | ✅ Complete |
-| `README.md` | Quick start guide | Installation, status, docs links | ✅ Complete |
+| File Path                              | Purpose                           | Key Functions/Classes                                                  | Status          |
+| -------------------------------------- | --------------------------------- | ---------------------------------------------------------------------- | --------------- |
+| `package.json`                         | Project dependencies & scripts    | npm scripts for build, test, lint                                      | [DONE] Complete |
+| `tsconfig.json`                        | TypeScript compiler configuration | Strict mode, ES2020 target                                             | [DONE] Complete |
+| `jest.config.js`                       | Jest test configuration           | 80% coverage threshold                                                 | [DONE] Complete |
+| `src/types.ts`                         | Core type definitions             | `ParsedError`, `RCAResult`, `AgentState`, `LLMResponse`, error classes | [DONE] Complete |
+| `src/llm/OllamaClient.ts`              | Ollama API client                 | `connect()`, `generate()`, `isHealthy()`, `listModels()`               | [DONE] Complete |
+| `src/utils/KotlinNPEParser.ts`         | Kotlin error parser               | `parse()`, `isKotlinError()`, `getSupportedTypes()`                    | [DONE] Complete |
+| `src/agent/MinimalReactAgent.ts`       | 3-iteration ReAct agent           | `analyze()`, `generateThought()`, `parseOutput()`                      | [DONE] Complete |
+| `tests/unit/KotlinNPEParser.test.ts`   | Parser unit tests                 | 15 test cases covering all error types                                 | [DONE] Complete |
+| `tests/unit/OllamaClient.test.ts`      | LLM client unit tests             | Mock-based tests for connection, generation, retries                   | [DONE] Complete |
+| `tests/unit/MinimalReactAgent.test.ts` | Agent unit tests                  | 8 test cases including timeout, JSON parsing                           | [DONE] Complete |
+| `examples/basic-usage.ts`              | Usage examples                    | `exampleLateinitError()`, `checkOllamaStatus()`                        | [DONE] Complete |
+| `README.md`                            | Quick start guide                 | Installation, status, docs links                                       | [DONE] Complete |
 
 ### Functions Implemented
-| Function Name | File | Signature | Purpose | Tests | Coverage |
-|---------------|------|-----------|---------|-------|----------|
-| `OllamaClient.connect()` | `llm/OllamaClient.ts` | `async (): Promise<void>` | Connect to Ollama server & verify model | ✅ | 95% |
-| `OllamaClient.generate()` | `llm/OllamaClient.ts` | `async (prompt: string, options?: GenerateOptions): Promise<LLMResponse>` | Generate text using LLM | ✅ | 92% |
-| `OllamaClient.withRetry()` | `llm/OllamaClient.ts` | `async <T>(operation: () => Promise<T>): Promise<T>` | Retry logic with exponential backoff | ✅ | 90% |
-| `KotlinNPEParser.parse()` | `utils/KotlinNPEParser.ts` | `(errorText: string): ParsedError \| null` | Parse Kotlin errors into structured format | ✅ | 94% |
-| `KotlinNPEParser.isKotlinError()` | `utils/KotlinNPEParser.ts` | `static (errorText: string): boolean` | Quick check if error is Kotlin | ✅ | 100% |
-| `MinimalReactAgent.analyze()` | `agent/MinimalReactAgent.ts` | `async (error: ParsedError): Promise<RCAResult>` | Perform 3-iteration RCA analysis | ✅ | 88% |
-| `MinimalReactAgent.generateThought()` | `agent/MinimalReactAgent.ts` | `async (state: AgentState, previousThought: string \| null): Promise<string>` | Generate reasoning for current iteration | ✅ | 85% |
-| `MinimalReactAgent.parseOutput()` | `agent/MinimalReactAgent.ts` | `(output: string, error: ParsedError): RCAResult` | Parse JSON with fallback handling | ✅ | 92% |
+| Function Name                         | File                         | Signature                                                                     | Purpose                                    | Tests  | Coverage |
+| ------------------------------------- | ---------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------ | ------ | -------- |
+| `OllamaClient.connect()`              | `llm/OllamaClient.ts`        | `async (): Promise<void>`                                                     | Connect to Ollama server & verify model    | [DONE] | 95%      |
+| `OllamaClient.generate()`             | `llm/OllamaClient.ts`        | `async (prompt: string, options?: GenerateOptions): Promise<LLMResponse>`     | Generate text using LLM                    | [DONE] | 92%      |
+| `OllamaClient.withRetry()`            | `llm/OllamaClient.ts`        | `async <T>(operation: () => Promise<T>): Promise<T>`                          | Retry logic with exponential backoff       | [DONE] | 90%      |
+| `KotlinNPEParser.parse()`             | `utils/KotlinNPEParser.ts`   | `(errorText: string): ParsedError \| null`                                    | Parse Kotlin errors into structured format | [DONE] | 94%      |
+| `KotlinNPEParser.isKotlinError()`     | `utils/KotlinNPEParser.ts`   | `static (errorText: string): boolean`                                         | Quick check if error is Kotlin             | [DONE] | 100%     |
+| `MinimalReactAgent.analyze()`         | `agent/MinimalReactAgent.ts` | `async (error: ParsedError): Promise<RCAResult>`                              | Perform 3-iteration RCA analysis           | [DONE] | 88%      |
+| `MinimalReactAgent.generateThought()` | `agent/MinimalReactAgent.ts` | `async (state: AgentState, previousThought: string \| null): Promise<string>` | Generate reasoning for current iteration   | [DONE] | 85%      |
+| `MinimalReactAgent.parseOutput()`     | `agent/MinimalReactAgent.ts` | `(output: string, error: ParsedError): RCAResult`                             | Parse JSON with fallback handling          | [DONE] | 92%      |
 
 ### Classes/Interfaces Created
-| Name | File | Purpose | Public Methods | Dependencies |
-|------|------|---------|----------------|--------------|
-| `OllamaClient` | `llm/OllamaClient.ts` | LLM client with retry & timeout | `connect()`, `generate()`, `isHealthy()`, `listModels()` | node-fetch |
-| `KotlinNPEParser` | `utils/KotlinNPEParser.ts` | Parse Kotlin errors | `parse()`, static helpers | None |
-| `MinimalReactAgent` | `agent/MinimalReactAgent.ts` | 3-iteration reasoning loop | `analyze()`, `getConfig()` | OllamaClient |
-| `ParsedError` | `types.ts` | Structured error info | N/A (interface) | None |
-| `RCAResult` | `types.ts` | Analysis result | N/A (interface) | None |
-| `AgentState` | `types.ts` | Agent iteration state | N/A (interface) | None |
-| `LLMError` | `types.ts` | LLM operation error | N/A (extends Error) | None |
-| `AnalysisTimeoutError` | `types.ts` | Timeout error | N/A (extends Error) | None |
+| Name                   | File                         | Purpose                         | Public Methods                                           | Dependencies |
+| ---------------------- | ---------------------------- | ------------------------------- | -------------------------------------------------------- | ------------ |
+| `OllamaClient`         | `llm/OllamaClient.ts`        | LLM client with retry & timeout | `connect()`, `generate()`, `isHealthy()`, `listModels()` | node-fetch   |
+| `KotlinNPEParser`      | `utils/KotlinNPEParser.ts`   | Parse Kotlin errors             | `parse()`, static helpers                                | None         |
+| `MinimalReactAgent`    | `agent/MinimalReactAgent.ts` | 3-iteration reasoning loop      | `analyze()`, `getConfig()`                               | OllamaClient |
+| `ParsedError`          | `types.ts`                   | Structured error info           | N/A (interface)                                          | None         |
+| `RCAResult`            | `types.ts`                   | Analysis result                 | N/A (interface)                                          | None         |
+| `AgentState`           | `types.ts`                   | Agent iteration state           | N/A (interface)                                          | None         |
+| `LLMError`             | `types.ts`                   | LLM operation error             | N/A (extends Error)                                      | None         |
+| `AnalysisTimeoutError` | `types.ts`                   | Timeout error                   | N/A (extends Error)                                      | None         |
 
 ### Architecture Decisions
 **No new ADRs this week** - Following existing decisions 001-002 from planning phase
 
 ### Performance Metrics (Estimated - Not Tested on Hardware Yet)
-| Metric | Target | Expected | Status |
-|--------|--------|----------|--------|
-| Parser Speed | <1ms | <1ms | ⏳ Untested |
-| LLM Generation | 4-6s (GPU) | 4-6s | ⏳ Requires Ollama |
-| Full RCA Analysis | <60s | 30-60s | ⏳ Requires Ollama |
-| Test Coverage | >80% | 90% | ✅ Achieved |
-| Build Time | <30s | ~10s | ✅ Fast |
+| Metric            | Target     | Expected | Status                  |
+| ----------------- | ---------- | -------- | ----------------------- |
+| Parser Speed      | <1ms       | <1ms     | [TIMER] Untested        |
+| LLM Generation    | 4-6s (GPU) | 4-6s     | [TIMER] Requires Ollama |
+| Full RCA Analysis | <60s       | 30-60s   | [TIMER] Requires Ollama |
+| Test Coverage     | >80%       | 90%      | [DONE] Achieved         |
+| Build Time        | <30s       | ~10s     | [DONE] Fast             |
 
 ### Blockers & Solutions
 **Blocker:** Working on laptop without Ollama server or granite-code model  

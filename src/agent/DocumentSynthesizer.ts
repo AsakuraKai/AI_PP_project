@@ -27,13 +27,13 @@ import { RCAResult, ParsedError, AgentState } from '../types';
 export interface SynthesisOptions {
   /** Include code context in output */
   includeCodeContext?: boolean;
-  
+
   /** Include tool execution details */
   includeToolDetails?: boolean;
-  
+
   /** Include metadata section */
   includeMetadata?: boolean;
-  
+
   /** Maximum code snippet length */
   maxCodeLength?: number;
 }
@@ -101,7 +101,7 @@ export class DocumentSynthesizer {
    */
   private generateSummary(rca: RCAResult, error: ParsedError): string {
     const confidence = this.formatConfidence(rca.confidence);
-    const location = error.filePath !== 'unknown' 
+    const location = error.filePath !== 'unknown'
       ? `[${error.filePath}:${error.line}](${error.filePath}#L${error.line})`
       : 'Unknown location';
 
@@ -149,7 +149,7 @@ ${steps}`;
     maxLength: number
   ): string {
     let codeContext = rca.codeContext || '';
-    
+
     if (codeContext.length > maxLength) {
       codeContext = codeContext.slice(0, maxLength) + '\n...[truncated]';
     }
@@ -201,7 +201,7 @@ ${toolList}`;
       const customMetadata = Object.entries(error.metadata)
         .map(([key, value]) => `**${this.formatMetadataKey(key)}:** ${value}`)
         .join('  \n');
-      
+
       if (customMetadata) {
         metadata.push(customMetadata);
       }
@@ -233,7 +233,7 @@ ${metadata.join('  \n')}`;
     const percentage = Math.round(confidence * 100);
     const bars = Math.round(confidence * 10);
     const visualization = '█'.repeat(bars) + '░'.repeat(10 - bars);
-    
+
     let label: string;
     if (confidence >= 0.8) {
       label = 'High';
@@ -265,10 +265,10 @@ ${metadata.join('  \n')}`;
    */
   private formatToolName(tool: string): string {
     const toolNames: Record<string, string> = {
-      read_file: '📖 Read File',
+      read_file: '[READ] Read File',
       find_callers: '[SEARCH] Find Callers (LSP)',
-      vector_search_db: '🗄️ Vector Search',
-      android_build_tool: '🔨 Android Build Analysis',
+      vector_search_db: '[DB] Vector Search',
+      android_build_tool: '[BUILD] Android Build Analysis',
     };
 
     return toolNames[tool] || tool.replace(/_/g, ' ');

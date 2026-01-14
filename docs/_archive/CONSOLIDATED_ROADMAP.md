@@ -1,4 +1,4 @@
-# AI RCA Agent - Consolidated Roadmap & Project Plan
+﻿# AI RCA Agent - Consolidated Roadmap & Project Plan
 
 **Last Updated:** January 5, 2026  
 **Status:** Phase 4 Complete (90%), Moving to Phase 5  
@@ -6,12 +6,12 @@
 
 ---
 
-## 📊 Project Status Overview
+## [CHART] Project Status Overview
 
 ### Current State (January 2026)
-- **Phase 1-3:** ✅ Complete (Kotlin/Android foundation)
-- **Phase 4:** ✅ Complete (Testing & Validation - 54.1% baseline accepted)
-- **Phase 5:** 🎯 Next (Backend Intelligence Polish)
+- **Phase 1-3:** [DONE] Complete (Kotlin/Android foundation)
+- **Phase 4:** [DONE] Complete (Testing & Validation - 54.1% baseline accepted)
+- **Phase 5:** [TARGET] Next (Backend Intelligence Polish)
 - **Overall Progress:** 90% complete
 
 ### Key Achievements
@@ -23,7 +23,7 @@
 
 ---
 
-## 🎯 Vision & Goals
+## [TARGET] Vision & Goals
 
 ### Mission Statement
 Build a local-first debugging assistant that leverages unlimited context, iterations, and continuous learning to provide deep root cause analysis for code errors - starting with Kotlin/Android development.
@@ -38,16 +38,16 @@ Build a local-first debugging assistant that leverages unlimited context, iterat
 | No learning | Continuous learning | 50%+ improvement over time |
 
 ### Success Criteria
-- **Phase 1-4:** ✅ Working Kotlin/Android debugging assistant
+- **Phase 1-4:** [DONE] Working Kotlin/Android debugging assistant
 - **Phase 5-6:** Polish and advanced features
 - **Phase 7+:** Multi-language support expansion
 - **Personal Goal:** Deep learning about LLM agents and RAG
 
 ---
 
-## 🚀 Phase Overview
+## [LAUNCH] Phase Overview
 
-### ✅ Phase 1-3: Foundation Complete (Weeks 1-12)
+### [DONE] Phase 1-3: Foundation Complete (Weeks 1-12)
 **Delivered:**
 - Core backend infrastructure
 - Kotlin/Android parsers (26+ error types)
@@ -63,7 +63,7 @@ Build a local-first debugging assistant that leverages unlimited context, iterat
 - <60s analysis time
 - Production-ready codebase
 
-### ✅ Phase 4: Testing & Validation (January 3-5, 2026)
+### [DONE] Phase 4: Testing & Validation (January 3-5, 2026)
 **Goal:** Validate and improve diagnostic quality
 **Result:** 54.1% usability baseline accepted, model limitation identified
 
@@ -74,14 +74,14 @@ Build a local-first debugging assistant that leverages unlimited context, iterat
 - Few-shot example scaling (82 examples)
 
 **Key Finding:**
-- Infrastructure: 100% working ✅
+- Infrastructure: 100% working [DONE]
 - Bottleneck: DeepSeek-R1-Distill-Qwen-7B model capability ceiling
 - Decision: Accept baseline, move to Phase 5
 - Future: Upgrade to GPT-4/Claude in Phase 7
 
 **Detailed Results:** See PHASE4_FINAL_REPORT.md in this archive
 
-### 🎯 Phase 5: Backend Intelligence Polish (Current)
+### [TARGET] Phase 5: Backend Intelligence Polish (Current)
 **Duration:** 2-3 weeks  
 **Focus:** Prompt engineering refinements
 
@@ -108,7 +108,7 @@ Build a local-first debugging assistant that leverages unlimited context, iterat
 4. Enhance visual feedback
 5. Add export capabilities
 
-### 💡 Phase 7: Advanced Features (Stretch Goal)
+### [IDEA] Phase 7: Advanced Features (Stretch Goal)
 **Optional Improvements:**
 
 #### Option A: Better Model (Recommended)
@@ -135,7 +135,7 @@ Build a local-first debugging assistant that leverages unlimited context, iterat
 
 ---
 
-## 💻 Hardware & Infrastructure
+## [CODE] Hardware & Infrastructure
 
 ### Current Setup
 - **GPU:** RTX 3070 Ti (8GB VRAM)
@@ -147,16 +147,16 @@ Build a local-first debugging assistant that leverages unlimited context, iterat
 ### Recommended Models
 | Model Size | VRAM | Speed | Best For |
 |------------|------|-------|----------|
-| 7B-8B (Q8) | 4-5GB | 4-6s/iter | Main debugging ✅ |
+| 7B-8B (Q8) | 4-5GB | 4-6s/iter | Main debugging [DONE] |
 | 3B-4B (Q8) | 2-3GB | 2-3s/iter | Fast feedback |
 | 13B+ (Q4) | 6-8GB | 8-10s/iter | Better quality |
 
 ---
 
-## 📈 Improvement Roadmap (From IMPROVEMENT_ROADMAP.md)
+## [GRAPH] Improvement Roadmap (From IMPROVEMENT_ROADMAP.md)
 
 ### Week 9-10: Prompt Engineering Overhaul
-**Priority:** 🔴 CRITICAL
+**Priority:** [RED] CRITICAL
 
 **Tasks:**
 1. Version-specific knowledge injection
@@ -167,7 +167,7 @@ Build a local-first debugging assistant that leverages unlimited context, iterat
 **Expected Impact:** +25% accuracy
 
 ### Week 11-12: Advanced Tool Development
-**Priority:** 🟡 HIGH
+**Priority:** [YELLOW] HIGH
 
 **Tasks:**
 1. Semantic code search tool
@@ -178,7 +178,7 @@ Build a local-first debugging assistant that leverages unlimited context, iterat
 **Expected Impact:** +15% context quality
 
 ### Week 13-14: Performance Optimization
-**Priority:** 🟡 MEDIUM
+**Priority:** [YELLOW] MEDIUM
 
 **Tasks:**
 1. Parallel tool execution
@@ -189,7 +189,7 @@ Build a local-first debugging assistant that leverages unlimited context, iterat
 **Target:** 23s → 12s median latency
 
 ### Week 15-16: Accuracy Testing
-**Priority:** 🔴 CRITICAL
+**Priority:** [RED] CRITICAL
 
 **Tasks:**
 1. Expand golden test suite (7 → 100+ cases)
@@ -201,7 +201,7 @@ Build a local-first debugging assistant that leverages unlimited context, iterat
 
 ---
 
-## 🔍 Deduplication & Code Quality
+## [SEARCH] Deduplication & Code Quality
 
 ### Consolidation Completed (All 15 Chunks)
 **Total Impact:**
@@ -225,16 +225,16 @@ Build a local-first debugging assistant that leverages unlimited context, iterat
 
 ---
 
-## 📊 Success Metrics
+## [CHART] Success Metrics
 
 ### Current Baseline (Phase 4 Complete)
 | Metric | Target | Actual | Status |
 |--------|--------|--------|--------|
-| Usability | 70-85% | 54.1% | ⚠️ Model-limited |
-| Tests Passed | 7-10/10 | 0/10 | ⚠️ Below threshold |
-| Latency | <20s | ~58s | ⚠️ Acceptable |
-| Infrastructure | Solid | 100% | ✅ Exceeded |
-| Examples | 40+ | 82 | ✅ Exceeded |
+| Usability | 70-85% | 54.1% | [WARNING] Model-limited |
+| Tests Passed | 7-10/10 | 0/10 | [WARNING] Below threshold |
+| Latency | <20s | ~58s | [WARNING] Acceptable |
+| Infrastructure | Solid | 100% | [DONE] Exceeded |
+| Examples | 40+ | 82 | [DONE] Exceeded |
 
 ### Phase 5-6 Targets
 | Metric | Current | Target | Approach |
@@ -254,7 +254,7 @@ Build a local-first debugging assistant that leverages unlimited context, iterat
 
 ---
 
-## 🎓 Learning Goals & Philosophy
+## [LEARN] Learning Goals & Philosophy
 
 ### Development Approach
 - **Solo developer** with heavy AI assistance
@@ -264,12 +264,12 @@ Build a local-first debugging assistant that leverages unlimited context, iterat
 - **AI collaboration** throughout
 
 ### Learning Objectives
-- ✅ Understand LLM agents deeply
-- ✅ Master RAG systems and vector databases
-- ✅ Learn effective AI-assisted development
-- ✅ Build practical debugging tool
-- ✅ Explore local AI deployment
-- 🎯 Create portfolio project (secondary)
+- [DONE] Understand LLM agents deeply
+- [DONE] Master RAG systems and vector databases
+- [DONE] Learn effective AI-assisted development
+- [DONE] Build practical debugging tool
+- [DONE] Explore local AI deployment
+- [TARGET] Create portfolio project (secondary)
 
 ### Personal Goals (Not Requirements)
 - Build something useful for yourself
@@ -279,22 +279,22 @@ Build a local-first debugging assistant that leverages unlimited context, iterat
 
 ---
 
-## 💡 Lessons Learned (Phase 4)
+## [IDEA] Lessons Learned (Phase 4)
 
-### What Worked ✅
+### What Worked [DONE]
 1. Systematic testing with automated harness
 2. Infrastructure-first approach paid off
 3. Root cause focus identified real bottleneck
 4. 82 few-shot examples loaded perfectly
 5. Quality validation architecture sound
 
-### What Didn't Work ❌
+### What Didn't Work [FAIL]
 1. More examples confused the model
 2. Stricter prompts didn't improve compliance
 3. Validation loop can't fix model limitations
 4. 7B model has reasoning capability ceiling
 
-### Key Insights 💡
+### Key Insights [IDEA]
 1. **Good infrastructure + weak model = limited results**
 2. **Good infrastructure + strong model = excellent results**
 3. **Keep infrastructure, upgrade model when ready**
@@ -303,14 +303,14 @@ Build a local-first debugging assistant that leverages unlimited context, iterat
 
 ---
 
-## 🚀 Next Steps
+## [LAUNCH] Next Steps
 
 ### Immediate (Phase 5)
-1. ✅ Accept baseline performance (54.1%)
-2. 🎯 Improve prompt engineering
-3. 🎯 Enhance tool orchestration
-4. 🎯 Refine few-shot selection
-5. 🎯 Better error categorization
+1. [DONE] Accept baseline performance (54.1%)
+2. [TARGET] Improve prompt engineering
+3. [TARGET] Enhance tool orchestration
+4. [TARGET] Refine few-shot selection
+5. [TARGET] Better error categorization
 
 ### Short-Term (Phase 6)
 1. Polish chat interface
@@ -328,7 +328,7 @@ Build a local-first debugging assistant that leverages unlimited context, iterat
 
 ---
 
-## 📚 Documentation Structure
+## [DOCS] Documentation Structure
 
 ### Active Documents (docs/)
 - README.md - Project overview
@@ -346,9 +346,9 @@ Build a local-first debugging assistant that leverages unlimited context, iterat
 
 ---
 
-## 🎯 Production-Ready Features
+## [TARGET] Production-Ready Features
 
-### Core Capabilities ✅
+### Core Capabilities [DONE]
 - Local-first architecture (zero cloud dependencies)
 - Educational mode for learning
 - Unlimited language support via model swapping
@@ -388,7 +388,7 @@ Build a local-first debugging assistant that leverages unlimited context, iterat
 
 ---
 
-## 📝 Supporting Documentation
+## [NOTE] Supporting Documentation
 
 ### Detailed Reports
 - [PHASE4_FINAL_REPORT.md](PHASE4_FINAL_REPORT.md) - Complete Phase 4 analysis
@@ -408,14 +408,14 @@ Build a local-first debugging assistant that leverages unlimited context, iterat
 
 ---
 
-## 🎉 Conclusion
+## [SUCCESS] Conclusion
 
 This project has successfully demonstrated:
-- ✅ Solid infrastructure implementation
-- ✅ Comprehensive testing methodology
-- ✅ Effective code consolidation
-- ✅ Realistic model evaluation
-- ✅ Clear path forward
+- [DONE] Solid infrastructure implementation
+- [DONE] Comprehensive testing methodology
+- [DONE] Effective code consolidation
+- [DONE] Realistic model evaluation
+- [DONE] Clear path forward
 
 **Current Status:** Ready for Phase 5 with clear understanding of capabilities and limitations.
 

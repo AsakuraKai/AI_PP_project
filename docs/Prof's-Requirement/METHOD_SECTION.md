@@ -1,4 +1,4 @@
-# Method
+﻿# Method
 
 > **Project:** RCA Agent - Local-First AI Debugging Assistant for Kotlin/Android  
 > **Development Period:** December 2025 - January 2026 (~13 weeks)  
@@ -356,9 +356,9 @@ function hashError(error: ParsedError): string {
 Accuracy = (Correct Root Causes / Total Analyses) × 100%
 
 Evaluation Criteria:
-- ✅ Correct: Root cause matches expected cause semantically
-- ❌ Incorrect: Root cause is wrong or irrelevant
-- ⚠️ Partial: Root cause is related but incomplete
+- [DONE] Correct: Root cause matches expected cause semantically
+- [FAIL] Incorrect: Root cause is wrong or irrelevant
+- [WARNING] Partial: Root cause is related but incomplete
 ```
 
 **Secondary Metrics:**

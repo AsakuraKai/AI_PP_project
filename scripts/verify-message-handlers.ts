@@ -181,7 +181,7 @@ function main() {
 
     if (extraHandlers.length > 0) {
         console.log();
-        console.log(`ℹ️  Extra handlers not in expected list (${extraHandlers.length}):`);
+        console.log(`[INFO] Extra handlers not in expected list (${extraHandlers.length}):`);
         extraHandlers.forEach(cmd => console.log(`  + ${cmd}`));
     }
 
@@ -201,7 +201,7 @@ function main() {
 
     if (extraResponses.length > 0) {
         console.log();
-        console.log(`ℹ️  Extra responses not in expected list (${extraResponses.length}):`);
+        console.log(`[INFO] Extra responses not in expected list (${extraResponses.length}):`);
         extraResponses.forEach(cmd => console.log(`  + ${cmd}`));
     }
 

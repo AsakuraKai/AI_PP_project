@@ -156,7 +156,7 @@ export function useErrorQueue() {
     });
 
   const analyzeError = useCallback((errorId: string) => {
-    postMessage('analyzeError', { errorId });
+    postMessage('startAnalysis', { errorId });
   }, [postMessage]);
 
   const analyzeSelected = useCallback(() => {
