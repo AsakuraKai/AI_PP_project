@@ -43,15 +43,16 @@
 
 ### [BUILD] Core Documentation (Root Level)
 
-| Document                                     | Purpose                                                      | Status               |
-| -------------------------------------------- | ------------------------------------------------------------ | -------------------- |
-| [README.md](README.md)                       | Project overview, quick start, and setup guide               | [DONE] Current       |
-| [DEVLOG.md](DEVLOG.md)                       | Weekly development journal + current status & phase progress | [DONE] Current       |
-| [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) | **CONSOLIDATED:** Complete file tree, statistics, build info | [DONE] Updated Jan 9 |
-| [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)     | Developer reference for extending RCA Agent                  | [DONE] Current       |
-| [USER_GUIDE.md](USER_GUIDE.md)               | User guide for using RCA Agent                               | [DONE] Current       |
-| [LEARNINGS.md](LEARNINGS.md)                 | Project insights and lessons learned                         | [DONE] Current       |
-| [DOCS_INDEX.md](DOCS_INDEX.md)               | This file - Documentation navigation                         | [DONE] Updated Jan 9 |
+| Document                                                       | Purpose                                                      | Status               |
+| -------------------------------------------------------------- | ------------------------------------------------------------ | -------------------- |
+| [README.md](README.md)                                         | Project overview, quick start, and setup guide               | [DONE] Current       |
+| [DEVLOG.md](DEVLOG.md)                                         | Weekly development journal + current status & phase progress | [DONE] Current       |
+| [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)                   | **CONSOLIDATED:** Complete file tree, statistics, build info | [DONE] Updated Jan 9 |
+| [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)                       | Developer reference for extending RCA Agent                  | [DONE] Current       |
+| [USER_GUIDE.md](USER_GUIDE.md)                                 | User guide for using RCA Agent                               | [DONE] Current       |
+| [LEARNINGS.md](LEARNINGS.md)                                   | Project insights and lessons learned                         | [DONE] Current       |
+| [data/RCA_DATA_AND_TRAINING.md](data/RCA_DATA_AND_TRAINING.md) | Dataset inventory, RCA data flow, zero-shot rationale        | [DONE] New Jan 14    |
+| [DOCS_INDEX.md](DOCS_INDEX.md)                                 | This file - Documentation navigation                         | [DONE] Updated Jan 9 |
 
 **Recent Changes:**
 - [DONE] **Consolidated PROJECT_STRUCTURE.md** - Merged PROJECT_FILE_STRUCTURE.md and PROJECT_STRUCTURE_STATS.md
