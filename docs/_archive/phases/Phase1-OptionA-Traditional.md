@@ -1,4 +1,4 @@
-# 🏗️ PHASE 1 - OPTION A: Traditional Systematic Approach
+﻿# [BUILD] PHASE 1 - OPTION A: Traditional Systematic Approach
 
 > **Goal:** Build systematically with testable milestones. Best for thorough learning.
 
@@ -14,11 +14,11 @@
 
 ### When to Choose This Approach
 
-✅ Want to learn systematically and thoroughly  
-✅ Prefer building solid foundations before moving forward  
-✅ Have 12 weeks to dedicate (flexible pace)  
-✅ Like structured learning with clear milestones  
-✅ Don't mind waiting to see it work end-to-end
+[DONE] Want to learn systematically and thoroughly  
+[DONE] Prefer building solid foundations before moving forward  
+[DONE] Have 12 weeks to dedicate (flexible pace)  
+[DONE] Like structured learning with clear milestones  
+[DONE] Don't mind waiting to see it work end-to-end
 
 ---
 
@@ -35,9 +35,9 @@
 
 ---
 
-## 🔧 CHUNK 1: Core Infrastructure Setup (Weeks 1-2)
+## [TOOL] CHUNK 1: Core Infrastructure Setup (Weeks 1-2)
 
-**Priority:** 🔥 CRITICAL - Foundation for everything else  
+**Priority:** [HOT] CRITICAL - Foundation for everything else  
 **Goal:** Get basic extension running with database connection
 
 ### What You'll Build
@@ -57,13 +57,13 @@
 ### Test Criteria (End of Chunk 1)
 ```bash
 # Integration test checklist
-✅ Extension loads in VS Code (<1s activation time)
-✅ Command palette shows "RCA Agent: Analyze Error"
-✅ Ollama responds to test prompt in <5s
-✅ ChromaDB health check passes (localhost:8000)
-✅ Can create RCA collection in ChromaDB
-✅ StateManager saves/loads checkpoint successfully
-✅ Configuration schema accepts model selection
+[DONE] Extension loads in VS Code (<1s activation time)
+[DONE] Command palette shows "RCA Agent: Analyze Error"
+[DONE] Ollama responds to test prompt in <5s
+[DONE] ChromaDB health check passes (localhost:8000)
+[DONE] Can create RCA collection in ChromaDB
+[DONE] StateManager saves/loads checkpoint successfully
+[DONE] Configuration schema accepts model selection
 ```
 
 ### Files Created (Chunk 1)
@@ -409,9 +409,9 @@ describe('Performance Benchmarks', () => {
 
 ---
 
-## 🛠️ CHUNK 2: Tool Ecosystem (Weeks 3-4)
+## [FIX] CHUNK 2: Tool Ecosystem (Weeks 3-4)
 
-**Priority:** 🔥 HIGH - Agent needs tools to be useful  
+**Priority:** [HOT] HIGH - Agent needs tools to be useful  
 **Goal:** Build complete tool infrastructure and parsers
 
 ### What You'll Build
@@ -433,13 +433,13 @@ describe('Performance Benchmarks', () => {
 ### Test Criteria (End of Chunk 2)
 ```bash
 # Integration test checklist
-✅ Parse 10+ different Kotlin error types correctly
-✅ Read file tool extracts code context (50 lines)
-✅ LSP tool finds callers of test function
-✅ Language detector: 95%+ accuracy on sample errors
-✅ Sanitizer blocks "Ignore previous instructions" attacks
-✅ Tool execution errors handled gracefully
-✅ All tool schemas validate with Zod
+[DONE] Parse 10+ different Kotlin error types correctly
+[DONE] Read file tool extracts code context (50 lines)
+[DONE] LSP tool finds callers of test function
+[DONE] Language detector: 95%+ accuracy on sample errors
+[DONE] Sanitizer blocks "Ignore previous instructions" attacks
+[DONE] Tool execution errors handled gracefully
+[DONE] All tool schemas validate with Zod
 ```
 
 ### Files Created (Chunk 2)
@@ -628,9 +628,9 @@ export class ContextWindowManager {
 
 ---
 
-## 🧠 CHUNK 3: Agent Intelligence (Weeks 5-6)
+## [BRAIN] CHUNK 3: Agent Intelligence (Weeks 5-6)
 
-**Priority:** 🔥 HIGH - The brain of the system  
+**Priority:** [HOT] HIGH - The brain of the system  
 **Goal:** Working ReAct agent that can analyze simple errors
 
 ### What You'll Build
@@ -652,14 +652,14 @@ export class ContextWindowManager {
 ### Test Criteria (End of Chunk 3)
 ```bash
 # Integration test checklist
-✅ Analyzes Kotlin NPE with >70% confidence
-✅ Uses 3+ tools during analysis
-✅ Completes in <60s on GPU
-✅ Self-reflection triggers on contradicting evidence
-✅ Generates root cause + fix guidelines
-✅ Parallel tool execution: 3x faster than sequential
-✅ Hypothesis mentioned in final RCA
-✅ Agent terminates without hanging
+[DONE] Analyzes Kotlin NPE with >70% confidence
+[DONE] Uses 3+ tools during analysis
+[DONE] Completes in <60s on GPU
+[DONE] Self-reflection triggers on contradicting evidence
+[DONE] Generates root cause + fix guidelines
+[DONE] Parallel tool execution: 3x faster than sequential
+[DONE] Hypothesis mentioned in final RCA
+[DONE] Agent terminates without hanging
 ```
 
 ### Files Created (Chunk 3)
@@ -951,9 +951,9 @@ export const VectorSearchTool: ToolDefinition = {
 
 ---
 
-## 📱 CHUNK 4: Android Specialization (Weeks 7-8)
+## [MOBILE] CHUNK 4: Android Specialization (Weeks 7-8)
 
-**Priority:** 🟡 MEDIUM - Android-specific features  
+**Priority:** [YELLOW] MEDIUM - Android-specific features  
 **Goal:** Handle all Android error types comprehensively
 
 ### What You'll Build
@@ -975,13 +975,13 @@ export const VectorSearchTool: ToolDefinition = {
 ### Test Criteria (End of Chunk 4)
 ```bash
 # Integration test checklist
-✅ 5+ Compose errors analyzed correctly
-✅ XML inflation errors identify missing IDs
-✅ Gradle conflicts detected and explained
-✅ Manifest merge errors show conflicting attributes
-✅ Lifecycle errors mention proper initialization points
-✅ Android docs search returns relevant results
-✅ Fix suggestions compile (Android-specific validation)
+[DONE] 5+ Compose errors analyzed correctly
+[DONE] XML inflation errors identify missing IDs
+[DONE] Gradle conflicts detected and explained
+[DONE] Manifest merge errors show conflicting attributes
+[DONE] Lifecycle errors mention proper initialization points
+[DONE] Android docs search returns relevant results
+[DONE] Fix suggestions compile (Android-specific validation)
 ```
 
 ### Files Created (Chunk 4)
@@ -1001,9 +1001,9 @@ tests/integration/
 
 ---
 
-## 🎨 CHUNK 5: User Experience (Weeks 9-10)
+## [DESIGN] CHUNK 5: User Experience (Weeks 9-10)
 
-**Priority:** 🟡 MEDIUM - Makes it usable  
+**Priority:** [YELLOW] MEDIUM - Makes it usable  
 **Goal:** Polish UI and add educational mode
 
 ### What You'll Build
@@ -1025,13 +1025,13 @@ tests/integration/
 ### Test Criteria (End of Chunk 5)
 ```bash
 # Integration test checklist
-✅ UI displays thought/action/observation in real-time
-✅ Markdown document includes code snippets with syntax highlighting
-✅ Educational mode explanations are beginner-friendly
-✅ Positive feedback increases RCA confidence score
-✅ Quality scorer identifies low-quality RCAs (<0.5)
-✅ Collection merge combines 2+ workspaces successfully
-✅ UI responsive during long-running analysis
+[DONE] UI displays thought/action/observation in real-time
+[DONE] Markdown document includes code snippets with syntax highlighting
+[DONE] Educational mode explanations are beginner-friendly
+[DONE] Positive feedback increases RCA confidence score
+[DONE] Quality scorer identifies low-quality RCAs (<0.5)
+[DONE] Collection merge combines 2+ workspaces successfully
+[DONE] UI responsive during long-running analysis
 ```
 
 ### Files Created (Chunk 5)
@@ -1053,9 +1053,9 @@ tests/integration/
 
 ---
 
-## 🚀 CHUNK 6: Production Ready (Weeks 11-12)
+## [LAUNCH] CHUNK 6: Production Ready (Weeks 11-12)
 
-**Priority:** 🟢 POLISH - Make it production-grade  
+**Priority:** [GREEN] POLISH - Make it production-grade  
 **Goal:** Testing, performance optimization, deployment
 
 ### What You'll Build
@@ -1077,15 +1077,15 @@ tests/integration/
 ### Test Criteria (End of Chunk 6)
 ```bash
 # Production readiness checklist
-✅ All unit tests passing (500+ tests)
-✅ Integration tests cover 15+ real scenarios
-✅ Golden tests validate against reference RCAs
-✅ Performance benchmarks meet targets
-✅ CI pipeline green (GitHub Actions)
-✅ ESLint + Prettier + TypeScript strict mode
-✅ Documentation complete (README + API_CONTRACTS)
-✅ Extension installs and activates successfully
-✅ No console errors or warnings
+[DONE] All unit tests passing (500+ tests)
+[DONE] Integration tests cover 15+ real scenarios
+[DONE] Golden tests validate against reference RCAs
+[DONE] Performance benchmarks meet targets
+[DONE] CI pipeline green (GitHub Actions)
+[DONE] ESLint + Prettier + TypeScript strict mode
+[DONE] Documentation complete (README + API_CONTRACTS)
+[DONE] Extension installs and activates successfully
+[DONE] No console errors or warnings
 ```
 
 ### Files Created (Chunk 6)
@@ -1114,7 +1114,7 @@ docs/
 
 ---
 
-## 📊 Progress Tracking
+## [CHART] Progress Tracking
 
 Track your progress through each chunk:
 
@@ -1127,18 +1127,18 @@ Track your progress through each chunk:
 
 ---
 
-## 🎯 Success Criteria
+## [TARGET] Success Criteria
 
 **Phase 1 Option A is complete when:**
-- ✅ All 6 chunks delivered
-- ✅ Can analyze 15+ different Kotlin/Android error types
-- ✅ Handles all Android approaches (Kotlin+Compose, Java+XML, Gradle)
-- ✅ Completes analysis in <60s on GPU
-- ✅ Educational mode works (both sync and async)
-- ✅ Vector DB learns from errors
-- ✅ 80%+ test coverage
-- ✅ Extension packaged and installable
-- ✅ You actually use it during development
+- [DONE] All 6 chunks delivered
+- [DONE] Can analyze 15+ different Kotlin/Android error types
+- [DONE] Handles all Android approaches (Kotlin+Compose, Java+XML, Gradle)
+- [DONE] Completes analysis in <60s on GPU
+- [DONE] Educational mode works (both sync and async)
+- [DONE] Vector DB learns from errors
+- [DONE] 80%+ test coverage
+- [DONE] Extension packaged and installable
+- [DONE] You actually use it during development
 
 ---
 

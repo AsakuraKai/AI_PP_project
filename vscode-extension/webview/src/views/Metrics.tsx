@@ -2,16 +2,16 @@
  * Metrics View - Performance analytics and insights
  * 
  * Features:
- * - ✅ Success rate chart (line graph over time)
- * - ✅ Average analysis time chart (bar graph)
- * - ✅ Error type distribution (pie/bar chart)
- * - ✅ Model performance comparison
- * - ✅ Learning metrics (cache hit rate, improvements)
- * - ✅ Time range selector
- * - ✅ Export functionality
- * - ✅ Loading skeletons for async content
- * - ✅ ARIA labels for accessibility
- * - ✅ Screen reader support
+ * - [OK] Success rate chart (line graph over time)
+ * - [OK] Average analysis time chart (bar graph)
+ * - [OK] Error type distribution (pie/bar chart)
+ * - [OK] Model performance comparison
+ * - [OK] Learning metrics (cache hit rate, improvements)
+ * - [OK] Time range selector
+ * - [OK] Export functionality
+ * - [OK] Loading skeletons for async content
+ * - [OK] ARIA labels for accessibility
+ * - [OK] Screen reader support
  */
 
 import { useEffect } from 'react';

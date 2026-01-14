@@ -127,7 +127,7 @@ export class DependencyGraphTool extends Tool {
    * Execute dependency graph analysis
    */
   async execute(params: DependencyGraphParams, _context?: ToolExecutionContext): Promise<DependencyGraph> {
-    console.log('🔍 Analyzing dependency graph...');
+    console.log('[SEARCH] Analyzing dependency graph...');
 
     try {
       // Build dependency tree
@@ -166,7 +166,7 @@ export class DependencyGraphTool extends Tool {
       return graph;
 
     } catch (error) {
-      console.warn('⚠️ Dependency graph analysis failed:', error);
+      console.warn('[WARN] Dependency graph analysis failed:', error);
       return {
         nodes: [],
         conflicts: [],
@@ -205,7 +205,7 @@ export class DependencyGraphTool extends Tool {
       return output;
 
     } catch (error: any) {
-      console.warn('⚠️ Failed to build dependency tree:', error.message);
+      console.warn('[WARN] Failed to build dependency tree:', error.message);
       return '';
     }
   }

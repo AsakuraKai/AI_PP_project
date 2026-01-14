@@ -7,15 +7,15 @@
  * - Complete: Result display with code diffs and fix suggestions
  * 
  * Phase 4 Enhancements:
- * - ✅ Form accessibility (labels, ARIA)
- * - ✅ Keyboard navigation (Enter to submit)
- * - ✅ Screen reader support
- * - ✅ Enhanced empty state
- * - ✅ Live region for progress
+ * - [OK] Form accessibility (labels, ARIA)
+ * - [OK] Keyboard navigation (Enter to submit)
+ * - [OK] Screen reader support
+ * - [OK] Enhanced empty state
+ * - [OK] Live region for progress
  */
 
 import { useState, useEffect } from 'react';
-import { AlertCircle, Download, Play, RefreshCw, Search, X, Sparkles } from 'lucide-react';
+import { AlertCircle, Download, Play, RefreshCw, Search, ThumbsDown, ThumbsUp, X, Sparkles } from 'lucide-react';
 import { useAnalysis } from '../hooks/useAnalysis';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -30,17 +30,19 @@ export function Analyze() {
     progress,
     result,
     error,
+    feedbackStatus,
     startManualAnalysis,
     cancelAnalysis,
     applyFix,
     exportResult,
+    submitFeedback,
     reset
   } = useAnalysis();
-  
+
   const [errorText, setErrorText] = useState('');
   const [selectedFile, setSelectedFile] = useState('');
   const [selectedLine, setSelectedLine] = useState('');
-  
+
   // Announce state changes to screen readers
   useEffect(() => {
     if (state === 'analyzing') {
@@ -51,19 +53,19 @@ export function Analyze() {
       announce('Analysis failed: ' + error, 'assertive');
     }
   }, [state, error]);
-  
+
   const handleAnalyze = () => {
     if (!errorText.trim()) return;
-    
+
     const errorData = {
       message: errorText,
       filePath: selectedFile || 'unknown',
       line: parseInt(selectedLine) || 0
     };
-    
+
     startManualAnalysis(JSON.stringify(errorData));
   };
-  
+
   // Empty State - Error Input
   if (state === 'empty') {
     return (
@@ -74,7 +76,7 @@ export function Analyze() {
             Paste an error message or select from the error queue to begin analysis
           </p>
         </div>
-        
+
         <div className="max-w-3xl mx-auto space-y-6">
           <form
             className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 space-y-4"
@@ -106,7 +108,7 @@ export function Analyze() {
                 Include the full error message and stack trace if available
               </p>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label
@@ -128,7 +130,7 @@ export function Analyze() {
                   Path to the file where the error occurred
                 </p>
               </div>
-              
+
               <div>
                 <label
                   htmlFor="line-number"
@@ -151,7 +153,7 @@ export function Analyze() {
                 </p>
               </div>
             </div>
-            
+
             <Button
               type="submit"
               disabled={!errorText.trim()}
@@ -163,7 +165,7 @@ export function Analyze() {
               <span>Start Analysis</span>
             </Button>
           </form>
-          
+
           <div className="text-center text-sm text-zinc-500">
             Or select an error from the <a href="#" className="text-purple-400 hover:text-purple-300">Error Queue</a>
           </div>
@@ -171,7 +173,7 @@ export function Analyze() {
       </div>
     );
   }
-  
+
   // Analyzing State - Progress Display
   if (state === 'analyzing' && progress) {
     return (
@@ -193,7 +195,7 @@ export function Analyze() {
             <span>Cancel</span>
           </Button>
         </div>
-        
+
         <div className="max-w-4xl mx-auto">
           <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6" role="region" aria-label="Analysis progress details">
             <AnalysisProgress {...progress} />
@@ -202,7 +204,7 @@ export function Analyze() {
       </div>
     );
   }
-  
+
   // Error State
   if (state === 'error' && error) {
     return (
@@ -213,7 +215,7 @@ export function Analyze() {
             An error occurred during analysis
           </p>
         </div>
-        
+
         <div className="max-w-3xl mx-auto">
           <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-6" role="alert">
             <div className="flex items-start gap-3 mb-4">
@@ -225,7 +227,7 @@ export function Analyze() {
                 <p className="text-sm text-zinc-300">{error}</p>
               </div>
             </div>
-            
+
             <Button
               variant="outline"
               onClick={reset}
@@ -240,7 +242,7 @@ export function Analyze() {
       </div>
     );
   }
-  
+
   // Complete State - Results Display
   if (state === 'complete' && result) {
     return (
@@ -273,7 +275,7 @@ export function Analyze() {
             </Button>
           </div>
         </div>
-        
+
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Root Cause */}
           <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6" role="article" aria-labelledby="root-cause-title">
@@ -288,23 +290,76 @@ export function Analyze() {
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-2 pt-4 border-t border-zinc-800">
               <Badge variant="outline" className="text-purple-400" aria-label={`Confidence: ${Math.round(result.confidence * 100)} percent`}>
                 Confidence: {Math.round(result.confidence * 100)}%
               </Badge>
-              <Badge variant="outline" aria-label={`${result.fixes.length} fixes suggested`}>
-                {result.fixes.length} fixes suggested
-              </Badge>
+              {result.fixes.length > 0 && (
+                <Badge variant="outline" aria-label={`${result.fixes.length} fixes suggested`}>
+                  {result.fixes.length} fixes suggested
+                </Badge>
+              )}
             </div>
           </div>
-          
+
+          {/* Feedback */}
+          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6" role="region" aria-label="Feedback">
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div>
+                <h3 className="text-lg font-medium text-zinc-200">Was this analysis helpful?</h3>
+                <p className="text-sm text-zinc-400">
+                  Your feedback improves future suggestions.
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  className="gap-2"
+                  disabled={!result.feedback?.enabled || feedbackStatus.status === 'sending'}
+                  onClick={() => submitFeedback('positive')}
+                  aria-label="Submit positive feedback"
+                >
+                  <ThumbsUp className="h-4 w-4" aria-hidden="true" />
+                  Helpful
+                </Button>
+                <Button
+                  variant="outline"
+                  className="gap-2"
+                  disabled={!result.feedback?.enabled || feedbackStatus.status === 'sending'}
+                  onClick={() => submitFeedback('negative')}
+                  aria-label="Submit negative feedback"
+                >
+                  <ThumbsDown className="h-4 w-4" aria-hidden="true" />
+                  Not helpful
+                </Button>
+              </div>
+            </div>
+
+            {!result.feedback?.enabled && (
+              <p className="text-xs text-zinc-500 mt-3">
+                Feedback is disabled because the analysis was not persisted (ChromaDB not available).
+              </p>
+            )}
+
+            {feedbackStatus.status === 'sent' && feedbackStatus.message && (
+              <p className="text-xs text-green-400 mt-3" role="status" aria-live="polite">
+                {feedbackStatus.message}
+              </p>
+            )}
+            {feedbackStatus.status === 'error' && feedbackStatus.message && (
+              <p className="text-xs text-red-400 mt-3" role="alert">
+                {feedbackStatus.message}
+              </p>
+            )}
+          </div>
+
           {/* Hypothesis */}
           <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6" role="article" aria-labelledby="hypothesis-title">
             <h3 id="hypothesis-title" className="text-lg font-medium text-zinc-200 mb-3">Hypothesis</h3>
             <p className="text-zinc-300 leading-relaxed">{result.hypothesis}</p>
           </div>
-          
+
           {/* Reasoning Steps */}
           {result.reasoning.length > 0 && (
             <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6" role="article" aria-labelledby="reasoning-title">
@@ -325,7 +380,7 @@ export function Analyze() {
               </ol>
             </div>
           )}
-          
+
           {/* Fix Suggestions */}
           {result.fixes.length > 0 && (
             <div className="space-y-4" role="region" aria-labelledby="fixes-title">
@@ -345,6 +400,6 @@ export function Analyze() {
       </div>
     );
   }
-  
+
   return null;
 }

@@ -1,10 +1,10 @@
-# 🏗️ VS Code Extension - Technical Architecture
+﻿# [BUILD] VS Code Extension - Technical Architecture
 
 > **Internal Architecture, Component Interactions, and Implementation Details**
 
 ---
 
-## 📋 Table of Contents
+## [CLIPBOARD] Table of Contents
 
 1. [System Overview](#system-overview)
 2. [Component Architecture](#component-architecture)
@@ -17,7 +17,7 @@
 
 ---
 
-## 🎯 System Overview
+## [TARGET] System Overview
 
 ### High-Level Architecture
 
@@ -35,7 +35,7 @@
 │  │         │                │                  │          │  │
 │  │         └────────────────┼──────────────────┘          │  │
 │  │                          │                             │  │
-│  │  ┌───────────────────────▼──────────────────────────┐ │  │
+│  │  ┌───────────────────────[DOWN]──────────────────────────┐ │  │
 │  │  │            Analysis Orchestrator                 │ │  │
 │  │  │  - Input validation & sanitization               │ │  │
 │  │  │  - Error parsing & language detection            │ │  │
@@ -46,7 +46,7 @@
 │  │  └──────────────────────────────────────────────────┘ │  │
 │  │                          │                             │  │
 │  │         ┌────────────────┼────────────────┐           │  │
-│  │         ▼                ▼                ▼           │  │
+│  │         [DOWN]                [DOWN]                [DOWN]           │  │
 │  │  ┌──────────┐    ┌──────────┐    ┌──────────────┐   │  │
 │  │  │  Output  │    │ Webview  │    │   Feedback   │   │  │
 │  │  │ Channel  │    │   Panel  │    │   Buttons    │   │  │
@@ -55,7 +55,7 @@
 │                                                               │
 └───────────────────────────────┬───────────────────────────────┘
                                 │
-                                ▼
+                                [DOWN]
 ┌─────────────────────────────────────────────────────────────┐
 │                    Backend Services (src/)                   │
 │                                                               │
@@ -66,7 +66,7 @@
 │         │                 │                  │              │
 │         └─────────────────┼──────────────────┘              │
 │                           │                                 │
-│  ┌────────────────────────▼───────────────────────────┐    │
+│  ┌────────────────────────[DOWN]───────────────────────────┐    │
 │  │              Ollama LLM Service                     │    │
 │  │         (http://localhost:11434)                    │    │
 │  └─────────────────────────────────────────────────────┘    │
@@ -76,7 +76,7 @@
 
 ---
 
-## 🧩 Component Architecture
+## [PUZZLE] Component Architecture
 
 ### 1. Extension Entry Point (extension.ts)
 
@@ -452,7 +452,7 @@ class ToolRegistry {
 
 ---
 
-## 🔄 Data Flow
+## [REFRESH] Data Flow
 
 ### Complete Analysis Flow
 
@@ -462,7 +462,7 @@ class ToolRegistry {
 │  (Ctrl+Shift+R) │
 └────────┬────────┘
          │
-         ▼
+         [DOWN]
 ┌─────────────────────────────────────────────────┐
 │  1. Input Handling                              │
 │     - Get text (selection or input box)         │
@@ -470,7 +470,7 @@ class ToolRegistry {
 │     - Sanitize (remove control chars)           │
 └─────────────────┬───────────────────────────────┘
                   │
-                  ▼
+                  [DOWN]
 ┌─────────────────────────────────────────────────┐
 │  2. Error Parsing                               │
 │     - Detect language (Kotlin/Compose/XML/etc)  │
@@ -478,7 +478,7 @@ class ToolRegistry {
 │     - Parse stack trace                         │
 └─────────────────┬───────────────────────────────┘
                   │
-                  ▼
+                  [DOWN]
 ┌─────────────────────────────────────────────────┐
 │  3. Cache Lookup                                │
 │     - Generate error hash (SHA-256)             │
@@ -488,7 +488,7 @@ class ToolRegistry {
                   │
         ┌─────────┴──────────┐
         │                    │
-        ▼ (Hit)              ▼ (Miss)
+        [DOWN] (Hit)              [DOWN] (Miss)
 ┌──────────────┐    ┌─────────────────────────────┐
 │ Return Cache │    │  4. Full Analysis           │
 │ (<5s)        │    │     - Initialize agent      │
@@ -497,7 +497,7 @@ class ToolRegistry {
        │            │     - Generate RCA           │
        │            └─────────────┬───────────────┘
        │                          │
-       │                          ▼
+       │                          [DOWN]
        │            ┌─────────────────────────────┐
        │            │  5. Store in Cache          │
        │            │     - Generate hash         │
@@ -506,7 +506,7 @@ class ToolRegistry {
        │                          │
        └──────────────┬───────────┘
                       │
-                      ▼
+                      [DOWN]
 ┌─────────────────────────────────────────────────┐
 │  6. Display Results                             │
 │     - Format as markdown/HTML                   │
@@ -514,10 +514,10 @@ class ToolRegistry {
 │     - Display performance metrics (if enabled)  │
 └─────────────────┬───────────────────────────────┘
                   │
-                  ▼
+                  [DOWN]
 ┌─────────────────────────────────────────────────┐
 │  7. Feedback Collection                         │
-│     - Show 👍/👎 buttons                        │
+│     - Show [LIKE]/[DISLIKE] buttons                        │
 │     - Collect optional comments                 │
 │     - Update quality scores                     │
 │     - Invalidate cache if negative              │
@@ -526,41 +526,41 @@ class ToolRegistry {
 
 ---
 
-## 🎨 UI Components
+## [DESIGN] UI Components
 
 ### Output Channel (Text-Based)
 
 **Format Structure:**
 
 ```
-🔴 ERROR ANALYSIS
+[RED] ERROR ANALYSIS
 ════════════════════════════════════════════════════
 [Header with file, type, message]
 
 ────────────────────────────────────────────────────
-🎯 ROOT CAUSE
+[TARGET] ROOT CAUSE
 ────────────────────────────────────────────────────
 [Analysis paragraph]
 
 ────────────────────────────────────────────────────
-🛠️  FIX GUIDELINES
+[FIX]  FIX GUIDELINES
 ────────────────────────────────────────────────────
 1. [Step 1]
 2. [Step 2]
 ...
 
 ────────────────────────────────────────────────────
-📊 METADATA
+[CHART] METADATA
 ────────────────────────────────────────────────────
 [Confidence, tools, timing, cache status]
 
 ────────────────────────────────────────────────────
-🎓 LEARNING NOTES (if educational mode)
+[LEARN] LEARNING NOTES (if educational mode)
 ────────────────────────────────────────────────────
 [What/Why/How sections]
 
 ────────────────────────────────────────────────────
-💬 FEEDBACK
+[CHAT] FEEDBACK
 ────────────────────────────────────────────────────
 [Prompt for feedback]
 ```
@@ -573,7 +573,7 @@ class ToolRegistry {
 <div class="rca-container">
   <!-- Header -->
   <div class="header">
-    <span class="error-badge">🔴 LATEINIT</span>
+    <span class="error-badge">[RED] LATEINIT</span>
     <h1>MainActivity.kt:42</h1>
   </div>
   
@@ -585,34 +585,34 @@ class ToolRegistry {
   
   <!-- Results (after analysis) -->
   <div class="results-section">
-    <h2>🎯 Root Cause</h2>
+    <h2>[TARGET] Root Cause</h2>
     <p>[Analysis]</p>
     
-    <h2>🛠️ Fix Guidelines</h2>
+    <h2>[FIX] Fix Guidelines</h2>
     <ol>
       <li>[Step 1]</li>
       <li>[Step 2]</li>
     </ol>
     
-    <h2>📄 Code Snippet</h2>
+    <h2>[FILE] Code Snippet</h2>
     <pre><code class="language-kotlin">[Code]</code></pre>
   </div>
   
   <!-- Educational (if enabled) -->
   <div class="learning-notes">
-    <h3>🎓 What</h3>
+    <h3>[LEARN] What</h3>
     <p>[Explanation]</p>
     
-    <h3>🎓 Why</h3>
+    <h3>[LEARN] Why</h3>
     <p>[Causes]</p>
     
-    <h3>🎓 How</h3>
+    <h3>[LEARN] How</h3>
     <p>[Prevention]</p>
   </div>
   
   <!-- Performance Metrics (if enabled) -->
   <div class="performance-metrics">
-    <h3>⚡ Performance</h3>
+    <h3>[FAST] Performance</h3>
     <ul>
       <li>Total Time: 12.5s</li>
       <li>LLM Time: 10.2s</li>
@@ -622,10 +622,10 @@ class ToolRegistry {
   
   <!-- Actions -->
   <div class="actions">
-    <button onclick="copyCode()">📋 Copy Code</button>
+    <button onclick="copyCode()">[CLIPBOARD] Copy Code</button>
     <button onclick="openFile()">📂 Open File</button>
-    <button onclick="sendFeedback(true)">👍 Helpful</button>
-    <button onclick="sendFeedback(false)">👎 Not Helpful</button>
+    <button onclick="sendFeedback(true)">[LIKE] Helpful</button>
+    <button onclick="sendFeedback(false)">[DISLIKE] Not Helpful</button>
   </div>
 </div>
 ```
@@ -704,7 +704,7 @@ function getOllamaConfig(): OllamaConfig {
 
 ---
 
-## 📊 State Management
+## [CHART] State Management
 
 ### Global State
 
@@ -746,7 +746,7 @@ class RCAWebview {
 
 ---
 
-## ⚡ Performance Optimizations
+## [FAST] Performance Optimizations
 
 ### 1. Lazy Loading
 
@@ -816,7 +816,7 @@ async function analyzeWithProgress(error: ParsedError): Promise<void> {
 
 ---
 
-## 🔄 Extension Lifecycle
+## [REFRESH] Extension Lifecycle
 
 ### Activation Flow
 
@@ -894,7 +894,7 @@ export function deactivate(): void {
 
 ---
 
-## 🎓 Best Practices
+## [LEARN] Best Practices
 
 ### Error Handling
 
@@ -969,7 +969,7 @@ vscode.workspace.onDidChangeConfiguration((e) => {
 
 ---
 
-## 📚 References
+## [DOCS] References
 
 - **VS Code Extension API**: https://code.visualstudio.com/api
 - **Extension Samples**: https://github.com/microsoft/vscode-extension-samples

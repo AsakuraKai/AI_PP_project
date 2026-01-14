@@ -1,13 +1,13 @@
-# Phase 4 Testing - Quick Reference
+﻿# Phase 4 Testing - Quick Reference
 
-**Testing Infrastructure:** ✅ COMPLETE  
+**Testing Infrastructure:** [DONE] COMPLETE  
 **Test Runner:** `npm run test:phase4`  
 **Total Test Cases:** 10  
 **Estimated Runtime:** 2-3 minutes (10 tests × ~12s each)
 
 ---
 
-## 🚀 Quick Start
+## [LAUNCH] Quick Start
 
 ### 1. Prerequisites
 ```bash
@@ -38,7 +38,7 @@ ls -lt tests/results/phase4/phase4-test-suite-report-*.json | head -1
 
 ---
 
-## 📊 Test Suite Overview
+## [CHART] Test Suite Overview
 
 ### Test Cases (10 Total)
 
@@ -67,7 +67,7 @@ ls -lt tests/results/phase4/phase4-test-suite-report-*.json | head -1
 
 ---
 
-## 🔍 Understanding Results
+## [SEARCH] Understanding Results
 
 ### Test Result Structure
 ```json
@@ -91,18 +91,18 @@ ls -lt tests/results/phase4/phase4-test-suite-report-*.json | head -1
 ```
 
 ### Pass/Fail Criteria
-- ✅ **PASS:** `overall_usability >= targetUsability`
-- ❌ **FAIL:** `overall_usability < targetUsability`
+- [DONE] **PASS:** `overall_usability >= targetUsability`
+- [FAIL] **FAIL:** `overall_usability < targetUsability`
 
 ### Example: Test 1 (AGP Version)
 - **Target:** 80% usability
 - **Result:** 87% usability
-- **Verdict:** ✅ PASS (+7% above target)
+- **Verdict:** [DONE] PASS (+7% above target)
 - **Improvement:** +47% from 40% baseline
 
 ---
 
-## 📈 Interpreting Test Suite Report
+## [GRAPH] Interpreting Test Suite Report
 
 ### Overall Summary
 ```json
@@ -150,9 +150,9 @@ ls -lt tests/results/phase4/phase4-test-suite-report-*.json | head -1
 
 ---
 
-## 🎯 What to Look For
+## [TARGET] What to Look For
 
-### Good Signs ✅
+### Good Signs [DONE]
 - Overall usability ≥ 80%
 - Pass rate ≥ 80% (8/10 tests)
 - Diagnosis accuracy = 100% (maintained from Phase 1)
@@ -171,11 +171,11 @@ ls -lt tests/results/phase4/phase4-test-suite-report-*.json | head -1
 
 ---
 
-## 🔧 Troubleshooting
+## [TOOL] Troubleshooting
 
 ### LLM Connection Failed
 ```bash
-❌ LLM connection failed. Is Ollama running?
+[FAIL] LLM connection failed. Is Ollama running?
 
 # Fix:
 ollama serve
@@ -204,7 +204,7 @@ const agent = new MinimalReactAgent(llmClient, {
 
 ---
 
-## 📝 Next Steps After Running Tests
+## [NOTE] Next Steps After Running Tests
 
 ### 1. Analyze Results
 ```bash
@@ -240,7 +240,7 @@ Based on analysis, implement:
 
 ---
 
-## 💡 Tips for Success
+## [IDEA] Tips for Success
 
 1. **Run tests 3 times:** LLMs have variance, average the results
 2. **Check individual results:** Suite summary hides details
@@ -251,7 +251,7 @@ Based on analysis, implement:
 
 ---
 
-## 📚 Related Documentation
+## [DOCS] Related Documentation
 
 - **Implementation:** [PHASE4_WEEK1-2_COMPLETE.md](../docs/PHASE4_WEEK1-2_COMPLETE.md)
 - **Test Suite Code:** [Phase4TestSuite.ts](../tests/real-world/Phase4TestSuite.ts)
@@ -262,5 +262,5 @@ Based on analysis, implement:
 ---
 
 **Last Updated:** January 2, 2026  
-**Status:** ✅ Ready to Run  
+**Status:** [DONE] Ready to Run  
 **Command:** `npm run test:phase4`

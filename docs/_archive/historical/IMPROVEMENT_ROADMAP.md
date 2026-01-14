@@ -1,4 +1,4 @@
-# RCA Agent Extension - Comprehensive Improvement Roadmap
+﻿# RCA Agent Extension - Comprehensive Improvement Roadmap
 
 **Version:** 2.0  
 **Created:** December 25, 2025  
@@ -7,7 +7,7 @@
 
 ---
 
-## 🎯 Vision Statement
+## [TARGET] Vision Statement
 
 **Current State:** Functional RCA agent with 99% passing tests, 50% real-world accuracy  
 **Target State:** Industry-leading AI debugging assistant with 90%+ accuracy, sub-10s latency, and exceptional user experience
@@ -21,16 +21,16 @@
 
 ---
 
-## 📊 Current Baseline (December 2025)
+## [CHART] Current Baseline (December 2025)
 
-### Strengths ✅
+### Strengths [DONE]
 - Parser accuracy: 100% (26+ error types)
 - Test coverage: 99% (878/878 tests passing)
 - Performance: 23.33s (74% faster than target)
 - Infrastructure: ChromaDB, caching, monitoring in place
 - Documentation: 9,650+ lines
 
-### Critical Gaps ❌
+### Critical Gaps [FAIL]
 - Real-world accuracy: ~50% (below 60% target)
 - Root cause specificity: Generic explanations
 - Version knowledge: Missing version-specific context
@@ -40,31 +40,31 @@
 
 ---
 
-## 🗺️ Roadmap Overview
+## [LOCATION] Roadmap Overview
 
-### Phase 2: VS Code Extension Integration (Weeks 1-8) 🔄 IN PROGRESS
+### Phase 2: VS Code Extension Integration (Weeks 1-8) [REFRESH] IN PROGRESS
 **Status:** With Sokchea (Frontend Developer)  
 **Goal:** Deliver functional VS Code extension with core features
 
-### Phase 3: Intelligence Enhancement (Weeks 9-16) 🎯 PRIORITY
+### Phase 3: Intelligence Enhancement (Weeks 9-16) [TARGET] PRIORITY
 **Status:** Planned  
 **Goal:** Achieve 90%+ real-world accuracy with specialized knowledge
 
-### Phase 4: User Experience Revolution (Weeks 17-24) 🚀 FUTURE
+### Phase 4: User Experience Revolution (Weeks 17-24) [LAUNCH] FUTURE
 **Status:** Planned  
 **Goal:** Create industry-leading debugging UX with AI assistance
 
-### Phase 5: Enterprise & Scale (Weeks 25-32) 💼 FUTURE
+### Phase 5: Enterprise & Scale (Weeks 25-32) [WORK] FUTURE
 **Status:** Planned  
 **Goal:** Team features, custom models, and enterprise deployment
 
 ---
 
-## 📅 Detailed Timeline
+## [DATE] Detailed Timeline
 
 ---
 
-# 🔴 PHASE 3: Intelligence Enhancement (HIGH PRIORITY)
+# [RED] PHASE 3: Intelligence Enhancement (HIGH PRIORITY)
 **Duration:** Weeks 9-16 (2 months)  
 **Focus:** Fixing accuracy and root cause quality issues
 
@@ -76,7 +76,7 @@
 Transform generic LLM responses into specific, actionable root cause analyses
 
 ### 3.1: Context-Aware System Prompts
-**Priority:** 🔴 CRITICAL  
+**Priority:** [RED] CRITICAL  
 **Impact:** +30% accuracy improvement expected
 
 **Tasks:**
@@ -168,7 +168,7 @@ Transform generic LLM responses into specific, actionable root cause analyses
 ---
 
 ### 3.2: Domain Knowledge Database
-**Priority:** 🔴 CRITICAL  
+**Priority:** [RED] CRITICAL  
 **Impact:** Eliminate hallucinations on version-specific issues
 
 **Tasks:**
@@ -268,7 +268,7 @@ Transform generic LLM responses into specific, actionable root cause analyses
 ---
 
 ### 3.3: Multi-Pass Reasoning
-**Priority:** 🟡 HIGH  
+**Priority:** [YELLOW] HIGH  
 **Impact:** Better root cause identification through deeper analysis
 
 **Tasks:**
@@ -355,7 +355,7 @@ Transform generic LLM responses into specific, actionable root cause analyses
 ## Week 11-12: Advanced Tool Development
 
 ### 3.4: Intelligent Code Analysis Tools
-**Priority:** 🟡 HIGH  
+**Priority:** [YELLOW] HIGH  
 **Impact:** Better context understanding and fix generation
 
 **Tasks:**
@@ -462,7 +462,7 @@ Transform generic LLM responses into specific, actionable root cause analyses
 ---
 
 ### 3.5: Fix Generation & Validation
-**Priority:** 🟡 HIGH  
+**Priority:** [YELLOW] HIGH  
 **Impact:** Generate code fixes, not just explanations
 
 **Tasks:**
@@ -555,7 +555,7 @@ Transform generic LLM responses into specific, actionable root cause analyses
 ## Week 13-14: Performance & Optimization
 
 ### 3.6: Latency Reduction
-**Priority:** 🟡 MEDIUM  
+**Priority:** [YELLOW] MEDIUM  
 **Goal:** Reduce analysis time from 23s to <15s
 
 **Tasks:**
@@ -643,7 +643,7 @@ Transform generic LLM responses into specific, actionable root cause analyses
 ---
 
 ### 3.7: Accuracy Testing & Validation
-**Priority:** 🔴 CRITICAL  
+**Priority:** [RED] CRITICAL  
 **Goal:** Systematically measure and improve accuracy
 
 **Tasks:**
@@ -720,7 +720,7 @@ Transform generic LLM responses into specific, actionable root cause analyses
 ## Week 15-16: Knowledge Base & Learning
 
 ### 3.8: Community-Driven Knowledge Base
-**Priority:** 🟢 MEDIUM  
+**Priority:** [GREEN] MEDIUM  
 **Impact:** Crowdsource fixes from user community
 
 **Tasks:**
@@ -822,7 +822,7 @@ Transform generic LLM responses into specific, actionable root cause analyses
 ---
 
 ### 3.9: Continuous Learning from Production
-**Priority:** 🟢 MEDIUM  
+**Priority:** [GREEN] MEDIUM  
 **Impact:** Agent improves automatically over time
 
 **Tasks:**
@@ -891,7 +891,7 @@ Transform generic LLM responses into specific, actionable root cause analyses
 
 ---
 
-# 🟡 PHASE 4: User Experience Revolution
+# [YELLOW] PHASE 4: User Experience Revolution
 **Duration:** Weeks 17-24 (2 months)  
 **Focus:** Making AI debugging feel magical
 
@@ -900,7 +900,7 @@ Transform generic LLM responses into specific, actionable root cause analyses
 ## Week 17-18: Intelligent UI/UX
 
 ### 4.1: Contextual Error Detection
-**Priority:** 🔴 CRITICAL  
+**Priority:** [RED] CRITICAL  
 **Impact:** Catch errors before build
 
 **Tasks:**
@@ -986,7 +986,7 @@ Transform generic LLM responses into specific, actionable root cause analyses
 ---
 
 ### 4.2: Interactive Debugging Assistant
-**Priority:** 🟡 HIGH  
+**Priority:** [YELLOW] HIGH  
 **Impact:** Conversational debugging experience
 
 **Tasks:**
@@ -1075,7 +1075,7 @@ Transform generic LLM responses into specific, actionable root cause analyses
 ---
 
 ### 4.3: Visual Error Analysis
-**Priority:** 🟢 MEDIUM  
+**Priority:** [GREEN] MEDIUM  
 **Impact:** Better understanding through visualization
 
 **Tasks:**
@@ -1113,7 +1113,7 @@ Transform generic LLM responses into specific, actionable root cause analyses
 ## Week 19-20: Proactive Assistance
 
 ### 4.4: Predictive Error Prevention
-**Priority:** 🟡 HIGH  
+**Priority:** [YELLOW] HIGH  
 **Impact:** Prevent errors before they happen
 
 **Tasks:**
@@ -1185,7 +1185,7 @@ Transform generic LLM responses into specific, actionable root cause analyses
 ---
 
 ### 4.5: Learning Mode
-**Priority:** 🟢 MEDIUM  
+**Priority:** [GREEN] MEDIUM  
 **Impact:** Help developers improve skills
 
 **Tasks:**
@@ -1248,7 +1248,7 @@ Transform generic LLM responses into specific, actionable root cause analyses
 ## Week 21-22: Collaboration Features
 
 ### 4.6: Team Sharing
-**Priority:** 🟢 LOW  
+**Priority:** [GREEN] LOW  
 **Impact:** Enable team knowledge sharing
 
 **Tasks:**
@@ -1298,7 +1298,7 @@ Transform generic LLM responses into specific, actionable root cause analyses
 ## Week 23-24: Multi-Language Support
 
 ### 4.7: Beyond Android
-**Priority:** 🟢 LOW (Future)  
+**Priority:** [GREEN] LOW (Future)  
 **Impact:** Expand to other languages and frameworks
 
 **Tasks:**
@@ -1348,7 +1348,7 @@ Transform generic LLM responses into specific, actionable root cause analyses
 ## Week 25-26: Enterprise Features
 
 ### 5.1: On-Premise Deployment
-**Priority:** 🟢 LOW (Enterprise)  
+**Priority:** [GREEN] LOW (Enterprise)  
 **Impact:** Enable enterprise adoption
 
 **Tasks:**
@@ -1399,7 +1399,7 @@ Transform generic LLM responses into specific, actionable root cause analyses
 ---
 
 ### 5.2: Custom Models & Fine-Tuning
-**Priority:** 🟢 LOW (Enterprise)  
+**Priority:** [GREEN] LOW (Enterprise)  
 **Impact:** Company-specific optimization
 
 **Tasks:**
@@ -1436,7 +1436,7 @@ Transform generic LLM responses into specific, actionable root cause analyses
 ---
 
 ### 5.3: Analytics & Governance
-**Priority:** 🟢 LOW (Enterprise)  
+**Priority:** [GREEN] LOW (Enterprise)  
 **Impact:** Compliance and insights
 
 **Tasks:**
@@ -1477,7 +1477,7 @@ Transform generic LLM responses into specific, actionable root cause analyses
 ## Week 27-28: Advanced AI Features
 
 ### 5.4: Multi-Model Orchestration
-**Priority:** 🟡 MEDIUM  
+**Priority:** [YELLOW] MEDIUM  
 **Impact:** Use specialized models for different tasks
 
 **Tasks:**
@@ -1528,7 +1528,7 @@ Transform generic LLM responses into specific, actionable root cause analyses
 ---
 
 ### 5.5: Agentic Workflows
-**Priority:** 🟢 LOW (Future)  
+**Priority:** [GREEN] LOW (Future)  
 **Impact:** Fully autonomous debugging
 
 **Tasks:**
@@ -1565,7 +1565,7 @@ Transform generic LLM responses into specific, actionable root cause analyses
 ## Week 29-32: Ecosystem & Community
 
 ### 5.6: Plugin Marketplace
-**Priority:** 🟢 LOW (Future)  
+**Priority:** [GREEN] LOW (Future)  
 **Impact:** Community extensibility
 
 **Tasks:**
@@ -1600,7 +1600,7 @@ Transform generic LLM responses into specific, actionable root cause analyses
 ---
 
 ### 5.7: Integration Ecosystem
-**Priority:** 🟢 MEDIUM  
+**Priority:** [GREEN] MEDIUM  
 **Impact:** Fit into existing workflows
 
 **Tasks:**
@@ -1630,7 +1630,7 @@ Transform generic LLM responses into specific, actionable root cause analyses
 
 ---
 
-# 📊 Success Metrics & KPIs
+# [CHART] Success Metrics & KPIs
 
 ## Overall Product Metrics
 
@@ -1668,37 +1668,37 @@ Transform generic LLM responses into specific, actionable root cause analyses
 
 ---
 
-# 🎯 Priority Matrix
+# [TARGET] Priority Matrix
 
 ## Immediate (Weeks 9-16) - Phase 3
-🔴 **CRITICAL** - Must have for production quality
+[RED] **CRITICAL** - Must have for production quality
 1. Prompt engineering overhaul
 2. Domain knowledge database
 3. Multi-pass reasoning
 4. Accuracy testing & validation
 
-🟡 **HIGH** - Significantly improves UX
+[YELLOW] **HIGH** - Significantly improves UX
 5. Advanced tool development
 6. Fix generation & validation
 7. Performance optimization
 
 ## Near-Term (Weeks 17-24) - Phase 4
-🟡 **HIGH** - Competitive differentiators
+[YELLOW] **HIGH** - Competitive differentiators
 8. Intelligent UI/UX
 9. Proactive assistance
 10. Interactive debugging assistant
 
-🟢 **MEDIUM** - Nice to have
+[GREEN] **MEDIUM** - Nice to have
 11. Visual error analysis
 12. Learning mode
 13. Collaboration features
 
 ## Long-Term (Weeks 25-32) - Phase 5
-🟢 **MEDIUM** - Future value
+[GREEN] **MEDIUM** - Future value
 14. Multi-model orchestration
 15. Integration ecosystem
 
-🟢 **LOW** - Optional/Enterprise
+[GREEN] **LOW** - Optional/Enterprise
 16. Multi-language support
 17. Enterprise features
 18. Custom models & fine-tuning
@@ -1707,7 +1707,7 @@ Transform generic LLM responses into specific, actionable root cause analyses
 
 ---
 
-# 🚀 Implementation Strategy
+# [LAUNCH] Implementation Strategy
 
 ## Development Approach
 
@@ -1770,7 +1770,7 @@ Each feature must pass:
 
 ---
 
-# 🎓 Learning & Knowledge Management
+# [LEARN] Learning & Knowledge Management
 
 ## Documentation Requirements
 
@@ -1796,7 +1796,7 @@ Each feature must pass:
 
 ---
 
-# 🔄 Continuous Improvement
+# [REFRESH] Continuous Improvement
 
 ## Weekly
 - [ ] Review accuracy metrics
@@ -1818,29 +1818,29 @@ Each feature must pass:
 
 ---
 
-# 🎯 Success Criteria
+# [TARGET] Success Criteria
 
 ## Phase 3 Success (Weeks 9-16)
-✅ Accuracy ≥75% on golden tests  
-✅ Latency <15s median  
-✅ 90%+ user satisfaction on beta  
-✅ Zero critical bugs
+[DONE] Accuracy ≥75% on golden tests  
+[DONE] Latency <15s median  
+[DONE] 90%+ user satisfaction on beta  
+[DONE] Zero critical bugs
 
 ## Phase 4 Success (Weeks 17-24)
-✅ 1,000+ monthly active users  
-✅ 4.2+ app store rating  
-✅ 60%+ fix application rate  
-✅ Real-time detection enabled by 70%+ users
+[DONE] 1,000+ monthly active users  
+[DONE] 4.2+ app store rating  
+[DONE] 60%+ fix application rate  
+[DONE] Real-time detection enabled by 70%+ users
 
 ## Phase 5 Success (Weeks 25-32)
-✅ 10,000+ monthly active users  
-✅ 5+ enterprise customers  
-✅ Plugin ecosystem established  
-✅ Multi-language support (3+ languages)
+[DONE] 10,000+ monthly active users  
+[DONE] 5+ enterprise customers  
+[DONE] Plugin ecosystem established  
+[DONE] Multi-language support (3+ languages)
 
 ---
 
-# 📝 Risks & Mitigation
+# [NOTE] Risks & Mitigation
 
 ## Technical Risks
 
@@ -1883,7 +1883,7 @@ Each feature must pass:
 
 ---
 
-# 🏆 Vision: 12 Months from Now
+# [TROPHY] Vision: 12 Months from Now
 
 **RCA Agent becomes:**
 

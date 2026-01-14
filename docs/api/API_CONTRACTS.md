@@ -1,7 +1,7 @@
-# API Contracts - Tool Input/Output Schemas
+﻿# API Contracts - Tool Input/Output Schemas
 
 > **Purpose:** Define exact JSON schemas for all LLM tools to ensure consistent communication between agent and toolset.  
-> **Project:** Local-first Kotlin/Android debugging assistant (**Phase 1 Backend Complete ✅**)  
+> **Project:** Local-first Kotlin/Android debugging assistant (**Phase 1 Backend Complete [DONE]**)  
 > **Validation:** Use Zod runtime validation to enforce contracts.  
 > **Update Rule:** Every new tool MUST have its schema documented here before implementation.
 
@@ -9,7 +9,7 @@
 
 ---
 
-## 📚 Comprehensive API Documentation Available
+## [DOCS] Comprehensive API Documentation Available
 
 For detailed API references, usage examples, and implementation patterns, see:
 
@@ -42,20 +42,20 @@ Each tool contract specifies:
 
 | API Name | Phase | Purpose | Status |
 |----------|-------|---------|--------|
-| `ChromaDBClient` | 3.1 | Vector database for RCA storage | ✅ Implemented |
-| `EmbeddingService` | 3.2 | Custom embedding generation | ✅ Implemented |
-| `RCACache` | 3.3 | Hash-based result caching | ✅ Implemented |
-| `QualityManager` | 3.4 | Auto-prune & quality metrics | ✅ Implemented |
+| `ChromaDBClient` | 3.1 | Vector database for RCA storage | [DONE] Implemented |
+| `EmbeddingService` | 3.2 | Custom embedding generation | [DONE] Implemented |
+| `RCACache` | 3.3 | Hash-based result caching | [DONE] Implemented |
+| `QualityManager` | 3.4 | Auto-prune & quality metrics | [DONE] Implemented |
 
 ## Agent APIs
 
 | API Name | Phase | Purpose | Status |
 |----------|-------|---------|--------|
-| `FeedbackHandler` | 3.4 | User validation feedback | ✅ Implemented |
-| `AgentStateStream` | 5.1 | Real-time progress events | ✅ Implemented |
-| `DocumentSynthesizer` | 5.1 | Markdown RCA report generation | ✅ Implemented |
-| `EducationalAgent` | 5.2 | Beginner-friendly explanations | ✅ Implemented |
-| `PerformanceTracker` | 5.3 | Performance monitoring & metrics | ✅ Implemented |
+| `FeedbackHandler` | 3.4 | User validation feedback | [DONE] Implemented |
+| `AgentStateStream` | 5.1 | Real-time progress events | [DONE] Implemented |
+| `DocumentSynthesizer` | 5.1 | Markdown RCA report generation | [DONE] Implemented |
+| `EducationalAgent` | 5.2 | Beginner-friendly explanations | [DONE] Implemented |
+| `PerformanceTracker` | 5.3 | Performance monitoring & metrics | [DONE] Implemented |
 
 ---
 
@@ -261,14 +261,14 @@ Print formatted metrics table to console.
 tracker.printMetrics();
 
 // Output:
-// 📊 Performance Metrics
+// [CHART] Performance Metrics
 // ================================================================================
 // 
-// ⏱️  Total Time: 52341.23ms
-// 📈 Total Operations: 15
+// [TIMER]  Total Time: 52341.23ms
+// [GRAPH] Total Operations: 15
 // ⌀  Average Time: 3489.42ms
 // 
-// 📋 Operation Breakdown:
+// [CLIPBOARD] Operation Breakdown:
 // --------------------------------------------------------------------------------
 // Operation                     Mean        p50         p90         p99         Count
 // --------------------------------------------------------------------------------
@@ -380,11 +380,11 @@ console.log(`Average LLM time: ${avgLLMTime.toFixed(2)}ms`);
 ### Performance Targets (Phase 5.3)
 | Metric | Target | Typical | Status |
 |--------|--------|---------|--------|
-| Analysis p50 | <60s | 45-55s | ✅ Met |
-| Analysis p90 | <75s | 65-80s | ✅ Met |
-| LLM inference (mean) | <15s | 10-12s | ✅ Met |
-| Tool execution (mean) | <5s | 2-4s | ✅ Met |
-| Prompt generation (mean) | <100ms | 50-80ms | ✅ Met |
+| Analysis p50 | <60s | 45-55s | [DONE] Met |
+| Analysis p90 | <75s | 65-80s | [DONE] Met |
+| LLM inference (mean) | <15s | 10-12s | [DONE] Met |
+| Tool execution (mean) | <5s | 2-4s | [DONE] Met |
+| Prompt generation (mean) | <100ms | 50-80ms | [DONE] Met |
 
 ### Features
 1. **Lightweight**: <1ms overhead per operation
@@ -461,9 +461,9 @@ const result = await agent.analyze(
 console.log(result.learningNotes);
 // Output:
 // [
-//   "🎓 **What is this error?**\n\nA 'lateinit' error occurs when you try to...",
-//   "🔍 **Why did this happen?**\n\nThink of lateinit like a promise to fill...",
-//   "🛡️ **How to prevent this:**\n\n1. Initialize lateinit properties in onCreate()..."
+//   "[LEARN] **What is this error?**\n\nA 'lateinit' error occurs when you try to...",
+//   "[SEARCH] **Why did this happen?**\n\nThink of lateinit like a promise to fill...",
+//   "[SHIELD] **How to prevent this:**\n\n1. Initialize lateinit properties in onCreate()..."
 // ]
 ```
 
@@ -473,7 +473,7 @@ console.log(result.learningNotes);
 const quickResult = await agent.analyze(error, 'async');
 
 console.log(quickResult.learningNotes);
-// Output: ["⏳ Learning notes are being generated in the background..."]
+// Output: ["[TIMER] Learning notes are being generated in the background..."]
 
 // Check if education is pending
 if (agent.hasPendingEducation(error)) {
@@ -527,7 +527,7 @@ boolean                       // True if pending, false otherwise
 **Example:**
 ```typescript
 if (agent.hasPendingEducation(error)) {
-  console.log('⏳ Education still generating...');
+  console.log('[TIMER] Education still generating...');
 } else {
   console.log('✓ No pending education');
 }
@@ -556,11 +556,11 @@ Each `learningNotes` array contains exactly 3 formatted sections:
 
 #### 1. Error Type Explanation ("What is this error?")
 ```typescript
-"🎓 **What is this error?**\n\n" + 
+"[LEARN] **What is this error?**\n\n" + 
 "<Beginner-friendly explanation of error type in ~100 words>"
 
 // Example:
-"🎓 **What is this error?**\n\n" +
+"[LEARN] **What is this error?**\n\n" +
 "A 'lateinit' error occurs when you try to access a property before it has " +
 "been assigned a value. Lateinit is Kotlin's way of saying 'I promise this " +
 "will have a value before I use it.' If you break that promise by accessing " +
@@ -569,11 +569,11 @@ Each `learningNotes` array contains exactly 3 formatted sections:
 
 #### 2. Root Cause Explanation ("Why did this happen?")
 ```typescript
-"🔍 **Why did this happen?**\n\n" +
+"[SEARCH] **Why did this happen?**\n\n" +
 "<Analogy-based explanation connecting error to user's code context>"
 
 // Example:
-"🔍 **Why did this happen?**\n\n" +
+"[SEARCH] **Why did this happen?**\n\n" +
 "Think of lateinit like a restaurant reservation. You've reserved a table " +
 "(declared the property) but haven't shown up yet (initialized it). When your " +
 "code tried to sit down at line 45, the table was still empty. You need to " +
@@ -582,11 +582,11 @@ Each `learningNotes` array contains exactly 3 formatted sections:
 
 #### 3. Prevention Tips ("How to prevent this?")
 ```typescript
-"🛡️ **How to prevent this:**\n\n" +
+"[SHIELD] **How to prevent this:**\n\n" +
 "<3 numbered, actionable prevention tips>"
 
 // Example:
-"🛡️ **How to prevent this:**\n\n" +
+"[SHIELD] **How to prevent this:**\n\n" +
 "1. Initialize lateinit properties in onCreate() or init block before accessing them\n" +
 "2. Use the '::property.isInitialized' check before accessing if initialization timing is uncertain\n" +
 "3. Consider using a nullable type (var user: User?) instead of lateinit if the property might not be initialized"
@@ -601,9 +601,9 @@ const result = await agent.analyze(error, 'sync');
 
 // If educational LLM calls fail:
 result.learningNotes = [
-  "🎓 **What is this error?**\n\nError generating explanation: Connection timeout",
-  "🔍 **Why did this happen?**\n\nError generating explanation: Connection timeout",
-  "🛡️ **How to prevent this:**\n\nError generating explanation: Connection timeout"
+  "[LEARN] **What is this error?**\n\nError generating explanation: Connection timeout",
+  "[SEARCH] **Why did this happen?**\n\nError generating explanation: Connection timeout",
+  "[SHIELD] **How to prevent this:**\n\nError generating explanation: Connection timeout"
 ];
 
 // Base RCA (rootCause, fixGuidelines) is always present
@@ -660,7 +660,7 @@ showResult(quickResult);
 
 // Show placeholder for educational content
 outputChannel.appendLine('\n## Learning Notes\n');
-outputChannel.appendLine('⏳ Educational content is being generated...\n');
+outputChannel.appendLine('[TIMER] Educational content is being generated...\n');
 
 // Fetch completed notes later (non-blocking)
 setTimeout(async () => {
@@ -684,9 +684,9 @@ it('should generate learning notes in sync mode', async () => {
   const result = await agent.analyze(error, 'sync');
   
   expect(result.learningNotes).toHaveLength(3);
-  expect(result.learningNotes![0]).toContain('🎓 **What is this error?**');
-  expect(result.learningNotes![1]).toContain('🔍 **Why did this happen?**');
-  expect(result.learningNotes![2]).toContain('🛡️ **How to prevent this:**');
+  expect(result.learningNotes![0]).toContain('[LEARN] **What is this error?**');
+  expect(result.learningNotes![1]).toContain('[SEARCH] **Why did this happen?**');
+  expect(result.learningNotes![2]).toContain('[SHIELD] **How to prevent this:**');
   
   // Verify content quality
   expect(result.learningNotes![0].toLowerCase()).toContain('lateinit');
@@ -748,7 +748,7 @@ interface ToolCall {
 
 // Example
 stream.on('action', (event: ActionEvent) => {
-  console.log(`🔧 Action: ${event.action.tool}`);
+  console.log(`[TOOL] Action: ${event.action.tool}`);
 });
 ```
 
@@ -778,7 +778,7 @@ interface CompleteEvent {
 
 // Example
 stream.on('complete', (event: CompleteEvent) => {
-  console.log(`✅ Complete in ${event.duration}ms after ${event.totalIterations} iterations`);
+  console.log(`[DONE] Complete in ${event.duration}ms after ${event.totalIterations} iterations`);
   console.log(`Root Cause: ${event.rca.rootCause}`);
 });
 ```
@@ -794,7 +794,7 @@ interface ErrorEvent {
 
 // Example
 stream.on('error', (event: ErrorEvent) => {
-  console.error(`❌ Error in ${event.phase} at iteration ${event.iteration}: ${event.error.message}`);
+  console.error(`[FAIL] Error in ${event.phase} at iteration ${event.iteration}: ${event.error.message}`);
 });
 ```
 
@@ -895,10 +895,10 @@ const stream = agent.getStream();
 // Subscribe to all events
 stream.on('iteration', (e) => progressBar.update(e.progress));
 stream.on('thought', (e) => console.log(`💭 ${e.thought}`));
-stream.on('action', (e) => console.log(`🔧 ${e.action.tool}`));
+stream.on('action', (e) => console.log(`[TOOL] ${e.action.tool}`));
 stream.on('observation', (e) => console.log(`${e.success ? '✓' : '✗'} ${e.observation}`));
-stream.on('complete', (e) => console.log(`✅ Done in ${e.duration}ms`));
-stream.on('error', (e) => console.error(`❌ ${e.error.message}`));
+stream.on('complete', (e) => console.log(`[DONE] Done in ${e.duration}ms`));
+stream.on('error', (e) => console.error(`[FAIL] ${e.error.message}`));
 
 // Run analysis
 const rca = await agent.analyze(error);
@@ -942,9 +942,9 @@ interface ParsedError {
 
 **Output:**
 ```markdown
-# 🔧 Root Cause Analysis: Lateinit
+# [TOOL] Root Cause Analysis: Lateinit
 
-## 📋 Summary
+## [CLIPBOARD] Summary
 **Error Type:** Lateinit
 **Location:** [MainActivity.kt:45](MainActivity.kt#L45)
 **Language:** KOTLIN
@@ -955,14 +955,14 @@ interface ParsedError {
 lateinit property user has not been initialized
 ```
 
-## 🔍 Root Cause
+## [SEARCH] Root Cause
 The lateinit property 'user' is declared but never initialized before being accessed.
 
-## 🛠️ Fix Guidelines
+## [FIX] Fix Guidelines
 1. Initialize 'user' in onCreate() or class initialization block
 2. Or check if user is initialized with ::user.isInitialized before accessing
 
-## 📝 Analysis Metadata
+## [NOTE] Analysis Metadata
 **PropertyName:** user
 **ClassName:** MainActivity
 ```
@@ -983,7 +983,7 @@ Generate one-line summary for notifications.
 
 **Output:**
 ```
-"✅ Lateinit error in MainActivity.kt:45 - Initialize in onCreate() (90% confidence)"
+"[DONE] Lateinit error in MainActivity.kt:45 - Initialize in onCreate() (90% confidence)"
 ```
 
 ### Usage Example
@@ -999,7 +999,7 @@ console.log(markdown); // Displays formatted markdown
 
 // Generate quick summary
 const summary = synthesizer.generateQuickSummary(rca, error);
-console.log(summary); // "✅ Lateinit error in MainActivity.kt:45..."
+console.log(summary); // "[DONE] Lateinit error in MainActivity.kt:45..."
 ```
 
 ### Confidence Visualization
@@ -1021,23 +1021,23 @@ File links use markdown format that VS Code auto-detects:
 
 | API Name | Phase | Purpose | Status |
 |----------|-------|---------|--------|
-| `ErrorParser` | 2.1 | Multi-language error router | ✅ Implemented |
-| `KotlinParser` | 2.1 | Kotlin error parsing (6 types) | ✅ Implemented |
-| `GradleParser` | 2.1 | Gradle build error parsing (5 types) | ✅ Implemented |
-| `JetpackComposeParser` | 4.1 | Compose error parsing (10 types) | ✅ Implemented |
-| `LanguageDetector` | 2.1 | Automatic language detection | ✅ Implemented |
+| `ErrorParser` | 2.1 | Multi-language error router | [DONE] Implemented |
+| `KotlinParser` | 2.1 | Kotlin error parsing (6 types) | [DONE] Implemented |
+| `GradleParser` | 2.1 | Gradle build error parsing (5 types) | [DONE] Implemented |
+| `JetpackComposeParser` | 4.1 | Compose error parsing (10 types) | [DONE] Implemented |
+| `LanguageDetector` | 2.1 | Automatic language detection | [DONE] Implemented |
 
 ## Tool Registry
 
 | Tool Name | Phase | Purpose | Status |
 |-----------|-------|---------|--------|
-| `read_file` | 1.4 | Read workspace file contents | ✅ Implemented |
-| `web_search_wiki` | 1.3 | Search external documentation | ⏳ Planned |
-| `get_code_context` | 1.6 | Extract code around error location | ⏳ Planned |
-| `find_callers_of_function` | 2.2 | LSP call hierarchy | ✅ Implemented |
-| `vector_search_db` | 3.1 | Query past RCA solutions | ✅ Implemented |
-| `get_user_error_context` | 2.3 | Capture error logs from user | ⏳ Planned |
-| `android_build_tool` | 4.3 | Gradle build error analysis | ✅ Implemented |
+| `read_file` | 1.4 | Read workspace file contents | [DONE] Implemented |
+| `web_search_wiki` | 1.3 | Search external documentation | [TIMER] Planned |
+| `get_code_context` | 1.6 | Extract code around error location | [TIMER] Planned |
+| `find_callers_of_function` | 2.2 | LSP call hierarchy | [DONE] Implemented |
+| `vector_search_db` | 3.1 | Query past RCA solutions | [DONE] Implemented |
+| `get_user_error_context` | 2.3 | Capture error logs from user | [TIMER] Planned |
+| `android_build_tool` | 4.3 | Gradle build error analysis | [DONE] Implemented |
 
 ---
 
@@ -2118,8 +2118,8 @@ const diagnosis = tool.diagnoseRepositoryIssues(error);
 
 console.log(diagnosis);
 // Output:
-// 📦 Android/AndroidX library detected
-// ✅ Ensure Google Maven repository is configured:
+// [PACKAGE] Android/AndroidX library detected
+// [DONE] Ensure Google Maven repository is configured:
 //    repositories { google() }
 ```
 

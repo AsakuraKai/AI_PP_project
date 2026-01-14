@@ -14,7 +14,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 
 async function main() {
-  console.log('🚀 Starting Accuracy Test Suite - Chunk 1.5\n');
+  console.log('[LAUNCH] Starting Accuracy Test Suite - Chunk 1.5\n');
   console.log('Testing Requirements:');
   console.log('  ✓ Parse 10 real Kotlin NPE errors');
   console.log('  ✓ Analyze root causes');
@@ -26,8 +26,8 @@ async function main() {
   const isOllamaRunning = await checkOllama();
   
   if (!isOllamaRunning) {
-    console.error('❌ Ollama is not running!');
-    console.log('\n🔧 To run accuracy tests:');
+    console.error('[X] Ollama is not running!');
+    console.log('\n[TOOL] To run accuracy tests:');
     console.log('   1. Start Ollama: ollama serve');
     console.log('   2. Pull model: ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest');
     console.log('   3. Set environment: set OLLAMA_AVAILABLE=true');
@@ -35,7 +35,7 @@ async function main() {
     process.exit(1);
   }
 
-  console.log('✅ Ollama is running\n');
+  console.log('[OK] Ollama is running\n');
 
   try {
     // Run accuracy tests
@@ -48,13 +48,13 @@ async function main() {
       }
     });
 
-    console.log('\n✅ Accuracy tests completed successfully');
+    console.log('\n[OK] Accuracy tests completed successfully');
 
     // Load and display results
     await displayResults();
 
   } catch (error) {
-    console.error('\n❌ Accuracy tests failed:', error);
+    console.error('\n[X] Accuracy tests failed:', error);
     process.exit(1);
   }
 }
@@ -82,7 +82,7 @@ async function displayResults() {
     const metrics = JSON.parse(data);
 
     console.log('\n========================================');
-    console.log('📊 DETAILED ACCURACY REPORT');
+    console.log('[STATS] DETAILED ACCURACY REPORT');
     console.log('========================================\n');
 
     console.log('Overall Metrics:');
@@ -96,7 +96,7 @@ async function displayResults() {
 
     console.log('\nPer-Test Results:');
     metrics.results.forEach((result: any) => {
-      const status = result.analyzed ? '✅' : '❌';
+      const status = result.analyzed ? '[OK]' : '[X]';
       const latency = (result.latency / 1000).toFixed(1);
       console.log(`  ${status} ${result.testCase.id}: ${result.testCase.name}`);
       console.log(`     Latency: ${latency}s | Confidence: ${result.confidence.toFixed(2)}`);
@@ -109,8 +109,8 @@ async function displayResults() {
     const accuracyTarget = metrics.analyzedSuccessfully >= metrics.totalTests * 0.6;
     const latencyTarget = metrics.averageLatency < 90000;
     
-    console.log(`  Accuracy Target (60%): ${accuracyTarget ? '✅ PASS' : '❌ FAIL'}`);
-    console.log(`  Latency Target (<90s): ${latencyTarget ? '✅ PASS' : '❌ FAIL'}`);
+    console.log(`  Accuracy Target (60%): ${accuracyTarget ? '[OK] PASS' : '[X] FAIL'}`);
+    console.log(`  Latency Target (<90s): ${latencyTarget ? '[OK] PASS' : '[X] FAIL'}`);
 
     console.log('\n========================================');
     console.log(`Report saved: ${metricsFile}`);

@@ -1,4 +1,4 @@
-# 🏗️ PHASE 1 - OPTION B: MVP-First Rapid Iteration
+﻿# [BUILD] PHASE 1 - OPTION B: MVP-First Rapid Iteration
 
 > **Goal:** Get working prototype fast, then expand. Best for quick validation.
 
@@ -14,11 +14,11 @@
 
 ### When to Choose This Approach
 
-✅ Want to see results in 2 weeks  
-✅ Learn best by iterating on working prototypes  
-✅ Want to validate LLM reasoning early  
-✅ Prefer discovering problems through real use  
-✅ More comfortable with refactoring as you learn
+[DONE] Want to see results in 2 weeks  
+[DONE] Learn best by iterating on working prototypes  
+[DONE] Want to validate LLM reasoning early  
+[DONE] Prefer discovering problems through real use  
+[DONE] More comfortable with refactoring as you learn
 
 **Recommendation:** Try this approach first. If MVP works well in 2 weeks, you've validated the approach. If it doesn't, you've only invested 2 weeks instead of 8-12.
 
@@ -28,19 +28,19 @@
 
 | Chunk | Focus | Duration | Status | Test Deliverable |
 |-------|-------|----------|--------|------------------|
-| **Chunk 1** | Minimal Viable Prototype | Weeks 1-2 | ✅ COMPLETE | Analyzes ONE Kotlin NPE end-to-end |
-| **Chunk 2** | Core Tools & Validation | Week 3 | ✅ COMPLETE | Works on 5+ error types with tools |
-| **Chunk 3** | Database & Learning | Weeks 4-5 | ✅ COMPLETE | Vector DB learns from errors |
-| **Chunk 4** | Android Full Coverage | Weeks 6-8 | ✅ COMPLETE | Compose, XML, Gradle, Manifest support (100% accuracy) |
-| **Chunk 5** | Polish & Production | Weeks 9-13 | ✅ COMPLETE | **Backend:** Real-time updates, educational mode, performance monitoring (878 tests, 99% passing)<br>**UI:** Interactive webview, 38+ error types with educational content, WCAG 2.1 AA accessibility (+643 lines docs) |
+| **Chunk 1** | Minimal Viable Prototype | Weeks 1-2 | [DONE] COMPLETE | Analyzes ONE Kotlin NPE end-to-end |
+| **Chunk 2** | Core Tools & Validation | Week 3 | [DONE] COMPLETE | Works on 5+ error types with tools |
+| **Chunk 3** | Database & Learning | Weeks 4-5 | [DONE] COMPLETE | Vector DB learns from errors |
+| **Chunk 4** | Android Full Coverage | Weeks 6-8 | [DONE] COMPLETE | Compose, XML, Gradle, Manifest support (100% accuracy) |
+| **Chunk 5** | Polish & Production | Weeks 9-13 | [DONE] COMPLETE | **Backend:** Real-time updates, educational mode, performance monitoring (878 tests, 99% passing)<br>**UI:** Interactive webview, 38+ error types with educational content, WCAG 2.1 AA accessibility (+643 lines docs) |
 
 ---
 
-## 🔧 Prerequisites & Environment Setup (Day 0, ~4-8h)
+## [TOOL] Prerequisites & Environment Setup (Day 0, ~4-8h)
 
 > **CRITICAL:** Complete this setup BEFORE starting Chunk 1.1. Both developers should work through this together.
 
-### 📦 Required Manual Installations (Cannot be done via terminal)
+### [PACKAGE] Required Manual Installations (Cannot be done via terminal)
 
 **Both Developers Must Install:**
 
@@ -73,7 +73,7 @@
 
 ---
 
-### ⌨️ Terminal-Based Setup (Run these commands)
+### [KEYBOARD] Terminal-Based Setup (Run these commands)
 
 **Step 1: Verify Prerequisites Installed**
 ```bash
@@ -136,7 +136,7 @@ curl http://localhost:11434/api/generate -d '{
 
 ---
 
-### 📚 Optional Tools (Recommended for easier development)
+### [DOCS] Optional Tools (Recommended for easier development)
 
 **Install via Terminal:**
 ```bash
@@ -157,7 +157,7 @@ npm install -g jest
 
 ---
 
-### ✅ Final Validation Checklist
+### [DONE] Final Validation Checklist
 
 **Run these commands to verify everything works:**
 
@@ -168,44 +168,44 @@ cd rca-test-setup
 
 # Test Node.js
 node --version
-# Expected: v18.x.x or higher ✅
+# Expected: v18.x.x or higher [DONE]
 
 # Test npm
 npm --version
-# Expected: v9.x.x or higher ✅
+# Expected: v9.x.x or higher [DONE]
 
 # Test TypeScript
 tsc --version
-# Expected: Version 5.x.x ✅
+# Expected: Version 5.x.x [DONE]
 
 # Test VS Code
 code --version
-# Expected: Version output ✅
+# Expected: Version output [DONE]
 
 # Test Yeoman
 yo --version
-# Expected: Version output ✅
+# Expected: Version output [DONE]
 
 # Test Ollama
 ollama list
-# Expected: Should show hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest in list ✅
+# Expected: Should show hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest in list [DONE]
 
 # Test Ollama API
 curl http://localhost:11434/api/tags
-# Expected: JSON response with models list ✅
+# Expected: JSON response with models list [DONE]
 
 # Cleanup
 cd ..
 rmdir rca-test-setup
 ```
 
-**All checks passed?** ✅ You're ready to start Chunk 1.1!
+**All checks passed?** [DONE] You're ready to start Chunk 1.1!
 
-**Any failures?** ❌ Review the installation steps for that tool.
+**Any failures?** [FAIL] Review the installation steps for that tool.
 
 ---
 
-### 🚨 Common Setup Issues & Solutions
+### [ALERT] Common Setup Issues & Solutions
 
 **Issue: `node: command not found`**
 - **Solution:** Node.js not in PATH. Restart terminal or add to PATH manually
@@ -229,7 +229,7 @@ rmdir rca-test-setup
 
 ---
 
-### ⏱️ Estimated Setup Time
+### [TIMER] Estimated Setup Time
 
 | Task | Time | Notes |
 |------|------|-------|
@@ -241,21 +241,21 @@ rmdir rca-test-setup
 
 ---
 
-### 👥 Division of Responsibilities
+### [USERS] Division of Responsibilities
 
 **Sokchea's Priority:**
-- ✅ Node.js + npm
-- ✅ VS Code
-- ✅ Yeoman + generator-code
-- ✅ Git
-- ⚠️ Ollama (basic awareness, but Kai will configure)
+- [DONE] Node.js + npm
+- [DONE] VS Code
+- [DONE] Yeoman + generator-code
+- [DONE] Git
+- [WARNING] Ollama (basic awareness, but Kai will configure)
 
 **Kai's Priority:**
-- ✅ Node.js + npm
-- ✅ Ollama + model download
-- ✅ Test Ollama API thoroughly
-- ✅ Git
-- ⚠️ VS Code (basic awareness, but Sokchea will configure extension)
+- [DONE] Node.js + npm
+- [DONE] Ollama + model download
+- [DONE] Test Ollama API thoroughly
+- [DONE] Git
+- [WARNING] VS Code (basic awareness, but Sokchea will configure extension)
 
 **Both Together:**
 - Verify all installations
@@ -264,153 +264,153 @@ rmdir rca-test-setup
 
 ---
 
-## ⚡ CHUNK 1: Minimal Viable Prototype (Weeks 1-2) ✅ COMPLETE
+## [FAST] CHUNK 1: Minimal Viable Prototype (Weeks 1-2) [DONE] COMPLETE
 
-**Status:** ✅ **PRODUCTION READY**  
+**Status:** [DONE] **PRODUCTION READY**  
 **Completion Date:** December 18, 2025  
-**Priority:** 🔥 CRITICAL - Prove the concept works  
+**Priority:** [HOT] CRITICAL - Prove the concept works  
 **Goal:** ONE Kotlin NPE working end-to-end in 2 weeks  
 **Achievement:** 100% accuracy (10/10 test cases), 75.8s avg latency, 88%+ test coverage
 
 ---
 
-### CHUNK 1.1: Extension Bootstrap (Days 1-3, ~24h) ✅ COMPLETE
+### CHUNK 1.1: Extension Bootstrap (Days 1-3, ~24h) [DONE] COMPLETE
 
 **Completion Date:** December 18, 2025  
 **Goal:** Get basic extension structure working with Ollama
 
 **Kai (Backend - Implements Everything):**
-- [x] ✅ Ollama client implementation (`OllamaClient.ts`) - 291 lines
-  - [x] ✅ Basic connection to Ollama server (http://localhost:11434)
-  - [x] ✅ `generate()` method for LLM inference
-  - [x] ✅ Error handling for connection failures
-  - [x] ✅ Health checks via `/api/tags` endpoint
-  - [x] ✅ Model listing with `listModels()`
-  - [x] ✅ Timeout handling (90s default with AbortController)
-  - [x] ✅ Retry logic with exponential backoff (3 retries, 1s → 2s → 4s)
-  - [x] ✅ Model selection (DeepSeek-R1-Distill-Qwen-7B-GGUF default)
-- [x] ✅ Basic types and interfaces (`types.ts`) - 230 lines
-  - [x] ✅ `ParsedError` interface (error representation)
-  - [x] ✅ `RCAResult` interface (analysis output)
-  - [x] ✅ `AgentState` interface (reasoning state)
-  - [x] ✅ `ToolCall` interface (tool invocation)
-  - [x] ✅ `GenerateOptions` interface (LLM configuration)
-  - [x] ✅ Error classes: LLMError, AnalysisTimeoutError, ValidationError, ParsingError
+- [x] [DONE] Ollama client implementation (`OllamaClient.ts`) - 291 lines
+  - [x] [DONE] Basic connection to Ollama server (http://localhost:11434)
+  - [x] [DONE] `generate()` method for LLM inference
+  - [x] [DONE] Error handling for connection failures
+  - [x] [DONE] Health checks via `/api/tags` endpoint
+  - [x] [DONE] Model listing with `listModels()`
+  - [x] [DONE] Timeout handling (90s default with AbortController)
+  - [x] [DONE] Retry logic with exponential backoff (3 retries, 1s → 2s → 4s)
+  - [x] [DONE] Model selection (DeepSeek-R1-Distill-Qwen-7B-GGUF default)
+- [x] [DONE] Basic types and interfaces (`types.ts`) - 230 lines
+  - [x] [DONE] `ParsedError` interface (error representation)
+  - [x] [DONE] `RCAResult` interface (analysis output)
+  - [x] [DONE] `AgentState` interface (reasoning state)
+  - [x] [DONE] `ToolCall` interface (tool invocation)
+  - [x] [DONE] `GenerateOptions` interface (LLM configuration)
+  - [x] [DONE] Error classes: LLMError, AnalysisTimeoutError, ValidationError, ParsingError
 
 **Sokchea (UI & Integration ONLY - No Implementation):**
-- [x] ✅ VS Code extension project setup (`yo code`)
-- [x] ✅ Extension activation/deactivation (boilerplate)
-- [x] ✅ Register `rcaAgent.analyzeError` command (empty handler)
-- [x] ✅ Test command appears in command palette
+- [x] [DONE] VS Code extension project setup (`yo code`)
+- [x] [DONE] Extension activation/deactivation (boilerplate)
+- [x] [DONE] Register `rcaAgent.analyzeError` command (empty handler)
+- [x] [DONE] Test command appears in command palette
 
-**Deliverable:** ✅ Command registered, Ollama client responds to test prompt  
+**Deliverable:** [DONE] Command registered, Ollama client responds to test prompt  
 **Test Results:** 12 test cases, 95% coverage, all passing
 
-### CHUNK 1.2: Kotlin NPE Parser (Days 4-6, ~24h) ✅ COMPLETE
+### CHUNK 1.2: Kotlin NPE Parser (Days 4-6, ~24h) [DONE] COMPLETE
 
 **Completion Date:** December 18, 2025  
 **Goal:** Parse Kotlin NullPointerException errors from stack traces
 
 **Kai (Backend):**
-- [x] ✅ KotlinNPEParser implementation (`KotlinNPEParser.ts`) - 220 lines
-  - [x] ✅ Parse `lateinit property X has not been initialized` errors
-  - [x] ✅ Parse standard `NullPointerException` errors
-  - [x] ✅ Parse `UninitializedPropertyAccessException` errors
-  - [x] ✅ Parse `IndexOutOfBoundsException` errors (added in Chunk 1.5)
-  - [x] ✅ Extract file paths from stack traces (`.kt` files)
-  - [x] ✅ Extract line numbers and function/class names
-  - [x] ✅ Handle multiline stack traces
-  - [x] ✅ Graceful degradation (returns null for non-Kotlin errors)
+- [x] [DONE] KotlinNPEParser implementation (`KotlinNPEParser.ts`) - 220 lines
+  - [x] [DONE] Parse `lateinit property X has not been initialized` errors
+  - [x] [DONE] Parse standard `NullPointerException` errors
+  - [x] [DONE] Parse `UninitializedPropertyAccessException` errors
+  - [x] [DONE] Parse `IndexOutOfBoundsException` errors (added in Chunk 1.5)
+  - [x] [DONE] Extract file paths from stack traces (`.kt` files)
+  - [x] [DONE] Extract line numbers and function/class names
+  - [x] [DONE] Handle multiline stack traces
+  - [x] [DONE] Graceful degradation (returns null for non-Kotlin errors)
 
 **Sokchea (UI):**
-- [x] ✅ Connected parser to command handler
-- [x] ✅ Display parsed error information in output
+- [x] [DONE] Connected parser to command handler
+- [x] [DONE] Display parsed error information in output
 
-**Deliverable:** ✅ Parser handles Kotlin NPE errors correctly  
+**Deliverable:** [DONE] Parser handles Kotlin NPE errors correctly  
 **Test Results:** 15 test cases, 94% coverage, all passing
 
-### CHUNK 1.3: Minimal ReAct Agent (Days 7-9, ~24h) ✅ COMPLETE
+### CHUNK 1.3: Minimal ReAct Agent (Days 7-9, ~24h) [DONE] COMPLETE
 
 **Completion Date:** December 18, 2025  
 **Goal:** 3-iteration reasoning loop using ReAct pattern
 
 **Kai (Backend):**
-- [x] ✅ MinimalReactAgent implementation (`MinimalReactAgent.ts`) - 280 lines
-  - [x] ✅ 3-iteration reasoning loop
-  - [x] ✅ Iteration 1: Initial hypothesis generation
-  - [x] ✅ Iteration 2: Deeper analysis with context
-  - [x] ✅ Iteration 3: Final conclusion with structured JSON
-  - [x] ✅ JSON output parsing with fallback mechanism
-  - [x] ✅ Regex-based JSON extraction (handles extra text)
-  - [x] ✅ Timeout handling (90s default)
-  - [x] ✅ AgentState tracking across iterations
+- [x] [DONE] MinimalReactAgent implementation (`MinimalReactAgent.ts`) - 280 lines
+  - [x] [DONE] 3-iteration reasoning loop
+  - [x] [DONE] Iteration 1: Initial hypothesis generation
+  - [x] [DONE] Iteration 2: Deeper analysis with context
+  - [x] [DONE] Iteration 3: Final conclusion with structured JSON
+  - [x] [DONE] JSON output parsing with fallback mechanism
+  - [x] [DONE] Regex-based JSON extraction (handles extra text)
+  - [x] [DONE] Timeout handling (90s default)
+  - [x] [DONE] AgentState tracking across iterations
 
 **Sokchea (UI):**
-- [x] ✅ Display agent reasoning in output panel
-- [x] ✅ Show iteration progress
+- [x] [DONE] Display agent reasoning in output panel
+- [x] [DONE] Show iteration progress
 
-**Deliverable:** ✅ Agent generates hypothesis and completes analysis  
+**Deliverable:** [DONE] Agent generates hypothesis and completes analysis  
 **Test Results:** 14 test cases, 88% coverage, all passing
 
-### CHUNK 1.4: ReadFileTool & Integration (Days 10-12, ~24h) ✅ COMPLETE
+### CHUNK 1.4: ReadFileTool & Integration (Days 10-12, ~24h) [DONE] COMPLETE
 
 **Completion Date:** December 18, 2025  
 **Goal:** Read source code at error location for context
 
 **Kai (Backend):**
-- [x] ✅ ReadFileTool implementation (`ReadFileTool.ts`) - 180 lines
-  - [x] ✅ Context window extraction (±25 lines around error)
-  - [x] ✅ Read entire file option with size validation
-  - [x] ✅ Binary file detection (scans first 8KB)
-  - [x] ✅ UTF-8 encoding support with error handling
-  - [x] ✅ Large file handling (10MB limit)
-  - [x] ✅ Graceful error handling
-  - [x] ✅ Integration with MinimalReactAgent
-- [x] ✅ E2E integration tests (`e2e.test.ts`) - 332 lines
-- [x] ✅ Test dataset (`test-dataset.ts`) - 180 lines with 10 real errors
+- [x] [DONE] ReadFileTool implementation (`ReadFileTool.ts`) - 180 lines
+  - [x] [DONE] Context window extraction (±25 lines around error)
+  - [x] [DONE] Read entire file option with size validation
+  - [x] [DONE] Binary file detection (scans first 8KB)
+  - [x] [DONE] UTF-8 encoding support with error handling
+  - [x] [DONE] Large file handling (10MB limit)
+  - [x] [DONE] Graceful error handling
+  - [x] [DONE] Integration with MinimalReactAgent
+- [x] [DONE] E2E integration tests (`e2e.test.ts`) - 332 lines
+- [x] [DONE] Test dataset (`test-dataset.ts`) - 180 lines with 10 real errors
 
 **Sokchea (UI):**
-- [x] ✅ Display file content and agent reasoning
-- [x] ✅ Show code context in output panel
+- [x] [DONE] Display file content and agent reasoning
+- [x] [DONE] Show code context in output panel
 
-**Deliverable:** ✅ Agent reads code and provides context-aware analysis  
+**Deliverable:** [DONE] Agent reads code and provides context-aware analysis  
 **Test Results:** 21 ReadFileTool tests + 7 e2e tests, 95%+ coverage, all passing
 
-### CHUNK 1.5: MVP Testing & Refinement (Days 13-14, ~16h) ✅ COMPLETE
+### CHUNK 1.5: MVP Testing & Refinement (Days 13-14, ~16h) [DONE] COMPLETE
 
 **Completion Date:** December 18, 2025  
 **Goal:** Validate MVP accuracy, performance, and production readiness
 
 **Kai (Backend):**
-- [x] ✅ Accuracy test suite (`accuracy.test.ts`) - 330 lines with 10 test cases
-- [x] ✅ Test runner script (`run-accuracy-tests.ts`) - 150 lines
-- [x] ✅ Performance benchmark (`benchmark.ts`) - 200 lines
-- [x] ✅ Testing guide documentation (`Chunk-1.5-Testing-Guide.md`) - 375 lines
-- [x] ✅ Scripts documentation (`scripts/README.md`) - 250 lines
-- [x] ✅ Bug fix: IndexOutOfBoundsException parsing (accuracy 81.8% → 100%)
+- [x] [DONE] Accuracy test suite (`accuracy.test.ts`) - 330 lines with 10 test cases
+- [x] [DONE] Test runner script (`run-accuracy-tests.ts`) - 150 lines
+- [x] [DONE] Performance benchmark (`benchmark.ts`) - 200 lines
+- [x] [DONE] Testing guide documentation (`Chunk-1.5-Testing-Guide.md`) - 375 lines
+- [x] [DONE] Scripts documentation (`scripts/README.md`) - 250 lines
+- [x] [DONE] Bug fix: IndexOutOfBoundsException parsing (accuracy 81.8% → 100%)
 
 **Sokchea (UI):**
-- [x] ✅ Refined output formatting
-- [x] ✅ Progress notifications
-- [x] ✅ Error handling improvements
+- [x] [DONE] Refined output formatting
+- [x] [DONE] Progress notifications
+- [x] [DONE] Error handling improvements
 
-**Deliverable:** ✅ MVP validated and production-ready  
+**Deliverable:** [DONE] MVP validated and production-ready  
 **Test Results:** 12 accuracy tests passing (100% success rate)
 
 **Final Metrics Achieved:**
-- ✅ **Accuracy:** 100% (10/10 test cases) - **67% above 60% target**
-- ✅ **Average Latency:** 75.8s - **16% faster than 90s target**
-- ✅ **Max Latency:** 111.5s - Within 120s threshold
-- ✅ **Test Coverage:** 88%+ - **10% above 80% target**
-- ✅ **Test Pass Rate:** 83/83 tests (100%) - **PERFECT**
-- ✅ **Parse Rate:** 100% - All errors parsed correctly
-- ✅ **Stability:** 0 crashes in 759s of testing
+- [DONE] **Accuracy:** 100% (10/10 test cases) - **67% above 60% target**
+- [DONE] **Average Latency:** 75.8s - **16% faster than 90s target**
+- [DONE] **Max Latency:** 111.5s - Within 120s threshold
+- [DONE] **Test Coverage:** 88%+ - **10% above 80% target**
+- [DONE] **Test Pass Rate:** 83/83 tests (100%) - **PERFECT**
+- [DONE] **Parse Rate:** 100% - All errors parsed correctly
+- [DONE] **Stability:** 0 crashes in 759s of testing
 
-### Week 8: UI Enhancements (Sokchea) ✅ COMPLETE
+### Week 8: UI Enhancements (Sokchea) [DONE] COMPLETE
 
 **Completion Date:** December 20, 2025  
 **Developer:** Sokchea (UI/Integration Specialist)  
-**Status:** ✅ **PRODUCTION READY - ALL CHUNKS 1.1-1.5 COMPLETE**
+**Status:** [DONE] **PRODUCTION READY - ALL CHUNKS 1.1-1.5 COMPLETE**
 
 **Overview:**
 Successfully completed all Chunk 1 UI sub-chunks (1.1 through 1.5), delivering a production-grade MVP extension with comprehensive error handling, professional formatting, and complete placeholder coverage ready for backend integration.
@@ -418,26 +418,26 @@ Successfully completed all Chunk 1 UI sub-chunks (1.1 through 1.5), delivering a
 **Features Implemented:**
 
 #### Chunk 1.4: Code Context Display
-- [x] ✅ File reading progress notifications ("Reading source file..." step)
-- [x] ✅ Code snippets with syntax highlighting (```kotlin markers)
-- [x] ✅ Warning messages for failed file reads (⚠️ icons)
-- [x] ✅ Graceful degradation (analysis continues without code snippet)
-- [x] ✅ Debug logging for troubleshooting
+- [x] [DONE] File reading progress notifications ("Reading source file..." step)
+- [x] [DONE] Code snippets with syntax highlighting (```kotlin markers)
+- [x] [DONE] Warning messages for failed file reads ([WARNING] icons)
+- [x] [DONE] Graceful degradation (analysis continues without code snippet)
+- [x] [DONE] Debug logging for troubleshooting
 
 #### Chunk 1.5: MVP Polish
-- [x] ✅ Confidence visualization (20-char █/░ bar with interpretation)
-- [x] ✅ Enhanced error handling (4 categories with action buttons):
+- [x] [DONE] Confidence visualization (20-char █/░ bar with interpretation)
+- [x] [DONE] Enhanced error handling (4 categories with action buttons):
   - Connection errors (Ollama not running)
   - Timeout errors (model too slow)
   - Parse errors (invalid error format)
   - Generic errors (with stack traces)
-- [x] ✅ Professional output formatting:
-  - Consistent emoji set (🔍 🐛 📁 📝 💡 🛠️ ✅)
+- [x] [DONE] Professional output formatting:
+  - Consistent emoji set ([SEARCH] [BUG] 📁 [NOTE] [IDEA] [FIX] [DONE])
   - 60-char section separators
   - Clear visual hierarchy
-- [x] ✅ Enhanced footer with inline help
-- [x] ✅ Better success notifications with "View Output" action
-- [x] ✅ Offline troubleshooting steps (no internet needed)
+- [x] [DONE] Enhanced footer with inline help
+- [x] [DONE] Better success notifications with "View Output" action
+- [x] [DONE] Offline troubleshooting steps (no internet needed)
 
 **Code Metrics:**
 - **Extension Lines:** ~470 lines (extension.ts)
@@ -449,14 +449,14 @@ Successfully completed all Chunk 1 UI sub-chunks (1.1 through 1.5), delivering a
 **Test Results:** 
 - **Manual Tests:** 13/13 passing (100%) - Foundation tests (Chunks 1.1-1.3)
 - **UI Enhancement Tests:** 8/8 passing (100%) - Code context + Polish (Chunks 1.4-1.5)
-- **Total:** 21/21 tests passing ✅
+- **Total:** 21/21 tests passing [DONE]
 
 **Integration Status:**
-- ✅ All placeholders ready for backend wiring
-- ✅ Calls to Kai's functions defined (parseError, analyze, readFile)
-- ✅ Type interfaces aligned with backend contracts
-- ✅ Error handling covers all backend failure modes
-- ✅ Resource disposal implemented (no memory leaks)
+- [DONE] All placeholders ready for backend wiring
+- [DONE] Calls to Kai's functions defined (parseError, analyze, readFile)
+- [DONE] Type interfaces aligned with backend contracts
+- [DONE] Error handling covers all backend failure modes
+- [DONE] Resource disposal implemented (no memory leaks)
 
 **Documentation Delivered:**
 - README.md - Extension overview and features
@@ -471,11 +471,11 @@ Successfully completed all Chunk 1 UI sub-chunks (1.1 through 1.5), delivering a
 
 ---
 
-### Weeks 9-10: Chunk 2 UI Enhancements (Sokchea) ✅ COMPLETE
+### Weeks 9-10: Chunk 2 UI Enhancements (Sokchea) [DONE] COMPLETE
 
 **Completion Date:** December 19, 2025  
 **Developer:** Sokchea (UI/Integration Specialist)  
-**Status:** ✅ **PRODUCTION READY - CHUNK 2 UI COMPLETE (Chunks 2.1-2.3)**
+**Status:** [DONE] **PRODUCTION READY - CHUNK 2 UI COMPLETE (Chunks 2.1-2.3)**
 
 **Overview:**
 Successfully completed all Chunk 2 UI sub-chunks (2.1-2.3), delivering comprehensive error visualization, real-time tool execution feedback, and accuracy metrics display. The extension now provides professional-grade error analysis with rich visual feedback.
@@ -485,36 +485,36 @@ Successfully completed all Chunk 2 UI sub-chunks (2.1-2.3), delivering comprehen
 **Features Implemented:**
 
 #### Chunk 2.1: Error Type Badges (Days 1-3, ~24h actual)
-- [x] ✅ 30+ error type badges across 4 categories
-- [x] ✅ Color-coded badges:
-  - 🔴 Red: Kotlin errors (6 types: NPE, lateinit, type mismatch, etc.)
-  - 🟡 Yellow: Gradle errors (5 types: build, dependency, version conflict)
+- [x] [DONE] 30+ error type badges across 4 categories
+- [x] [DONE] Color-coded badges:
+  - [RED] Red: Kotlin errors (6 types: NPE, lateinit, type mismatch, etc.)
+  - [YELLOW] Yellow: Gradle errors (5 types: build, dependency, version conflict)
   - 🟣 Purple: Jetpack Compose errors (10 types: remember, state, recomposition)
   - 🟠 Orange: XML errors (8 types: inflation, attributes, views)
   - ⚪ White: Unknown/fallback (1 type)
-- [x] ✅ `getErrorBadge()` helper function
-- [x] ✅ Integration with backend ErrorParser (26 error types)
+- [x] [DONE] `getErrorBadge()` helper function
+- [x] [DONE] Integration with backend ErrorParser (26 error types)
 
 #### Chunk 2.2: Tool Execution Feedback (Days 4-5, ~16h actual)
-- [x] ✅ 6-step progress feedback system:
-  - 📖 Parsing error... (10%)
-  - 🤖 Initializing LLM... (20%)
-  - 🔍 Executing tools... (50%)
-  - 📚 Searching database... (70%)
-  - 🧠 Synthesizing result... (90%)
-  - ✅ Complete! (100%)
-- [x] ✅ Tool icon mapping (📖 read, 🔍 search, 📚 database, 🌐 web)
-- [x] ✅ Tool usage display in output
-- [x] ✅ Iteration count display (reasoning depth)
-- [x] ✅ `analyzeWithProgress()` and `getToolIcon()` functions
+- [x] [DONE] 6-step progress feedback system:
+  - [BOOK] Parsing error... (10%)
+  - [BOT] Initializing LLM... (20%)
+  - [SEARCH] Executing tools... (50%)
+  - [DOCS] Searching database... (70%)
+  - [BRAIN] Synthesizing result... (90%)
+  - [DONE] Complete! (100%)
+- [x] [DONE] Tool icon mapping ([BOOK] read, [SEARCH] search, [DOCS] database, [WEB] web)
+- [x] [DONE] Tool usage display in output
+- [x] [DONE] Iteration count display (reasoning depth)
+- [x] [DONE] `analyzeWithProgress()` and `getToolIcon()` functions
 
 #### Chunk 2.3: Accuracy Metrics Display (Days 6-7, ~12h actual)
-- [x] ✅ Quality score display with visual bar chart
-- [x] ✅ Analysis latency display (ms → seconds: 25918ms → 25.9s)
-- [x] ✅ LLM model name display (e.g., 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest')
-- [x] ✅ Optional metrics section (only shows when data available)
-- [x] ✅ Component reuse (confidence bar for quality score)
-- [x] ✅ Extended `RCAResult` interface with optional metrics fields
+- [x] [DONE] Quality score display with visual bar chart
+- [x] [DONE] Analysis latency display (ms → seconds: 25918ms → 25.9s)
+- [x] [DONE] LLM model name display (e.g., 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest')
+- [x] [DONE] Optional metrics section (only shows when data available)
+- [x] [DONE] Component reuse (confidence bar for quality score)
+- [x] [DONE] Extended `RCAResult` interface with optional metrics fields
 
 **Code Metrics:**
 - **Extension Lines:** ~630 lines (extension.ts) - +160 lines from Chunk 1 end (+34% growth)
@@ -522,20 +522,20 @@ Successfully completed all Chunk 2 UI sub-chunks (2.1-2.3), delivering comprehen
 - **Progress Steps:** 6 (2x increase from 3 in Chunk 1)
 - **Display Sections:** 8 (60% increase from 5 in Chunk 1)
 - **Helper Functions:** 8 (33% increase from 6 in Chunk 1)
-- **TypeScript Errors:** 0 ✅
-- **ESLint Warnings:** 0 ✅
+- **TypeScript Errors:** 0 [DONE]
+- **ESLint Warnings:** 0 [DONE]
 
 **Test Results:**
 - **Error Badge Tests:** 30/30 passing (100%) - All error types display correctly
 - **Progress Tests:** 6/6 passing (100%) - All progress steps working
 - **Metrics Tests:** 3/3 passing (100%) - Quality, latency, model display
-- **Total:** 39/39 manual tests passing ✅
+- **Total:** 39/39 manual tests passing [DONE]
 
 **Integration Status:**
-- ✅ All backend dependencies complete (Kai's Chunks 1-5)
-- ✅ Type interfaces aligned with backend contracts
-- ✅ Ready for full integration testing
-- ✅ Zero known issues or blockers
+- [DONE] All backend dependencies complete (Kai's Chunks 1-5)
+- [DONE] Type interfaces aligned with backend contracts
+- [DONE] Ready for full integration testing
+- [DONE] Zero known issues or blockers
 
 **Documentation Updates:**
 - Chunk-2-COMPLETE.md - Full completion documentation (~1,030 lines)
@@ -543,12 +543,12 @@ Successfully completed all Chunk 2 UI sub-chunks (2.1-2.3), delivering comprehen
 
 ---
 
-## 🤖 CHUNK 4: Android Backend Support (Weeks 6-8) ✅ COMPLETE
+## [BOT] CHUNK 4: Android Backend Support (Weeks 6-8) [DONE] COMPLETE
 
-**Status:** ✅ **PRODUCTION READY**  
+**Status:** [DONE] **PRODUCTION READY**  
 **Completion Date:** December 18, 2025  
 **Duration:** ~18 days (Days 1-18 of Android Backend phase)  
-**Priority:** 🔥 HIGH - Comprehensive Android error support  
+**Priority:** [HOT] HIGH - Comprehensive Android error support  
 **Goal:** Support Android-specific errors (Compose, XML, Gradle, Manifest)  
 **Achievement:** 100% accuracy (20/20 Android test cases), 773 total tests, 26 error types supported
 
@@ -564,13 +564,13 @@ Successfully implemented comprehensive **Android Backend Support** for the RCA A
 
 | Goal | Target | Final Result | Status |
 |------|--------|--------------|--------|
-| **Parsers Implemented** | 4 parsers | 4 (Compose, XML, Gradle+, Manifest) | ✅ Met |
-| **Error Types Supported** | 15+ | 26 total (20 Android-specific) | ✅ Exceeds |
-| **Test Dataset** | 20 cases | 20 Android errors | ✅ Met |
-| **Accuracy** | >35% | 100% (20/20 final) | ✅ Exceeds |
-| **Tests Added** | 500+ | 581 | ✅ Exceeds |
-| **Coverage** | >85% | 95%+ (Android modules) | ✅ Exceeds |
-| **Integration** | Full | All parsers in ErrorParser | ✅ Met |
+| **Parsers Implemented** | 4 parsers | 4 (Compose, XML, Gradle+, Manifest) | [DONE] Met |
+| **Error Types Supported** | 15+ | 26 total (20 Android-specific) | [DONE] Exceeds |
+| **Test Dataset** | 20 cases | 20 Android errors | [DONE] Met |
+| **Accuracy** | >35% | 100% (20/20 final) | [DONE] Exceeds |
+| **Tests Added** | 500+ | 581 | [DONE] Exceeds |
+| **Coverage** | >85% | 95%+ (Android modules) | [DONE] Exceeds |
+| **Integration** | Full | All parsers in ErrorParser | [DONE] Met |
 
 ### Components Implemented
 
@@ -689,7 +689,7 @@ Successfully implemented comprehensive **Android Backend Support** for the RCA A
 - After GradleParser: 75% (15/20)
 - After JetpackComposeParser: 90% (18/20)
 - After ErrorParser fix: 95% (19/20)
-- Final (Dec 19): **100% (20/20)** ✅
+- Final (Dec 19): **100% (20/20)** [DONE]
 
 ### Cumulative Metrics
 
@@ -708,13 +708,13 @@ Successfully implemented comprehensive **Android Backend Support** for the RCA A
 
 | Module | Lines | Tests | Coverage | Status |
 |--------|-------|-------|----------|--------|
-| **JetpackComposeParser** | ~500 | 49 | 95%+ | ✅ |
-| **XMLParser** | ~500 | 43 | 95%+ | ✅ |
-| **AndroidBuildTool** | ~350 | 26 | 95%+ | ✅ |
-| **ManifestAnalyzerTool** | ~400 | 17 | 95%+ | ✅ |
-| **AndroidDocsSearchTool** | ~338 | 9 | 95%+ | ✅ |
-| **Android Test Dataset** | ~1732 | 60 | N/A | ✅ |
-| **Total Android Backend** | **~3820** | **204** | **95%+** | ✅ |
+| **JetpackComposeParser** | ~500 | 49 | 95%+ | [DONE] |
+| **XMLParser** | ~500 | 43 | 95%+ | [DONE] |
+| **AndroidBuildTool** | ~350 | 26 | 95%+ | [DONE] |
+| **ManifestAnalyzerTool** | ~400 | 17 | 95%+ | [DONE] |
+| **AndroidDocsSearchTool** | ~338 | 9 | 95%+ | [DONE] |
+| **Android Test Dataset** | ~1732 | 60 | N/A | [DONE] |
+| **Total Android Backend** | **~3820** | **204** | **95%+** | [DONE] |
 
 ### Files Created (Chunk 4 - Android Backend)
 
@@ -746,55 +746,55 @@ tests/
 │   └── android-test-dataset.ts       # 20 test cases (~1732 lines)
 ```
 
-### Test Criteria (End of Chunk 4) ✅ ACHIEVED
+### Test Criteria (End of Chunk 4) [DONE] ACHIEVED
 
 **Target vs. Achieved:**
 ```bash
 # Chunk 4 Success Checklist - ALL CRITERIA MET OR EXCEEDED
-✅ 4 Android parsers implemented (Compose, XML, Gradle+, Manifest) - ACHIEVED
-✅ 15+ Android error types supported - EXCEEDED (26 total, 20 Android-specific)
-✅ Test dataset with 20 Android errors - ACHIEVED
-✅ >35% baseline accuracy - EXCEEDED (100%, 65 points above baseline)
-✅ 500+ new tests - EXCEEDED (581 tests added)
-✅ >85% coverage for Android modules - EXCEEDED (95%+)
-✅ Full integration with ErrorParser - ACHIEVED
-✅ AndroidDocsSearchTool with offline docs - ACHIEVED
-✅ Version resolution for Gradle conflicts - ACHIEVED
-✅ Smart stack trace parsing - ACHIEVED
+[DONE] 4 Android parsers implemented (Compose, XML, Gradle+, Manifest) - ACHIEVED
+[DONE] 15+ Android error types supported - EXCEEDED (26 total, 20 Android-specific)
+[DONE] Test dataset with 20 Android errors - ACHIEVED
+[DONE] >35% baseline accuracy - EXCEEDED (100%, 65 points above baseline)
+[DONE] 500+ new tests - EXCEEDED (581 tests added)
+[DONE] >85% coverage for Android modules - EXCEEDED (95%+)
+[DONE] Full integration with ErrorParser - ACHIEVED
+[DONE] AndroidDocsSearchTool with offline docs - ACHIEVED
+[DONE] Version resolution for Gradle conflicts - ACHIEVED
+[DONE] Smart stack trace parsing - ACHIEVED
 
 # Additional Achievements (Beyond Requirements)
-✅ Parser optimization phase completed (35% → 100%)
-✅ 773 total tests (98.8% passing)
-✅ <5ms average parse time across all parsers
-✅ Comprehensive metadata extraction
-✅ Framework detection (Compose, XML, Gradle, Manifest)
-✅ Zero regressions in existing tests
+[DONE] Parser optimization phase completed (35% → 100%)
+[DONE] 773 total tests (98.8% passing)
+[DONE] <5ms average parse time across all parsers
+[DONE] Comprehensive metadata extraction
+[DONE] Framework detection (Compose, XML, Gradle, Manifest)
+[DONE] Zero regressions in existing tests
 ```
 
-### Test Criteria (End of Chunk 1 - All Sub-Chunks Complete) ✅ ACHIEVED
+### Test Criteria (End of Chunk 1 - All Sub-Chunks Complete) [DONE] ACHIEVED
 
 **Target vs. Achieved:**
 ```bash
 # MVP Success Checklist - ALL CRITERIA MET OR EXCEEDED
-✅ Extension activates without errors - ACHIEVED
-✅ Can analyze this exact error: - ACHIEVED (100% accuracy)
+[DONE] Extension activates without errors - ACHIEVED
+[DONE] Can analyze this exact error: - ACHIEVED (100% accuracy)
    "kotlin.UninitializedPropertyAccessException: lateinit property user has not been initialized"
-✅ Agent uses read_file tool correctly - ACHIEVED (21/21 tests passing)
-✅ Generates hypothesis mentioning "lateinit" and "initialization" - ACHIEVED
-✅ Completes in <90s (even on CPU) - ACHIEVED (75.8s average, 16% faster)
-✅ Output includes: root cause, affected file, line number - ACHIEVED
-✅ Works on at least 6/10 real errors from your projects (60%+ accuracy) - EXCEEDED (10/10 = 100%)
+[DONE] Agent uses read_file tool correctly - ACHIEVED (21/21 tests passing)
+[DONE] Generates hypothesis mentioning "lateinit" and "initialization" - ACHIEVED
+[DONE] Completes in <90s (even on CPU) - ACHIEVED (75.8s average, 16% faster)
+[DONE] Output includes: root cause, affected file, line number - ACHIEVED
+[DONE] Works on at least 6/10 real errors from your projects (60%+ accuracy) - EXCEEDED (10/10 = 100%)
 
 # Additional Achievements (Beyond Requirements)
-✅ 88%+ test coverage (exceeds 80% target)
-✅ 83/83 tests passing (100% pass rate)
-✅ Zero crashes in 759s of testing
-✅ IndexOutOfBoundsException support added
-✅ Comprehensive documentation (2,125+ lines)
-✅ Production-ready error handling with fallbacks
+[DONE] 88%+ test coverage (exceeds 80% target)
+[DONE] 83/83 tests passing (100% pass rate)
+[DONE] Zero crashes in 759s of testing
+[DONE] IndexOutOfBoundsException support added
+[DONE] Comprehensive documentation (2,125+ lines)
+[DONE] Production-ready error handling with fallbacks
 ```
 
-### Files Created (Chunk 1 - MVP) ✅ COMPLETE
+### Files Created (Chunk 1 - MVP) [DONE] COMPLETE
 
 **Source Code (5 files, ~1,690 lines):**
 ```
@@ -1008,14 +1008,14 @@ export class KotlinNPEParser {
 
 ### What You're NOT Building Yet
 
-- ❌ Vector database
-- ❌ Multiple error types
-- ❌ UI/Webview
-- ❌ Educational mode
-- ❌ Caching
-- ❌ State persistence
-- ❌ LSP integration
-- ❌ Android-specific features (Compose, XML, Gradle)
+- [FAIL] Vector database
+- [FAIL] Multiple error types
+- [FAIL] UI/Webview
+- [FAIL] Educational mode
+- [FAIL] Caching
+- [FAIL] State persistence
+- [FAIL] LSP integration
+- [FAIL] Android-specific features (Compose, XML, Gradle)
 
 ### Lessons to Learn from MVP
 
@@ -1030,12 +1030,12 @@ After completing this chunk, you'll discover:
 
 ---
 
-## 🛠️ CHUNK 2: Core Tools Backend (Week 3) ✅ COMPLETE
+## [FIX] CHUNK 2: Core Tools Backend (Week 3) [DONE] COMPLETE
 
-**Status:** ✅ **PRODUCTION READY**  
+**Status:** [DONE] **PRODUCTION READY**  
 **Completion Date:** December 18-19, 2025  
-**Prerequisites:** ✅ Chunk 1 complete and validated  
-**Priority:** 🔥 HIGH - Expand MVP with multi-language parsing, tools, and prompt engineering  
+**Prerequisites:** [DONE] Chunk 1 complete and validated  
+**Priority:** [HOT] HIGH - Expand MVP with multi-language parsing, tools, and prompt engineering  
 **Goal:** Work on 5+ error types with extensible tool system and enhanced prompting  
 **Primary Owner:** Kai (Backend)  
 **Key Themes:** Multi-language parsing, tool infrastructure, prompt engineering, agent integration
@@ -1049,14 +1049,14 @@ Chunk 2 delivers the backend "core tools" foundation for the RCA Agent:
 - **Agent integration:** ReAct agent with configurable iterations (1-10), tool execution, and A/B testing toggles
 
 **Achievement Metrics:**
-- ✅ **Parse Rate:** 100% (11+ error types)
-- ✅ **Test Coverage:** 95%+ on new modules, 90%+ overall
-- ✅ **Test Pass Rate:** 268/272 (98.5%) - some non-critical failures due to mock timing adjustments
-- ✅ **Error Families Supported:**
+- [DONE] **Parse Rate:** 100% (11+ error types)
+- [DONE] **Test Coverage:** 95%+ on new modules, 90%+ overall
+- [DONE] **Test Pass Rate:** 268/272 (98.5%) - some non-critical failures due to mock timing adjustments
+- [DONE] **Error Families Supported:**
   - **Kotlin:** lateinit, npe, unresolved_reference, type_mismatch, compilation, import-related
   - **Gradle:** dependency resolution, dependency conflict, task failure, build script syntax, compilation-related
-- ✅ **Tools Registered:** read_file, find_callers, get_symbol_info, workspace_symbol_search
-- ✅ **Architecture:** Clean separation of concerns with Strategy, Singleton, and Composition patterns
+- [DONE] **Tools Registered:** read_file, find_callers, get_symbol_info, workspace_symbol_search
+- [DONE] **Architecture:** Clean separation of concerns with Strategy, Singleton, and Composition patterns
 
 **What This Enables:**
 - Robust error parsing across Kotlin + Gradle with scalable architecture
@@ -1066,38 +1066,38 @@ Chunk 2 delivers the backend "core tools" foundation for the RCA Agent:
 
 ---
 
-### CHUNK 2.1: Full Error Parser (Days 1-3, ~24h) ✅ COMPLETE
+### CHUNK 2.1: Full Error Parser (Days 1-3, ~24h) [DONE] COMPLETE
 
 **Completion Date:** December 18, 2025  
 **Goal:** Parse 5+ Kotlin error types and add Gradle coverage
 
 **Kai (Backend - Implements Everything):**
-- [x] ✅ **LanguageDetector.ts** - Heuristic language detection
-  - [x] ✅ Keyword-based detection (Kotlin/Gradle/XML/Java)
-  - [x] ✅ File extension analysis
-  - [x] ✅ Confidence scoring
-  - [x] ✅ Quick check methods for each language
-- [x] ✅ **ErrorParser.ts** - Unified error parsing router
-  - [x] ✅ Single entry point for all error parsing
-  - [x] ✅ Parser registration system (Strategy pattern)
-  - [x] ✅ Fallback to language detection
-  - [x] ✅ Singleton pattern for global access
-- [x] ✅ **KotlinParser.ts** - Comprehensive Kotlin parsing
-  - [x] ✅ lateinit property errors
-  - [x] ✅ NullPointerException errors
-  - [x] ✅ Unresolved reference errors
-  - [x] ✅ Type mismatch errors
-  - [x] ✅ Compilation errors
-  - [x] ✅ Import errors
-  - [x] ✅ Composition with KotlinNPEParser (reuses Chunk 1 code)
-- [x] ✅ **GradleParser.ts** - Gradle build failure parsing
-  - [x] ✅ Dependency resolution errors
-  - [x] ✅ Dependency conflict errors
-  - [x] ✅ Task failure errors
-  - [x] ✅ Build script syntax errors
-  - [x] ✅ Compilation-related errors
-- [x] ✅ **Test Coverage:** 95%+ on new modules
-- [x] ✅ **Performance:** <1ms average parse time per error
+- [x] [DONE] **LanguageDetector.ts** - Heuristic language detection
+  - [x] [DONE] Keyword-based detection (Kotlin/Gradle/XML/Java)
+  - [x] [DONE] File extension analysis
+  - [x] [DONE] Confidence scoring
+  - [x] [DONE] Quick check methods for each language
+- [x] [DONE] **ErrorParser.ts** - Unified error parsing router
+  - [x] [DONE] Single entry point for all error parsing
+  - [x] [DONE] Parser registration system (Strategy pattern)
+  - [x] [DONE] Fallback to language detection
+  - [x] [DONE] Singleton pattern for global access
+- [x] [DONE] **KotlinParser.ts** - Comprehensive Kotlin parsing
+  - [x] [DONE] lateinit property errors
+  - [x] [DONE] NullPointerException errors
+  - [x] [DONE] Unresolved reference errors
+  - [x] [DONE] Type mismatch errors
+  - [x] [DONE] Compilation errors
+  - [x] [DONE] Import errors
+  - [x] [DONE] Composition with KotlinNPEParser (reuses Chunk 1 code)
+- [x] [DONE] **GradleParser.ts** - Gradle build failure parsing
+  - [x] [DONE] Dependency resolution errors
+  - [x] [DONE] Dependency conflict errors
+  - [x] [DONE] Task failure errors
+  - [x] [DONE] Build script syntax errors
+  - [x] [DONE] Compilation-related errors
+- [x] [DONE] **Test Coverage:** 95%+ on new modules
+- [x] [DONE] **Performance:** <1ms average parse time per error
 
 **Design Patterns Used:**
 ```typescript
@@ -1125,46 +1125,46 @@ export class KotlinParser {
 ```
 
 **Sokchea (UI):**
-- [x] ✅ Display parsed error type and language in output
-- [x] ✅ Enhanced error information presentation
+- [x] [DONE] Display parsed error type and language in output
+- [x] [DONE] Enhanced error information presentation
 
-**Deliverable:** ✅ Parser handles 11+ error types across Kotlin and Gradle  
+**Deliverable:** [DONE] Parser handles 11+ error types across Kotlin and Gradle  
 **Test Results:** 109 tests (Chunk 2.1 alone), ~3.7s execution time, 95%+ coverage
 
 ---
 
-### CHUNK 2.2: LSP Integration & Tool Registry (Days 4-6, ~24h) ✅ COMPLETE
+### CHUNK 2.2: LSP Integration & Tool Registry (Days 4-6, ~24h) [DONE] COMPLETE
 
 **Completion Date:** December 18, 2025  
 **Goal:** Add extensible tool system and code-analysis capability foundation
 
 **Kai (Backend - Implements Everything):**
-- [x] ✅ **ToolRegistry.ts** - Extensible tool management
-  - [x] ✅ Tool registration with Zod schema validation
-  - [x] ✅ Tool discovery and execution
-  - [x] ✅ Runtime parameter validation
-  - [x] ✅ Error handling with detailed context
-  - [x] ✅ Optional parallel execution capability
-  - [x] ✅ Tool usage tracking
-- [x] ✅ **LSPTool.ts** - Code analysis foundation
-  - [x] ✅ Find callers of a symbol
-  - [x] ✅ Get symbol definition
-  - [x] ✅ Get symbol information
-  - [x] ✅ Workspace symbol search
-  - [x] ✅ Regex-based placeholder implementation (suitable for backend testing)
-  - [x] ✅ Integration hook for VS Code LSP (extension context)
-- [x] ✅ **Tool Interface Standardization**
-  - [x] ✅ Consistent parameter schemas
-  - [x] ✅ Structured error responses
-  - [x] ✅ Tool metadata (name, description, schema)
-- [x] ✅ **Test Coverage:** 95%+ on new modules
-- [x] ✅ **Performance:** 1-10ms tool validation, 10-50ms LSP operations (regex-based)
+- [x] [DONE] **ToolRegistry.ts** - Extensible tool management
+  - [x] [DONE] Tool registration with Zod schema validation
+  - [x] [DONE] Tool discovery and execution
+  - [x] [DONE] Runtime parameter validation
+  - [x] [DONE] Error handling with detailed context
+  - [x] [DONE] Optional parallel execution capability
+  - [x] [DONE] Tool usage tracking
+- [x] [DONE] **LSPTool.ts** - Code analysis foundation
+  - [x] [DONE] Find callers of a symbol
+  - [x] [DONE] Get symbol definition
+  - [x] [DONE] Get symbol information
+  - [x] [DONE] Workspace symbol search
+  - [x] [DONE] Regex-based placeholder implementation (suitable for backend testing)
+  - [x] [DONE] Integration hook for VS Code LSP (extension context)
+- [x] [DONE] **Tool Interface Standardization**
+  - [x] [DONE] Consistent parameter schemas
+  - [x] [DONE] Structured error responses
+  - [x] [DONE] Tool metadata (name, description, schema)
+- [x] [DONE] **Test Coverage:** 95%+ on new modules
+- [x] [DONE] **Performance:** 1-10ms tool validation, 10-50ms LSP operations (regex-based)
 
 **Sokchea (UI):**
-- [x] ✅ Display tool execution results in output panel
-- [x] ✅ Show tool usage statistics
+- [x] [DONE] Display tool execution results in output panel
+- [x] [DONE] Show tool usage statistics
 
-**Deliverable:** ✅ Extensible tool system with code analysis foundation ready for expansion  
+**Deliverable:** [DONE] Extensible tool system with code analysis foundation ready for expansion  
 **Test Results:** Runtime parameter validation catches errors, tool execution with error handling operational
 
 **Usage Example:**
@@ -1192,37 +1192,37 @@ const results = await registry.executeParallel([
 
 ---
 
-### CHUNK 2.3: Prompt Engineering (Days 7-9, ~24h) ✅ COMPLETE
+### CHUNK 2.3: Prompt Engineering (Days 7-9, ~24h) [DONE] COMPLETE
 
 **Completion Date:** December 18, 2025  
 **Goal:** Improve analysis quality and reliability with stronger prompts
 
 **Kai (Backend - Implements Everything):**
-- [x] ✅ **PromptEngine.ts** - Advanced prompt generation
-  - [x] ✅ System prompt with RCA workflow guidance
-  - [x] ✅ Few-shot examples for error types:
-    - [x] ✅ lateinit errors
-    - [x] ✅ NPE errors
-    - [x] ✅ unresolved_reference errors
-    - [x] ✅ type_mismatch errors
-  - [x] ✅ Iteration prompts with history
-  - [x] ✅ Final synthesis prompts
-  - [x] ✅ JSON extraction with tolerance for extra text
-  - [x] ✅ Response validation
-  - [x] ✅ Prompt caching (system prompt, examples)
-- [x] ✅ **Prompt Templates**
-  - [x] ✅ Initial analysis template
-  - [x] ✅ Iteration refinement template
-  - [x] ✅ Final synthesis template
-  - [x] ✅ Tool usage guidance
-- [x] ✅ **Test Coverage:** 95%+ on PromptEngine
-- [x] ✅ **Performance:** <1ms cached prompts, 1-5ms initial prompt generation
+- [x] [DONE] **PromptEngine.ts** - Advanced prompt generation
+  - [x] [DONE] System prompt with RCA workflow guidance
+  - [x] [DONE] Few-shot examples for error types:
+    - [x] [DONE] lateinit errors
+    - [x] [DONE] NPE errors
+    - [x] [DONE] unresolved_reference errors
+    - [x] [DONE] type_mismatch errors
+  - [x] [DONE] Iteration prompts with history
+  - [x] [DONE] Final synthesis prompts
+  - [x] [DONE] JSON extraction with tolerance for extra text
+  - [x] [DONE] Response validation
+  - [x] [DONE] Prompt caching (system prompt, examples)
+- [x] [DONE] **Prompt Templates**
+  - [x] [DONE] Initial analysis template
+  - [x] [DONE] Iteration refinement template
+  - [x] [DONE] Final synthesis template
+  - [x] [DONE] Tool usage guidance
+- [x] [DONE] **Test Coverage:** 95%+ on PromptEngine
+- [x] [DONE] **Performance:** <1ms cached prompts, 1-5ms initial prompt generation
 
 **Sokchea (UI):**
-- [x] ✅ Enhanced output formatting with prompt-guided structure
-- [x] ✅ Display few-shot learning improvements
+- [x] [DONE] Enhanced output formatting with prompt-guided structure
+- [x] [DONE] Display few-shot learning improvements
 
-**Deliverable:** ✅ Reliable structured output from LLM with improved accuracy  
+**Deliverable:** [DONE] Reliable structured output from LLM with improved accuracy  
 **Test Results:** JSON extraction handles edge cases, validation prevents malformed outputs
 
 **Usage Example:**
@@ -1236,46 +1236,46 @@ const result = engine.extractJSON(response); // Tolerates "extra text" around JS
 
 ---
 
-### CHUNK 2.4: Agent Integration & Testing (Days 10-12, ~24h) ✅ COMPLETE
+### CHUNK 2.4: Agent Integration & Testing (Days 10-12, ~24h) [DONE] COMPLETE
 
 **Completion Date:** December 18-19, 2025  
 **Goal:** Integrate tools + prompts into ReAct agent workflow
 
 **Kai (Backend - Implements Everything):**
-- [x] ✅ **Updated MinimalReactAgent.ts**
-  - [x] ✅ Configurable iteration loop (1-10 iterations, default 3)
-  - [x] ✅ Optional feature flags for A/B testing:
-    - [x] ✅ `usePromptEngine` flag (enable/disable PromptEngine)
-    - [x] ✅ `useToolRegistry` flag (enable/disable ToolRegistry)
-  - [x] ✅ Tool execution inside reasoning loop
-  - [x] ✅ Tool usage tracking in output
-  - [x] ✅ Integration with PromptEngine for better prompts
-  - [x] ✅ Integration with ToolRegistry for validated tool calls
-- [x] ✅ **Updated types.ts**
-  - [x] ✅ Extended RCAResult to include `iterations?` and `toolsUsed?`
-  - [x] ✅ Tool execution metadata
-- [x] ✅ **Updated ReadFileTool.ts**
-  - [x] ✅ Implements Tool interface from ToolRegistry
-  - [x] ✅ Backward-compatible invocation (supports old and new signatures)
-  - [x] ✅ Zod schema for parameter validation
-- [x] ✅ **Registered Tools:**
-  - [x] ✅ read_file (ReadFileTool)
-  - [x] ✅ find_callers (LSPTool)
-  - [x] ✅ get_symbol_info (LSPTool)
-  - [x] ✅ workspace_symbol_search (LSPTool)
-- [x] ✅ **A/B Testing Infrastructure**
-  - [x] ✅ Baseline mode (legacy prompts, no tools)
-  - [x] ✅ Enhanced mode (PromptEngine + ToolRegistry)
-  - [x] ✅ Configurable comparison tests
-- [x] ✅ **Test Coverage:** 95%+ on new integration code
-- [x] ✅ **Test Results:** 268/272 passing (some mock timing adjustments needed)
+- [x] [DONE] **Updated MinimalReactAgent.ts**
+  - [x] [DONE] Configurable iteration loop (1-10 iterations, default 3)
+  - [x] [DONE] Optional feature flags for A/B testing:
+    - [x] [DONE] `usePromptEngine` flag (enable/disable PromptEngine)
+    - [x] [DONE] `useToolRegistry` flag (enable/disable ToolRegistry)
+  - [x] [DONE] Tool execution inside reasoning loop
+  - [x] [DONE] Tool usage tracking in output
+  - [x] [DONE] Integration with PromptEngine for better prompts
+  - [x] [DONE] Integration with ToolRegistry for validated tool calls
+- [x] [DONE] **Updated types.ts**
+  - [x] [DONE] Extended RCAResult to include `iterations?` and `toolsUsed?`
+  - [x] [DONE] Tool execution metadata
+- [x] [DONE] **Updated ReadFileTool.ts**
+  - [x] [DONE] Implements Tool interface from ToolRegistry
+  - [x] [DONE] Backward-compatible invocation (supports old and new signatures)
+  - [x] [DONE] Zod schema for parameter validation
+- [x] [DONE] **Registered Tools:**
+  - [x] [DONE] read_file (ReadFileTool)
+  - [x] [DONE] find_callers (LSPTool)
+  - [x] [DONE] get_symbol_info (LSPTool)
+  - [x] [DONE] workspace_symbol_search (LSPTool)
+- [x] [DONE] **A/B Testing Infrastructure**
+  - [x] [DONE] Baseline mode (legacy prompts, no tools)
+  - [x] [DONE] Enhanced mode (PromptEngine + ToolRegistry)
+  - [x] [DONE] Configurable comparison tests
+- [x] [DONE] **Test Coverage:** 95%+ on new integration code
+- [x] [DONE] **Test Results:** 268/272 passing (some mock timing adjustments needed)
 
 **Sokchea (UI):**
-- [x] ✅ Display iteration count in output
-- [x] ✅ Show tools used during analysis
-- [x] ✅ Toggle between baseline and enhanced modes (for testing)
+- [x] [DONE] Display iteration count in output
+- [x] [DONE] Show tools used during analysis
+- [x] [DONE] Toggle between baseline and enhanced modes (for testing)
 
-**Deliverable:** ✅ Multi-iteration, tool-using agent ready for production  
+**Deliverable:** [DONE] Multi-iteration, tool-using agent ready for production  
 **Test Results:** Agent executes tools correctly, A/B testing infrastructure operational
 
 **Usage Example:**
@@ -1296,17 +1296,17 @@ const enhancedAgent = new MinimalReactAgent(llm, {
 
 const result = await enhancedAgent.analyze(parsedError);
 console.log(`Used ${result.iterations} iterations and ${result.toolsUsed?.length} tools`);
-  - [x] ✅ Compilation errors
-- [x] ✅ Language detector (`LanguageDetector.ts`)
-- [x] ✅ Gradle build error parser (`GradleParser.ts`)
-- [x] ✅ Unit tests for each error type (15+ test cases)
+  - [x] [DONE] Compilation errors
+- [x] [DONE] Language detector (`LanguageDetector.ts`)
+- [x] [DONE] Gradle build error parser (`GradleParser.ts`)
+- [x] [DONE] Unit tests for each error type (15+ test cases)
 
 **Sokchea (UI & Integration ONLY - No Implementation):**
-- [x] ✅ Display error type badges (NPE, Lateinit, Build, etc.)
-- [x] ✅ Color-code different error types in output
-- [x] ✅ Wire new parser to command handler
+- [x] [DONE] Display error type badges (NPE, Lateinit, Build, etc.)
+- [x] [DONE] Color-code different error types in output
+- [x] [DONE] Wire new parser to command handler
 
-**Deliverable:** ✅ Parser handles 11+ Kotlin and Gradle error types correctly  
+**Deliverable:** [DONE] Parser handles 11+ Kotlin and Gradle error types correctly  
 **Test Results:** 100% parse rate for all supported error types
 
 **Development Timeline:**
@@ -1327,28 +1327,28 @@ console.log(`Used ${result.iterations} iterations and ${result.toolsUsed?.length
 
 ---
 
-### CHUNK 2.2: LSP Integration & Tool Registry (Days 4-5, ~16h) ✅ COMPLETE
+### CHUNK 2.2: LSP Integration & Tool Registry (Days 4-5, ~16h) [DONE] COMPLETE
 
 **Completion Date:** December 18, 2025  
 **Goal:** Add LSP-powered tools for better code analysis
 
 **Kai (Backend - Implements Everything):**
-- [x] ✅ Tool registry system (`ToolRegistry.ts`)
-  - [x] ✅ Tool registration API
-  - [x] ✅ Schema validation with Zod
-  - [x] ✅ Parallel execution capability
-- [x] ✅ LSP tool implementation (`LSPTool.ts`)
-  - [x] ✅ Find function callers
-  - [x] ✅ Get symbol definitions
-  - [x] ✅ Search workspace symbols
-- [x] ✅ Integrate tools into agent workflow
+- [x] [DONE] Tool registry system (`ToolRegistry.ts`)
+  - [x] [DONE] Tool registration API
+  - [x] [DONE] Schema validation with Zod
+  - [x] [DONE] Parallel execution capability
+- [x] [DONE] LSP tool implementation (`LSPTool.ts`)
+  - [x] [DONE] Find function callers
+  - [x] [DONE] Get symbol definitions
+  - [x] [DONE] Search workspace symbols
+- [x] [DONE] Integrate tools into agent workflow
 
 **Sokchea (UI & Integration ONLY - No Implementation):**
-- [x] ✅ Display tool execution status ("Finding callers...")
-- [x] ✅ Show tool results in output
-- [x] ✅ Format LSP results for readability
+- [x] [DONE] Display tool execution status ("Finding callers...")
+- [x] [DONE] Show tool results in output
+- [x] [DONE] Format LSP results for readability
 
-**Deliverable:** ✅ Agent uses LSP to find function relationships  
+**Deliverable:** [DONE] Agent uses LSP to find function relationships  
 **Test Results:** Tool registry with comprehensive error handling and validation
 
 **Development Timeline:**
@@ -1365,26 +1365,26 @@ console.log(`Used ${result.iterations} iterations and ${result.toolsUsed?.length
 
 ---
 
-### CHUNK 2.3: Prompt Engineering & Validation (Days 6-7, ~16h) ✅ COMPLETE
+### CHUNK 2.3: Prompt Engineering & Validation (Days 6-7, ~16h) [DONE] COMPLETE
 
 **Completion Date:** December 18, 2025  
 **Goal:** Improve analysis quality through better prompts
 
 **Kai (Backend - Implements Everything):**
-- [x] ✅ Prompt engine (`PromptEngine.ts`)
-  - [x] ✅ System prompts with guidelines
-  - [x] ✅ Few-shot examples for error types: lateinit, NPE, unresolved_reference, type_mismatch
-  - [x] ✅ Structured output formatting with JSON extraction
-  - [x] ✅ Iteration prompts and final synthesis
-- [x] ✅ Test suite with 10+ real errors
-- [x] ✅ Measure accuracy metrics
+- [x] [DONE] Prompt engine (`PromptEngine.ts`)
+  - [x] [DONE] System prompts with guidelines
+  - [x] [DONE] Few-shot examples for error types: lateinit, NPE, unresolved_reference, type_mismatch
+  - [x] [DONE] Structured output formatting with JSON extraction
+  - [x] [DONE] Iteration prompts and final synthesis
+- [x] [DONE] Test suite with 10+ real errors
+- [x] [DONE] Measure accuracy metrics
 
 **Sokchea (UI & Integration ONLY - No Implementation):**
-- [x] ✅ Display accuracy metrics in output
-- [x] ✅ Show confidence scores
-- [x] ✅ Better formatting of agent reasoning
+- [x] [DONE] Display accuracy metrics in output
+- [x] [DONE] Show confidence scores
+- [x] [DONE] Better formatting of agent reasoning
 
-**Deliverable:** ✅ Enhanced prompting system with robust JSON extraction  
+**Deliverable:** [DONE] Enhanced prompting system with robust JSON extraction  
 **Test Results:** Improved analysis quality and reliability
 
 **Development Timeline:**
@@ -1397,26 +1397,26 @@ console.log(`Used ${result.iterations} iterations and ${result.toolsUsed?.length
 - **Together:** Run test suite, measure accuracy
 - **Together:** Iterate on prompts to improve results
 
-**Test:** ✅ Enhanced prompt reliability achieved
+**Test:** [DONE] Enhanced prompt reliability achieved
 
 ---
 
-### CHUNK 2.4: Agent Integration & Testing (Days 8-9, ~16h) ✅ COMPLETE
+### CHUNK 2.4: Agent Integration & Testing (Days 8-9, ~16h) [DONE] COMPLETE
 
 **Completion Date:** December 18-19, 2025  
 **Goal:** Integrate tools and prompts into ReAct agent workflow
 
 **Kai (Backend - Implements Everything):**
-- [x] ✅ Updated `MinimalReactAgent.ts`
-  - [x] ✅ Configurable iteration loop (1-10 iterations)
-  - [x] ✅ Feature flags for A/B testing: `usePromptEngine` and `useToolRegistry`
-  - [x] ✅ Tool execution within reasoning loop via ToolRegistry
-  - [x] ✅ Tool usage tracking in output
-- [x] ✅ Updated `types.ts`
-  - [x] ✅ `RCAResult` extended with `iterations?` and `toolsUsed?` fields
-- [x] ✅ Updated `ReadFileTool.ts`
-  - [x] ✅ Implements Tool interface
-  - [x] ✅ Supports backward-compatible invocation
+- [x] [DONE] Updated `MinimalReactAgent.ts`
+  - [x] [DONE] Configurable iteration loop (1-10 iterations)
+  - [x] [DONE] Feature flags for A/B testing: `usePromptEngine` and `useToolRegistry`
+  - [x] [DONE] Tool execution within reasoning loop via ToolRegistry
+  - [x] [DONE] Tool usage tracking in output
+- [x] [DONE] Updated `types.ts`
+  - [x] [DONE] `RCAResult` extended with `iterations?` and `toolsUsed?` fields
+- [x] [DONE] Updated `ReadFileTool.ts`
+  - [x] [DONE] Implements Tool interface
+  - [x] [DONE] Supports backward-compatible invocation
 
 **Registered Tools:**
 - `read_file` (ReadFileTool)
@@ -1424,59 +1424,59 @@ console.log(`Used ${result.iterations} iterations and ${result.toolsUsed?.length
 - `get_symbol_info` (LSPTool)
 
 **Sokchea (UI & Integration ONLY - No Implementation):**
-- [x] ✅ Display tool execution in output
-- [x] ✅ Show iteration progress with tool usage
-- [x] ✅ Format multi-tool results
+- [x] [DONE] Display tool execution in output
+- [x] [DONE] Show iteration progress with tool usage
+- [x] [DONE] Format multi-tool results
 
-**Deliverable:** ✅ Integrated agent with PromptEngine + ToolRegistry  
+**Deliverable:** [DONE] Integrated agent with PromptEngine + ToolRegistry  
 **Test Results:** A/B testing framework operational, some non-critical test failures due to mock timing
 
-### Test Criteria (End of Chunk 2) ✅ ACHIEVED ✅ ACHIEVED
+### Test Criteria (End of Chunk 2) [DONE] ACHIEVED [DONE] ACHIEVED
 ```bash
 # Expanded Coverage Checklist - ALL CRITERIA MET OR EXCEEDED
-✅ Handles: NPE, lateinit, unresolved reference, build errors, type mismatch - ACHIEVED
-✅ Supports 11+ error types (Kotlin + Gradle) - EXCEEDED (11+ types supported)
-✅ LSP tool works for simple projects - ACHIEVED
-✅ PromptEngine with few-shot examples operational - ACHIEVED
-✅ Tool registry with schema validation - ACHIEVED
-✅ Agent explains WHY error happened (not just WHAT) - ACHIEVED
-✅ A/B testing framework functional - ACHIEVED
-✅ 95%+ test coverage on new modules - ACHIEVED
-✅ 268/272 tests passing (98.5% pass rate) - ACHIEVED
+[DONE] Handles: NPE, lateinit, unresolved reference, build errors, type mismatch - ACHIEVED
+[DONE] Supports 11+ error types (Kotlin + Gradle) - EXCEEDED (11+ types supported)
+[DONE] LSP tool works for simple projects - ACHIEVED
+[DONE] PromptEngine with few-shot examples operational - ACHIEVED
+[DONE] Tool registry with schema validation - ACHIEVED
+[DONE] Agent explains WHY error happened (not just WHAT) - ACHIEVED
+[DONE] A/B testing framework functional - ACHIEVED
+[DONE] 95%+ test coverage on new modules - ACHIEVED
+[DONE] 268/272 tests passing (98.5% pass rate) - ACHIEVED
 
 # Additional Achievements (Beyond Requirements)
-✅ Configurable iteration loop (1-10 iterations)
-✅ Comprehensive error handling and retry logic
-✅ Parallel tool execution capability
-✅ Robust JSON extraction (tolerant of extra text)
-✅ Feature flags for controlled rollout
+[DONE] Configurable iteration loop (1-10 iterations)
+[DONE] Comprehensive error handling and retry logic
+[DONE] Parallel tool execution capability
+[DONE] Robust JSON extraction (tolerant of extra text)
+[DONE] Feature flags for controlled rollout
 ```
 
-### Files Created (Chunk 2 - Expansion) ✅ COMPLETE
+### Files Created (Chunk 2 - Expansion) [DONE] COMPLETE
 ```
 src/
 ├── utils/
-│   ├── ErrorParser.ts            # ✅ Full parser with router
-│   ├── LanguageDetector.ts       # ✅ Heuristic language detection
+│   ├── ErrorParser.ts            # [DONE] Full parser with router
+│   ├── LanguageDetector.ts       # [DONE] Heuristic language detection
 │   └── parsers/
-│       ├── KotlinParser.ts       # ✅ All Kotlin errors (11+ types)
-│       └── GradleParser.ts       # ✅ Build errors (dependency, task, script)
+│       ├── KotlinParser.ts       # [DONE] All Kotlin errors (11+ types)
+│       └── GradleParser.ts       # [DONE] Build errors (dependency, task, script)
 ├── tools/
-│   ├── ToolRegistry.ts           # ✅ Schema validation + parallel execution
-│   └── LSPTool.ts                # ✅ Call hierarchy + symbol search
+│   ├── ToolRegistry.ts           # [DONE] Schema validation + parallel execution
+│   └── LSPTool.ts                # [DONE] Call hierarchy + symbol search
 └── agent/
-    ├── PromptEngine.ts           # ✅ Few-shot examples + JSON extraction
-    └── MinimalReactAgent.ts      # ✅ Updated with tool integration (2.4)
+    ├── PromptEngine.ts           # [DONE] Few-shot examples + JSON extraction
+    └── MinimalReactAgent.ts      # [DONE] Updated with tool integration (2.4)
 
 tests/
 ├── unit/
-│   ├── ErrorParser.test.ts       # ✅ Parser routing tests
-│   ├── KotlinParser.test.ts      # ✅ Kotlin error tests
-│   ├── GradleParser.test.ts      # ✅ Gradle error tests
-│   ├── ToolRegistry.test.ts      # ✅ Tool registry tests
-│   └── PromptEngine.test.ts      # ✅ Prompt engineering tests
+│   ├── ErrorParser.test.ts       # [DONE] Parser routing tests
+│   ├── KotlinParser.test.ts      # [DONE] Kotlin error tests
+│   ├── GradleParser.test.ts      # [DONE] Gradle error tests
+│   ├── ToolRegistry.test.ts      # [DONE] Tool registry tests
+│   └── PromptEngine.test.ts      # [DONE] Prompt engineering tests
 └── integration/
-    └── agent-tools.test.ts       # ✅ Agent + tools integration
+    └── agent-tools.test.ts       # [DONE] Agent + tools integration
 
 **Total:** 9+ new source files, 15+ test files, 95%+ coverage on new modules
 ```
@@ -1608,37 +1608,37 @@ Provide your analysis as JSON:
 
 ---
 
-## 🗄️ CHUNK 3: Database & Learning (Weeks 4-5) ✅ COMPLETE
+## [DATABASE] CHUNK 3: Database & Learning (Weeks 4-5) [DONE] COMPLETE
 
-**Status:** ✅ **PRODUCTION READY**  
+**Status:** [DONE] **PRODUCTION READY**  
 **Completion Date:** December 19, 2025  
 **Total Time:** ~80 hours (3.1: 24h, 3.2: 16h, 3.3: 20h, 3.4: 20h)  
-**Priority:** 🔥 CRITICAL - Enable persistent learning  
+**Priority:** [HOT] CRITICAL - Enable persistent learning  
 **Goal:** Vector store for learning from past errors  
 **Achievement:** 536 total tests (292 new), 95%+ coverage, full persistence layer
 
 ---
 
-### CHUNK 3.1: ChromaDB Setup & Integration (Days 1-3, ~24h) ✅ COMPLETE
+### CHUNK 3.1: ChromaDB Setup & Integration (Days 1-3, ~24h) [DONE] COMPLETE
 
 **Completion Date:** December 19, 2025  
 **Goal:** Get ChromaDB running and storing RCAs
 
 **Kai (Backend - Implements Everything):**
-- [x] ✅ ChromaDB client (`ChromaDBClient.ts`) - 627 lines
-  - [x] ✅ Connection to local ChromaDB server
-  - [x] ✅ Collection initialization
-  - [x] ✅ Add document method
-  - [x] ✅ Error handling
-- [x] ✅ RCA schema definition (`rca-collection.ts`)
-- [x] ✅ Integration tests
+- [x] [DONE] ChromaDB client (`ChromaDBClient.ts`) - 627 lines
+  - [x] [DONE] Connection to local ChromaDB server
+  - [x] [DONE] Collection initialization
+  - [x] [DONE] Add document method
+  - [x] [DONE] Error handling
+- [x] [DONE] RCA schema definition (`rca-collection.ts`)
+- [x] [DONE] Integration tests
 
 **Sokchea (UI & Integration ONLY - No Implementation):**
-- [x] ✅ Docker setup guide for ChromaDB (documentation)
-- [x] ✅ Display "Storing result..." notification
-- [x] ✅ Show storage success/failure messages
-- [x] ✅ RCA ID tracking and display
-- [x] ✅ Retry option for failed storage
+- [x] [DONE] Docker setup guide for ChromaDB (documentation)
+- [x] [DONE] Display "Storing result..." notification
+- [x] [DONE] Show storage success/failure messages
+- [x] [DONE] RCA ID tracking and display
+- [x] [DONE] Retry option for failed storage
 
 **Deliverable:** ChromaDB stores RCA documents successfully
 
@@ -1660,28 +1660,28 @@ Provide your analysis as JSON:
 
 ---
 
-### CHUNK 3.2: Embedding & Similarity Search (Days 4-6, ~24h) ✅ COMPLETE
+### CHUNK 3.2: Embedding & Similarity Search (Days 4-6, ~24h) [DONE] COMPLETE
 
 **Completion Date:** December 19, 2025  
 **Goal:** Search vector DB for similar past errors
 
 **Kai (Backend - Implements Everything):**
-- [x] ✅ Local embedding service (`EmbeddingService.ts`) - 280 lines
-  - [x] ✅ Load sentence transformer model
-  - [x] ✅ Generate embeddings for errors
-  - [x] ✅ Batch processing
-- [x] ✅ Similarity search implementation
-  - [x] ✅ Query by error message
-  - [x] ✅ Filter by language/error type
-  - [x] ✅ Rank by relevance
-- [x] ✅ Quality scorer (`QualityScorer.ts`) - 256 lines
+- [x] [DONE] Local embedding service (`EmbeddingService.ts`) - 280 lines
+  - [x] [DONE] Load sentence transformer model
+  - [x] [DONE] Generate embeddings for errors
+  - [x] [DONE] Batch processing
+- [x] [DONE] Similarity search implementation
+  - [x] [DONE] Query by error message
+  - [x] [DONE] Filter by language/error type
+  - [x] [DONE] Rank by relevance
+- [x] [DONE] Quality scorer (`QualityScorer.ts`) - 256 lines
 
 **Sokchea (UI & Integration ONLY - No Implementation):**
-- [x] ✅ Display "Searching past solutions..." status
-- [x] ✅ Show similar errors found in output
-- [x] ✅ Format similarity scores for user
-- [x] ✅ Similarity percentage display (1 - distance) × 100%
-- [x] ✅ Pre-analysis search with action buttons (View Now/Continue)
+- [x] [DONE] Display "Searching past solutions..." status
+- [x] [DONE] Show similar errors found in output
+- [x] [DONE] Format similarity scores for user
+- [x] [DONE] Similarity percentage display (1 - distance) × 100%
+- [x] [DONE] Pre-analysis search with action buttons (View Now/Continue)
 
 **Deliverable:** Search returns relevant past RCAs
 
@@ -1703,28 +1703,28 @@ Provide your analysis as JSON:
 
 ---
 
-### CHUNK 3.3: Caching & Deduplication (Days 7-9, ~24h) ✅ COMPLETE
+### CHUNK 3.3: Caching & Deduplication (Days 7-9, ~24h) [DONE] COMPLETE
 
 **Completion Date:** December 19, 2025  
 **Goal:** Speed up analysis for repeat errors
 
 **Kai (Backend - Implements Everything):**
-- [x] ✅ Error hasher (`ErrorHasher.ts`) - 245 lines
-  - [x] ✅ SHA-256 signature generation
-  - [x] ✅ Normalize error messages
-- [x] ✅ RCA cache (`RCACache.ts`) - 380 lines
-  - [x] ✅ In-memory cache with TTL
-  - [x] ✅ Cache hit/miss tracking
-  - [x] ✅ Invalidation on feedback
-- [x] ✅ Performance metrics
+- [x] [DONE] Error hasher (`ErrorHasher.ts`) - 245 lines
+  - [x] [DONE] SHA-256 signature generation
+  - [x] [DONE] Normalize error messages
+- [x] [DONE] RCA cache (`RCACache.ts`) - 380 lines
+  - [x] [DONE] In-memory cache with TTL
+  - [x] [DONE] Cache hit/miss tracking
+  - [x] [DONE] Invalidation on feedback
+- [x] [DONE] Performance metrics
 
 **Sokchea (UI & Integration ONLY - No Implementation):**
-- [x] ✅ Display "⚡ Found in cache!" notification
-- [x] ✅ Show cache statistics (optional)
-- [x] ✅ Faster response feedback (<5s cache hits)
-- [x] ✅ "Time ago" display for cached results
-- [x] ✅ Cache indicator in output channel
-- [x] ✅ "No LLM inference needed" message
+- [x] [DONE] Display "[FAST] Found in cache!" notification
+- [x] [DONE] Show cache statistics (optional)
+- [x] [DONE] Faster response feedback (<5s cache hits)
+- [x] [DONE] "Time ago" display for cached results
+- [x] [DONE] Cache indicator in output channel
+- [x] [DONE] "No LLM inference needed" message
 
 **Deliverable:** Repeat errors return in <5s
 
@@ -1746,28 +1746,28 @@ Provide your analysis as JSON:
 
 ---
 
-### CHUNK 3.4: User Feedback System (Days 10-12, ~24h) ✅ COMPLETE
+### CHUNK 3.4: User Feedback System (Days 10-12, ~24h) [DONE] COMPLETE
 
 **Completion Date:** December 19, 2025  
 **Goal:** Learn from user validation of RCAs
 
 **Kai (Backend - Implements Everything):**
-- [x] ✅ Feedback handler (`FeedbackHandler.ts`) - 430 lines
-  - [x] ✅ Process thumbs up/down
-  - [x] ✅ Update confidence scores
-  - [x] ✅ Re-embed with new scores
-- [x] ✅ Quality management (`QualityManager.ts`) - 630 lines
-  - [x] ✅ Auto-prune low-quality RCAs
-  - [x] ✅ Expiration policy (6 months)
+- [x] [DONE] Feedback handler (`FeedbackHandler.ts`) - 430 lines
+  - [x] [DONE] Process thumbs up/down
+  - [x] [DONE] Update confidence scores
+  - [x] [DONE] Re-embed with new scores
+- [x] [DONE] Quality management (`QualityManager.ts`) - 630 lines
+  - [x] [DONE] Auto-prune low-quality RCAs
+  - [x] [DONE] Expiration policy (6 months)
 
 **Sokchea (UI & Integration ONLY - No Implementation):**
-- [x] ✅ "Helpful?" buttons (👍/👎/Skip) in output
-- [x] ✅ Thank you message on feedback
-- [x] ✅ Optional comment box on negative feedback
-- [x] ✅ Wire buttons to Kai's feedback handler
-- [x] ✅ Feedback stats display showing impact
-- [x] ✅ Feedback confirmation in output channel
-- [x] ✅ Works for both new and cached results
+- [x] [DONE] "Helpful?" buttons ([LIKE]/[DISLIKE]/Skip) in output
+- [x] [DONE] Thank you message on feedback
+- [x] [DONE] Optional comment box on negative feedback
+- [x] [DONE] Wire buttons to Kai's feedback handler
+- [x] [DONE] Feedback stats display showing impact
+- [x] [DONE] Feedback confirmation in output channel
+- [x] [DONE] Works for both new and cached results
 
 **Deliverable:** User feedback improves future results
 
@@ -1787,22 +1787,22 @@ Provide your analysis as JSON:
 
 **Test:** Positive feedback increases confidence, negative invalidates cache
 
-### Test Criteria (End of Chunk 3) ✅ ALL COMPLETE
+### Test Criteria (End of Chunk 3) [DONE] ALL COMPLETE
 
 **Test Results:** All passing (December 19, 2025)
 
 ```bash
 # Learning System Checklist
-✅ Store 10 RCAs in vector DB
-✅ Query "NullPointerException" returns relevant past solutions
-✅ Repeat identical error: <5s (cache hit)
-✅ Positive feedback increases confidence score
-✅ Low-quality RCAs (confidence <0.5) not returned in search
-✅ Cache hit rate >60% achieved
-✅ Storage notifications working correctly
-✅ Similar solutions display working
-✅ Feedback buttons integrated
-✅ Full workflow tested end-to-end
+[DONE] Store 10 RCAs in vector DB
+[DONE] Query "NullPointerException" returns relevant past solutions
+[DONE] Repeat identical error: <5s (cache hit)
+[DONE] Positive feedback increases confidence score
+[DONE] Low-quality RCAs (confidence <0.5) not returned in search
+[DONE] Cache hit rate >60% achieved
+[DONE] Storage notifications working correctly
+[DONE] Similar solutions display working
+[DONE] Feedback buttons integrated
+[DONE] Full workflow tested end-to-end
 ```
 
 **Performance Metrics Achieved:**
@@ -1814,7 +1814,7 @@ Provide your analysis as JSON:
 - **Embedding Time:** ~500ms (with caching)
 - **Quality Scoring:** Multi-factor (confidence + validation + usage + age)
 
-### Files Created (Chunk 3 - Database) ✅ COMPLETE
+### Files Created (Chunk 3 - Database) [DONE] COMPLETE
 
 **Total Lines:** ~2,850 lines (implementation + tests)
 
@@ -1991,11 +1991,11 @@ export class ReactAgent {
 
 ---
 
-## 📱 CHUNK 4: Android Full Coverage (Weeks 6-8) ✅ COMPLETE
+## [MOBILE] CHUNK 4: Android Full Coverage (Weeks 6-8) [DONE] COMPLETE
 
-**Status:** ✅ **PRODUCTION READY**  
+**Status:** [DONE] **PRODUCTION READY**  
 **Completion Date:** December 19, 2025 (Week 12)  
-**Priority:** 🟡 MEDIUM - Complete Android support  
+**Priority:** [YELLOW] MEDIUM - Complete Android support  
 **Goal:** Handle all Android error types (Compose, XML, Gradle)  
 **Achievement:** 38+ Android error types with 100% UI coverage
 
@@ -2006,28 +2006,28 @@ export class ReactAgent {
 
 ---
 
-### CHUNK 4.1: Jetpack Compose Parser (Days 1-4, ~32h) ✅ COMPLETE
+### CHUNK 4.1: Jetpack Compose Parser (Days 1-4, ~32h) [DONE] COMPLETE
 
 **Goal:** Parse and analyze Compose-specific errors
 
 **Kai (Backend - Implements Everything):**
-- [x] ✅ Jetpack Compose parser (`JetpackComposeParser.ts`) - 500 lines
-  - [x] ✅ `remember` errors
-  - [x] ✅ `derivedStateOf` errors
-  - [x] ✅ Recomposition issues
-  - [x] ✅ `LaunchedEffect` errors
-  - [x] ✅ CompositionLocal errors
-  - [x] ✅ 3 additional error types (modifier, side-effect, snapshot)
-- [x] ✅ Compose-specific prompts
-- [x] ✅ Unit tests (10 Compose error types)
+- [x] [DONE] Jetpack Compose parser (`JetpackComposeParser.ts`) - 500 lines
+  - [x] [DONE] `remember` errors
+  - [x] [DONE] `derivedStateOf` errors
+  - [x] [DONE] Recomposition issues
+  - [x] [DONE] `LaunchedEffect` errors
+  - [x] [DONE] CompositionLocal errors
+  - [x] [DONE] 3 additional error types (modifier, side-effect, snapshot)
+- [x] [DONE] Compose-specific prompts
+- [x] [DONE] Unit tests (10 Compose error types)
 
 **Sokchea (UI & Integration ONLY - No Implementation):**
-- [x] ✅ Compose error badge/icon (🟣 Purple badge)
-- [x] ✅ Display recomposition hints
-- [x] ✅ Format Compose-specific output
-- [x] ✅ Official Compose documentation links
+- [x] [DONE] Compose error badge/icon (🟣 Purple badge)
+- [x] [DONE] Display recomposition hints
+- [x] [DONE] Format Compose-specific output
+- [x] [DONE] Official Compose documentation links
 
-**Deliverable:** ✅ Analyze 10 Compose error types (exceeded 5+ target)
+**Deliverable:** [DONE] Analyze 10 Compose error types (exceeded 5+ target)
 
 **Development Timeline:**
 
@@ -2043,27 +2043,27 @@ export class ReactAgent {
 
 ---
 
-### CHUNK 4.2: XML Layout Parser (Days 5-7, ~24h) ✅ COMPLETE
+### CHUNK 4.2: XML Layout Parser (Days 5-7, ~24h) [DONE] COMPLETE
 
 **Goal:** Handle XML layout inflation errors
 
 **Kai (Backend - Implements Everything):**
-- [x] ✅ XML parser (`XMLParser.ts`) - 500 lines
-  - [x] ✅ Inflation errors
-  - [x] ✅ Missing view ID errors
-  - [x] ✅ Attribute errors (layout_width, etc.)
-  - [x] ✅ Namespace issues
-  - [x] ✅ 4 additional error types (tag mismatch, resource not found, duplicate ID, invalid value)
-- [x] ✅ XML-specific prompts
-- [x] ✅ Unit tests (8 XML error types)
+- [x] [DONE] XML parser (`XMLParser.ts`) - 500 lines
+  - [x] [DONE] Inflation errors
+  - [x] [DONE] Missing view ID errors
+  - [x] [DONE] Attribute errors (layout_width, etc.)
+  - [x] [DONE] Namespace issues
+  - [x] [DONE] 4 additional error types (tag mismatch, resource not found, duplicate ID, invalid value)
+- [x] [DONE] XML-specific prompts
+- [x] [DONE] Unit tests (8 XML error types)
 
 **Sokchea (UI & Integration ONLY - No Implementation):**
-- [x] ✅ XML error badge (🟠 Orange badge)
-- [x] ✅ Display XML code snippets
-- [x] ✅ Format XML attribute suggestions
-- [x] ✅ Attribute suggestion templates
+- [x] [DONE] XML error badge (🟠 Orange badge)
+- [x] [DONE] Display XML code snippets
+- [x] [DONE] Format XML attribute suggestions
+- [x] [DONE] Attribute suggestion templates
 
-**Deliverable:** ✅ Analyze 8 XML layout error types (exceeded 3+ target)
+**Deliverable:** [DONE] Analyze 8 XML layout error types (exceeded 3+ target)
 
 **Development Timeline:**
 
@@ -2079,29 +2079,29 @@ export class ReactAgent {
 
 ---
 
-### CHUNK 4.3: Gradle Build Analyzer (Days 8-11, ~32h) ✅ COMPLETE
+### CHUNK 4.3: Gradle Build Analyzer (Days 8-11, ~32h) [DONE] COMPLETE
 
 **Goal:** Analyze Gradle build errors and dependency conflicts
 
 **Kai (Backend - Implements Everything):**
-- [x] ✅ Android build tool (`AndroidBuildTool.ts`) - 350 lines
-  - [x] ✅ Dependency conflict detection
-  - [x] ✅ Version mismatch analysis
-  - [x] ✅ Repository configuration errors
-  - [x] ✅ Plugin errors
-  - [x] ✅ Task failure detection
-- [x] ✅ Gradle DSL parser (Groovy + Kotlin DSL)
-- [x] ✅ Dependency recommendation engine
-- [x] ✅ Unit tests (5 Gradle error types)
+- [x] [DONE] Android build tool (`AndroidBuildTool.ts`) - 350 lines
+  - [x] [DONE] Dependency conflict detection
+  - [x] [DONE] Version mismatch analysis
+  - [x] [DONE] Repository configuration errors
+  - [x] [DONE] Plugin errors
+  - [x] [DONE] Task failure detection
+- [x] [DONE] Gradle DSL parser (Groovy + Kotlin DSL)
+- [x] [DONE] Dependency recommendation engine
+- [x] [DONE] Unit tests (5 Gradle error types)
 
 **Sokchea (UI & Integration ONLY - No Implementation):**
-- [x] ✅ Gradle error badge (🟡 Yellow badge)
-- [x] ✅ Display dependency conflicts clearly
-- [x] ✅ Format version recommendations
-- [x] ✅ Show Kai's build fix suggestions
-- [x] ✅ Executable fix commands
+- [x] [DONE] Gradle error badge ([YELLOW] Yellow badge)
+- [x] [DONE] Display dependency conflicts clearly
+- [x] [DONE] Format version recommendations
+- [x] [DONE] Show Kai's build fix suggestions
+- [x] [DONE] Executable fix commands
 
-**Deliverable:** ✅ Analyze 5 Gradle build error types (met target)
+**Deliverable:** [DONE] Analyze 5 Gradle build error types (met target)
 
 **Development Timeline:**
 
@@ -2117,31 +2117,31 @@ export class ReactAgent {
 
 ---
 
-### CHUNK 4.4: Manifest & Docs Integration (Days 12-15, ~32h) ✅ COMPLETE
+### CHUNK 4.4: Manifest & Docs Integration (Days 12-15, ~32h) [DONE] COMPLETE
 
 **Goal:** Handle manifest errors and add Android documentation
 
 **Kai (Backend - Implements Everything):**
-- [x] ✅ Manifest analyzer tool (`ManifestAnalyzerTool.ts`) - 400 lines
-  - [x] ✅ Merge conflict detection
-  - [x] ✅ Missing permission errors
-  - [x] ✅ Activity/Service declaration issues
-  - [x] ✅ Receiver declaration errors
-  - [x] ✅ Version conflict detection
-- [x] ✅ Android docs search (`AndroidDocsSearchTool.ts`) - 338 lines
-  - [x] ✅ Offline Android SDK docs (15 APIs)
-  - [x] ✅ Jetpack library docs
-  - [x] ✅ Common API references
-- [x] ✅ Unit tests (5 Manifest error types)
+- [x] [DONE] Manifest analyzer tool (`ManifestAnalyzerTool.ts`) - 400 lines
+  - [x] [DONE] Merge conflict detection
+  - [x] [DONE] Missing permission errors
+  - [x] [DONE] Activity/Service declaration issues
+  - [x] [DONE] Receiver declaration errors
+  - [x] [DONE] Version conflict detection
+- [x] [DONE] Android docs search (`AndroidDocsSearchTool.ts`) - 338 lines
+  - [x] [DONE] Offline Android SDK docs (15 APIs)
+  - [x] [DONE] Jetpack library docs
+  - [x] [DONE] Common API references
+- [x] [DONE] Unit tests (5 Manifest error types)
 
 **Sokchea (UI & Integration ONLY - No Implementation):**
-- [x] ✅ Manifest error badge (🟢 Green badge)
-- [x] ✅ Display Kai's docs search results
-- [x] ✅ Format permission suggestions
-- [x] ✅ Link to relevant documentation
-- [x] ✅ Dangerous permission warnings
+- [x] [DONE] Manifest error badge ([GREEN] Green badge)
+- [x] [DONE] Display Kai's docs search results
+- [x] [DONE] Format permission suggestions
+- [x] [DONE] Link to relevant documentation
+- [x] [DONE] Dangerous permission warnings
 
-**Deliverable:** ✅ Analyze 5 manifest error types + search 15 Android APIs
+**Deliverable:** [DONE] Analyze 5 manifest error types + search 15 Android APIs
 
 **Development Timeline:**
 
@@ -2157,46 +2157,46 @@ export class ReactAgent {
 
 ---
 
-### CHUNK 4.5: Android Testing & Validation (Days 16-18, ~24h) ✅ COMPLETE
+### CHUNK 4.5: Android Testing & Validation (Days 16-18, ~24h) [DONE] COMPLETE
 
 **Goal:** Comprehensive testing of all Android features
 
 **Kai (Backend - Implements Everything):**
-- [x] ✅ Integration tests for all Android parsers
-- [x] ✅ Test suite with 20 real Android errors (`android-test-dataset.ts` - 1732 lines)
-- [x] ✅ Accuracy measurement (100% - 20/20 test cases)
-- [x] ✅ Performance optimization (<5ms parse time)
+- [x] [DONE] Integration tests for all Android parsers
+- [x] [DONE] Test suite with 20 real Android errors (`android-test-dataset.ts` - 1732 lines)
+- [x] [DONE] Accuracy measurement (100% - 20/20 test cases)
+- [x] [DONE] Performance optimization (<5ms parse time)
 
 **Sokchea (UI & Integration ONLY - No Implementation):**
-- [x] ✅ Android error summary dashboard (optional)
-- [x] ✅ Test all UI components with real data
-- [x] ✅ Polish Android-specific UI elements
-- [x] ✅ Complete testing validation (38+ error types)
+- [x] [DONE] Android error summary dashboard (optional)
+- [x] [DONE] Test all UI components with real data
+- [x] [DONE] Polish Android-specific UI elements
+- [x] [DONE] Complete testing validation (38+ error types)
 
-**Deliverable:** ✅ 100% accuracy on Android error test suite (exceeded 70% target)
+**Deliverable:** [DONE] 100% accuracy on Android error test suite (exceeded 70% target)
 
 **Development Timeline:**
 
 **Days 16-17:**
-- **Kai:** ✅ Run comprehensive test suite (764/773 tests passing - 98.8%)
-- **Together:** ✅ Fix bugs and edge cases
+- **Kai:** [DONE] Run comprehensive test suite (764/773 tests passing - 98.8%)
+- **Together:** [DONE] Fix bugs and edge cases
 
 **Day 18:**
-- **Together:** ✅ Final validation and documentation
-- **Together:** ✅ Measure accuracy metrics (100% achieved)
+- **Together:** [DONE] Final validation and documentation
+- **Together:** [DONE] Measure accuracy metrics (100% achieved)
 
-**Test:** ✅ 20/20 Android errors analyzed successfully (PERFECT SCORE)
+**Test:** [DONE] 20/20 Android errors analyzed successfully (PERFECT SCORE)
 
-### Test Criteria (End of Chunk 4) ✅ ALL EXCEEDED
+### Test Criteria (End of Chunk 4) [DONE] ALL EXCEEDED
 ```bash
 # Full Android Support Checklist - ALL CRITERIA MET OR EXCEEDED
-✅ 10 Compose errors: remember, derivedStateOf, LaunchedEffect, + 7 more (exceeded 5+ target)
-✅ 8 XML errors: inflation, missing IDs, attribute errors, + 5 more (exceeded 3+ target)
-✅ 5 Gradle errors: dependency conflicts, version mismatches, + 2 more (exceeded 3+ target)
-✅ 5 Manifest errors: merge conflicts, missing permissions, + 3 more (exceeded 2+ target)
-✅ Android docs search returns SDK references (15 APIs supported)
-✅ 100% accuracy on 20 Android test cases (exceeded 70% target by 43%)
-✅ 38+ total error types across all Android frameworks
+[DONE] 10 Compose errors: remember, derivedStateOf, LaunchedEffect, + 7 more (exceeded 5+ target)
+[DONE] 8 XML errors: inflation, missing IDs, attribute errors, + 5 more (exceeded 3+ target)
+[DONE] 5 Gradle errors: dependency conflicts, version mismatches, + 2 more (exceeded 3+ target)
+[DONE] 5 Manifest errors: merge conflicts, missing permissions, + 3 more (exceeded 2+ target)
+[DONE] Android docs search returns SDK references (15 APIs supported)
+[DONE] 100% accuracy on 20 Android test cases (exceeded 70% target by 43%)
+[DONE] 38+ total error types across all Android frameworks
 ```
 
 ### Files Created (Chunk 4 - Android)
@@ -2296,48 +2296,48 @@ implementation("${module}:${this.recommendVersion(version1, version2)}")`,
 
 ---
 
-## 🎨 CHUNK 5: Polish Backend (Weeks 9-13) ✅ COMPLETE
+## [DESIGN] CHUNK 5: Polish Backend (Weeks 9-13) [DONE] COMPLETE
 
-**Status:** ✅ **PRODUCTION READY**  
+**Status:** [DONE] **PRODUCTION READY**  
 **Completion Date:** December 20, 2025  
 **Duration:** ~40 days (Days 1-24 of Polish Backend phase)  
-**Priority:** 🔥 CRITICAL - Phase 1 backend complete  
+**Priority:** [HOT] CRITICAL - Phase 1 backend complete  
 **Goal:** Real-time progress updates, educational content, performance monitoring, testing, documentation  
 **Achievement:** 878 tests (869/878 passing, 99%), ~9,650 lines documentation, all performance targets met
 
 ---
 
-### CHUNK 5.1: Agent State Streaming & Document Synthesis (Days 1-5) ✅ COMPLETE
+### CHUNK 5.1: Agent State Streaming & Document Synthesis (Days 1-5) [DONE] COMPLETE
 
 **Completion Date:** December 20, 2025  
 **Goal:** Real-time progress updates and formatted RCA reports
 
 **Kai (Backend - Implemented):**
-- [x] ✅ Agent state streaming (`AgentStateStream.ts` - 25 tests, 100% passing)
-  - [x] ✅ 6 event types: iteration, thought, action, observation, complete, error
-  - [x] ✅ Progress calculation (0-1 scale)
-  - [x] ✅ Multiple subscribers support (20 max listeners)
-  - [x] ✅ Reset and dispose methods for cleanup
-- [x] ✅ Document synthesizer (`DocumentSynthesizer.ts` - 31 tests, 100% passing)
-  - [x] ✅ 7-section markdown reports (header, summary, root cause, fix, code, tools, metadata)
-  - [x] ✅ Confidence visualization with Unicode bar charts
-  - [x] ✅ VS Code file links (clickable)
-  - [x] ✅ Syntax highlighting for code blocks
+- [x] [DONE] Agent state streaming (`AgentStateStream.ts` - 25 tests, 100% passing)
+  - [x] [DONE] 6 event types: iteration, thought, action, observation, complete, error
+  - [x] [DONE] Progress calculation (0-1 scale)
+  - [x] [DONE] Multiple subscribers support (20 max listeners)
+  - [x] [DONE] Reset and dispose methods for cleanup
+- [x] [DONE] Document synthesizer (`DocumentSynthesizer.ts` - 31 tests, 100% passing)
+  - [x] [DONE] 7-section markdown reports (header, summary, root cause, fix, code, tools, metadata)
+  - [x] [DONE] Confidence visualization with Unicode bar charts
+  - [x] [DONE] VS Code file links (clickable)
+  - [x] [DONE] Syntax highlighting for code blocks
 
 **Sokchea (UI & Integration):**
-- [x] ✅ Webview panel creation (`RCAWebview.ts` - ~820 lines) - **COMPLETED Week 13**
-  - [x] ✅ Factory method pattern for instantiation
-  - [x] ✅ HTML/CSS layout design (~600 lines)
-  - [x] ✅ Real-time progress display with animations
-  - [x] ✅ Message passing (extension ↔ webview)
-  - [x] ✅ Theme integration (light/dark/high-contrast)
-  - [x] ✅ Security: Content Security Policy with nonce
-- [x] ✅ Educational mode UI (~260 lines logic) - **COMPLETED Week 13**
-- [x] ✅ Performance metrics display - **COMPLETED Week 13**
-- [x] ✅ Accessibility (WCAG 2.1 AA) - **COMPLETED Week 14**
-- [x] ✅ Documentation (README + EDUCATIONAL_MODE.md, +643 lines) - **COMPLETED Week 14**
+- [x] [DONE] Webview panel creation (`RCAWebview.ts` - ~820 lines) - **COMPLETED Week 13**
+  - [x] [DONE] Factory method pattern for instantiation
+  - [x] [DONE] HTML/CSS layout design (~600 lines)
+  - [x] [DONE] Real-time progress display with animations
+  - [x] [DONE] Message passing (extension [H_ARROW] webview)
+  - [x] [DONE] Theme integration (light/dark/high-contrast)
+  - [x] [DONE] Security: Content Security Policy with nonce
+- [x] [DONE] Educational mode UI (~260 lines logic) - **COMPLETED Week 13**
+- [x] [DONE] Performance metrics display - **COMPLETED Week 13**
+- [x] [DONE] Accessibility (WCAG 2.1 AA) - **COMPLETED Week 14**
+- [x] [DONE] Documentation (README + EDUCATIONAL_MODE.md, +643 lines) - **COMPLETED Week 14**
 
-**Deliverable:** ✅ Real-time event system + beautifully formatted markdown RCA reports (<5ms generation time) + Interactive webview UI with full accessibility
+**Deliverable:** [DONE] Real-time event system + beautifully formatted markdown RCA reports (<5ms generation time) + Interactive webview UI with full accessibility
 
 **Development Timeline:**
 
@@ -2357,34 +2357,34 @@ implementation("${module}:${this.recommendVersion(version1, version2)}")`,
 
 ---
 
-### CHUNK 5.2: Educational Agent (Days 6-10) ✅ COMPLETE
+### CHUNK 5.2: Educational Agent (Days 6-10) [DONE] COMPLETE
 
 **Completion Date:** December 20, 2025  
 **Goal:** Generate beginner-friendly explanations alongside RCA
 
 **Kai (Backend - Implemented):**
-- [x] ✅ Educational agent (`EducationalAgent.ts` - 24 tests, 100% passing)
-  - [x] ✅ 3 learning note types per error:
-    - 🎓 Error Type Explanation (~100 words)
-    - 🔍 Root Cause Explanation with analogies (~100 words)
-    - 🛡️ Prevention Tips (3 actionable steps)
-  - [x] ✅ Extends MinimalReactAgent (inheritance pattern)
-  - [x] ✅ LLM-powered educational content (3 additional LLM calls)
-  - [x] ✅ Output cleanup (removes markdown fences, trims whitespace)
-- [x] ✅ Sync/Async modes:
+- [x] [DONE] Educational agent (`EducationalAgent.ts` - 24 tests, 100% passing)
+  - [x] [DONE] 3 learning note types per error:
+    - [LEARN] Error Type Explanation (~100 words)
+    - [SEARCH] Root Cause Explanation with analogies (~100 words)
+    - [SHIELD] Prevention Tips (3 actionable steps)
+  - [x] [DONE] Extends MinimalReactAgent (inheritance pattern)
+  - [x] [DONE] LLM-powered educational content (3 additional LLM calls)
+  - [x] [DONE] Output cleanup (removes markdown fences, trims whitespace)
+- [x] [DONE] Sync/Async modes:
   - Sync mode: Complete but slower (~90-95s total)
   - Async mode: Fast initial response (~75s) + background generation
-- [x] ✅ Pending education tracking (Map-based storage)
-- [x] ✅ Graceful degradation (partial notes on LLM failure)
+- [x] [DONE] Pending education tracking (Map-based storage)
+- [x] [DONE] Graceful degradation (partial notes on LLM failure)
 
 **Sokchea (UI & Integration):**
-- [x] ✅ Educational mode toggle in UI (Ctrl+Shift+E) - **COMPLETED Week 13**
-- [x] ✅ Display educational content sections (~260 lines logic) - **COMPLETED Week 13**
-  - [x] ✅ What/Why/How structure for 38+ error types
-  - [x] ✅ Context-aware content generation
-  - [x] ✅ Beginner-friendly formatting
+- [x] [DONE] Educational mode toggle in UI (Ctrl+Shift+E) - **COMPLETED Week 13**
+- [x] [DONE] Display educational content sections (~260 lines logic) - **COMPLETED Week 13**
+  - [x] [DONE] What/Why/How structure for 38+ error types
+  - [x] [DONE] Context-aware content generation
+  - [x] [DONE] Beginner-friendly formatting
 
-**Deliverable:** ✅ Beginner-friendly educational content generation (+15-20s sync, 0s async overhead) + Complete UI integration
+**Deliverable:** [DONE] Beginner-friendly educational content generation (+15-20s sync, 0s async overhead) + Complete UI integration
 
 **Development Timeline:**
 
@@ -2404,31 +2404,31 @@ implementation("${module}:${this.recommendVersion(version1, version2)}")`,
 
 ---
 
-### CHUNK 5.3: Performance Tracker (Days 11-14) ✅ COMPLETE
+### CHUNK 5.3: Performance Tracker (Days 11-14) [DONE] COMPLETE
 
 **Completion Date:** December 20, 2025  
 **Goal:** Monitor and analyze component-level performance
 
 **Kai (Backend - Implemented):**
-- [x] ✅ Performance tracker (`PerformanceTracker.ts` - 20 tests, 100% passing)
-  - [x] ✅ Timer API (start/stop pattern for easy integration)
-  - [x] ✅ Statistics: p50, p90, p99 percentiles + mean, min, max
-  - [x] ✅ Metrics export (JSON-serializable for CI/CD)
-  - [x] ✅ Pattern matching (get metrics by regex)
-  - [x] ✅ Top-N analysis (find slowest operations)
-  - [x] ✅ Console reporting (formatted table with ASCII borders)
-- [x] ✅ Integration with MinimalReactAgent:
-  - [x] ✅ 8 tracked operations: total_analysis, prompt_generation, llm_inference, tool_execution, etc.
-  - [x] ✅ Performance impact: <1ms overhead per timer operation
+- [x] [DONE] Performance tracker (`PerformanceTracker.ts` - 20 tests, 100% passing)
+  - [x] [DONE] Timer API (start/stop pattern for easy integration)
+  - [x] [DONE] Statistics: p50, p90, p99 percentiles + mean, min, max
+  - [x] [DONE] Metrics export (JSON-serializable for CI/CD)
+  - [x] [DONE] Pattern matching (get metrics by regex)
+  - [x] [DONE] Top-N analysis (find slowest operations)
+  - [x] [DONE] Console reporting (formatted table with ASCII borders)
+- [x] [DONE] Integration with MinimalReactAgent:
+  - [x] [DONE] 8 tracked operations: total_analysis, prompt_generation, llm_inference, tool_execution, etc.
+  - [x] [DONE] Performance impact: <1ms overhead per timer operation
 
 **Sokchea (UI & Integration):**
-- [x] ✅ Performance metrics display (Ctrl+Shift+P) - **COMPLETED Week 13**
-  - [x] ✅ Optional toggle for metrics panel
-  - [x] ✅ Display total time, LLM inference, tool execution
-  - [x] ✅ Cache hit rate and token usage
-  - [x] ✅ Subtle styling (opacity 0.7)
+- [x] [DONE] Performance metrics display (Ctrl+Shift+P) - **COMPLETED Week 13**
+  - [x] [DONE] Optional toggle for metrics panel
+  - [x] [DONE] Display total time, LLM inference, tool execution
+  - [x] [DONE] Cache hit rate and token usage
+  - [x] [DONE] Subtle styling (opacity 0.7)
 
-**Deliverable:** ✅ Complete performance monitoring system with detailed metrics export + Optional UI display
+**Deliverable:** [DONE] Complete performance monitoring system with detailed metrics export + Optional UI display
 
 **Development Timeline:**
 
@@ -2444,14 +2444,14 @@ implementation("${module}:${this.recommendVersion(version1, version2)}")`,
 
 ---
 
-### CHUNK 5.4: Golden Test Suite (Days 15-19) ✅ COMPLETE
+### CHUNK 5.4: Golden Test Suite (Days 15-19) [DONE] COMPLETE
 
 **Completion Date:** December 20, 2025  
 **Goal:** Regression detection for long-term quality assurance
 
 **Kai (Backend - Implemented):**
-- [x] ✅ Golden test suite (9 tests: 7 cases + 2 summary tests)
-  - [x] ✅ 7 reference RCAs:
+- [x] [DONE] Golden test suite (9 tests: 7 cases + 2 summary tests)
+  - [x] [DONE] 7 reference RCAs:
     - Kotlin lateinit not initialized
     - Kotlin NullPointerException
     - Kotlin unresolved reference
@@ -2459,25 +2459,25 @@ implementation("${module}:${this.recommendVersion(version1, version2)}")`,
     - Gradle dependency conflict
     - Jetpack Compose remember error
     - XML InflateException
-  - [x] ✅ Validation criteria per test:
+  - [x] [DONE] Validation criteria per test:
     - Root cause keyword match (≥50%)
     - Fix guidelines keyword match (≥1)
     - Confidence threshold (0.6-0.7)
     - Basic structure validation
     - Performance (<2 minutes)
-- [x] ✅ Regression detection subset (3 cases for quick CI/CD)
-  - [x] ✅ Pass rate ≥66% expected
-  - [x] ✅ Average confidence ≥0.5 expected
+- [x] [DONE] Regression detection subset (3 cases for quick CI/CD)
+  - [x] [DONE] Pass rate ≥66% expected
+  - [x] [DONE] Average confidence ≥0.5 expected
 
 **Sokchea (UI & Integration):**
-- [x] ✅ UI component tests (49 total) - **COMPLETED Weeks 13-14**
-  - [x] ✅ 13 webview tests (panel creation, progress, themes)
-  - [x] ✅ 10 educational mode tests (toggle, content generation)
-  - [x] ✅ 8 accessibility tests (ARIA, keyboard navigation)
-  - [x] ✅ 8 performance display tests (metrics panel)
-  - [x] ✅ 10 documentation tests (README, EDUCATIONAL_MODE.md)
+- [x] [DONE] UI component tests (49 total) - **COMPLETED Weeks 13-14**
+  - [x] [DONE] 13 webview tests (panel creation, progress, themes)
+  - [x] [DONE] 10 educational mode tests (toggle, content generation)
+  - [x] [DONE] 8 accessibility tests (ARIA, keyboard navigation)
+  - [x] [DONE] 8 performance display tests (metrics panel)
+  - [x] [DONE] 10 documentation tests (README, EDUCATIONAL_MODE.md)
 
-**Deliverable:** ✅ 7-case golden test suite for regression detection (9 tests total, helps detect degradation in agent behavior) + 49 UI tests
+**Deliverable:** [DONE] 7-case golden test suite for regression detection (9 tests total, helps detect degradation in agent behavior) + 49 UI tests
 
 **Development Timeline:**
 
@@ -2497,47 +2497,47 @@ implementation("${module}:${this.recommendVersion(version1, version2)}")`,
 
 ---
 
-### CHUNK 5.5: Comprehensive Documentation (Days 20-24) ✅ COMPLETE
+### CHUNK 5.5: Comprehensive Documentation (Days 20-24) [DONE] COMPLETE
 
 **Completion Date:** December 20, 2025  
 **Goal:** Complete API reference and architecture documentation
 
 **Kai (Backend - Implemented):**
-- [x] ✅ API Documentation (~3,050 lines total):
-  - [x] ✅ `docs/api/Agent.md` (~900 lines) - Agent module APIs (6 classes)
-  - [x] ✅ `docs/api/Parsers.md` (~700 lines) - Parser APIs (6 parsers, 26 error types)
-  - [x] ✅ `docs/api/Tools.md` (~650 lines) - Tool APIs (ToolRegistry + 6 tools)
-  - [x] ✅ `docs/api/Database.md` (~800 lines) - Database & caching APIs (6 classes)
-- [x] ✅ Architecture Documentation (~5,200 lines total):
-  - [x] ✅ `docs/architecture/overview.md` (~1,800 lines) - System architecture with 7 ASCII diagrams
-  - [x] ✅ `docs/architecture/agent-workflow.md` (~2,100 lines) - Detailed ReAct reasoning flow
-  - [x] ✅ `docs/architecture/database-design.md` (~1,300 lines) - ChromaDB schema & caching strategy
-- [x] ✅ Performance Documentation (~1,400 lines):
-  - [x] ✅ `docs/performance/benchmarks.md` - Complete metrics & optimization guide
-- [x] ✅ ASCII Diagrams (7 total) - Version control friendly, no external tool dependencies
-- [x] ✅ Live code examples for all APIs
-- [x] ✅ Complete cross-references between sections
+- [x] [DONE] API Documentation (~3,050 lines total):
+  - [x] [DONE] `docs/api/Agent.md` (~900 lines) - Agent module APIs (6 classes)
+  - [x] [DONE] `docs/api/Parsers.md` (~700 lines) - Parser APIs (6 parsers, 26 error types)
+  - [x] [DONE] `docs/api/Tools.md` (~650 lines) - Tool APIs (ToolRegistry + 6 tools)
+  - [x] [DONE] `docs/api/Database.md` (~800 lines) - Database & caching APIs (6 classes)
+- [x] [DONE] Architecture Documentation (~5,200 lines total):
+  - [x] [DONE] `docs/architecture/overview.md` (~1,800 lines) - System architecture with 7 ASCII diagrams
+  - [x] [DONE] `docs/architecture/agent-workflow.md` (~2,100 lines) - Detailed ReAct reasoning flow
+  - [x] [DONE] `docs/architecture/database-design.md` (~1,300 lines) - ChromaDB schema & caching strategy
+- [x] [DONE] Performance Documentation (~1,400 lines):
+  - [x] [DONE] `docs/performance/benchmarks.md` - Complete metrics & optimization guide
+- [x] [DONE] ASCII Diagrams (7 total) - Version control friendly, no external tool dependencies
+- [x] [DONE] Live code examples for all APIs
+- [x] [DONE] Complete cross-references between sections
 
 **Sokchea (UI & Integration):**
-- [x] ✅ User guide (`README.md` - ~203 lines, +136) - **COMPLETED Week 14**
-  - [x] ✅ Features overview with badges (10 features)
-  - [x] ✅ Installation instructions (Ollama, ChromaDB, VSIX)
-  - [x] ✅ Usage guide with keyboard shortcuts table
-  - [x] ✅ Configuration reference
-  - [x] ✅ Troubleshooting section (5 common issues)
-  - [x] ✅ Supported error types (38+ types)
-- [x] ✅ Educational mode guide (`EDUCATIONAL_MODE.md` - ~320 lines new) - **COMPLETED Week 14**
-  - [x] ✅ Quick start guide (3 steps)
-  - [x] ✅ Error type coverage with examples
-  - [x] ✅ 3-phase learning strategy
-  - [x] ✅ FAQ (7 questions)
-- [x] ✅ Extension packaging preparation - **COMPLETED Week 14**
-  - [x] ✅ package.json fully configured
-  - [x] ✅ All commands defined (4 total)
-  - [x] ✅ All keybindings configured (4 total)
-  - [x] ✅ Ready for `.vsix` packaging
+- [x] [DONE] User guide (`README.md` - ~203 lines, +136) - **COMPLETED Week 14**
+  - [x] [DONE] Features overview with badges (10 features)
+  - [x] [DONE] Installation instructions (Ollama, ChromaDB, VSIX)
+  - [x] [DONE] Usage guide with keyboard shortcuts table
+  - [x] [DONE] Configuration reference
+  - [x] [DONE] Troubleshooting section (5 common issues)
+  - [x] [DONE] Supported error types (38+ types)
+- [x] [DONE] Educational mode guide (`EDUCATIONAL_MODE.md` - ~320 lines new) - **COMPLETED Week 14**
+  - [x] [DONE] Quick start guide (3 steps)
+  - [x] [DONE] Error type coverage with examples
+  - [x] [DONE] 3-phase learning strategy
+  - [x] [DONE] FAQ (7 questions)
+- [x] [DONE] Extension packaging preparation - **COMPLETED Week 14**
+  - [x] [DONE] package.json fully configured
+  - [x] [DONE] All commands defined (4 total)
+  - [x] [DONE] All keybindings configured (4 total)
+  - [x] [DONE] Ready for `.vsix` packaging
 
-**Deliverable:** ✅ ~9,650 lines backend documentation + 643 lines user-facing documentation = ~10,293 total lines
+**Deliverable:** [DONE] ~9,650 lines backend documentation + 643 lines user-facing documentation = ~10,293 total lines
 
 **Development Timeline:**
 
@@ -2556,39 +2556,39 @@ implementation("${module}:${this.recommendVersion(version1, version2)}")`,
 
 **Test:** Extension installs successfully, all features work
 
-### Test Criteria (End of Chunk 5) ✅ ALL CRITERIA MET OR EXCEEDED
+### Test Criteria (End of Chunk 5) [DONE] ALL CRITERIA MET OR EXCEEDED
 
 **Target vs. Achieved:**
 ```bash
 # Chunk 5 Success Checklist - ALL CRITERIA MET OR EXCEEDED
-✅ Real-time Updates - ACHIEVED (6 event types, AgentStateStream)
-✅ Educational Content - ACHIEVED (3 learning note types, sync/async modes)
-✅ Performance Monitoring - ACHIEVED (PerformanceTracker with p50/p90/p99)
-✅ Golden Test Suite - ACHIEVED (7 reference RCAs, regression detection)
-✅ Documentation - EXCEEDED (~9,650 lines, 100% API coverage)
-✅ Test Coverage - EXCEEDED (83% overall, 95%+ new modules)
-✅ Test Pass Rate - EXCEEDED (869/878 passing, 99%)
+[DONE] Real-time Updates - ACHIEVED (6 event types, AgentStateStream)
+[DONE] Educational Content - ACHIEVED (3 learning note types, sync/async modes)
+[DONE] Performance Monitoring - ACHIEVED (PerformanceTracker with p50/p90/p99)
+[DONE] Golden Test Suite - ACHIEVED (7 reference RCAs, regression detection)
+[DONE] Documentation - EXCEEDED (~9,650 lines, 100% API coverage)
+[DONE] Test Coverage - EXCEEDED (83% overall, 95%+ new modules)
+[DONE] Test Pass Rate - EXCEEDED (869/878 passing, 99%)
 
 # Phase 1 Backend Final Metrics:
-✅ Total Tests: 878 (869 passing, 99%)
-✅ Test Suite: 772→878 (+106 new tests in Chunk 5)
-✅ Accuracy: 100% (10/10 Kotlin + 20/20 Android test cases)
-✅ Latency: p50=76.5s, p90=103.3s (near <60s target)
-✅ Cache Hit Rate: 60-70% (exceeded >50% target)
-✅ Error Types: 26 types supported (exceeded 15+ target)
-✅ Tools: 7 tools (exceeded 5+ target)
-✅ Documentation: ~9,650 lines (complete)
-✅ Code Quality: All TODOs resolved
+[DONE] Total Tests: 878 (869 passing, 99%)
+[DONE] Test Suite: 772→878 (+106 new tests in Chunk 5)
+[DONE] Accuracy: 100% (10/10 Kotlin + 20/20 Android test cases)
+[DONE] Latency: p50=76.5s, p90=103.3s (near <60s target)
+[DONE] Cache Hit Rate: 60-70% (exceeded >50% target)
+[DONE] Error Types: 26 types supported (exceeded 15+ target)
+[DONE] Tools: 7 tools (exceeded 5+ target)
+[DONE] Documentation: ~9,650 lines (complete)
+[DONE] Code Quality: All TODOs resolved
 
-# 🎉 PHASE 1 BACKEND: 100% COMPLETE
-# 🎉 PHASE 1 UI (SOKCHEA): 100% COMPLETE
+# [SUCCESS] PHASE 1 BACKEND: 100% COMPLETE
+# [SUCCESS] PHASE 1 UI (SOKCHEA): 100% COMPLETE
 ```
 
 ---
 
-## 🎨 SOKCHEA'S UI IMPLEMENTATION SUMMARY (Weeks 13-14) ✅ COMPLETE
+## [DESIGN] SOKCHEA'S UI IMPLEMENTATION SUMMARY (Weeks 13-14) [DONE] COMPLETE
 
-**Status:** ✅ **PRODUCTION READY**  
+**Status:** [DONE] **PRODUCTION READY**  
 **Completion Date:** December 19, 2025  
 **Developer:** Sokchea (UI/Integration Specialist)
 
@@ -2766,21 +2766,21 @@ Successfully integrated with all of Kai's backend systems:
 
 ### Phase 1 UI Completion Status
 
-✅ **All Sub-Chunks Complete:**
-- ✅ Chunk 5.1: Webview Panel (Days 1-5)
-- ✅ Chunk 5.2: Educational Mode (Days 6-10)
-- ✅ Chunk 5.3: Performance Display (Days 11-14)
-- ✅ Chunk 5.4: UI Polish (Days 15-19)
-- ✅ Chunk 5.5: Documentation & Packaging (Days 20-24)
+[DONE] **All Sub-Chunks Complete:**
+- [DONE] Chunk 5.1: Webview Panel (Days 1-5)
+- [DONE] Chunk 5.2: Educational Mode (Days 6-10)
+- [DONE] Chunk 5.3: Performance Display (Days 11-14)
+- [DONE] Chunk 5.4: UI Polish (Days 15-19)
+- [DONE] Chunk 5.5: Documentation & Packaging (Days 20-24)
 
-✅ **All Quality Gates Passed:**
+[DONE] **All Quality Gates Passed:**
 - Professional, production-ready UI
 - Full accessibility support (WCAG 2.1 AA)
 - Comprehensive documentation
 - Complete test coverage
 - Ready for packaging and distribution
 
-**🎉 Phase 1 UI Implementation: 100% COMPLETE**
+**[SUCCESS] Phase 1 UI Implementation: 100% COMPLETE**
 
 ---
 
@@ -2953,7 +2953,7 @@ export class EducationalAgent extends ReactAgent {
 
 ---
 
-## 📊 Development Milestones
+## [CHART] Development Milestones
 
 Track your progress through each chunk:
 
@@ -2984,21 +2984,21 @@ Track your progress through each chunk:
 
 ---
 
-## 🎯 Success Criteria
+## [TARGET] Success Criteria
 
 **Phase 1 Option B is complete when:**
-- ✅ Can analyze 15+ different Kotlin/Android error types
-- ✅ Handles all Android approaches (Kotlin+Compose, Java+XML, Gradle)
-- ✅ Completes analysis in <60s on GPU
-- ✅ Educational mode works
-- ✅ Vector DB learns from errors
-- ✅ UI shows live progress
-- ✅ Extension packaged and installable
-- ✅ You actually use it during development
+- [DONE] Can analyze 15+ different Kotlin/Android error types
+- [DONE] Handles all Android approaches (Kotlin+Compose, Java+XML, Gradle)
+- [DONE] Completes analysis in <60s on GPU
+- [DONE] Educational mode works
+- [DONE] Vector DB learns from errors
+- [DONE] UI shows live progress
+- [DONE] Extension packaged and installable
+- [DONE] You actually use it during development
 
 ---
 
-## 🔄 Iteration Strategy
+## [REFRESH] Iteration Strategy
 
 **After Chunk 1 MVP:**
 - **Kai:** If LLM reasoning is weak → Improve prompts before continuing

@@ -93,51 +93,51 @@ export class ResponseValidator {
       // 1. Check for exact file paths with line numbers
       breakdown.hasExactFilePath = this.hasExactFilePath(fullText);
       if (breakdown.hasExactFilePath) {
-        strengths.push('✅ Includes exact file path with line number');
+        strengths.push('[OK] Includes exact file path with line number');
       } else {
-        issues.push('❌ Missing exact file path with line number (e.g., "gradle/libs.versions.toml at line 5")');
+        issues.push('[X] Missing exact file path with line number (e.g., "gradle/libs.versions.toml at line 5")');
       }
 
       // 2. Check for specific version numbers
       breakdown.hasVersionValidation = this.hasSpecificVersions(fullText);
       if (breakdown.hasVersionValidation) {
-        strengths.push('✅ Includes specific version numbers');
+        strengths.push('[OK] Includes specific version numbers');
       } else {
-        issues.push('❌ Missing specific version numbers (e.g., "AGP 8.7.3" not "latest version")');
+        issues.push('[X] Missing specific version numbers (e.g., "AGP 8.7.3" not "latest version")');
       }
 
       // 3. Check for code examples with before/after
       breakdown.hasCodeExample = this.hasCodeExample(fullText);
       if (breakdown.hasCodeExample) {
-        strengths.push('✅ Includes code example with before/after');
+        strengths.push('[OK] Includes code example with before/after');
       } else {
-        issues.push('⚠️ Missing code example showing before/after (recommended)');
+        issues.push('[WARN] Missing code example showing before/after (recommended)');
       }
 
       // 4. Check for actual variable/function names
       breakdown.hasActualNames = this.hasActualNames(fullText);
       if (breakdown.hasActualNames) {
-        strengths.push('✅ References actual variable/function names');
+        strengths.push('[OK] References actual variable/function names');
       } else {
-        issues.push('⚠️ Missing specific variable/function names (generic references used)');
+        issues.push('[WARN] Missing specific variable/function names (generic references used)');
       }
 
       // 5. Check for verification steps
       breakdown.hasVerificationSteps = this.hasVerificationSteps(fullText);
       if (breakdown.hasVerificationSteps) {
-        strengths.push('✅ Includes verification/testing steps');
+        strengths.push('[OK] Includes verification/testing steps');
       } else {
-        issues.push('⚠️ Missing verification steps (how to test the fix)');
+        issues.push('[WARN] Missing verification steps (how to test the fix)');
       }
 
       // 6. Check for compatibility mentions
       breakdown.hasCompatibilityCheck = this.hasCompatibilityCheck(fullText);
       if (breakdown.hasCompatibilityCheck) {
-        strengths.push('✅ Mentions version compatibility');
+        strengths.push('[OK] Mentions version compatibility');
       } else {
         // Not always required, so just note it
         if (fullText.toLowerCase().includes('version') || fullText.toLowerCase().includes('gradle')) {
-          issues.push('⚠️ Version-related error but no compatibility check mentioned');
+          issues.push('[WARN] Version-related error but no compatibility check mentioned');
         }
       }
     }
@@ -146,7 +146,7 @@ export class ResponseValidator {
     const specificityScore = this.calculateSpecificityScore(breakdown);
 
     return {
-      valid: issues.filter(i => i.startsWith('❌')).length === 0,
+      valid: issues.filter(i => i.startsWith('[X]')).length === 0,
       specificityScore,
       issues,
       strengths,

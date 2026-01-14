@@ -1,9 +1,9 @@
-# RCA Agent: Key Learnings & Insights
+﻿# RCA Agent: Key Learnings & Insights
 
 **Project Duration:** December 2025 - January 2026  
 **Total Development Time:** ~13 weeks  
 **Team:** 2 developers (Kai - Backend, Sokchea - Frontend)  
-**Final Status:** Production Ready ✅
+**Final Status:** Production Ready [DONE]
 
 ---
 
@@ -35,9 +35,9 @@ Building RCA Agent taught us invaluable lessons about AI-powered development too
 **Discovery:** We tested 11 iterations and found that structured templates outperform traditional few-shot learning for 7B parameter models.
 
 **Evidence:**
-- **Iteration 7** (All 82 examples): **58.3% accuracy** ❌
-- **Iteration 8** (1 example): **56.0% accuracy** ❌
-- **Iteration 11** (Templates): **61.0% accuracy** ✅
+- **Iteration 7** (All 82 examples): **58.3% accuracy** [FAIL]
+- **Iteration 8** (1 example): **56.0% accuracy** [FAIL]
+- **Iteration 11** (Templates): **61.0% accuracy** [DONE]
 
 **Why It Works:**
 - **Reduced cognitive load:** Fill-in-the-blank is easier than open-ended generation
@@ -49,11 +49,11 @@ Building RCA Agent taught us invaluable lessons about AI-powered development too
 
 **Code Example:**
 ```typescript
-// ❌ Bad: Open-ended with many examples
+// [FAIL] Bad: Open-ended with many examples
 const prompt = `Here are 82 examples of error analysis...
 Now analyze this error: ${error}`;
 
-// ✅ Good: Structured template
+// [DONE] Good: Structured template
 const prompt = `
 ## Root Cause Analysis
 Primary Cause: [FILL: specific issue]
@@ -77,11 +77,11 @@ Contributing Factors: [FILL: related problems]
 - **Result:** Consistent ceiling at ~61-65% with DeepSeek-R1-Distill-Qwen-7B
 
 **What We Tried:**
-1. ✅ Fixed all async/loading bugs → 61%
-2. ✅ Added 82 few-shot examples → 58% (worse!)
-3. ✅ Built validation layer → 54% (worse!)
-4. ✅ Simplified prompts → 58%
-5. ✅ Template approach → 61% (best, but still capped)
+1. [DONE] Fixed all async/loading bugs → 61%
+2. [DONE] Added 82 few-shot examples → 58% (worse!)
+3. [DONE] Built validation layer → 54% (worse!)
+4. [DONE] Simplified prompts → 58%
+5. [DONE] Template approach → 61% (best, but still capped)
 
 **Evidence:**
 - **Test 1 (AGP Version):** Consistently **85%** (has good examples)
@@ -165,7 +165,7 @@ class VersionLookupTool {
 
 **Problem:**
 ```typescript
-// ❌ Race condition!
+// [FAIL] Race condition!
 class FewShotDatabase {
   private static instance: FewShotDatabase;
   
@@ -181,7 +181,7 @@ class FewShotDatabase {
 
 **Fix:**
 ```typescript
-// ✅ Proper async singleton
+// [DONE] Proper async singleton
 class FewShotDatabase {
   private static instance: FewShotDatabase;
   private static initPromise: Promise<void> | null = null;
@@ -216,16 +216,16 @@ class FewShotDatabase {
 - **Quality:** 61% baseline, 85% for well-supported categories
 
 **Advantages:**
-- ✅ **Privacy:** Code never leaves user's machine
-- ✅ **No API costs:** Free after initial model download
-- ✅ **Offline capable:** Works without internet
-- ✅ **Fast:** ~10-15s responses on modern hardware
-- ✅ **Controllable:** Full control over model and parameters
+- [DONE] **Privacy:** Code never leaves user's machine
+- [DONE] **No API costs:** Free after initial model download
+- [DONE] **Offline capable:** Works without internet
+- [DONE] **Fast:** ~10-15s responses on modern hardware
+- [DONE] **Controllable:** Full control over model and parameters
 
 **Tradeoffs:**
-- ⚠️ **Quality ceiling:** 61% vs potential 90%+ with GPT-4
-- ⚠️ **Setup friction:** Users must install Ollama + model
-- ⚠️ **Hardware requirements:** Needs 8GB+ RAM
+- [WARNING] **Quality ceiling:** 61% vs potential 90%+ with GPT-4
+- [WARNING] **Setup friction:** Users must install Ollama + model
+- [WARNING] **Hardware requirements:** Needs 8GB+ RAM
 
 **Lesson:** Local LLMs are perfect for privacy-sensitive developer tools where good-enough is acceptable
 
@@ -267,20 +267,20 @@ Total: ~1000 tokens (well within 4K context)
 
 **1. Explicit Structure:**
 ```typescript
-// ✅ Good: Clear structure
+// [DONE] Good: Clear structure
 `## Step 1: Identify Error Type
 [FILL: gradle-version / kotlin-npe / compose-api]
 
 ## Step 2: Analyze Root Cause
 [FILL: specific underlying issue]`
 
-// ❌ Bad: Vague
+// [FAIL] Bad: Vague
 `Analyze this error and tell me what's wrong.`
 ```
 
 **2. Examples of Good vs Bad:**
 ```typescript
-// ✅ Good: Show what to avoid
+// [DONE] Good: Show what to avoid
 `BAD EXAMPLE: "Update your Gradle version"
 GOOD EXAMPLE: "Upgrade AGP from 7.0.0 to 8.0.0 in build.gradle:
 android {
@@ -293,10 +293,10 @@ android {
 
 **3. Fill-in-the-Blank > Open-Ended:**
 ```typescript
-// ✅ Good: Specific placeholder
+// [DONE] Good: Specific placeholder
 `Primary Fix: [FILL: exact code change with before/after]`
 
-// ❌ Bad: Open-ended
+// [FAIL] Bad: Open-ended
 `Provide a fix for this error.`
 ```
 
@@ -334,7 +334,7 @@ while (attempts < 3) {
 
 **Results:**
 - **Baseline:** 61% accuracy
-- **With Validation:** 54% accuracy ❌ (worse!)
+- **With Validation:** 54% accuracy [FAIL] (worse!)
 - **Latency:** 11.7s → 58s (much slower)
 
 **Why It Failed:**
@@ -359,10 +359,10 @@ Extension Layer → Agent Layer → Tool Layer → LLM Layer → Storage Layer
 ```
 
 **Benefits:**
-- ✅ **Testability:** Each layer independently testable
-- ✅ **Maintainability:** Changes isolated to specific layers
-- ✅ **Flexibility:** Can swap LLM providers without changing tools
-- ✅ **Clarity:** New developers understand structure quickly
+- [DONE] **Testability:** Each layer independently testable
+- [DONE] **Maintainability:** Changes isolated to specific layers
+- [DONE] **Flexibility:** Can swap LLM providers without changing tools
+- [DONE] **Clarity:** New developers understand structure quickly
 
 **Example:**
 ```typescript
@@ -413,9 +413,9 @@ class ExpensiveResource {
 - ChromaDB Client (persistent connection)
 
 **Benefits:**
-- ✅ **Performance:** Load once, use many times
-- ✅ **Memory:** Single instance shared across calls
-- ✅ **Consistency:** Same data everywhere
+- [DONE] **Performance:** Load once, use many times
+- [DONE] **Memory:** Single instance shared across calls
+- [DONE] **Consistency:** Same data everywhere
 
 **Lesson:** Singleton pattern perfect for read-heavy shared resources
 
@@ -443,10 +443,10 @@ class ToolOrchestrator {
 ```
 
 **Benefits:**
-- ✅ **Extensibility:** Add new tools without changing core code
-- ✅ **Flexibility:** Select tools dynamically per error type
-- ✅ **Testability:** Mock individual tools easily
-- ✅ **Discoverability:** All tools listed in one place
+- [DONE] **Extensibility:** Add new tools without changing core code
+- [DONE] **Flexibility:** Select tools dynamically per error type
+- [DONE] **Testability:** Mock individual tools easily
+- [DONE] **Discoverability:** All tools listed in one place
 
 **Lesson:** Registry pattern enables plugin-like extensibility
 
@@ -476,10 +476,10 @@ class MultiPassAgent extends EventEmitter {
 ```
 
 **Benefits:**
-- ✅ **User experience:** Live progress instead of spinner
-- ✅ **Debugging:** See where process gets stuck
-- ✅ **Transparency:** Users understand what's happening
-- ✅ **Cancellability:** Can cancel long-running operations
+- [DONE] **User experience:** Live progress instead of spinner
+- [DONE] **Debugging:** See where process gets stuck
+- [DONE] **Transparency:** Users understand what's happening
+- [DONE] **Cancellability:** Can cancel long-running operations
 
 **Lesson:** Event-driven architecture improves perceived performance
 
@@ -489,14 +489,14 @@ class MultiPassAgent extends EventEmitter {
 
 ### Summary of Optimizations
 
-| Phase | Focus | Improvement |
-|-------|-------|-------------|
-| **Phase 1-3** | Build core functionality | N/A (baseline) |
-| **Phase 4** | Template-based prompting | 57% → 61% quality |
-| **Phase 5** | Tool optimization | 45s → 11.7s latency (74% faster) |
-| **Phase 5** | Parallel execution | 3x tool speedup |
-| **Phase 5** | Result caching | 40% cache hit rate |
-| **Phase 6** | Error UX polish | N/A (user experience) |
+| Phase         | Focus                    | Improvement                      |
+| ------------- | ------------------------ | -------------------------------- |
+| **Phase 1-3** | Build core functionality | N/A (baseline)                   |
+| **Phase 4**   | Template-based prompting | 57% → 61% quality                |
+| **Phase 5**   | Tool optimization        | 45s → 11.7s latency (74% faster) |
+| **Phase 5**   | Parallel execution       | 3x tool speedup                  |
+| **Phase 5**   | Result caching           | 40% cache hit rate               |
+| **Phase 6**   | Error UX polish          | N/A (user experience)            |
 
 ### Key Takeaways
 
@@ -513,12 +513,12 @@ class MultiPassAgent extends EventEmitter {
 
 **Before (Generic):**
 ```
-❌ Error: Connection failed
+[FAIL] Error: Connection failed
 ```
 
 **After (Contextual):**
 ```
-❌ Cannot connect to Ollama
+[FAIL] Cannot connect to Ollama
 
 I couldn't connect to the Ollama LLM service. Make sure Ollama is running:
 
@@ -528,9 +528,9 @@ I couldn't connect to the Ollama LLM service. Make sure Ollama is running:
 
 If you don't have Ollama installed, visit: https://ollama.ai/download
 
-⏱️ Estimated fix time: 2-5 minutes
+[TIMER] Estimated fix time: 2-5 minutes
 
-[🔄 Retry] [📚 View Docs] [🐛 Report Issue]
+[[REFRESH] Retry] [[DOCS] View Docs] [[BUG] Report Issue]
 ```
 
 **Impact:**
@@ -637,10 +637,10 @@ tests/fixtures/
 ```
 
 **Benefits:**
-- ✅ **Reproducible:** Same error every time
-- ✅ **Measurable:** Track quality over iterations
-- ✅ **Comprehensive:** Covers diverse error types
-- ✅ **Realistic:** Real code, real projects
+- [DONE] **Reproducible:** Same error every time
+- [DONE] **Measurable:** Track quality over iterations
+- [DONE] **Comprehensive:** Covers diverse error types
+- [DONE] **Realistic:** Real code, real projects
 
 **Effort:** ~8 hours to create, infinite value
 
@@ -654,10 +654,10 @@ tests/fixtures/
 
 **Format:**
 ```markdown
-| Iteration | Date | Approach | Avg % | Passed | Latency |
-|-----------|------|----------|-------|--------|---------|
-| 1 | Jan 3 | Baseline | 57.4% | 2/10 | ~45s |
-| 11 | Jan 5 | Templates | 61.0% | 2/10 | 11.7s |
+| Iteration | Date  | Approach  | Avg % | Passed | Latency |
+| --------- | ----- | --------- | ----- | ------ | ------- |
+| 1         | Jan 3 | Baseline  | 57.4% | 2/10   | ~45s    |
+| 11        | Jan 5 | Templates | 61.0% | 2/10   | 11.7s   |
 ```
 
 **Value:**
@@ -675,17 +675,17 @@ tests/fixtures/
 ### 1. Hobby Projects Need Different Management
 
 **What Worked:**
-- ✅ **Flexible deadlines:** "When you feel like it"
-- ✅ **Focus on learning:** Not just shipping
-- ✅ **Fun factor:** "No stress, no burnout"
-- ✅ **Clear phases:** But no pressure to complete fast
-- ✅ **Celebrate progress:** Each small win acknowledged
+- [DONE] **Flexible deadlines:** "When you feel like it"
+- [DONE] **Focus on learning:** Not just shipping
+- [DONE] **Fun factor:** "No stress, no burnout"
+- [DONE] **Clear phases:** But no pressure to complete fast
+- [DONE] **Celebrate progress:** Each small win acknowledged
 
 **What Didn't:**
-- ❌ **Tight schedules:** Causes stress
-- ❌ **Feature bloat:** Scope creep from excitement
-- ❌ **Perfectionism:** Good enough is good enough
-- ❌ **Comparison:** Every project is different
+- [FAIL] **Tight schedules:** Causes stress
+- [FAIL] **Feature bloat:** Scope creep from excitement
+- [FAIL] **Perfectionism:** Good enough is good enough
+- [FAIL] **Comparison:** Every project is different
 
 **Lesson:** Hobby projects should be joyful, not stressful
 
@@ -694,11 +694,11 @@ tests/fixtures/
 ### 2. Documentation Pays Off
 
 **What We Documented:**
-- ✅ **DEVLOG.md:** Weekly progress journal
-- ✅ **REMAINING_WORK.md:** Roadmap with status
-- ✅ **Test results:** Every iteration with analysis
-- ✅ **Architecture decisions:** Why we chose X over Y
-- ✅ **Learnings:** This document!
+- [DONE] **DEVLOG.md:** Weekly progress journal
+- [DONE] **REMAINING_WORK.md:** Roadmap with status
+- [DONE] **Test results:** Every iteration with analysis
+- [DONE] **Architecture decisions:** Why we chose X over Y
+- [DONE] **Learnings:** This document!
 
 **Benefits:**
 - Can take breaks and resume easily
@@ -719,11 +719,11 @@ tests/fixtures/
 - **Sokchea (Frontend):** Panel UI, VS Code integration
 
 **Benefits:**
-- ✅ **Parallel work:** No blocking on each other
-- ✅ **Knowledge sharing:** Learn from each other
-- ✅ **Motivation:** Accountability partner
-- ✅ **Code review:** Fresh eyes catch bugs
-- ✅ **Fun:** Building together is more enjoyable
+- [DONE] **Parallel work:** No blocking on each other
+- [DONE] **Knowledge sharing:** Learn from each other
+- [DONE] **Motivation:** Accountability partner
+- [DONE] **Code review:** Fresh eyes catch bugs
+- [DONE] **Fun:** Building together is more enjoyable
 
 **Challenges:**
 - Communication overhead (solved with good docs)
@@ -736,63 +736,63 @@ tests/fixtures/
 ## What Worked Well
 
 ### Technical
-1. ✅ **Template-based prompting** - Best quality + speed
-2. ✅ **Parallel tool execution** - 3x speedup
-3. ✅ **Layered architecture** - Clean, maintainable
-4. ✅ **Local-first LLM** - Privacy + no API costs
-5. ✅ **TypeScript** - Great DX, catches bugs early
-6. ✅ **VS Code Extension API** - Powerful, well-documented
+1. [DONE] **Template-based prompting** - Best quality + speed
+2. [DONE] **Parallel tool execution** - 3x speedup
+3. [DONE] **Layered architecture** - Clean, maintainable
+4. [DONE] **Local-first LLM** - Privacy + no API costs
+5. [DONE] **TypeScript** - Great DX, catches bugs early
+6. [DONE] **VS Code Extension API** - Powerful, well-documented
 
 ### Process
-1. ✅ **Phase-based approach** - Clear milestones
-2. ✅ **Real-world testing** - Caught quality issues
-3. ✅ **Iteration comparison** - Evidence-based decisions
-4. ✅ **Comprehensive docs** - Easy to resume after breaks
-5. ✅ **No pressure timeline** - Sustainable pace
-6. ✅ **Flexible scope** - Added features organically
+1. [DONE] **Phase-based approach** - Clear milestones
+2. [DONE] **Real-world testing** - Caught quality issues
+3. [DONE] **Iteration comparison** - Evidence-based decisions
+4. [DONE] **Comprehensive docs** - Easy to resume after breaks
+5. [DONE] **No pressure timeline** - Sustainable pace
+6. [DONE] **Flexible scope** - Added features organically
 
 ### Tools
-1. ✅ **Jest** - Fast, good mocking
-2. ✅ **ESLint + Prettier** - Consistent code style
-3. ✅ **Git branches** - Safe experimentation
-4. ✅ **VS Code debugger** - Excellent TypeScript debugging
-5. ✅ **Ollama** - Simple local LLM setup
+1. [DONE] **Jest** - Fast, good mocking
+2. [DONE] **ESLint + Prettier** - Consistent code style
+3. [DONE] **Git branches** - Safe experimentation
+4. [DONE] **VS Code debugger** - Excellent TypeScript debugging
+5. [DONE] **Ollama** - Simple local LLM setup
 
 ---
 
 ## What We'd Do Differently
 
 ### Technical
-1. **❌ Start with templates from Day 1**
+1. **[FAIL] Start with templates from Day 1**
    - Would have saved ~3 days of iteration in Phase 4
    - Lesson: Structure > Examples for small models
 
-2. **❌ Profile performance earlier**
+2. **[FAIL] Profile performance earlier**
    - Waited until Phase 5 to optimize
    - Could have had 11s latency from start
    - Lesson: Measure early, optimize early
 
-3. **❌ Build test fixtures first**
+3. **[FAIL] Build test fixtures first**
    - Created after initial implementation
    - Led to refactoring when tests revealed issues
    - Lesson: TDD actually works for AI tools
 
-4. **❌ Set model expectations upfront**
+4. **[FAIL] Set model expectations upfront**
    - Spent time trying to hit 85% with 7B model
    - Accepted 61% baseline in Phase 4
    - Lesson: Know your model's limits early
 
 ### Process
-1. **❌ Document architectural decisions real-time**
+1. **[FAIL] Document architectural decisions real-time**
    - Had to reconstruct some decisions later
    - Use ADR (Architecture Decision Records) format
    - Lesson: Document "why" when you make the decision
 
-2. **❌ Create CONTRIBUTING.md earlier**
+2. **[FAIL] Create CONTRIBUTING.md earlier**
    - Would help future contributors (and our future selves)
    - Lesson: Assume you'll forget your own code
 
-3. **❌ Version control strategy**
+3. **[FAIL] Version control strategy**
    - Could have used semantic versioning from start
    - Lesson: Start with 2.0, increment meaningfully
 
@@ -913,4 +913,4 @@ To everyone who inspired, helped, or supported this project:
 
 Open an issue or start a discussion on [GitHub](https://github.com/AsakuraKai/AI_PP_project)!
 
-**Happy Learning! 🎓🚀**
+**Happy Learning! [LEARN][LAUNCH]**

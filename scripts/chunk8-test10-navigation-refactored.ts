@@ -135,11 +135,11 @@ class MainActivity : ComponentActivity() {
 if (require.main === module) {
   runTest10Navigation()
     .then(() => {
-      console.log('\n✅ Test 10 complete!');
+      console.log('\n[OK] Test 10 complete!');
       process.exit(0);
     })
     .catch(error => {
-      console.error('\n❌ Test failed:', error);
+      console.error('\n[X] Test failed:', error);
       process.exit(1);
     });
 }

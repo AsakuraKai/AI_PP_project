@@ -1,4 +1,4 @@
-# RCA Agent UI Implementation Roadmap
+﻿# RCA Agent UI Implementation Roadmap
 
 **Last Updated**: January 9, 2026  
 **Status**: [DESIGN] Design Approved → [BUILD] Ready to Build
@@ -35,7 +35,7 @@ Transform RCA Agent from traditional VS Code UI to a modern, Figma-inspired inte
 - [ ] Configure Tailwind with RCA color theme
 - [ ] Import shadcn/ui component library (40+ components)
 - [ ] Setup VS Code webview integration
-- [ ] Configure message passing (extension ↔ webview)
+- [ ] Configure message passing (extension [H_ARROW] webview)
 
 **Days 4-7: Sidebar**
 - [ ] Build CollapsibleSidebar component
@@ -114,7 +114,7 @@ Transform RCA Agent from traditional VS Code UI to a modern, Figma-inspired inte
 **Days 6-7: Backend Integration**
 - [ ] Complete message passing implementation
 - [ ] Setup all real-time update subscriptions
-- [ ] Test full data flow (extension ↔ webview)
+- [ ] Test full data flow (extension [H_ARROW] webview)
 - [ ] Error handling and timeouts
 - [ ] State persistence
 

@@ -150,7 +150,7 @@ All modules must use the same Kotlin version.`
 
 async function runTest(testCase: TestCase, agent: MinimalReactAgent): Promise<TestResult> {
   console.log(`\n${'='.repeat(80)}`);
-  console.log(`🧪 Running Test ${testCase.id}: ${testCase.name}`);
+  console.log(`[TEST] Running Test ${testCase.id}: ${testCase.name}`);
   console.log(`${'='.repeat(80)}\n`);
   
   const startTime = Date.now();
@@ -159,14 +159,14 @@ async function runTest(testCase: TestCase, agent: MinimalReactAgent): Promise<Te
     const result = await agent.analyze(testCase.error);
     const latencyMs = Date.now() - startTime;
 
-    console.log(`\n✅ Test ${testCase.id} complete!`);
-    console.log(`⏱️  Latency: ${(latencyMs / 1000).toFixed(2)}s`);
+    console.log(`\n[OK] Test ${testCase.id} complete!`);
+    console.log(`[TIME]  Latency: ${(latencyMs / 1000).toFixed(2)}s`);
     
     // Calculate metrics
     const metrics = calculateMetrics(result, testCase);
     
     // Display results
-    console.log('\n📊 Metrics:');
+    console.log('\n[STATS] Metrics:');
     console.log(`   Overall Usability: ${metrics.overallUsability}%`);
     console.log(`   Diagnosis Accuracy: ${metrics.diagnosisAccuracy}%`);
     console.log(`   Solution Specificity: ${metrics.solutionSpecificity}%`);
@@ -181,7 +181,7 @@ async function runTest(testCase: TestCase, agent: MinimalReactAgent): Promise<Te
       timestamp: new Date().toISOString()
     };
   } catch (error) {
-    console.error(`\n❌ Test ${testCase.id} failed:`, error);
+    console.error(`\n[X] Test ${testCase.id} failed:`, error);
     throw error;
   }
 }
@@ -265,7 +265,7 @@ function calculateMetrics(result: any, testCase: TestCase): any {
 }
 
 async function main() {
-  console.log('\n🚀 Chunk 7: Real-World Test Suite');
+  console.log('\n[LAUNCH] Chunk 7: Real-World Test Suite');
   console.log('Running all 5 tests to validate Chunks 1-6 improvements\n');
   console.log(`Target: 70%+ average usability\n`);
 
@@ -300,7 +300,7 @@ async function main() {
 
   // Calculate overall statistics
   console.log('\n\n' + '='.repeat(80));
-  console.log('📊 OVERALL RESULTS');
+  console.log('[STATS] OVERALL RESULTS');
   console.log('='.repeat(80) + '\n');
 
   const avgUsability = results.reduce((sum, r) => sum + r.metrics.overallUsability, 0) / results.length;
@@ -311,7 +311,7 @@ async function main() {
   const avgLatency = results.reduce((sum, r) => sum + r.metrics.latencyMs, 0) / results.length;
 
   console.log('Average Metrics:');
-  console.log(`  Overall Usability: ${avgUsability.toFixed(1)}% ${avgUsability >= 70 ? '✅' : '❌'}`);
+  console.log(`  Overall Usability: ${avgUsability.toFixed(1)}% ${avgUsability >= 70 ? '[OK]' : '[X]'}`);
   console.log(`  Diagnosis Accuracy: ${avgDiagnosis.toFixed(1)}%`);
   console.log(`  Solution Specificity: ${avgSolution.toFixed(1)}%`);
   console.log(`  File Identification: ${avgFileId.toFixed(1)}%`);
@@ -349,9 +349,9 @@ async function main() {
 
   console.log('\n' + '='.repeat(80));
   if (avgUsability >= 70) {
-    console.log('🎉 SUCCESS: Target achieved! Average usability ≥ 70%');
+    console.log('[SUCCESS] SUCCESS: Target achieved! Average usability ≥ 70%');
   } else {
-    console.log('⚠️  Target not met. Average usability < 70%');
+    console.log('[WARN]  Target not met. Average usability < 70%');
   }
   console.log('='.repeat(80) + '\n');
 }

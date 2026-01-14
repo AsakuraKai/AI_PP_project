@@ -1,13 +1,13 @@
-# ✅ CHUNK 1 UI: MVP VS CODE EXTENSION - COMPLETE
+﻿# [DONE] CHUNK 1 UI: MVP VS CODE EXTENSION - COMPLETE
 
 **Phase:** Extension Foundation & MVP  
 **Developer:** Sokchea (UI/Integration Specialist)  
 **Timeline:** December 16-20, 2025 (Weeks 7-8)  
-**Status:** ✅ **COMPLETE - READY FOR BACKEND INTEGRATION**
+**Status:** [DONE] **COMPLETE - READY FOR BACKEND INTEGRATION**
 
 ---
 
-## 🎯 Executive Summary
+## [TARGET] Executive Summary
 
 Successfully completed Chunk 1 (MVP Extension) of the VS Code extension UI, spanning all sub-chunks 1.1 through 1.5. The extension provides a complete, professional user experience from project bootstrap through error analysis, code snippet display, confidence visualization, and comprehensive error handling. All placeholder implementations are ready to be wired to Kai's backend components.
 
@@ -15,42 +15,42 @@ Successfully completed Chunk 1 (MVP Extension) of the VS Code extension UI, span
 
 ---
 
-## 📋 Chunk Overview
+## [CLIPBOARD] Chunk Overview
 
 ### Chunk 1 Complete Scope (Sub-Chunks 1.1-1.5)
 
 **Chunk 1.1: Extension Bootstrap**
 - Goal: Create VS Code extension project structure and basic setup
 - Duration: 1 day
-- Status: ✅ Complete
+- Status: [DONE] Complete
 
 **Chunk 1.2: User Input Handling**
 - Goal: Capture error text from editor selection or input box
 - Duration: 1 day
-- Status: ✅ Complete
+- Status: [DONE] Complete
 
 **Chunk 1.3: Output Display**
 - Goal: Format and display analysis results with error badges
 - Duration: 1 day
-- Status: ✅ Complete
+- Status: [DONE] Complete
 
 **Chunk 1.4: Code Context Display**
 - Goal: Show code snippets that the agent read from source files
 - Duration: 2 days
-- Status: ✅ Complete
+- Status: [DONE] Complete
 
 **Chunk 1.5: MVP Polish**
 - Goal: Improve output formatting, error handling, and overall UX
 - Duration: 3 days
-- Status: ✅ Complete
+- Status: [DONE] Complete
 
 **Total Time Investment:** ~70 hours across 9 days (Chunks 1.1-1.5 combined)
 
 ---
 
-## 📊 What Was Accomplished
+## [CHART] What Was Accomplished
 
-### 0. Extension Bootstrap (Chunks 1.1-1.3) ✅
+### 0. Extension Bootstrap (Chunks 1.1-1.3) [DONE]
 
 **Overview:**
 The foundation phase established the complete VS Code extension infrastructure, including project setup, user input handling, and output display systems. This created the framework upon which all subsequent features were built.
@@ -125,15 +125,15 @@ function log(level: 'info' | 'warn' | 'error', message: string, data?: any) {
 ```
 
 **Features Delivered:**
-- ✅ Extension activates correctly
-- ✅ Command registered and accessible via Command Palette
-- ✅ Keyboard shortcut (Ctrl+Shift+R) functional
-- ✅ Output channels created and working
-- ✅ Configuration system implemented
-- ✅ Debug logging functional
-- ✅ TypeScript strict mode enabled
-- ✅ Zero ESLint warnings
-- ✅ Resource disposal handled
+- [DONE] Extension activates correctly
+- [DONE] Command registered and accessible via Command Palette
+- [DONE] Keyboard shortcut (Ctrl+Shift+R) functional
+- [DONE] Output channels created and working
+- [DONE] Configuration system implemented
+- [DONE] Debug logging functional
+- [DONE] TypeScript strict mode enabled
+- [DONE] Zero ESLint warnings
+- [DONE] Resource disposal handled
 
 ---
 
@@ -225,13 +225,13 @@ function parseError(errorText: string): ParsedError | null {
 ```
 
 **Features Delivered:**
-- ✅ Editor selection capture working
-- ✅ Input box fallback functional
-- ✅ Input validation comprehensive
-- ✅ User-friendly error messages
-- ✅ Placeholder parser implemented (regex-based)
-- ✅ Multi-source input support (selection + input box)
-- ✅ Graceful handling of edge cases
+- [DONE] Editor selection capture working
+- [DONE] Input box fallback functional
+- [DONE] Input validation comprehensive
+- [DONE] User-friendly error messages
+- [DONE] Placeholder parser implemented (regex-based)
+- [DONE] Multi-source input support (selection + input box)
+- [DONE] Graceful handling of edge cases
 
 ---
 
@@ -246,8 +246,8 @@ function parseError(errorText: string): ParsedError | null {
 function getErrorBadge(errorType: string): string {
   const badges: Record<string, string> = {
     'lateinit': '🟠 Lateinit Error',
-    'npe': '🔴 Null Pointer Exception',
-    'unresolved_reference': '🟡 Unresolved Reference',
+    'npe': '[RED] Null Pointer Exception',
+    'unresolved_reference': '[YELLOW] Unresolved Reference',
     'type_mismatch': '🔵 Type Mismatch',
     'unknown': '⚪ Unknown Error'
   };
@@ -262,24 +262,24 @@ function showResult(result: AnalysisResult) {
   outputChannel.show(true);
 
   // Header
-  outputChannel.appendLine('🔍 === ROOT CAUSE ANALYSIS ===\n');
+  outputChannel.appendLine('[SEARCH] === ROOT CAUSE ANALYSIS ===\n');
 
   // Error badge
   outputChannel.appendLine(getErrorBadge(result.parsedError.type));
   outputChannel.appendLine('');
 
   // Error details
-  outputChannel.appendLine(`🐛 ERROR: ${result.parsedError.message}`);
+  outputChannel.appendLine(`[BUG] ERROR: ${result.parsedError.message}`);
   outputChannel.appendLine(`📁 FILE: ${result.parsedError.filePath}:${result.parsedError.line}`);
   outputChannel.appendLine('');
 
   // Root cause analysis
-  outputChannel.appendLine('💡 ROOT CAUSE:');
+  outputChannel.appendLine('[IDEA] ROOT CAUSE:');
   outputChannel.appendLine(result.rootCause);
   outputChannel.appendLine('');
 
   // Fix guidelines
-  outputChannel.appendLine('🛠️  FIX GUIDELINES:');
+  outputChannel.appendLine('[FIX]  FIX GUIDELINES:');
   result.fixGuidelines.forEach((guideline, index) => {
     outputChannel.appendLine(`  ${index + 1}. ${guideline}`);
   });
@@ -287,7 +287,7 @@ function showResult(result: AnalysisResult) {
 
   // Footer
   outputChannel.appendLine('────────────────────────────────────────────────────────────');
-  outputChannel.appendLine('💡 TIP: This is a placeholder result. Connect to Ollama for real AI-powered analysis.');
+  outputChannel.appendLine('[IDEA] TIP: This is a placeholder result. Connect to Ollama for real AI-powered analysis.');
 
   log('info', 'Analysis result displayed', { errorType: result.parsedError.type });
 }
@@ -317,7 +317,7 @@ async function analyzeWithProgress(errorText: string) {
       progress.report({ increment: 100, message: "Complete!" });
       showResult(result);
 
-      vscode.window.showInformationMessage('✅ Analysis complete!');
+      vscode.window.showInformationMessage('[DONE] Analysis complete!');
     }
   );
 }
@@ -361,41 +361,41 @@ function generateMockResult(parsedError: ParsedError): AnalysisResult {
 ```
 
 **Features Delivered:**
-- ✅ Error badge system (5 error types)
-- ✅ Formatted output with emoji indicators
-- ✅ Root cause display
-- ✅ Fix guidelines (numbered list)
-- ✅ Progress notifications
-- ✅ Mock result generation
-- ✅ Professional output formatting
-- ✅ Clear visual hierarchy
+- [DONE] Error badge system (5 error types)
+- [DONE] Formatted output with emoji indicators
+- [DONE] Root cause display
+- [DONE] Fix guidelines (numbered list)
+- [DONE] Progress notifications
+- [DONE] Mock result generation
+- [DONE] Professional output formatting
+- [DONE] Clear visual hierarchy
 
 ---
 
 #### Testing Results (Chunks 1.1-1.3)
 
-**Manual Tests: 13/13 Passed ✅**
+**Manual Tests: 13/13 Passed [DONE]**
 
 | Test | Status | Notes |
 |------|--------|-------|
-| Extension activates | ✅ | Clean activation, no errors |
-| Command registered | ✅ | Accessible via Command Palette |
-| Keyboard shortcut works | ✅ | Ctrl+Shift+R functional |
-| Input validation | ✅ | Empty text rejected |
-| Selection detection | ✅ | Captures selected text correctly |
-| Input box fallback | ✅ | Shows when no selection |
-| Placeholder parsing | ✅ | Detects lateinit, NPE patterns |
-| Output formatting | ✅ | Clean, professional display |
-| Error badges | ✅ | Correct emoji for each type |
-| Progress notifications | ✅ | Shows during analysis |
-| Error handling | ✅ | Graceful degradation |
-| Configuration access | ✅ | Settings read correctly |
-| Debug logging | ✅ | Logs when enabled |
-| Extension cleanup | ✅ | Resources disposed properly |
-| No console errors | ✅ | Clean console output |
+| Extension activates | [DONE] | Clean activation, no errors |
+| Command registered | [DONE] | Accessible via Command Palette |
+| Keyboard shortcut works | [DONE] | Ctrl+Shift+R functional |
+| Input validation | [DONE] | Empty text rejected |
+| Selection detection | [DONE] | Captures selected text correctly |
+| Input box fallback | [DONE] | Shows when no selection |
+| Placeholder parsing | [DONE] | Detects lateinit, NPE patterns |
+| Output formatting | [DONE] | Clean, professional display |
+| Error badges | [DONE] | Correct emoji for each type |
+| Progress notifications | [DONE] | Shows during analysis |
+| Error handling | [DONE] | Graceful degradation |
+| Configuration access | [DONE] | Settings read correctly |
+| Debug logging | [DONE] | Logs when enabled |
+| Extension cleanup | [DONE] | Resources disposed properly |
+| No console errors | [DONE] | Clean console output |
 
 **Code Quality Metrics:**
-- TypeScript strict mode: ✅ Enabled
+- TypeScript strict mode: [DONE] Enabled
 - ESLint warnings: 0
 - Compiler errors: 0
 - Resource leaks: None detected
@@ -403,7 +403,7 @@ function generateMockResult(parsedError: ParsedError): AnalysisResult {
 
 ---
 
-### 1. Code Context Display (Chunk 1.4) ✅
+### 1. Code Context Display (Chunk 1.4) [DONE]
 
 **Implementation Details:**
 
@@ -425,34 +425,34 @@ await vscode.window.withProgress(
 ```typescript
 if (result.codeSnippet && result.codeSnippet.length > 0 && 
     result.codeSnippet !== '// Code snippet will be provided by agent') {
-  outputChannel.appendLine('📝 CODE CONTEXT (from source file):');
+  outputChannel.appendLine('[NOTE] CODE CONTEXT (from source file):');
   outputChannel.appendLine('```kotlin');
   outputChannel.appendLine(result.codeSnippet);
   outputChannel.appendLine('```\n');
   log('info', 'Code snippet displayed', { snippetLength: result.codeSnippet.length });
 } else {
-  outputChannel.appendLine('⚠️  CODE CONTEXT: File could not be read (using error message only)\n');
+  outputChannel.appendLine('[WARNING]  CODE CONTEXT: File could not be read (using error message only)\n');
   log('warn', 'No code snippet available');
 }
 ```
 
 #### Error Handling for File Reading
 - Detects when file reading fails
-- Shows "⚠️ CODE CONTEXT: File could not be read" message
+- Shows "[WARNING] CODE CONTEXT: File could not be read" message
 - Continues analysis even if file read fails
 - Logs warnings for troubleshooting
 
 **Features Delivered:**
-- ✅ Progress notification shows file reading step
-- ✅ Code snippets displayed with syntax highlighting
-- ✅ Warning shown when file cannot be read
-- ✅ Syntax highlighting markers (```kotlin) present
-- ✅ Analysis continues without code snippet
-- ✅ Debug logging for snippet availability
+- [DONE] Progress notification shows file reading step
+- [DONE] Code snippets displayed with syntax highlighting
+- [DONE] Warning shown when file cannot be read
+- [DONE] Syntax highlighting markers (```kotlin) present
+- [DONE] Analysis continues without code snippet
+- [DONE] Debug logging for snippet availability
 
 ---
 
-### 2. MVP Polish (Chunk 1.5) ✅
+### 2. MVP Polish (Chunk 1.5) [DONE]
 
 **Implementation Details:**
 
@@ -480,7 +480,7 @@ function getConfidenceInterpretation(confidence: number): string {
 
 **Example Output:**
 ```
-✅ CONFIDENCE: 75%
+[DONE] CONFIDENCE: 75%
    ███████████████░░░░░
    Medium confidence - verify suggestion
 ```
@@ -494,12 +494,12 @@ function getConfidenceInterpretation(confidence: number): string {
 
 **1. Ollama Connection Error:**
 ```
-❌ Could not connect to Ollama. Is it running?
+[FAIL] Could not connect to Ollama. Is it running?
 [Start Ollama] [Installation Guide] [Check Logs]
 
-❌ ERROR: Could not connect to Ollama
+[FAIL] ERROR: Could not connect to Ollama
 
-🔧 TROUBLESHOOTING STEPS:
+[TOOL] TROUBLESHOOTING STEPS:
 1. Install Ollama: https://ollama.ai/
 2. Start Ollama: Run "ollama serve" in terminal
 3. Pull model: Run "ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest"
@@ -508,12 +508,12 @@ function getConfidenceInterpretation(confidence: number): string {
 
 **2. Timeout Error:**
 ```
-⏱️ Analysis timed out. Try increasing timeout or using a smaller model.
+[TIMER] Analysis timed out. Try increasing timeout or using a smaller model.
 [Open Settings] [View Logs]
 
-⏱️ ERROR: Analysis timed out
+[TIMER] ERROR: Analysis timed out
 
-💡 SUGGESTIONS:
+[IDEA] SUGGESTIONS:
 • Increase timeout in settings
 • Use a faster/smaller model (e.g., hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest)
 • Check your network connection
@@ -521,12 +521,12 @@ function getConfidenceInterpretation(confidence: number): string {
 
 **3. Parse Error:**
 ```
-⚠️ Could not parse error. Is this a Kotlin/Android error?
+[WARNING] Could not parse error. Is this a Kotlin/Android error?
 [View Debug Logs] [Report Issue]
 
-⚠️ ERROR: Could not parse error message
+[WARNING] ERROR: Could not parse error message
 
-💡 TIPS:
+[IDEA] TIPS:
 • Ensure error is from Kotlin/Android code
 • Include full stack trace if possible
 • Check debug logs for more details
@@ -534,12 +534,12 @@ function getConfidenceInterpretation(confidence: number): string {
 
 **4. Generic Error:**
 ```
-❌ Analysis failed: [error message]
+[FAIL] Analysis failed: [error message]
 [View Logs] [Retry]
 
-❌ ERROR: [error message]
+[FAIL] ERROR: [error message]
 
-📋 Stack Trace:
+[CLIPBOARD] Stack Trace:
 [full stack trace]
 ```
 
@@ -549,7 +549,7 @@ function handleAnalysisError(error: any) {
   if (error.message.includes('ECONNREFUSED') || error.message.includes('connect')) {
     // Ollama connection error
     vscode.window.showErrorMessage(
-      '❌ Could not connect to Ollama. Is it running?',
+      '[FAIL] Could not connect to Ollama. Is it running?',
       'Start Ollama', 'Installation Guide', 'Check Logs'
     ).then(selection => {
       if (selection === 'Installation Guide') {
@@ -572,15 +572,15 @@ function handleAnalysisError(error: any) {
 **Enhanced Footer:**
 ```
 ────────────────────────────────────────────────────────────
-💡 TIP: This is a placeholder result. Connect to Ollama for real AI-powered analysis.
-📖 Configure: File > Preferences > Settings > RCA Agent
+[IDEA] TIP: This is a placeholder result. Connect to Ollama for real AI-powered analysis.
+[BOOK] Configure: File > Preferences > Settings > RCA Agent
 ❓ Need help? Check the documentation or report issues on GitHub.
 ```
 
 **Better Success Notifications:**
 ```typescript
 vscode.window.showInformationMessage(
-  '✅ Analysis complete! Check the RCA Agent output.',
+  '[DONE] Analysis complete! Check the RCA Agent output.',
   'View Output'
 ).then(selection => {
   if (selection === 'View Output') {
@@ -592,7 +592,7 @@ vscode.window.showInformationMessage(
 #### D. Professional UX Touches
 
 **Visual Hierarchy:**
-- Consistent emoji set (🔍 🐛 📁 📝 💡 🛠️ ✅)
+- Consistent emoji set ([SEARCH] [BUG] 📁 [NOTE] [IDEA] [FIX] [DONE])
 - 60-character horizontal lines (────) for section separators
 - Blank lines between sections for readability
 - Clear section headers
@@ -610,7 +610,7 @@ vscode.window.showInformationMessage(
 
 ---
 
-## 📈 Metrics & Statistics
+## [GRAPH] Metrics & Statistics
 
 ### Overall Chunk 1 Code Statistics
 
@@ -630,7 +630,7 @@ vscode.window.showInformationMessage(
 - Core infrastructure: 350 lines
 - Basic functions: 8 (activation, parsing, display, logging)
 - Error handling: Generic only
-- Manual tests: 13/13 passing ✅
+- Manual tests: 13/13 passing [DONE]
 
 **Chunks 1.4-1.5 (Enhancement):**
 - Code additions: +120 lines (+34%)
@@ -643,50 +643,50 @@ vscode.window.showInformationMessage(
 
 | Function | Introduced | Purpose | Lines | Status |
 |----------|-----------|---------|-------|--------|
-| `activate()` | Chunk 1.1 | Extension entry point | ~30 | ✅ Complete |
-| `deactivate()` | Chunk 1.1 | Resource cleanup | ~10 | ✅ Complete |
-| `analyzeError()` | Chunk 1.2 | Main command handler | ~35 | ✅ Complete |
-| `parseError()` | Chunk 1.2 | Error text parsing | ~40 | ✅ Placeholder |
-| `generateMockResult()` | Chunk 1.3 | Mock RCA generation | ~50 | ✅ Placeholder |
-| `getErrorBadge()` | Chunk 1.3 | Error type badges | ~10 | ✅ Complete |
-| `log()` | Chunk 1.1 | Debug logging | ~15 | ✅ Complete |
-| `analyzeWithProgress()` | Chunk 1.3/1.4 | Progress notifications | ~45 | ✅ Enhanced |
-| `showResult()` | Chunk 1.3/1.4 | Display results | ~60 | ✅ Enhanced |
-| `handleAnalysisError()` | Chunk 1.5 | Error handling | ~80 | ✅ Rewritten |
-| `createConfidenceBar()` | Chunk 1.5 | Visual confidence | ~5 | ✅ New |
-| `getConfidenceInterpretation()` | Chunk 1.5 | Confidence text | ~8 | ✅ New |
+| `activate()` | Chunk 1.1 | Extension entry point | ~30 | [DONE] Complete |
+| `deactivate()` | Chunk 1.1 | Resource cleanup | ~10 | [DONE] Complete |
+| `analyzeError()` | Chunk 1.2 | Main command handler | ~35 | [DONE] Complete |
+| `parseError()` | Chunk 1.2 | Error text parsing | ~40 | [DONE] Placeholder |
+| `generateMockResult()` | Chunk 1.3 | Mock RCA generation | ~50 | [DONE] Placeholder |
+| `getErrorBadge()` | Chunk 1.3 | Error type badges | ~10 | [DONE] Complete |
+| `log()` | Chunk 1.1 | Debug logging | ~15 | [DONE] Complete |
+| `analyzeWithProgress()` | Chunk 1.3/1.4 | Progress notifications | ~45 | [DONE] Enhanced |
+| `showResult()` | Chunk 1.3/1.4 | Display results | ~60 | [DONE] Enhanced |
+| `handleAnalysisError()` | Chunk 1.5 | Error handling | ~80 | [DONE] Rewritten |
+| `createConfidenceBar()` | Chunk 1.5 | Visual confidence | ~5 | [DONE] New |
+| `getConfidenceInterpretation()` | Chunk 1.5 | Confidence text | ~8 | [DONE] New |
 
 ### UX Improvements Impact (Cumulative)
 
 | Feature | Pre-Chunk 1 | After 1.1-1.3 | After 1.4-1.5 | Impact |
 |---------|-------------|---------------|---------------|--------|
-| **Extension Structure** | None | Complete | Complete | ⭐⭐⭐⭐⭐ Critical |
-| **Command System** | None | Working | Working | ⭐⭐⭐⭐⭐ Critical |
-| **Input Handling** | None | Complete | Complete | ⭐⭐⭐⭐⭐ Critical |
-| **Output Display** | None | Basic | Enhanced | ⭐⭐⭐⭐⭐ High |
-| **Error Badges** | None | 5 types | 5 types | ⭐⭐⭐⭐ Medium-High |
-| **Error Messages** | None | Generic | 4 specific | ⭐⭐⭐⭐⭐ High |
-| **Confidence Display** | None | Text only | Bar + text | ⭐⭐⭐⭐ Medium-High |
-| **Code Context** | None | Not shown | Displayed | ⭐⭐⭐⭐⭐ High |
-| **Troubleshooting** | None | External docs | Inline steps | ⭐⭐⭐⭐ Medium-High |
-| **Action Buttons** | None | None | 9 buttons | ⭐⭐⭐⭐ Medium-High |
-| **Progress Updates** | None | Basic | Step-by-step | ⭐⭐⭐ Medium |
+| **Extension Structure** | None | Complete | Complete | [STAR][STAR][STAR][STAR][STAR] Critical |
+| **Command System** | None | Working | Working | [STAR][STAR][STAR][STAR][STAR] Critical |
+| **Input Handling** | None | Complete | Complete | [STAR][STAR][STAR][STAR][STAR] Critical |
+| **Output Display** | None | Basic | Enhanced | [STAR][STAR][STAR][STAR][STAR] High |
+| **Error Badges** | None | 5 types | 5 types | [STAR][STAR][STAR][STAR] Medium-High |
+| **Error Messages** | None | Generic | 4 specific | [STAR][STAR][STAR][STAR][STAR] High |
+| **Confidence Display** | None | Text only | Bar + text | [STAR][STAR][STAR][STAR] Medium-High |
+| **Code Context** | None | Not shown | Displayed | [STAR][STAR][STAR][STAR][STAR] High |
+| **Troubleshooting** | None | External docs | Inline steps | [STAR][STAR][STAR][STAR] Medium-High |
+| **Action Buttons** | None | None | 9 buttons | [STAR][STAR][STAR][STAR] Medium-High |
+| **Progress Updates** | None | Basic | Step-by-step | [STAR][STAR][STAR] Medium |
 
 ---
 
-## 🎨 Example Output
+## [DESIGN] Example Output
 
 ### Successful Analysis with Code Context
 
 ```
-🔍 === ROOT CAUSE ANALYSIS ===
+[SEARCH] === ROOT CAUSE ANALYSIS ===
 
 🟠 Lateinit Error
 
-🐛 ERROR: kotlin.UninitializedPropertyAccessException: lateinit property database has not been initialized
+[BUG] ERROR: kotlin.UninitializedPropertyAccessException: lateinit property database has not been initialized
 📁 FILE: MainActivity.kt:42
 
-📝 CODE CONTEXT (from source file):
+[NOTE] CODE CONTEXT (from source file):
 ```kotlin
     private lateinit var database: AppDatabase
     
@@ -699,22 +699,22 @@ vscode.window.showInformationMessage(
     }
 ```
 
-💡 ROOT CAUSE:
+[IDEA] ROOT CAUSE:
 A lateinit property was accessed before being initialized.
 
-🛠️  FIX GUIDELINES:
+[FIX]  FIX GUIDELINES:
   1. Initialize property in onCreate() or init block
   2. Check ::property.isInitialized before access
   3. Consider using nullable type instead of lateinit
   4. Ensure initialization happens before first access
 
-✅ CONFIDENCE: 75%
+[DONE] CONFIDENCE: 75%
    ███████████████░░░░░
    Medium confidence - verify suggestion
 
 ────────────────────────────────────────────────────────────
-💡 TIP: This is a placeholder result. Connect to Ollama for real AI-powered analysis.
-📖 Configure: File > Preferences > Settings > RCA Agent
+[IDEA] TIP: This is a placeholder result. Connect to Ollama for real AI-powered analysis.
+[BOOK] Configure: File > Preferences > Settings > RCA Agent
 ❓ Need help? Check the documentation or report issues on GitHub.
 ```
 
@@ -722,15 +722,15 @@ A lateinit property was accessed before being initialized.
 
 **User Notification:**
 ```
-❌ Could not connect to Ollama. Is it running?
+[FAIL] Could not connect to Ollama. Is it running?
 [Start Ollama] [Installation Guide] [Check Logs]
 ```
 
 **Output Channel:**
 ```
-❌ ERROR: Could not connect to Ollama
+[FAIL] ERROR: Could not connect to Ollama
 
-🔧 TROUBLESHOOTING STEPS:
+[TOOL] TROUBLESHOOTING STEPS:
 1. Install Ollama: https://ollama.ai/
 2. Start Ollama: Run "ollama serve" in terminal
 3. Pull model: Run "ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest"
@@ -739,32 +739,32 @@ A lateinit property was accessed before being initialized.
 
 ---
 
-## 🔧 Technical Decisions
+## [TOOL] Technical Decisions
 
 ### 1. Confidence Bar Design
 
 **Decision:** Use 20-character bar with █ and ░ characters.
 
 **Rationale:**
-- ✅ Cross-platform compatibility (no special fonts required)
-- ✅ Good visual balance (not too small, not too long)
-- ✅ Clear distinction between filled/empty
-- ✅ Fits in output channel without wrapping
+- [DONE] Cross-platform compatibility (no special fonts required)
+- [DONE] Good visual balance (not too small, not too long)
+- [DONE] Clear distinction between filled/empty
+- [DONE] Fits in output channel without wrapping
 
 **Alternatives Considered:**
-- ❌ 10 characters - Too small for granular visualization
-- ❌ 50 characters - Too long, wraps on smaller screens
-- ❌ ■ and □ - Less visual weight than █ and ░
+- [FAIL] 10 characters - Too small for granular visualization
+- [FAIL] 50 characters - Too long, wraps on smaller screens
+- [FAIL] [SQUARE] and [BOX] - Less visual weight than █ and ░
 
 ### 2. Error Categorization Strategy
 
 **Decision:** Four specific error types with unique handling.
 
 **Rationale:**
-- ✅ Covers 90%+ of user-facing errors
-- ✅ Each has different root cause and solution
-- ✅ Specific actions are more helpful than generic "View Docs"
-- ✅ Reduces support burden with inline help
+- [DONE] Covers 90%+ of user-facing errors
+- [DONE] Each has different root cause and solution
+- [DONE] Specific actions are more helpful than generic "View Docs"
+- [DONE] Reduces support burden with inline help
 
 **Categories:**
 1. **Ollama Connection** - Setup/configuration issue
@@ -777,20 +777,20 @@ A lateinit property was accessed before being initialized.
 **Decision:** 1-3 buttons per error, most important action first.
 
 **Rationale:**
-- ✅ VS Code supports max 3 action buttons in notifications
-- ✅ Users prefer primary action first (e.g., "Start Ollama")
-- ✅ Secondary actions provide alternatives (e.g., "View Docs")
-- ✅ Tertiary actions for diagnostics (e.g., "Check Logs")
+- [DONE] VS Code supports max 3 action buttons in notifications
+- [DONE] Users prefer primary action first (e.g., "Start Ollama")
+- [DONE] Secondary actions provide alternatives (e.g., "View Docs")
+- [DONE] Tertiary actions for diagnostics (e.g., "Check Logs")
 
 ### 4. Inline Troubleshooting
 
 **Decision:** Include troubleshooting steps directly in output channel.
 
 **Rationale:**
-- ✅ Faster than opening external docs
-- ✅ Works offline (no internet needed)
-- ✅ Context-specific to error type
-- ✅ Reduces cognitive load (no tab switching)
+- [DONE] Faster than opening external docs
+- [DONE] Works offline (no internet needed)
+- [DONE] Context-specific to error type
+- [DONE] Reduces cognitive load (no tab switching)
 
 ---
 
@@ -861,7 +861,7 @@ const llm = await OllamaClient.create({
 
 ---
 
-## ✅ Completion Checklist
+## [DONE] Completion Checklist
 
 ### Chunk 1.1: Extension Bootstrap
 - [x] Create VS Code extension project structure (9 files)
@@ -937,7 +937,7 @@ const llm = await OllamaClient.create({
 
 ---
 
-## 🎓 Learnings & Insights
+## [LEARN] Learnings & Insights
 
 ### What Went Well
 
@@ -1004,7 +1004,7 @@ const llm = await OllamaClient.create({
 
 ---
 
-## 🚀 Next Steps
+## [LAUNCH] Next Steps
 
 ### Immediate: Backend Integration (Week 9)
 
@@ -1039,7 +1039,7 @@ const llm = await OllamaClient.create({
 **Planned Features:**
 1. Support 10+ error types with color-coded badges
 2. Update `getErrorBadge()` for all Kotlin/Android errors
-3. Visual indicators (🔴 🟠 🟡 🔵 🟣)
+3. Visual indicators ([RED] 🟠 [YELLOW] 🔵 🟣)
 4. Wire to Kai's expanded parsers (Gradle, Compose, XML)
 5. Test with comprehensive error samples
 
@@ -1047,50 +1047,50 @@ const llm = await OllamaClient.create({
 
 ---
 
-## 📊 Project Status (End of Week 8)
+## [CHART] Project Status (End of Week 8)
 
 ### Overall Phase 1 Progress
 
 | Component | Developer | Status | Completion |
 |-----------|-----------|--------|------------|
-| **Backend Core** | Kai | ✅ Complete | 100% (Chunks 1-5) |
-| **Extension MVP** | Sokchea | ✅ Complete | 100% (Chunk 1) |
-| **Integration** | Both | 🔄 Pending | 0% (Week 9+) |
-| **Testing** | Both | ⏳ Partial | Backend: 99%, UI: Manual |
+| **Backend Core** | Kai | [DONE] Complete | 100% (Chunks 1-5) |
+| **Extension MVP** | Sokchea | [DONE] Complete | 100% (Chunk 1) |
+| **Integration** | Both | [REFRESH] Pending | 0% (Week 9+) |
+| **Testing** | Both | [TIMER] Partial | Backend: 99%, UI: Manual |
 
 ### Test Results Summary
 
 **Backend (Kai's Completion):**
 - Total tests: 878 (869 passing - 99%)
 - Accuracy: 100% on 20 Android test cases
-- Average latency: 75.8s (target: <90s) ✅
+- Average latency: 75.8s (target: <90s) [DONE]
 - Parser coverage: Kotlin, Gradle, Compose, XML, Manifest (26+ error types)
 - Test coverage: 95%+ on new modules, 88%+ overall
 
 **UI (Sokchea's Completion):**
-- Manual testing: All features verified ✅
+- Manual testing: All features verified [DONE]
 - Automated tests: 0 (to be added in future chunks)
-- Extension activation: Works ✅
-- Command registration: Works ✅
-- Output display: Professional ✅
-- Error handling: Comprehensive (4 categories) ✅
+- Extension activation: Works [DONE]
+- Command registration: Works [DONE]
+- Output display: Professional [DONE]
+- Error handling: Comprehensive (4 categories) [DONE]
 
 ### Key Metrics Achieved
 
 | Metric | Target | Achieved | Status |
 |--------|--------|----------|--------|
-| **Backend Accuracy** | ≥60% | 100% | ✅ +67% |
-| **Backend Latency** | <90s | 75.8s | ✅ 16% faster |
-| **UI Code Quality** | Professional | MVP-grade | ✅ Polished |
-| **Error Handling** | Basic | 4 categories | ✅ Comprehensive |
-| **Confidence Display** | Text only | Bar + text | ✅ Enhanced |
-| **Code Context** | Not shown | Displayed | ✅ Implemented |
+| **Backend Accuracy** | ≥60% | 100% | [DONE] +67% |
+| **Backend Latency** | <90s | 75.8s | [DONE] 16% faster |
+| **UI Code Quality** | Professional | MVP-grade | [DONE] Polished |
+| **Error Handling** | Basic | 4 categories | [DONE] Comprehensive |
+| **Confidence Display** | Text only | Bar + text | [DONE] Enhanced |
+| **Code Context** | Not shown | Displayed | [DONE] Implemented |
 
 ---
 
-## 🎉 Milestone Achievement
+## [SUCCESS] Milestone Achievement
 
-### Complete Chunk 1 Success Criteria - ALL MET ✅
+### Complete Chunk 1 Success Criteria - ALL MET [DONE]
 
 **Foundation (Chunks 1.1-1.3):**
 - [x] Extension project structure created (9 files)
@@ -1121,7 +1121,7 @@ const llm = await OllamaClient.create({
 
 ### Production Readiness Checklist
 
-**Code Quality:** ✅
+**Code Quality:** [DONE]
 - TypeScript strict mode enabled
 - No `any` types in production code
 - All public functions have type signatures
@@ -1129,7 +1129,7 @@ const llm = await OllamaClient.create({
 - Zero ESLint warnings
 - Zero compiler errors
 
-**User Experience:** ✅
+**User Experience:** [DONE]
 - Professional visual design (emojis, bars, separators)
 - Clear error messages with action buttons
 - Helpful tooltips and inline help
@@ -1137,14 +1137,14 @@ const llm = await OllamaClient.create({
 - Multiple input methods (selection + fallback)
 - Graceful degradation on errors
 
-**Integration Readiness:** ✅
+**Integration Readiness:** [DONE]
 - Clean interfaces for backend wiring
 - Configuration settings defined (3 settings)
 - Placeholder implementations complete (2 functions)
 - API contracts implicitly documented in code
 - Ready for OllamaClient, MinimalReactAgent, ReadFileTool
 
-**Maintainability:** ✅
+**Maintainability:** [DONE]
 - Comprehensive debug logging (3 levels)
 - Clear function naming and structure (12 functions)
 - Resource disposal handled correctly
@@ -1153,7 +1153,7 @@ const llm = await OllamaClient.create({
 
 ---
 
-## 📝 Final Notes
+## [NOTE] Final Notes
 
 ### Strengths
 
@@ -1179,7 +1179,7 @@ const llm = await OllamaClient.create({
 
 ---
 
-## 📚 Related Documentation
+## [DOCS] Related Documentation
 
 ### Project Documentation
 - [API Contracts](../../API_CONTRACTS.md) - Backend-frontend interface specifications
@@ -1199,7 +1199,7 @@ const llm = await OllamaClient.create({
 
 ---
 
-**Status:** ✅ **CHUNK 1 COMPLETE (ALL SUB-CHUNKS 1.1-1.5) - MVP EXTENSION READY FOR INTEGRATION**  
+**Status:** [DONE] **CHUNK 1 COMPLETE (ALL SUB-CHUNKS 1.1-1.5) - MVP EXTENSION READY FOR INTEGRATION**  
 **Completion Date:** December 20, 2025  
 **Duration:** Weeks 7-8 (December 16-20, 2025)  
 **Total Investment:** ~70 hours across 9 days  

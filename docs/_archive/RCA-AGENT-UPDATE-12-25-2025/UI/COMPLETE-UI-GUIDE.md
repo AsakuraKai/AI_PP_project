@@ -1,4 +1,4 @@
-# RCA Agent UI/UX Complete Guide
+﻿# RCA Agent UI/UX Complete Guide
 
 **Complete documentation for transitioning to panel-based interface**
 
@@ -66,11 +66,11 @@
 
 **Total Duration:** 25 days (5 weeks)  
 **Risk Level:** Low to Medium (with proper testing)  
-**Dependencies:** Backend Phase 1 must be complete ✅
+**Dependencies:** Backend Phase 1 must be complete [DONE]
 
 ---
 
-### CHUNK 1: Foundation & Activity Bar ⚡
+### CHUNK 1: Foundation & Activity Bar [FAST]
 **Duration:** 5 days (Week 1)  
 **Priority:** CRITICAL - Everything depends on this  
 **Risk Level:** Low
@@ -113,7 +113,7 @@
 
 ---
 
-### CHUNK 2: Core Panel UI 🎨
+### CHUNK 2: Core Panel UI [DESIGN]
 **Duration:** 5 days (Early Week 2)  
 **Priority:** HIGH - User-facing UI  
 **Risk Level:** Medium
@@ -126,7 +126,7 @@
    - Add loading spinners and progress bars
 
 2. **Webview Communication**
-   - Set up message passing (extension ↔ webview)
+   - Set up message passing (extension [H_ARROW] webview)
    - Implement command handlers in webview
    - Create event listeners for user actions
 
@@ -155,7 +155,7 @@
 
 ---
 
-### CHUNK 3: Error Queue & TreeView 📋
+### CHUNK 3: Error Queue & TreeView [CLIPBOARD]
 **Duration:** 5 days (Late Week 2)  
 **Priority:** HIGH - Core feature  
 **Risk Level:** Low
@@ -199,7 +199,7 @@
 
 ---
 
-### CHUNK 4: Inline Editor Integration 💡
+### CHUNK 4: Inline Editor Integration [IDEA]
 **Duration:** 5 days (Week 3)  
 **Priority:** MEDIUM - Nice to have but enhances UX  
 **Risk Level:** Medium
@@ -242,7 +242,7 @@
 
 ---
 
-### CHUNK 5: Polish & Production Ready ✨
+### CHUNK 5: Polish & Production Ready [SPARKLE]
 **Duration:** 5 days (Week 4)  
 **Priority:** CRITICAL - Release quality  
 **Risk Level:** Low
@@ -321,25 +321,25 @@
 │   Foundation    │  (5 days, ~800 LOC)
 └────────┬────────┘
          │
-         ▼
+         [DOWN]
 ┌─────────────────┐
 │   CHUNK 2       │  Core Panel UI
 │   Core Panel    │  (5 days, ~1,200 LOC)
 └────────┬────────┘
          │
-         ▼
+         [DOWN]
 ┌─────────────────┐
 │   CHUNK 3       │  Error Queue & TreeView
 │   TreeView      │  (5 days, ~1,000 LOC)
 └────────┬────────┘
          │
-         ▼
+         [DOWN]
 ┌─────────────────┐
 │   CHUNK 4       │  Inline Editor Integration
 │   Inline Int    │  (5 days, ~800 LOC)
 └────────┬────────┘
          │
-         ▼
+         [DOWN]
 ┌─────────────────┐
 │   CHUNK 5       │  Polish & Production Ready
 │   Polish        │  (5 days, ~600 LOC)
@@ -351,7 +351,7 @@
 ### Quick Start Checklist
 
 **Before starting Chunk 1:**
-- [ ] Backend Phase 1 complete (✅ Already done)
+- [ ] Backend Phase 1 complete ([DONE] Already done)
 - [ ] Review current extension code in `vscode-extension/src/`
 - [ ] Create feature branch: `feature/ui-overhaul-chunk-1`
 - [ ] Set up testing environment
@@ -460,10 +460,10 @@ Before starting implementation (don't stress, it's a hobby project!):
 #### Default State (No Errors)
 ```
 ╔═══════════════════════════════════════════════════════╗
-║ RCA AGENT                             [⚙️] [📖] [✕] ║
+║ RCA AGENT                             [[SETTINGS]] [[BOOK]] [✕] ║
 ╠═══════════════════════════════════════════════════════╣
 ║                                                       ║
-║              [▶ Analyze Selected Error]              ║
+║              [[PLAY] Analyze Selected Error]              ║
 ║                                                       ║
 ║  ╭───────────────────────────────────────────────╮   ║
 ║  │        No errors detected                     │   ║
@@ -486,27 +486,27 @@ Before starting implementation (don't stress, it's a hobby project!):
 #### Active State (With Errors)
 ```
 ╔═══════════════════════════════════════════════════════╗
-║ RCA AGENT                             [⚙️] [📖] [✕] ║
+║ RCA AGENT                             [[SETTINGS]] [[BOOK]] [✕] ║
 ╠═══════════════════════════════════════════════════════╣
-║ ERROR QUEUE                            [▶ Analyze All]║
+║ ERROR QUEUE                            [[PLAY] Analyze All]║
 ╟───────────────────────────────────────────────────────╢
 ║ ┌─────────────────────────────────────────────────┐   ║
-║ │ 🔴 NullPointerException                  Line 42│   ║
+║ │ [RED] NullPointerException                  Line 42│   ║
 ║ │    MainActivity.kt                      [Analyze]│   ║
 ║ ├─────────────────────────────────────────────────┤   ║
-║ │ 🟡 Unresolved reference: User            Line 15│   ║
+║ │ [YELLOW] Unresolved reference: User            Line 15│   ║
 ║ │    UserRepository.kt                    [Analyze]│   ║
 ║ ├─────────────────────────────────────────────────┤   ║
-║ │ 🟢 Compose recomposition                Line 88│   ║
+║ │ [GREEN] Compose recomposition                Line 88│   ║
 ║ │    HomeScreen.kt                        [Analyze]│   ║
 ║ └─────────────────────────────────────────────────┘   ║
 ║                                                       ║
-║ 📊 CURRENT ANALYSIS                    [⏸ Stop] [⏷] ║
+║ [CHART] CURRENT ANALYSIS                    [[PAUSE] Stop] [⏷] ║
 ╟───────────────────────────────────────────────────────╢
 ║ Error: NullPointerException at MainActivity.kt:42     ║
 ║ Type: kotlin_npe                                      ║
 ║                                                       ║
-║ 🔄 Progress: █████████████░░░░░░░ 65%               ║
+║ [REFRESH] Progress: █████████████░░░░░░░ 65%               ║
 ║    💭 Analyzing error pattern...                     ║
 ║                                                       ║
 ║ Iteration 2 of 3                                      ║
@@ -524,43 +524,43 @@ Before starting implementation (don't stress, it's a hobby project!):
 #### Analysis Complete State
 ```
 ╔═══════════════════════════════════════════════════════╗
-║ ✅ ANALYSIS COMPLETE                                 ║
+║ [DONE] ANALYSIS COMPLETE                                 ║
 ║ NullPointerException at MainActivity.kt:42            ║
 ╟───────────────────────────────────────────────────────╢
-║ 🎯 ROOT CAUSE                                        ║
+║ [TARGET] ROOT CAUSE                                        ║
 ║ ┌─────────────────────────────────────────────────┐   ║
 ║ │ Accessing 'name' property on null User object.  │   ║
 ║ │ The getUserById() returns null when user not    │   ║
 ║ │ found, but code doesn't check for null.         │   ║
 ║ └─────────────────────────────────────────────────┘   ║
 ║                                                       ║
-║ 📝 CODE CONTEXT                         [View File ↗]║
+║ [NOTE] CODE CONTEXT                         [View File ↗]║
 ║ ┌─────────────────────────────────────────────────┐   ║
 ║ │ 40: fun displayUser(id: Int) {               │   ║
 ║ │ 41:   val user = getUserById(id)             │   ║
-║ │ 42: → println(user.name) // 🔥 CRASH HERE    │   ║
+║ │ 42: → println(user.name) // [HOT] CRASH HERE    │   ║
 ║ │ 43:   println(user.email)                    │   ║
 ║ │ 44: }                                        │   ║
 ║ └─────────────────────────────────────────────────┘   ║
 ║                                                       ║
-║ 🛠️ FIX GUIDELINES                                    ║
+║ [FIX] FIX GUIDELINES                                    ║
 ║ ┌─────────────────────────────────────────────────┐   ║
 ║ │ 1. Use safe call operator                       │   ║
-║ │    println(user?.name)              [📋 Copy]  │   ║
+║ │    println(user?.name)              [[CLIPBOARD] Copy]  │   ║
 ║ │                                                 │   ║
 ║ │ 2. Use Elvis operator with default             │   ║
 ║ │    val name = user?.name ?: "Unknown"          │   ║
-║ │    println(name)                    [📋 Copy]  │   ║
+║ │    println(name)                    [[CLIPBOARD] Copy]  │   ║
 ║ │                                                 │   ║
 ║ │ 3. Check for null explicitly                   │   ║
 ║ │    if (user != null) {                         │   ║
 ║ │      println(user.name)                        │   ║
-║ │    }                                [📋 Copy]  │   ║
+║ │    }                                [[CLIPBOARD] Copy]  │   ║
 ║ └─────────────────────────────────────────────────┘   ║
 ║                                                       ║
-║ 📊 CONFIDENCE: ████████████████████░ 92%            ║
+║ [CHART] CONFIDENCE: ████████████████████░ 92%            ║
 ║                                                       ║
-║ [👍 Helpful] [👎 Not Helpful] [💬 Feedback]         ║
+║ [[LIKE] Helpful] [[DISLIKE] Not Helpful] [[CHAT] Feedback]         ║
 ╚═══════════════════════════════════════════════════════╝
 ```
 
@@ -571,7 +571,7 @@ Before starting implementation (don't stress, it's a hobby project!):
 #### Ollama Server Unavailable
 ```
 ╔═══════════════════════════════════════════════════════╗
-║ ⚠️ OLLAMA SERVER NOT AVAILABLE                       ║
+║ [WARNING] OLLAMA SERVER NOT AVAILABLE                       ║
 ╟───────────────────────────────────────────────────────╢
 ║  The Ollama server is not responding.                 ║
 ║                                                       ║
@@ -582,14 +582,14 @@ Before starting implementation (don't stress, it's a hobby project!):
 ║                                                       ║
 ║  Current URL: http://localhost:11434                  ║
 ║                                                       ║
-║  [🔄 Check Connection] [🔧 Change URL] [📋 View Logs]║
+║  [[REFRESH] Check Connection] [[TOOL] Change URL] [[CLIPBOARD] View Logs]║
 ╚═══════════════════════════════════════════════════════╝
 ```
 
 #### Model Not Found
 ```
 ╔═══════════════════════════════════════════════════════╗
-║ ⚠️ MODEL NOT FOUND                                   ║
+║ [WARNING] MODEL NOT FOUND                                   ║
 ╟───────────────────────────────────────────────────────╢
 ║  The model 'deepseek-r1' is not installed.           ║
 ║                                                       ║
@@ -602,7 +602,7 @@ Before starting implementation (don't stress, it's a hobby project!):
 ║  • deepseek-coder (smaller, faster)                   ║
 ║  • codellama (optimized for code)                     ║
 ║                                                       ║
-║  [⬇️ Install Model] [🔄 Choose Different Model]      ║
+║  [[DOWN] Install Model] [[REFRESH] Choose Different Model]      ║
 ╚═══════════════════════════════════════════════════════╝
 ```
 
@@ -612,12 +612,12 @@ Before starting implementation (don't stress, it's a hobby project!):
 
 #### Main Toolbar
 ```
-[▶ Analyze] [⏸] [🔄] [⚙️] [❓] [✕]
+[[PLAY] Analyze] [[PAUSE]] [[REFRESH]] [[SETTINGS]] [❓] [✕]
 
-▶ Analyze   = Analyze selected/all errors
-⏸ Pause     = Stop current analysis
-🔄 Refresh   = Reload error queue
-⚙️ Settings  = Open settings dropdown
+[PLAY] Analyze   = Analyze selected/all errors
+[PAUSE] Pause     = Stop current analysis
+[REFRESH] Refresh   = Reload error queue
+[SETTINGS] Settings  = Open settings dropdown
 ❓ Docs      = Open documentation
 ✕ Close     = Close panel
 ```
@@ -625,7 +625,7 @@ Before starting implementation (don't stress, it's a hobby project!):
 #### Settings Dropdown (Expanded)
 ```
 ┌─────────────────────────────────────────┐
-│ ⚙️ SETTINGS                            │
+│ [SETTINGS] SETTINGS                            │
 ├─────────────────────────────────────────┤
 │ Display                                 │
 │   ☑ Educational Mode                   │
@@ -640,21 +640,21 @@ Before starting implementation (don't stress, it's a hobby project!):
 │   ☑ Keep Panel Open After Analysis     │
 │                                         │
 │ Analysis                                │
-│ • Max Iterations: [3 ▼]                │
-│ • Analysis Mode: [Standard ▼]          │
+│ • Max Iterations: [3 [DOWN]]                │
+│ • Analysis Mode: [Standard [DOWN]]          │
 │   ├─ Fast (1-2 iterations)              │
 │   ├─ Standard (3 iterations)            │
 │   └─ Deep (5-10 iterations)             │
 │                                         │
 │ Model Configuration                     │
-│ • Model: [DeepSeek-R1 ▼]               │
+│ • Model: [DeepSeek-R1 [DOWN]]               │
 │ • Ollama URL: [localhost:11434]         │
 │ • Timeout: [120s]                       │
 │                                         │
 │ Advanced                                │
-│ • [📋 View Logs]                       │
-│ • [🗑️ Clear Cache]                     │
-│ • [⚙️ Advanced Settings...]            │
+│ • [[CLIPBOARD] View Logs]                       │
+│ • [[TRASH] Clear Cache]                     │
+│ • [[SETTINGS] Advanced Settings...]            │
 │                                         │
 │ [Reset to Defaults] [Apply] [Cancel]   │
 └─────────────────────────────────────────┘
@@ -666,15 +666,15 @@ Before starting implementation (don't stress, it's a hobby project!):
 
 #### Lightbulb Quick Actions
 ```
-42: println(user.name) // 💡 Error: NPE
+42: println(user.name) // [IDEA] Error: NPE
          ↑
          └─ Hover shows lightbulb
 
 Click lightbulb → Quick Actions Menu:
 ┌────────────────────────────────┐
-│ 🤖 Analyze with RCA Agent     │ ← NEW!
-│ 🔧 Quick Fix...               │
-│ 💡 Explain Problem            │
+│ [BOT] Analyze with RCA Agent     │ ← NEW!
+│ [TOOL] Quick Fix...               │
+│ [IDEA] Explain Problem            │
 │ 🚫 Suppress Warning           │
 └────────────────────────────────┘
 ```
@@ -683,7 +683,7 @@ Click lightbulb → Quick Actions Menu:
 ```
 42: println(user.name) // Error
     ──────────────────────────────────────
-    │ 🤖 RCA Agent - Analysis Result    │
+    │ [BOT] RCA Agent - Analysis Result    │
     │─────────────────────────────────────│
     │ Root Cause: Null reference access   │
     │                                     │
@@ -699,10 +699,10 @@ Click lightbulb → Quick Actions Menu:
 ### Status Bar Integration
 
 ```
-Idle:       🤖 RCA: Ready
-Analyzing:  🔄 RCA: Analyzing (2/3) 67%
-Errors:     🤖 (3) RCA: 3 errors detected
-Error:      ⚠️ RCA: Analysis failed
+Idle:       [BOT] RCA: Ready
+Analyzing:  [REFRESH] RCA: Analyzing (2/3) 67%
+Errors:     [BOT] (3) RCA: 3 errors detected
+Error:      [WARNING] RCA: Analysis failed
 ```
 
 ---
@@ -1029,7 +1029,7 @@ export class RCACodeActionProvider implements vscode.CodeActionProvider {
     
     for (const diagnostic of context.diagnostics) {
       const analyzeAction = new vscode.CodeAction(
-        '🤖 Analyze with RCA Agent',
+        '[BOT] Analyze with RCA Agent',
         vscode.CodeActionKind.QuickFix
       );
       
@@ -1204,7 +1204,7 @@ export class AnalysisService {
 
 | Feature | Trigger | Description |
 |---------|---------|-------------|
-| **Quick Analysis** | Click 💡 on error | Lightbulb menu |
+| **Quick Analysis** | Click [IDEA] on error | Lightbulb menu |
 | **Peek View** | Ctrl+K Ctrl+I | Inline peek view |
 | **Apply Fix** | Click [Apply Fix] | One-click fix |
 | **Copy Fix** | Click [Copy] | Copy to clipboard |
@@ -1301,7 +1301,7 @@ export interface AnalysisProgress {
 }
 ```
 
-**✅ Success Criteria:**
+**[DONE] Success Criteria:**
 - [ ] Folder structure created
 - [ ] Types defined
 - [ ] No compilation errors
@@ -1402,7 +1402,7 @@ export function activate(context: vscode.ExtensionContext) {
 }
 ```
 
-**✅ Success Criteria:**
+**[DONE] Success Criteria:**
 - [ ] Activity bar icon appears
 - [ ] Panel opens when icon clicked
 - [ ] Basic HTML content displays
@@ -1413,7 +1413,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 *(Detailed implementation steps following the same pattern)*
 
-**✅ Chunk 1 Complete:**
+**[DONE] Chunk 1 Complete:**
 - [ ] Panel appears
 - [ ] Basic UI works
 - [ ] Old commands intact
@@ -1431,7 +1431,7 @@ export function activate(context: vscode.ExtensionContext) {
 - Settings integration
 - Status bar integration
 
-**✅ Chunk 2 Complete:**
+**[DONE] Chunk 2 Complete:**
 - [ ] Full analysis workflow works
 - [ ] Panel displays all states correctly
 - [ ] Real-time progress works
@@ -1448,7 +1448,7 @@ export function activate(context: vscode.ExtensionContext) {
 - Auto-detect errors
 - Peek view (optional)
 
-**✅ Chunk 3 Complete:**
+**[DONE] Chunk 3 Complete:**
 - [ ] Error queue auto-populates
 - [ ] TreeView displays correctly
 - [ ] Batch analysis functional
@@ -1465,7 +1465,7 @@ export function activate(context: vscode.ExtensionContext) {
 - Testing & bug fixes
 - Release preparation
 
-**✅ Chunk 4 Complete:**
+**[DONE] Chunk 4 Complete:**
 - [ ] Lightbulb integration works
 - [ ] Status bar integration complete
 - [ ] All keyboard shortcuts work
@@ -1483,7 +1483,7 @@ export function activate(context: vscode.ExtensionContext) {
 - Feature flag implementation
 - Comprehensive testing
 
-**✅ Chunk 5 Complete:**
+**[DONE] Chunk 5 Complete:**
 - [ ] All features polished and bug-free
 - [ ] Accessibility: WCAG 2.1 AA
 - [ ] Documentation complete with screenshots
@@ -1567,11 +1567,11 @@ If issues arise:
 ### Success Metrics
 
 **This redesign is successful if:**
-1. ✅ Users can analyze errors in **≤2 clicks** (vs. 4 steps)
-2. ✅ **80%+ users** discover RCA Agent without docs
-3. ✅ **60%+ reduction** in time-to-first-fix
-4. ✅ **90%+ users** prefer new UI (survey)
-5. ✅ **Zero increase** in bug reports during migration
+1. [DONE] Users can analyze errors in **≤2 clicks** (vs. 4 steps)
+2. [DONE] **80%+ users** discover RCA Agent without docs
+3. [DONE] **60%+ reduction** in time-to-first-fix
+4. [DONE] **90%+ users** prefer new UI (survey)
+5. [DONE] **Zero increase** in bug reports during migration
 
 ---
 

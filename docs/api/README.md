@@ -1,10 +1,10 @@
-# API Documentation
+﻿# API Documentation
 
 > **Complete API reference for RCA Agent components**
 
 ---
 
-## 📚 Available APIs
+## [DOCS] Available APIs
 
 ### Core Components
 
@@ -19,7 +19,7 @@
 
 ---
 
-## 🎯 Quick Reference
+## [TARGET] Quick Reference
 
 **Looking for...**
 - **Agent behavior** → [Agent.md](Agent.md)
@@ -30,7 +30,7 @@
 
 ---
 
-## 📊 Statistics
+## [CHART] Statistics
 
 - **Total Lines:** ~5,200
 - **APIs Documented:** 50+

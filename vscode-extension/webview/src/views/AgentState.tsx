@@ -2,16 +2,16 @@
  * Agent State View - Real-time visualization of agent's thought process
  * 
  * Features:
- * - ✅ Live iteration progress bar
- * - ✅ Current hypothesis with confidence meter
- * - ✅ Observations list
- * - ✅ Tools used with timing
- * - ✅ Consensus building visualization
- * - ✅ Phase indicators
- * - ✅ Loading skeletons for async content
- * - ✅ ARIA labels for accessibility
- * - ✅ Screen reader announcements
- * - ✅ Keyboard navigation support
+ * - [OK] Live iteration progress bar
+ * - [OK] Current hypothesis with confidence meter
+ * - [OK] Observations list
+ * - [OK] Tools used with timing
+ * - [OK] Consensus building visualization
+ * - [OK] Phase indicators
+ * - [OK] Loading skeletons for async content
+ * - [OK] ARIA labels for accessibility
+ * - [OK] Screen reader announcements
+ * - [OK] Keyboard navigation support
  */
 
 import { useEffect } from 'react';

@@ -5,10 +5,10 @@
  * the improvement from all Chunks 1-6 implementations.
  * 
  * **Previous Result (MVP Test):** 40% usability
- * - Diagnosis: 100% ✅
- * - Solution: 17% ❌
- * - File identification: 30% ⚠️
- * - Code examples: 0% ❌
+ * - Diagnosis: 100% [OK]
+ * - Solution: 17% [X]
+ * - File identification: 30% [WARN]
+ * - Code examples: 0% [X]
  * 
  * **Expected Improvement:**
  * - Version suggestions: 0% → 90% (Chunks 1-2)
@@ -42,11 +42,11 @@ interface TestResult {
 }
 
 async function runTest1(): Promise<TestResult> {
-  console.log('\n🧪 Running Chunk 7 Test 1: AGP Version Error (Re-test MVP)\n');
+  console.log('\n[TEST] Running Chunk 7 Test 1: AGP Version Error (Re-test MVP)\n');
   
   // Chunk 7: Set project root for FileResolver integration
   const projectRoot = 'c:/Users/Admin/OneDrive/Desktop/Nuclear Creation/AI/AI_PP_project/tests/fixtures/mvp-test-project';
-  console.log(`📁 Project root: ${projectRoot}\n`);
+  console.log(`[FOLDER] Project root: ${projectRoot}\n`);
   
   // The original MVP error
   const error: ParsedError = {
@@ -83,7 +83,7 @@ async function runTest1(): Promise<TestResult> {
   };
 
   // Initialize Ollama client
-  console.log('⚙️  Initializing Ollama client...');
+  console.log('[CONFIG]  Initializing Ollama client...');
   const ollama = new OllamaClient({
     baseUrl: 'http://localhost:11434',
     model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest',
@@ -97,10 +97,10 @@ async function runTest1(): Promise<TestResult> {
     projectRoot: projectRoot  // Chunk 7: FileResolver integration
   });
 
-  console.log('⚙️  Agent configured with improvements');
+  console.log('[CONFIG]  Agent configured with improvements');
   console.log('   - Model: DeepSeek-R1-Distill-Qwen-7B');
   console.log('   - Max iterations: 5');
-  console.log('   - Fix generation: ✅');
+  console.log('   - Fix generation: [OK]');
   console.log(`   - Project root: ${projectRoot}`);
   console.log('   - Timeout: 120s\n');
 
@@ -110,14 +110,14 @@ async function runTest1(): Promise<TestResult> {
     const result = await agent.analyze(error);
     const latencyMs = Date.now() - startTime;
 
-    console.log('\n✅ Analysis complete!');
-    console.log(`⏱️  Latency: ${latencyMs}ms (${(latencyMs / 1000).toFixed(2)}s)`);
+    console.log('\n[OK] Analysis complete!');
+    console.log(`[TIME]  Latency: ${latencyMs}ms (${(latencyMs / 1000).toFixed(2)}s)`);
     
     // Calculate metrics
     const metrics = calculateMetrics(result, error);
     
     // Display results
-    console.log('\n📊 Metrics:');
+    console.log('\n[STATS] Metrics:');
     console.log(`   Overall Usability: ${metrics.overallUsability}%`);
     console.log(`   Diagnosis Accuracy: ${metrics.diagnosisAccuracy}%`);
     console.log(`   Solution Specificity: ${metrics.solutionSpecificity}%`);
@@ -127,7 +127,7 @@ async function runTest1(): Promise<TestResult> {
     console.log(`   Confidence: ${metrics.confidence}%`);
     
     // Compare with MVP baseline
-    console.log('\n📈 Improvement from MVP Test:');
+    console.log('\n[UP] Improvement from MVP Test:');
     console.log(`   Usability: 40% → ${metrics.overallUsability}% (+${metrics.overallUsability - 40}%)`);
     console.log(`   Solution: 17% → ${metrics.solutionSpecificity}% (+${metrics.solutionSpecificity - 17}%)`);
     console.log(`   File ID: 30% → ${metrics.fileIdentification}% (+${metrics.fileIdentification - 30}%)`);
@@ -141,7 +141,7 @@ async function runTest1(): Promise<TestResult> {
       timestamp: new Date().toISOString()
     };
   } catch (error) {
-    console.error('\n❌ Test failed:', error);
+    console.error('\n[X] Test failed:', error);
     throw error;
   }
 }
@@ -255,15 +255,15 @@ if (require.main === module) {
   runTest1()
     .then(result => saveResults(result))
     .then(() => {
-      console.log('\n✅ Test 1 complete!');
-      console.log('\n📝 Next Steps:');
+      console.log('\n[OK] Test 1 complete!');
+      console.log('\n[NOTE] Next Steps:');
       console.log('   1. Review results in TEST_RESULTS/');
       console.log('   2. Update CHUNK_7_COMPLETION.md');
       console.log('   3. Create Test 2 (Kotlin lateinit NPE)');
       process.exit(0);
     })
     .catch(error => {
-      console.error('\n❌ Test failed:', error);
+      console.error('\n[X] Test failed:', error);
       process.exit(1);
     });
 }

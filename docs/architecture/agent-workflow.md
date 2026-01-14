@@ -1,4 +1,4 @@
-# Agent Workflow and Reasoning Process
+﻿# Agent Workflow and Reasoning Process
 
 > **Last Updated:** December 20, 2025 (Chunk 5.5)  
 > **Component:** MinimalReactAgent, EducationalAgent  
@@ -92,32 +92,32 @@ export class MinimalReactAgent {
 │ 1. Parse Error     │  ErrorParser.parse(errorText)
 └────────┬───────────┘  → Returns ParsedError or null
          │
-         ▼
+         [DOWN]
 ┌────────────────────┐
 │ 2. Hash Error      │  ErrorHasher.hash(parsedError)
 └────────┬───────────┘  → Returns SHA-256 hash
          │
-         ▼
+         [DOWN]
 ┌────────────────────┐
 │ 3. Cache Lookup    │  RCACache.get(hash)
 └────────┬───────────┘  → Returns cached RCA or null
          │
      Hit │   Miss
          │     │
-         │     ▼
+         │     [DOWN]
          │  ┌──────────────────┐
          │  │ 4. DB Search     │  ChromaDB.searchSimilar()
          │  └────────┬─────────┘  → Returns similar RCAs or []
          │           │
          │       Found│  Not Found
          │           │     │
-         │           │     ▼
+         │           │     [DOWN]
          │           │  ┌─────────────────┐
          │           │  │ 5. Read File    │  ReadFileTool.execute()
          │           │  │    Context      │  → Read ±25 lines
          │           │  └────────┬────────┘
          │           │           │
-         │           │           ▼
+         │           │           [DOWN]
          │           │  ┌─────────────────┐
          │           │  │ 6. Initialize   │  Create AgentState
          │           │  │    Agent State  │  → Set iteration = 0
@@ -127,7 +127,7 @@ export class MinimalReactAgent {
          │                  │
          └──────────────────┘
                      │
-                     ▼
+                     [DOWN]
           ┌──────────────────┐
           │ 7. Start ReAct   │  Begin iteration loop
           │    Loop          │
@@ -173,7 +173,7 @@ export class MinimalReactAgent {
 │  │  Latency: 10-15s (GPU), 20-30s (CPU)            │     │
 │  └─────────────────────────────────────────────────┘     │
 │                         │                                 │
-│                         ▼                                 │
+│                         [DOWN]                                 │
 │  ┌─────────────────────────────────────────────────┐     │
 │  │ STEP 2: ACTION SELECTION                        │     │
 │  │                                                  │     │
@@ -195,7 +195,7 @@ export class MinimalReactAgent {
 │  │  Latency: <1ms (parsing only)                    │     │
 │  └─────────────────────────────────────────────────┘     │
 │                         │                                 │
-│                         ▼                                 │
+│                         [DOWN]                                 │
 │  ┌─────────────────────────────────────────────────┐     │
 │  │ STEP 3: TOOL EXECUTION                          │     │
 │  │                                                  │     │
@@ -220,7 +220,7 @@ export class MinimalReactAgent {
 │  │   - AndroidBuildTool: 50-100ms                   │     │
 │  └─────────────────────────────────────────────────┘     │
 │                         │                                 │
-│                         ▼                                 │
+│                         [DOWN]                                 │
 │  ┌─────────────────────────────────────────────────┐     │
 │  │ STEP 4: STATE UPDATE                            │     │
 │  │                                                  │     │
@@ -242,7 +242,7 @@ export class MinimalReactAgent {
                           │
            ┌──────────────┴──────────────┐
            │                             │
-           ▼ Continue                    ▼ Done
+           [DOWN] Continue                    [DOWN] Done
     Next Iteration             Phase 3: Synthesis
 ```
 
@@ -275,7 +275,7 @@ Agent may conclude early (before max iterations) if:
 │                        │  - Request structured JSON
 └────────┬───────────────┘
          │
-         ▼
+         [DOWN]
 ┌────────────────────────┐
 │ 2. Final LLM Call      │  OllamaClient.generate()
 │                        │  - Longer prompt (all context)
@@ -283,7 +283,7 @@ Agent may conclude early (before max iterations) if:
 │                        │  - Request fix guidelines
 └────────┬───────────────┘
          │
-         ▼
+         [DOWN]
 ┌────────────────────────┐
 │ 3. Parse Response      │  PromptEngine.parseResponse()
 │                        │  - Extract JSON
@@ -291,7 +291,7 @@ Agent may conclude early (before max iterations) if:
 │                        │  - Handle malformed output
 └────────┬───────────────┘
          │
-         ▼
+         [DOWN]
 ┌────────────────────────┐
 │ 4. Build RCAResult     │  Create final object
 │                        │  - Root cause string
@@ -300,7 +300,7 @@ Agent may conclude early (before max iterations) if:
 │                        │  - Metadata (iterations, tools)
 └────────┬───────────────┘
          │
-         ▼
+         [DOWN]
 ┌────────────────────────┐
 │ 5. Store in Database   │  ChromaDBClient.addRCA()
 │                        │  - Generate embedding
@@ -308,21 +308,21 @@ Agent may conclude early (before max iterations) if:
 │                        │  - Update quality score
 └────────┬───────────────┘
          │
-         ▼
+         [DOWN]
 ┌────────────────────────┐
 │ 6. Cache Result        │  RCACache.set(hash, result)
 │                        │  - TTL: 24 hours
 │                        │  - In-memory storage
 └────────┬───────────────┘
          │
-         ▼
+         [DOWN]
 ┌────────────────────────┐
 │ 7. Emit Complete Event │  AgentStateStream.emitComplete()
 │                        │  - Full RCA result
 │                        │  - Performance metrics
 └────────┬───────────────┘
          │
-         ▼
+         [DOWN]
 ┌────────────────────────┐
 │ 8. Return to Caller    │  Return RCAResult
 └────────────────────────┘

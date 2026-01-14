@@ -192,7 +192,7 @@ async function validateAgentAnalysis(): Promise<ValidationResult> {
 // ========================================
 
 async function main(): Promise<void> {
-  console.log('\n🔍 Validating Performance Testing Setup\n');
+  console.log('\n[SEARCH] Validating Performance Testing Setup\n');
   console.log('='.repeat(80));
   
   const results: ValidationResult[] = [];
@@ -204,7 +204,7 @@ async function main(): Promise<void> {
   printResult(ollamaResult);
 
   if (ollamaResult.status === 'fail') {
-    console.log('\n❌ Ollama server validation failed. Please ensure:');
+    console.log('\n[X] Ollama server validation failed. Please ensure:');
     console.log('   1. Ollama is installed: https://ollama.ai/download');
     console.log('   2. Ollama server is running: ollama serve');
     console.log('   3. Model is downloaded: ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest');
@@ -228,7 +228,7 @@ async function main(): Promise<void> {
   // Test 4: Agent Analysis (only if previous tests passed)
   if (results.every(r => r.status === 'pass')) {
     console.log('\n[4/4] Running agent end-to-end test (KT-001: Simple lateinit NPE)...');
-    console.log('   ⏳ This may take 60-90 seconds...');
+    console.log('   [PENDING] This may take 60-90 seconds...');
     const agentResult = await validateAgentAnalysis();
     results.push(agentResult);
     printResult(agentResult);
@@ -250,7 +250,7 @@ async function main(): Promise<void> {
 }
 
 function printResult(result: ValidationResult): void {
-  const icon = result.status === 'pass' ? '✅' : '❌';
+  const icon = result.status === 'pass' ? '[OK]' : '[X]';
   const durationStr = result.duration ? ` (${(result.duration / 1000).toFixed(2)}s)` : '';
   
   console.log(`   ${icon} ${result.test}${durationStr}`);
@@ -259,27 +259,27 @@ function printResult(result: ValidationResult): void {
 
 function printSummary(results: ValidationResult[]): void {
   console.log('\n' + '='.repeat(80));
-  console.log('📊 VALIDATION SUMMARY\n');
+  console.log('[STATS] VALIDATION SUMMARY\n');
 
   const passed = results.filter(r => r.status === 'pass').length;
   const failed = results.filter(r => r.status === 'fail').length;
   const total = results.length;
 
   console.log(`Total Tests: ${total}`);
-  console.log(`Passed: ${passed} ✅`);
-  console.log(`Failed: ${failed} ❌`);
+  console.log(`Passed: ${passed} [OK]`);
+  console.log(`Failed: ${failed} [X]`);
   console.log(`Success Rate: ${((passed / total) * 100).toFixed(1)}%`);
 
   if (passed === total) {
-    console.log('\n🎉 All validation tests passed!');
-    console.log('✅ Performance testing suite is ready to use.');
+    console.log('\n[SUCCESS] All validation tests passed!');
+    console.log('[OK] Performance testing suite is ready to use.');
     console.log('\nNext steps:');
     console.log('  - Run quick test (8 simple cases, ~9 min):');
     console.log('    npm run perf-test:quick');
     console.log('  - Run full suite (31 tests, ~40 min):');
     console.log('    npm run perf-test');
   } else {
-    console.log('\n❌ Some validation tests failed.');
+    console.log('\n[X] Some validation tests failed.');
     console.log('Please address the issues above before running performance tests.');
   }
 
@@ -289,7 +289,7 @@ function printSummary(results: ValidationResult[]): void {
 // Run
 if (require.main === module) {
   main().catch(error => {
-    console.error('\n❌ Fatal error during validation:', error);
+    console.error('\n[X] Fatal error during validation:', error);
     process.exit(1);
   });
 }

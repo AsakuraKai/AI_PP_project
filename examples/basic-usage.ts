@@ -127,7 +127,7 @@ async function checkOllamaStatus() {
     console.log('Ollama Server:', healthy ? '✓ Online' : '✗ Offline');
 
     if (!healthy) {
-      console.log('\n❌ Ollama is not running!');
+      console.log('\n[X] Ollama is not running!');
       console.log('Please start Ollama:');
       console.log('  ollama serve');
       return;
@@ -142,13 +142,13 @@ async function checkOllamaStatus() {
     console.log('\nhf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest:', hasGraniteCode ? '✓ Installed' : '✗ Not found');
 
     if (!hasGraniteCode) {
-      console.log('\n❌ Required model not found!');
+      console.log('\n[X] Required model not found!');
       console.log('Please download:');
       console.log('  ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest');
       return;
     }
 
-    console.log('\n✅ All prerequisites met!');
+    console.log('\n[OK] All prerequisites met!');
   } catch (error) {
     console.error('Error checking Ollama:', error);
   }

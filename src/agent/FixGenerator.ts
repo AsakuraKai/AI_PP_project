@@ -162,15 +162,15 @@ export class FixGenerator {
         return null;
       }
       
-      // ✨ NEW: Validate file content
+      // [FEATURE] NEW: Validate file content
       if (originalCode.startsWith('Error:')) {
-        console.warn(`⚠️ Cannot generate fix: source file not readable`);
+        console.warn(`[WARN] Cannot generate fix: source file not readable`);
         return null;  // Don't generate if no source
       }
       
-      // ✨ NEW: Validate file is not JSON (sanity check)
+      // [FEATURE] NEW: Validate file is not JSON (sanity check)
       if (originalCode.trim().startsWith('{')) {
-        console.warn(`⚠️ Cannot generate fix: file content appears to be JSON`);
+        console.warn(`[WARN] Cannot generate fix: file content appears to be JSON`);
         return null;
       }
       
@@ -276,7 +276,7 @@ export class FixGenerator {
     contextLines: number
   ): Promise<string | null> {
     try {
-      // ✨ CHUNK 7: Resolve exact file path first using FileResolver
+      // [FEATURE] CHUNK 7: Resolve exact file path first using FileResolver
       const resolved = await this.fileResolver.resolve(filePath);
       
       let pathToUse = filePath; // Default to original path
@@ -382,12 +382,12 @@ INSTRUCTIONS:
 6. Do NOT wrap in JSON objects
 7. Do NOT add explanations outside code
 
-❌ DO NOT output like this:
+[X] DO NOT output like this:
 {
   "fixedCode": "..."
 }
 
-✅ DO output like this (code in a fence or raw):
+[OK] DO output like this (code in a fence or raw):
 \`\`\`${request.error.language}
 [your fixed code here]
 \`\`\`
@@ -405,7 +405,7 @@ FIXED CODE (start with \`\`\`${request.error.language}):`;
     // Check if LLM returned JSON object (wrong format)
     const trimmed = text.trim();
     if (trimmed.startsWith('{') && trimmed.length < 50) {
-      console.warn('⚠️ LLM returned JSON instead of code, attempting recovery');
+      console.warn('[WARN] LLM returned JSON instead of code, attempting recovery');
       // Try to extract from JSON
       try {
         const json = JSON.parse(trimmed);

@@ -2,16 +2,16 @@
  * History View - Browse and search past analyses
  * 
  * Features:
- * - ✅ Timeline grouped by date (Today, Yesterday, This Week, etc.)
- * - ✅ Full-text search across error messages and root causes
- * - ✅ Filter by success/failure
- * - ✅ Re-analyze past errors
- * - ✅ Export analysis to markdown
- * - ✅ Delete individual items or clear all history
- * - ✅ Keyboard navigation (Arrow keys through timeline, Enter to expand)
- * - ✅ ARIA labels for accessibility
- * - ✅ Loading skeletons for async content
- * - ✅ Screen reader announcements
+ * - [OK] Timeline grouped by date (Today, Yesterday, This Week, etc.)
+ * - [OK] Full-text search across error messages and root causes
+ * - [OK] Filter by success/failure
+ * - [OK] Re-analyze past errors
+ * - [OK] Export analysis to markdown
+ * - [OK] Delete individual items or clear all history
+ * - [OK] Keyboard navigation (Arrow keys through timeline, Enter to expand)
+ * - [OK] ARIA labels for accessibility
+ * - [OK] Loading skeletons for async content
+ * - [OK] Screen reader announcements
  */
 
 import { useState, useRef, useEffect } from 'react';
@@ -26,7 +26,9 @@ import {
   CheckCircle2,
   XCircle,
   Calendar,
-  Filter
+  Filter,
+  ThumbsDown,
+  ThumbsUp
 } from 'lucide-react';
 import { useHistory, type FilterStatus } from '../hooks/useHistory';
 import { Button } from '../components/ui/button';
@@ -52,13 +54,15 @@ export function History() {
     sortOrder,
     setSortOrder,
     stats,
+    feedbackStatusById,
     refreshHistory,
     searchHistory,
     reanalyzeError,
     deleteHistoryItem,
     clearHistory,
     exportToMarkdown,
-    exportAllToMarkdown
+    exportAllToMarkdown,
+    submitFeedback
   } = useHistory();
 
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
@@ -366,6 +370,8 @@ export function History() {
               <div className="space-y-3" role="list" aria-label={`${groupName} analyses`}>
                 {groupedByDate[groupName].map((item, index) => {
                   const isExpanded = expandedItems.has(item.id);
+                  const feedbackMeta = item.result.feedback;
+                  const feedbackStatus = feedbackStatusById[item.id] || { status: 'idle' as const };
                   const timestamp = new Date(item.timestamp).toLocaleTimeString('en-US', {
                     hour: '2-digit',
                     minute: '2-digit'
@@ -424,6 +430,34 @@ export function History() {
 
                           <div className="flex gap-1 flex-shrink-0" role="group" aria-label="Item actions">
                             <Button
+                              {...createButtonProps('Mark analysis as helpful')}
+                              variant="ghost"
+                              size="sm"
+                              disabled={!feedbackMeta?.enabled || feedbackStatus.status === 'sending'}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                submitFeedback(item.id, 'positive');
+                                announce('Submitting positive feedback', 'polite');
+                              }}
+                              className="h-8 w-8 p-0 focus-ring"
+                            >
+                              <ThumbsUp className="h-4 w-4" aria-hidden="true" />
+                            </Button>
+                            <Button
+                              {...createButtonProps('Mark analysis as not helpful')}
+                              variant="ghost"
+                              size="sm"
+                              disabled={!feedbackMeta?.enabled || feedbackStatus.status === 'sending'}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                submitFeedback(item.id, 'negative');
+                                announce('Submitting negative feedback', 'polite');
+                              }}
+                              className="h-8 w-8 p-0 focus-ring"
+                            >
+                              <ThumbsDown className="h-4 w-4" aria-hidden="true" />
+                            </Button>
+                            <Button
                               {...createButtonProps('Re-analyze this error')}
                               variant="ghost"
                               size="sm"
@@ -471,6 +505,67 @@ export function History() {
                       {isExpanded && (
                         <CardContent className="p-4 pt-0 border-t border-zinc-800 mt-3">
                           <div className="space-y-4">
+                            {/* Feedback */}
+                            <div>
+                              <h4 className="text-sm font-medium text-zinc-400 mb-2">Feedback</h4>
+                              {!feedbackMeta ? (
+                                <p className="text-xs text-zinc-500">
+                                  Feedback is unavailable for this history entry.
+                                </p>
+                              ) : !feedbackMeta.enabled ? (
+                                <p className="text-xs text-zinc-500">
+                                  Feedback is disabled because the analysis was not persisted (ChromaDB not available).
+                                </p>
+                              ) : (
+                                <div className="flex items-center justify-between gap-3 flex-wrap">
+                                  <p className="text-sm text-zinc-400">Was this analysis helpful?</p>
+                                  <div className="flex items-center gap-2">
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="gap-2"
+                                      disabled={feedbackStatus.status === 'sending'}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        submitFeedback(item.id, 'positive');
+                                        announce('Submitting positive feedback', 'polite');
+                                      }}
+                                      aria-label="Submit positive feedback"
+                                    >
+                                      <ThumbsUp className="h-4 w-4" aria-hidden="true" />
+                                      Helpful
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="gap-2"
+                                      disabled={feedbackStatus.status === 'sending'}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        submitFeedback(item.id, 'negative');
+                                        announce('Submitting negative feedback', 'polite');
+                                      }}
+                                      aria-label="Submit negative feedback"
+                                    >
+                                      <ThumbsDown className="h-4 w-4" aria-hidden="true" />
+                                      Not helpful
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
+
+                              {feedbackStatus.status === 'sent' && feedbackStatus.message && (
+                                <p className="text-xs text-green-400 mt-2" role="status" aria-live="polite">
+                                  {feedbackStatus.message}
+                                </p>
+                              )}
+                              {feedbackStatus.status === 'error' && feedbackStatus.message && (
+                                <p className="text-xs text-red-400 mt-2" role="alert">
+                                  {feedbackStatus.message}
+                                </p>
+                              )}
+                            </div>
+
                             {/* Root Cause */}
                             <div>
                               <h4 className="text-sm font-medium text-zinc-400 mb-2">Root Cause</h4>

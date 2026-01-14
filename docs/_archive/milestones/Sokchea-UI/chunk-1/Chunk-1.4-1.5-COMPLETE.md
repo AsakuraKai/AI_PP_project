@@ -1,11 +1,11 @@
-# ✅ Chunks 1.4-1.5 UI: MVP Extension Complete
+﻿# [DONE] Chunks 1.4-1.5 UI: MVP Extension Complete
 
 **Date Completed:** December 19, 2025  
-**Status:** ✅ **MVP UI COMPLETE - READY FOR BACKEND INTEGRATION**
+**Status:** [DONE] **MVP UI COMPLETE - READY FOR BACKEND INTEGRATION**
 
 ---
 
-## 🎯 Executive Summary
+## [TARGET] Executive Summary
 
 Successfully completed Chunks 1.4 (Code Context Display) and 1.5 (MVP Polish) for the VS Code extension UI. The extension now provides a professional user experience with code snippet display, confidence visualization, and comprehensive error handling. All placeholder implementations are in place and ready to be wired to Kai's backend components.
 
@@ -13,9 +13,9 @@ Successfully completed Chunks 1.4 (Code Context Display) and 1.5 (MVP Polish) fo
 
 ---
 
-## 📊 What Was Accomplished
+## [CHART] What Was Accomplished
 
-### Chunk 1.4: Code Context Display ✅
+### Chunk 1.4: Code Context Display [DONE]
 
 **Goal:** Show code snippets that the agent read from source files.
 
@@ -33,7 +33,7 @@ Successfully completed Chunks 1.4 (Code Context Display) and 1.5 (MVP Polish) fo
 
 3. **Error Handling**
    - Detects when file reading fails
-   - Shows "⚠️ CODE CONTEXT: File could not be read" message
+   - Shows "[WARNING] CODE CONTEXT: File could not be read" message
    - Continues analysis even if file read fails
    - Logs warnings for troubleshooting
 
@@ -42,13 +42,13 @@ Successfully completed Chunks 1.4 (Code Context Display) and 1.5 (MVP Polish) fo
 // Enhanced showResult() function
 if (result.codeSnippet && result.codeSnippet.length > 0 && 
     result.codeSnippet !== '// Code snippet will be provided by agent') {
-  outputChannel.appendLine('📝 CODE CONTEXT (from source file):');
+  outputChannel.appendLine('[NOTE] CODE CONTEXT (from source file):');
   outputChannel.appendLine('```kotlin');
   outputChannel.appendLine(result.codeSnippet);
   outputChannel.appendLine('```\n');
   log('info', 'Code snippet displayed', { snippetLength: result.codeSnippet.length });
 } else {
-  outputChannel.appendLine('⚠️  CODE CONTEXT: File could not be read (using error message only)\n');
+  outputChannel.appendLine('[WARNING]  CODE CONTEXT: File could not be read (using error message only)\n');
   log('warn', 'No code snippet available');
 }
 ```
@@ -62,7 +62,7 @@ if (result.codeSnippet && result.codeSnippet.length > 0 &&
 
 ---
 
-### Chunk 1.5: MVP Polish ✅
+### Chunk 1.5: MVP Polish [DONE]
 
 **Goal:** Improve output formatting, error handling, and overall user experience.
 
@@ -101,7 +101,7 @@ function getConfidenceInterpretation(confidence: number): string {
 
 **Example Output:**
 ```
-✅ CONFIDENCE: 75%
+[DONE] CONFIDENCE: 75%
    ███████████████░░░░░
    Medium confidence - verify suggestion
 ```
@@ -112,12 +112,12 @@ function getConfidenceInterpretation(confidence: number): string {
 
 **A. Ollama Connection Error:**
 ```
-❌ Could not connect to Ollama. Is it running?
+[FAIL] Could not connect to Ollama. Is it running?
 [Start Ollama] [Installation Guide] [Check Logs]
 
-❌ ERROR: Could not connect to Ollama
+[FAIL] ERROR: Could not connect to Ollama
 
-🔧 TROUBLESHOOTING STEPS:
+[TOOL] TROUBLESHOOTING STEPS:
 1. Install Ollama: https://ollama.ai/
 2. Start Ollama: Run "ollama serve" in terminal
 3. Pull model: Run "ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest"
@@ -126,12 +126,12 @@ function getConfidenceInterpretation(confidence: number): string {
 
 **B. Timeout Error:**
 ```
-⏱️ Analysis timed out. Try increasing timeout or using a smaller model.
+[TIMER] Analysis timed out. Try increasing timeout or using a smaller model.
 [Open Settings] [View Logs]
 
-⏱️ ERROR: Analysis timed out
+[TIMER] ERROR: Analysis timed out
 
-💡 SUGGESTIONS:
+[IDEA] SUGGESTIONS:
 • Increase timeout in settings
 • Use a faster/smaller model (e.g., hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest)
 • Check your network connection
@@ -139,12 +139,12 @@ function getConfidenceInterpretation(confidence: number): string {
 
 **C. Parse Error:**
 ```
-⚠️ Could not parse error. Is this a Kotlin/Android error?
+[WARNING] Could not parse error. Is this a Kotlin/Android error?
 [View Debug Logs] [Report Issue]
 
-⚠️ ERROR: Could not parse error message
+[WARNING] ERROR: Could not parse error message
 
-💡 TIPS:
+[IDEA] TIPS:
 • Ensure error is from Kotlin/Android code
 • Include full stack trace if possible
 • Check debug logs for more details
@@ -152,12 +152,12 @@ function getConfidenceInterpretation(confidence: number): string {
 
 **D. Generic Error:**
 ```
-❌ Analysis failed: [error message]
+[FAIL] Analysis failed: [error message]
 [View Logs] [Retry]
 
-❌ ERROR: [error message]
+[FAIL] ERROR: [error message]
 
-📋 Stack Trace:
+[CLIPBOARD] Stack Trace:
 [full stack trace]
 ```
 
@@ -166,15 +166,15 @@ function getConfidenceInterpretation(confidence: number): string {
 **Enhanced Footer:**
 ```
 ────────────────────────────────────────────────────────────
-💡 TIP: This is a placeholder result. Connect to Ollama for real AI-powered analysis.
-📖 Configure: File > Preferences > Settings > RCA Agent
+[IDEA] TIP: This is a placeholder result. Connect to Ollama for real AI-powered analysis.
+[BOOK] Configure: File > Preferences > Settings > RCA Agent
 ❓ Need help? Check the documentation or report issues on GitHub.
 ```
 
 **Better Success Notifications:**
 ```typescript
 vscode.window.showInformationMessage(
-  '✅ Analysis complete! Check the RCA Agent output.',
+  '[DONE] Analysis complete! Check the RCA Agent output.',
   'View Output'
 ).then(selection => {
   if (selection === 'View Output') {
@@ -185,7 +185,7 @@ vscode.window.showInformationMessage(
 
 #### 4. Professional UX Touches
 
-- **Emoji Usage:** Consistent emoji set for visual hierarchy (🔍 🐛 📁 📝 💡 🛠️ ✅)
+- **Emoji Usage:** Consistent emoji set for visual hierarchy ([SEARCH] [BUG] 📁 [NOTE] [IDEA] [FIX] [DONE])
 - **Section Separators:** 60-character horizontal lines (─)
 - **Consistent Spacing:** Blank lines between sections for readability
 - **Action Buttons:** 1-3 buttons per error type for user convenience
@@ -202,7 +202,7 @@ vscode.window.showInformationMessage(
 
 ---
 
-## 📈 Metrics & Week 8 Summary
+## [GRAPH] Metrics & Week 8 Summary
 
 ### Weekly Overview
 **Week:** December 16-20, 2025 (Week 8)  
@@ -223,40 +223,40 @@ vscode.window.showInformationMessage(
 
 | Function | Purpose | Lines | Status |
 |----------|---------|-------|--------|
-| `showResult()` | Display analysis results | ~60 | ✅ Enhanced |
-| `analyzeWithProgress()` | Progress notifications | ~45 | ✅ Enhanced |
-| `handleAnalysisError()` | Error handling | ~80 | ✅ Rewritten |
-| `createConfidenceBar()` | Visual confidence | ~5 | ✅ New |
-| `getConfidenceInterpretation()` | Confidence text | ~8 | ✅ New |
-| `getErrorBadge()` | Error type badges | ~10 | ✅ Existing |
-| `log()` | Debug logging | ~15 | ✅ Existing |
+| `showResult()` | Display analysis results | ~60 | [DONE] Enhanced |
+| `analyzeWithProgress()` | Progress notifications | ~45 | [DONE] Enhanced |
+| `handleAnalysisError()` | Error handling | ~80 | [DONE] Rewritten |
+| `createConfidenceBar()` | Visual confidence | ~5 | [DONE] New |
+| `getConfidenceInterpretation()` | Confidence text | ~8 | [DONE] New |
+| `getErrorBadge()` | Error type badges | ~10 | [DONE] Existing |
+| `log()` | Debug logging | ~15 | [DONE] Existing |
 
 ### UX Improvements
 
 | Feature | Before | After | Impact |
 |---------|--------|-------|--------|
-| **Error Messages** | Generic text | Specific with actions | ⭐⭐⭐⭐⭐ High |
-| **Confidence Display** | Text only (75%) | Bar + interpretation | ⭐⭐⭐⭐ Medium-High |
-| **Code Context** | Not shown | Displayed with syntax | ⭐⭐⭐⭐⭐ High |
-| **Troubleshooting** | External docs | Inline steps | ⭐⭐⭐⭐ Medium-High |
-| **Success Feedback** | Simple message | Action button | ⭐⭐⭐ Medium |
-| **Progress Updates** | Generic | Step-by-step | ⭐⭐⭐ Medium |
+| **Error Messages** | Generic text | Specific with actions | [STAR][STAR][STAR][STAR][STAR] High |
+| **Confidence Display** | Text only (75%) | Bar + interpretation | [STAR][STAR][STAR][STAR] Medium-High |
+| **Code Context** | Not shown | Displayed with syntax | [STAR][STAR][STAR][STAR][STAR] High |
+| **Troubleshooting** | External docs | Inline steps | [STAR][STAR][STAR][STAR] Medium-High |
+| **Success Feedback** | Simple message | Action button | [STAR][STAR][STAR] Medium |
+| **Progress Updates** | Generic | Step-by-step | [STAR][STAR][STAR] Medium |
 
 ---
 
-## 🎨 Example Output
+## [DESIGN] Example Output
 
 ### Successful Analysis with Code Context
 
 ```
-🔍 === ROOT CAUSE ANALYSIS ===
+[SEARCH] === ROOT CAUSE ANALYSIS ===
 
 🟠 Lateinit Error
 
-🐛 ERROR: kotlin.UninitializedPropertyAccessException: lateinit property database has not been initialized
+[BUG] ERROR: kotlin.UninitializedPropertyAccessException: lateinit property database has not been initialized
 📁 FILE: MainActivity.kt:42
 
-📝 CODE CONTEXT (from source file):
+[NOTE] CODE CONTEXT (from source file):
 ```kotlin
     private lateinit var database: AppDatabase
     
@@ -269,22 +269,22 @@ vscode.window.showInformationMessage(
     }
 ```
 
-💡 ROOT CAUSE:
+[IDEA] ROOT CAUSE:
 A lateinit property was accessed before being initialized.
 
-🛠️  FIX GUIDELINES:
+[FIX]  FIX GUIDELINES:
   1. Initialize property in onCreate() or init block
   2. Check ::property.isInitialized before access
   3. Consider using nullable type instead of lateinit
   4. Ensure initialization happens before first access
 
-✅ CONFIDENCE: 75%
+[DONE] CONFIDENCE: 75%
    ███████████████░░░░░
    Medium confidence - verify suggestion
 
 ────────────────────────────────────────────────────────────
-💡 TIP: This is a placeholder result. Connect to Ollama for real AI-powered analysis.
-📖 Configure: File > Preferences > Settings > RCA Agent
+[IDEA] TIP: This is a placeholder result. Connect to Ollama for real AI-powered analysis.
+[BOOK] Configure: File > Preferences > Settings > RCA Agent
 ❓ Need help? Check the documentation or report issues on GitHub.
 ```
 
@@ -292,15 +292,15 @@ A lateinit property was accessed before being initialized.
 
 **User sees:**
 ```
-❌ Could not connect to Ollama. Is it running?
+[FAIL] Could not connect to Ollama. Is it running?
 [Start Ollama] [Installation Guide] [Check Logs]
 ```
 
 **Output channel shows:**
 ```
-❌ ERROR: Could not connect to Ollama
+[FAIL] ERROR: Could not connect to Ollama
 
-🔧 TROUBLESHOOTING STEPS:
+[TOOL] TROUBLESHOOTING STEPS:
 1. Install Ollama: https://ollama.ai/
 2. Start Ollama: Run "ollama serve" in terminal
 3. Pull model: Run "ollama pull hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest"
@@ -309,7 +309,7 @@ A lateinit property was accessed before being initialized.
 
 ---
 
-## 🔧 Technical Decisions
+## [TOOL] Technical Decisions
 
 ### 1. Confidence Bar Design
 **Decision:** Use 20-character bar with █ and ░ characters.
@@ -321,9 +321,9 @@ A lateinit property was accessed before being initialized.
 - Fits in output channel without wrapping
 
 **Alternatives Considered:**
-- ❌ 10 characters - Too small for granular visualization
-- ❌ 50 characters - Too long, wraps on smaller screens
-- ❌ ■ and □ - Less visual weight than █ and ░
+- [FAIL] 10 characters - Too small for granular visualization
+- [FAIL] 50 characters - Too long, wraps on smaller screens
+- [FAIL] [SQUARE] and [BOX] - Less visual weight than █ and ░
 
 ### 2. Error Categorization
 **Decision:** Four specific error types with unique handling.
@@ -364,7 +364,7 @@ A lateinit property was accessed before being initialized.
 
 ### Integration Readiness (Week 8)
 
-**Status:** ✅ All placeholder implementations complete and ready for Kai's backend
+**Status:** [DONE] All placeholder implementations complete and ready for Kai's backend
 
 ### Backend Components Ready for Wiring
 
@@ -420,7 +420,7 @@ All placeholders in the extension are ready to be replaced with Kai's backend:
 
 ---
 
-## ✅ Completion Checklist
+## [DONE] Completion Checklist
 
 ### Chunk 1.4: Code Context Display
 - [x] Display file reading status in progress notifications
@@ -452,7 +452,7 @@ All placeholders in the extension are ready to be replaced with Kai's backend:
 
 ---
 
-## 🚀 What's Next
+## [LAUNCH] What's Next
 
 ### Week 9: Chunk 2.1 - Core UI Enhancements
 
@@ -461,7 +461,7 @@ All placeholders in the extension are ready to be replaced with Kai's backend:
 **Tasks:**
 1. Support 5+ error types with color-coded badges
 2. Update `getErrorBadge()` for all Kotlin/Android errors
-3. Visual indicators (🔴 🟠 🟡 🔵 🟣)
+3. Visual indicators ([RED] 🟠 [YELLOW] 🔵 🟣)
 4. Wire to Kai's expanded `ErrorParser`
 5. Test with real error samples
 
@@ -491,7 +491,7 @@ All placeholders in the extension are ready to be replaced with Kai's backend:
 
 ---
 
-## 📝 Notes
+## [NOTE] Notes
 
 ### Strengths
 1. **Professional UX:** Confidence bars, emojis, and action buttons make the extension feel polished
@@ -512,7 +512,7 @@ None - all placeholder implementations work as designed.
 
 ---
 
-## 🎓 Learnings
+## [LEARN] Learnings
 
 ### What Went Well
 1. **Incremental Development:** Building Chunk 1.4 and 1.5 together was efficient
@@ -534,32 +534,32 @@ None - all placeholder implementations work as designed.
 
 ---
 
-## 🎉 Week 8 Project Status
+## [SUCCESS] Week 8 Project Status
 
 ### Overall Phase 1 Progress
 
 | Phase | Status | Completion |
 |-------|--------|------------|
-| **Backend (Kai)** | ✅ Complete | 100% (Chunks 1.1-4.2) |
-| **UI (Sokchea)** | ✅ MVP Complete | 100% (Chunks 1.1-1.5) |
-| **Integration** | 🔄 Pending | 0% (Week 9) |
-| **Testing** | ⏳ Partial | Backend: 100%, UI: Manual only |
+| **Backend (Kai)** | [DONE] Complete | 100% (Chunks 1.1-4.2) |
+| **UI (Sokchea)** | [DONE] MVP Complete | 100% (Chunks 1.1-1.5) |
+| **Integration** | [REFRESH] Pending | 0% (Week 9) |
+| **Testing** | [TIMER] Partial | Backend: 100%, UI: Manual only |
 
 ### Test Results Summary
 
 **Backend (Kai's work):**
-- Total tests: 628 passing ✅
+- Total tests: 628 passing [DONE]
 - Accuracy: 100% on 10-test validation  
 - Average latency: 75.8s (target: <90s)
 - Parser coverage: Kotlin, XML, Gradle, Compose
 
 **UI (Sokchea's work):**
-- Manual testing: All features verified ✅
+- Manual testing: All features verified [DONE]
 - Automated tests: 0 (to be added)
-- Extension activation: Works ✅
-- Command registration: Works ✅
-- Output display: Professional ✅
-- Error handling: Comprehensive ✅
+- Extension activation: Works [DONE]
+- Command registration: Works [DONE]
+- Output display: Professional [DONE]
+- Error handling: Comprehensive [DONE]
 
 ### Pre-Integration Checklist
 
@@ -582,7 +582,7 @@ Before integration testing:
 
 ---
 
-**Status:** ✅ **CHUNKS 1.4-1.5 UI COMPLETE - WEEK 8 MVP MILESTONE ACHIEVED**  
+**Status:** [DONE] **CHUNKS 1.4-1.5 UI COMPLETE - WEEK 8 MVP MILESTONE ACHIEVED**  
 **Next Milestone:** Backend Integration & End-to-End Testing (Week 9)  
 **Timeline:** December 23-27, 2025  
 **Blocker:** None - ready for integration

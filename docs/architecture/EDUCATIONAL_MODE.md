@@ -1,4 +1,4 @@
-# [LEARN] Educational Mode Guide
+﻿# [LEARN] Educational Mode Guide
 
 Educational Mode transforms RCA Agent into a learning companion that not only fixes your errors but teaches you **why** they happened and **how** to prevent them.
 
@@ -34,7 +34,7 @@ Press Ctrl+Shift+E (Cmd+Shift+E on Mac)
 
 **Status**:
 -  Enabled: "Educational Mode enabled [LEARN]" notification
-- ⏹️ Disabled: "Educational Mode disabled [LEARN]" notification
+- [STOP]️ Disabled: "Educational Mode disabled [LEARN]" notification
 
 ### Using Educational Mode
 

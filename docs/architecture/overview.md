@@ -1,4 +1,4 @@
-# System Architecture Overview
+﻿# System Architecture Overview
 
 > **Last Updated:** December 20, 2025 (Chunk 5.5)  
 > **Status:** Phase 1 Complete - Production Ready
@@ -29,7 +29,7 @@ The RCA Agent is a local-first AI debugging assistant that provides root cause a
 │                         (Sokchea's Work)                             │
 └────────────────────────────┬────────────────────────────────────────┘
                              │
-                             ▼
+                             [DOWN]
 ┌─────────────────────────────────────────────────────────────────────┐
 │                      RCA Agent Backend (Kai's Work)                  │
 │                                                                       │
@@ -37,7 +37,7 @@ The RCA Agent is a local-first AI debugging assistant that provides root cause a
 │  │   Error Parsers   │  │     Agent    │  │   Tool Registry    │   │
 │  │                   │  │              │  │                    │   │
 │  │ • KotlinParser    │  │ • MinimalReac│  │ • ReadFileTool     │   │
-│  │ • GradleParser    │──▶   tAgent     │◀─│ • LSPTool          │   │
+│  │ • GradleParser    │──[PLAY]   tAgent     │[BACK]─│ • LSPTool          │   │
 │  │ • ComposeParser   │  │ • Educational│  │ • AndroidBuildTool │   │
 │  │ • XMLParser       │  │   Agent      │  │ • DocsSearchTool   │   │
 │  │ • LanguageDetector│  │ • PromptEngin│  │ • ManifestTool     │   │
@@ -46,7 +46,7 @@ The RCA Agent is a local-first AI debugging assistant that provides root cause a
 │  ┌───────────────────┐  │   thesizer   │  ┌────────────────────┐   │
 │  │   Database Layer  │  │ • AgentState │  │   Monitoring       │   │
 │  │                   │  │   Stream     │  │                    │   │
-│  │ • ChromaDBClient  │◀─┘ • FeedbackHan│  │ • PerformanceTrack│   │
+│  │ • ChromaDBClient  │[BACK]─┘ • FeedbackHan│  │ • PerformanceTrack│   │
 │  │ • EmbeddingServic │    │   dler      │  │   er               │   │
 │  │   e               │    └──────────────┘  └────────────────────┘   │
 │  │ • RCACache        │                                               │
@@ -262,17 +262,17 @@ prompt_generation      300      65ms      58ms      92ms      120ms
 │ error text  │
 └──────┬──────┘
        │
-       ▼
+       [DOWN]
 ┌─────────────┐
 │ ErrorParser │──────────┐
 └──────┬──────┘          │ Returns null
        │ ParsedError     │ (unknown error)
-       ▼                 │
+       [DOWN]                 │
 ┌─────────────┐          │
 │ ErrorHasher │          │
 └──────┬──────┘          │
        │ hash            │
-       ▼                 │
+       [DOWN]                 │
 ┌─────────────┐          │
 │  RCACache   │          │
 │   .get()    │          │
@@ -280,21 +280,21 @@ prompt_generation      300      65ms      58ms      92ms      120ms
        │                 │
    Hit │   Miss          │
        │     │           │
-       │     ▼           │
+       │     [DOWN]           │
        │ ┌────────────┐  │
        │ │ ChromaDB   │  │
        │ │ .searchSim │  │
        │ └─────┬──────┘  │
        │   Found│NotFound│
        │       │   │     │
-       │       │   ▼     │
+       │       │   [DOWN]     │
        │       │ ┌────┐  │
        │       │ │Agent│ │
        │       │ │.anal│ │
        │       │ │yze()│ │
        │       │ └──┬─┘  │
        │       │    │    │
-       │       │    ▼    │
+       │       │    [DOWN]    │
        │       │ ┌────┐  │
        │       │ │Store│ │
        │       │ │in DB│ │
@@ -302,7 +302,7 @@ prompt_generation      300      65ms      58ms      92ms      120ms
        │       │    │    │
        │       └────┴────┘
        │            │
-       │            ▼
+       │            [DOWN]
        │      ┌──────────┐
        │      │  Cache   │
        │      │  result  │
@@ -310,7 +310,7 @@ prompt_generation      300      65ms      58ms      92ms      120ms
        │           │
        └───────────┘
               │
-              ▼
+              [DOWN]
        ┌────────────┐
        │ Return to  │
        │   User     │
@@ -325,13 +325,13 @@ prompt_generation      300      65ms      58ms      92ms      120ms
 │ (ParsedError)│
 └──────┬───────┘
        │
-       ▼
+       [DOWN]
 ┌──────────────┐
 │ Read file at │
 │ error line   │
 └──────┬───────┘
        │
-       ▼
+       [DOWN]
 ┌─────────────────────────────────┐
 │  Iteration Loop (max 10 times)  │
 │                                  │
@@ -342,7 +342,7 @@ prompt_generation      300      65ms      58ms      92ms      120ms
 │  │   - Include prior context  │ │
 │  └───────────┬────────────────┘ │
 │              │                   │
-│              ▼                   │
+│              [DOWN]                   │
 │  ┌────────────────────────────┐ │
 │  │ 2. ACTION (optional)       │ │
 │  │   - Select tool            │ │
@@ -350,7 +350,7 @@ prompt_generation      300      65ms      58ms      92ms      120ms
 │  │   - Handle errors          │ │
 │  └───────────┬────────────────┘ │
 │              │                   │
-│              ▼                   │
+│              [DOWN]                   │
 │  ┌────────────────────────────┐ │
 │  │ 3. OBSERVATION             │ │
 │  │   - Process tool result    │ │
@@ -358,27 +358,27 @@ prompt_generation      300      65ms      58ms      92ms      120ms
 │  │   - Emit events            │ │
 │  └───────────┬────────────────┘ │
 │              │                   │
-│              ▼                   │
+│              [DOWN]                   │
 │  ┌────────────────────────────┐ │
 │  │ 4. DECISION                │ │
 │  │   - Continue iterating?    │ │
 │  │   - Or conclude analysis?  │ │
 │  └───────────┬────────────────┘ │
 │              │                   │
-│              ▼                   │
+│              [DOWN]                   │
 │         Done? No ────┐           │
 │              │       │           │
 │             Yes      └───────┐   │
 │              │               │   │
 └──────────────┼───────────────┼───┘
                │               │
-               ▼               │
+               [DOWN]               │
         ┌─────────────┐        │
         │  Synthesize │        │
         │  Final RCA  │        │
         └──────┬──────┘        │
                │               │
-               ▼               │
+               [DOWN]               │
         ┌─────────────┐        │
         │ Return RCA  │        │
         │   Result    │        │
@@ -397,7 +397,7 @@ prompt_generation      300      65ms      58ms      92ms      120ms
 │    tool    │
 └─────┬──────┘
       │
-      ▼
+      [DOWN]
 ┌───────────────────────────┐
 │  ToolRegistry.execute()   │
 │                           │
@@ -406,7 +406,7 @@ prompt_generation      300      65ms      58ms      92ms      120ms
 │  3. Call tool.execute()  │
 └─────┬─────────────────────┘
       │
-      ▼
+      [DOWN]
 ┌───────────────────────────┐
 │   Tool Implementation     │
 │                           │
@@ -416,7 +416,7 @@ prompt_generation      300      65ms      58ms      92ms      120ms
 │   - Format output         │
 └─────┬─────────────────────┘
       │
-      ▼
+      [DOWN]
 ┌───────────────────────────┐
 │   Return Result           │
 │                           │
@@ -424,7 +424,7 @@ prompt_generation      300      65ms      58ms      92ms      120ms
 │   Failure: null or throw  │
 └─────┬─────────────────────┘
       │
-      ▼
+      [DOWN]
 ┌───────────────────────────┐
 │  Agent processes result   │
 │  as "observation"         │
@@ -548,9 +548,9 @@ prompt_generation      300      65ms      58ms      92ms      120ms
 **Target:** <60s for standard analysis (p50)
 
 **Actual Performance (RTX 3070 Ti):**
-- p50: 45-55s ✅
-- p90: 65-80s ✅
-- p99: 85-100s ✅
+- p50: 45-55s [DONE]
+- p90: 65-80s [DONE]
+- p99: 85-100s [DONE]
 
 **Breakdown:**
 - LLM inference: 60% (10-12s per iteration × 3-5 iterations)
@@ -634,11 +634,11 @@ prompt_generation      300      65ms      58ms      92ms      120ms
 
 | Module | Lines | Statements | Branches | Functions | Status |
 |--------|-------|------------|----------|-----------|--------|
-| Agent | 88% | 90% | 85% | 92% | ✅ |
-| Parsers | 95% | 96% | 94% | 97% | ✅ |
-| Tools | 95% | 96% | 93% | 96% | ✅ |
-| Database | 95% | 96% | 94% | 97% | ✅ |
-| **Overall** | **85%** | **87%** | **83%** | **89%** | ✅ |
+| Agent | 88% | 90% | 85% | 92% | [DONE] |
+| Parsers | 95% | 96% | 94% | 97% | [DONE] |
+| Tools | 95% | 96% | 93% | 96% | [DONE] |
+| Database | 95% | 96% | 94% | 97% | [DONE] |
+| **Overall** | **85%** | **87%** | **83%** | **89%** | [DONE] |
 
 ### Test Types
 

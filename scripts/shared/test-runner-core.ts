@@ -78,7 +78,7 @@ export class TestRunnerCore {
    * Initialize LLM and agent
    */
   async initialize(): Promise<void> {
-    console.log('🤖 Initializing Ollama LLM...');
+    console.log('[INIT] Initializing Ollama LLM...');
     this.llmClient = new OllamaClient({
       model: this.config.model!,
       temperature: this.config.temperature,
@@ -88,39 +88,39 @@ export class TestRunnerCore {
     // Test LLM connection
     try {
       await this.llmClient.health();
-      console.log('   ✅ LLM connection successful');
+      console.log('   [OK] LLM connection successful');
     } catch (error) {
       throw new Error('LLM connection failed. Is Ollama running? Run: ollama serve');
     }
 
     // Initialize tools
-    console.log('🛠️  Initializing tools...');
+    console.log('[BUILD]  Initializing tools...');
     const toolRegistry = ToolRegistry.getInstance();
-    
+
     // Register ReadFileTool
     toolRegistry.register(
       'read_file',
       new ReadFileTool(),
       z.object({ filePath: z.string(), line: z.number(), contextLines: z.number().optional() })
     );
-    
+
     // Register VersionLookupTool
     toolRegistry.register(
       'version_lookup',
       new VersionLookupTool(),
       z.object({ tool: z.enum(['agp', 'kotlin', 'gradle']), queryType: z.enum(['exists', 'latest-stable', 'latest-any', 'compatible', 'suggest']), version: z.string().optional() })
     );
-    
-    console.log('   ✅ Tools registered');
+
+    console.log('   [OK] Tools registered');
 
     // Initialize agent
-    console.log('🤖 Initializing RCA Agent...');
+    console.log('[INIT] Initializing RCA Agent...');
     this.agent = new MinimalReactAgent(this.llmClient, {
       maxIterations: this.config.maxIterations,
       tools: toolRegistry,
       enableCaching: this.config.enableCaching,
     });
-    console.log('   ✅ Agent initialized');
+    console.log('   [OK] Agent initialized');
   }
 
   /**
@@ -133,7 +133,7 @@ export class TestRunnerCore {
 
     const startTime = Date.now();
 
-    console.log(`\n📋 Test ${testCase.id}: ${testCase.name}`);
+    console.log(`\n[LIST] Test ${testCase.id}: ${testCase.name}`);
     console.log('-'.repeat(80));
 
     try {
@@ -163,7 +163,7 @@ export class TestRunnerCore {
         status,
       };
     } catch (error: any) {
-      console.error(`   ❌ Test failed: ${error.message}`);
+      console.error(`   [X] Test failed: ${error.message}`);
       return {
         testName: testCase.name,
         error: testCase.error,
@@ -181,7 +181,7 @@ export class TestRunnerCore {
   async runTests(testCases: TestCase[]): Promise<TestResult[]> {
     const results: TestResult[] = [];
 
-    console.log(`\n🧪 Running ${testCases.length} test cases...\n`);
+    console.log(`\n[TEST] Running ${testCases.length} test cases...\n`);
 
     for (let i = 0; i < testCases.length; i++) {
       const result = await this.runTest(testCases[i]);
@@ -285,7 +285,7 @@ export class TestRunnerCore {
    */
   generateSummary(results: TestResult[]): void {
     console.log('\n' + '='.repeat(80));
-    console.log('📊 TEST SUMMARY');
+    console.log('[STATS] TEST SUMMARY');
     console.log('='.repeat(80));
 
     const passed = results.filter(r => r.status === 'passed').length;
@@ -296,9 +296,9 @@ export class TestRunnerCore {
     const avgLatency = results.reduce((sum, r) => sum + r.metrics.latencyMs, 0) / results.length;
 
     console.log(`\nTotal Tests: ${results.length}`);
-    console.log(`✅ Passed: ${passed} (${((passed / results.length) * 100).toFixed(0)}%)`);
-    console.log(`⚠️  Partial: ${partial} (${((partial / results.length) * 100).toFixed(0)}%)`);
-    console.log(`❌ Failed: ${failed} (${((failed / results.length) * 100).toFixed(0)}%)`);
+    console.log(`[OK] Passed: ${passed} (${((passed / results.length) * 100).toFixed(0)}%)`);
+    console.log(`[WARN]  Partial: ${partial} (${((partial / results.length) * 100).toFixed(0)}%)`);
+    console.log(`[X] Failed: ${failed} (${((failed / results.length) * 100).toFixed(0)}%)`);
     console.log(`\nAverage Usability: ${avgUsability.toFixed(1)}%`);
     console.log(`Average Latency: ${(avgLatency / 1000).toFixed(2)}s`);
 
@@ -307,7 +307,7 @@ export class TestRunnerCore {
     console.log('-'.repeat(80));
 
     results.forEach((result, i) => {
-      const statusIcon = result.status === 'passed' ? '✅' : result.status === 'partial' ? '⚠️' : '❌';
+      const statusIcon = result.status === 'passed' ? '[OK]' : result.status === 'partial' ? '[WARN]' : '[X]';
       console.log(`${i + 1}. ${result.testName.padEnd(40)} ${result.metrics.overallUsability}% ${statusIcon}`);
     });
 

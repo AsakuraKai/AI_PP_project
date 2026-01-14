@@ -1,11 +1,11 @@
-# ITERATION 6 - Quick Start Guide
+﻿# ITERATION 6 - Quick Start Guide
 **Date:** December 31, 2025  
-**Status:** ✅ COMPLETE  
+**Status:** [DONE] COMPLETE  
 **For:** Future developers and reviewers
 
 ---
 
-## 🎯 What This Iteration Fixed
+## [TARGET] What This Iteration Fixed
 
 **Problem:** Retry mechanism was disabled (P0 emergency rollback), preventing recovery from low-quality responses
 
@@ -15,7 +15,7 @@
 
 ---
 
-## 📖 Reading Order
+## [BOOK] Reading Order
 
 1. **Start Here:** [README.md](./README.md) - Quick summary
 2. **Deep Dive:** [ITERATION_6_IMPLEMENTATION.md](./ITERATION_6_IMPLEMENTATION.md) - Complete technical details
@@ -23,7 +23,7 @@
 
 ---
 
-## 🔑 Key Files Modified
+## [KEY] Key Files Modified
 
 ```typescript
 // src/agent/MinimalReactAgent.ts
@@ -43,7 +43,7 @@ qualityThreshold: 0.55 → 0.45  // Very forgiving
 
 ---
 
-## 🧪 Quick Test
+## [TEST] Quick Test
 
 ```powershell
 # Test single scenario
@@ -55,7 +55,7 @@ npm run test:phase1
 
 ---
 
-## ✅ Success Criteria
+## [DONE] Success Criteria
 
 - Average usability: 55%+ (target: 65%+)
 - Tests passing: 3-4/5 (target: 4/5)
@@ -64,7 +64,7 @@ npm run test:phase1
 
 ---
 
-## 🚀 If Tests Pass
+## [LAUNCH] If Tests Pass
 
 **Next Phase:** VS Code Extension UI
 **Prerequisites:** Phase 1 backend at 65%+ usability
@@ -72,7 +72,7 @@ npm run test:phase1
 
 ---
 
-## 📞 Need Help?
+## [CALL] Need Help?
 
 - **Implementation Details:** See ITERATION_6_IMPLEMENTATION.md
 - **Test Results:** Check `tests/results/chunk8/` and `phase1-retest-output.txt`

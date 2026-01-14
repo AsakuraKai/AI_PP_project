@@ -1,4 +1,4 @@
-# RCA Agent - Complete Project Structure
+﻿# RCA Agent - Complete Project Structure
 
 > **Comprehensive project file structure and statistics**  
 > **Project Type:** Personal learning project - Kotlin/Android debugging assistant  
@@ -7,7 +7,7 @@
 
 ---
 
-## 📊 Project Statistics
+## [CHART] Project Statistics
 
 **Last Generated:** January 9, 2026
 
@@ -77,7 +77,7 @@ rca-agent/
 │   ├── data/                      # Test results data
 │   └── _archive/                  # Historical documents
 │
-├── src/                           # Backend (Kai's Implementation) ✅
+├── src/                           # Backend (Kai's Implementation) [DONE]
 │   ├── types.ts                   # Core TypeScript interfaces
 │   │
 │   ├── agent/                     # LLM Agent System
@@ -145,7 +145,7 @@ rca-agent/
 │           ├── JetpackComposeParser.ts # Compose errors
 │           └── XMLParser.ts       # XML layout errors
 │
-├── vscode-extension/              # VS Code Extension ⚠️ UI REMOVED
+├── vscode-extension/              # VS Code Extension [WARNING] UI REMOVED
 │   ├── package.json               # Extension manifest (minimal)
 │   ├── tsconfig.json              # TypeScript configuration
 │   ├── README.md                  # Extension guide
@@ -155,13 +155,13 @@ rca-agent/
 │   │   ├── types/                 # Extension types
 │   │   │   └── index.ts           # Centralized type definitions
 │   │   │
-│   │   ├── services/              # Backend Services (✅ Preserved)
+│   │   ├── services/              # Backend Services ([DONE] Preserved)
 │   │   │   ├── AnalysisService.ts        # RCA analysis orchestration
 │   │   │   ├── FixApplicationService.ts  # Code fix application
 │   │   │   ├── NetworkTimeoutHandler.ts  # Ollama timeout handling
 │   │   │   └── BaseService.ts            # Base service class
 │   │   │
-│   │   ├── chat/                  # Chat Participant (✅ Preserved)
+│   │   ├── chat/                  # Chat Participant ([DONE] Preserved)
 │   │   │   ├── RCAChatParticipant.ts     # Chat integration
 │   │   │   ├── ConversationalAgent.ts    # Conversational debugging
 │   │   │   ├── GuidedDebuggingWorkflow.ts # Guided workflow
@@ -170,7 +170,7 @@ rca-agent/
 │   │   │   ├── ContextCollector.ts       # Context collection
 │   │   │   └── ResponseStreamer.ts       # Response streaming
 │   │   │
-│   │   └── tools/                 # Extension Tools (✅ Preserved)
+│   │   └── tools/                 # Extension Tools ([DONE] Preserved)
 │   │       ├── ExecuteCommandTool.ts     # Command execution
 │   │       ├── FileOperationTool.ts      # File operations
 │   │       ├── GradleCommandHelper.ts    # Gradle helpers
@@ -290,9 +290,9 @@ rca-agent/
 
 ---
 
-## 🔑 Key Components Explained
+## [KEY] Key Components Explained
 
-### Backend Services (src/) - ✅ Complete
+### Backend Services (src/) - [DONE] Complete
 
 **Agent System:**
 - **MinimalReactAgent** - Core ReAct reasoning loop with tool execution
@@ -317,7 +317,7 @@ rca-agent/
 - **JetpackComposeParser** - Compose errors (12 patterns)
 - **XMLParser** - XML layout errors (8 patterns)
 
-### VS Code Extension - ⚠️ UI Removed, Backend Preserved
+### VS Code Extension - [WARNING] UI Removed, Backend Preserved
 
 **Preserved Services:**
 - **AnalysisService** - Orchestrates RCA analysis with backend
@@ -350,22 +350,22 @@ rca-agent/
 
 ---
 
-## 📊 File Size Overview
+## [CHART] File Size Overview
 
 ### Source Code Statistics
 
 | Component | Files | Lines | Status |
 |-----------|-------|-------|--------|
-| **Backend (src/)** | ~22 | ~4,480 | ✅ Complete |
-| **VS Code Extension** | ~8 | ~800 | ⚠️ Minimal (UI removed) |
-| **Tests** | ~29 | ~4,055 | ✅ 878 tests (99% pass) |
-| **Scripts** | ~15 | ~600 | ✅ Complete |
-| **Documentation** | ~17 | ~8,200 | ✅ Up to date |
-| **Total** | **~91** | **~18,135** | ✅ Production ready |
+| **Backend (src/)** | ~22 | ~4,480 | [DONE] Complete |
+| **VS Code Extension** | ~8 | ~800 | [WARNING] Minimal (UI removed) |
+| **Tests** | ~29 | ~4,055 | [DONE] 878 tests (99% pass) |
+| **Scripts** | ~15 | ~600 | [DONE] Complete |
+| **Documentation** | ~17 | ~8,200 | [DONE] Up to date |
+| **Total** | **~91** | **~18,135** | [DONE] Production ready |
 
 ---
 
-## 🚀 Development Workflow
+## [LAUNCH] Development Workflow
 
 ### Build Commands
 ```bash
@@ -406,26 +406,26 @@ npx ts-node scripts/generate-file-structure-stats.ts
 
 ---
 
-## 🎯 Integration Readiness
+## [TARGET] Integration Readiness
 
-### Backend Status (✅ Production Ready)
-- ✅ **Parsers:** 26+ error types, 100% accuracy
-- ✅ **Agent:** MinimalReactAgent with ReAct reasoning
-- ✅ **LLM Client:** Ollama integration tested
-- ✅ **Knowledge Base:** 156 AGP + 52 Kotlin versions
-- ✅ **Database:** ChromaDB optional integration
-- ✅ **Caching:** RCACache with ErrorHasher
-- ✅ **Performance:** All targets achieved
-- ✅ **Testing:** 878 tests, 99% pass rate
-- ✅ **Coverage:** 85%+ across all modules
+### Backend Status ([DONE] Production Ready)
+- [DONE] **Parsers:** 26+ error types, 100% accuracy
+- [DONE] **Agent:** MinimalReactAgent with ReAct reasoning
+- [DONE] **LLM Client:** Ollama integration tested
+- [DONE] **Knowledge Base:** 156 AGP + 52 Kotlin versions
+- [DONE] **Database:** ChromaDB optional integration
+- [DONE] **Caching:** RCACache with ErrorHasher
+- [DONE] **Performance:** All targets achieved
+- [DONE] **Testing:** 878 tests, 99% pass rate
+- [DONE] **Coverage:** 85%+ across all modules
 
-### Extension Status (⚠️ Ready for Fresh UI)
-- ✅ **Backend Services:** Fully functional
-- ✅ **Chat Participant:** Working conversational debugging
-- ✅ **Tool Integration:** Terminal, files, search operational
-- ⚠️ **UI Components:** Removed - See RCA_UI_WIRING_GUIDE.md
-- ⚠️ **Commands:** Minimal (4 conversational debugging commands)
-- ⚠️ **Configuration:** Basic settings only
+### Extension Status ([WARNING] Ready for Fresh UI)
+- [DONE] **Backend Services:** Fully functional
+- [DONE] **Chat Participant:** Working conversational debugging
+- [DONE] **Tool Integration:** Terminal, files, search operational
+- [WARNING] **UI Components:** Removed - See RCA_UI_WIRING_GUIDE.md
+- [WARNING] **Commands:** Minimal (4 conversational debugging commands)
+- [WARNING] **Configuration:** Basic settings only
 
 ### Next Steps for UI Implementation
 See [RCA_UI_WIRING_GUIDE.md](RCA_UI_WIRING_GUIDE.md) for complete implementation guide:
@@ -437,7 +437,7 @@ See [RCA_UI_WIRING_GUIDE.md](RCA_UI_WIRING_GUIDE.md) for complete implementation
 
 ---
 
-## 📝 Notes
+## [NOTE] Notes
 
 **Current Status:** Backend production ready, UI removed for fresh implementation  
 **Test Status:** 869/878 passing (99% pass rate), 85%+ coverage  
@@ -454,7 +454,7 @@ See [RCA_UI_WIRING_GUIDE.md](RCA_UI_WIRING_GUIDE.md) for complete implementation
 ---
 
 **Last Updated:** January 9, 2026  
-**Status:** ✅ Backend Complete | ⚠️ UI Removed | 📘 Documentation Current  
+**Status:** [DONE] Backend Complete | [WARNING] UI Removed | 📘 Documentation Current  
 **Next Milestone:** Fresh UI Implementation (Estimated 11-17 days)
 │       │   ├── Chunk-4.1-4.2-COMPLETE.md         # Backend: Android (Compose, XML)
 │       │   ├── Chunk-5.1-5.2-UI-COMPLETE.md      # UI: Webview Panel & Educational Mode (Week 13)
@@ -485,7 +485,7 @@ See [RCA_UI_WIRING_GUIDE.md](RCA_UI_WIRING_GUIDE.md) for complete implementation
 │       │   # - Database storage notifications (Chunk 3.1)
 │       │   # - Similar solutions display (Chunk 3.2)
 │       │   # - Cache hit notifications with timestamps (Chunk 3.3)
-│       │   # - User feedback system (👍/👎/Skip) (Chunk 3.4)
+│       │   # - User feedback system ([LIKE]/[DISLIKE]/Skip) (Chunk 3.4)
 │       │   # - Compose error detection & tips (Chunk 4.1)
 │       │   # - XML error detection & tips (Chunk 4.2)
 │       │   # - Gradle conflict visualization (Chunk 4.3)
@@ -589,18 +589,18 @@ See [RCA_UI_WIRING_GUIDE.md](RCA_UI_WIRING_GUIDE.md) for complete implementation
 └── README.md                      # Project overview
 ```
 
-**Documentation Status:** ✅ **Week 13 Complete - Performance & Testing Ready**
+**Documentation Status:** [DONE] **Week 13 Complete - Performance & Testing Ready**
 
 **Key Changes (December 20, 2025):**
-- ✅ Completed Chunks 5.3-5.4 (Performance Optimization & Testing)
-- ✅ Updated DEVLOG.md with Week 13 comprehensive entry
-- ✅ Added PerformanceTracker with metrics collection (~243 lines)
-- ✅ Integrated performance tracking into MinimalReactAgent (+35 lines)
-- ✅ Created golden test suite with 7 reference RCA cases (~315 lines)
-- ✅ Added 29 new tests (20 performance + 9 golden)
-- ✅ Achieved all performance targets (p50 <60s, p90 <75s)
-- ✅ 869/878 tests passing (99% pass rate, 85%+ coverage)
-- ✅ Ready for documentation phase (Chunk 5.5)
+- [DONE] Completed Chunks 5.3-5.4 (Performance Optimization & Testing)
+- [DONE] Updated DEVLOG.md with Week 13 comprehensive entry
+- [DONE] Added PerformanceTracker with metrics collection (~243 lines)
+- [DONE] Integrated performance tracking into MinimalReactAgent (+35 lines)
+- [DONE] Created golden test suite with 7 reference RCA cases (~315 lines)
+- [DONE] Added 29 new tests (20 performance + 9 golden)
+- [DONE] Achieved all performance targets (p50 <60s, p90 <75s)
+- [DONE] 869/878 tests passing (99% pass rate, 85%+ coverage)
+- [DONE] Ready for documentation phase (Chunk 5.5)
 
 ---
 
@@ -610,12 +610,12 @@ See [RCA_UI_WIRING_GUIDE.md](RCA_UI_WIRING_GUIDE.md) for complete implementation
 
 | Component | Files | Lines | Status |
 |-----------|-------|-------|--------|
-| **VS Code Extension** | 1 | ~600 | ✅ Chunks 1.1-2.2 Complete |
-| **Backend (src/)** | ~22 | ~4,480 | ✅ Chunks 1.1-5.4 Complete |
-| **Tests** | ~29 | ~4,055 | ✅ 869 tests passing (878 total) |
-| **Scripts** | 3 | ~600 | ✅ Accuracy & benchmark |
-| **Docs** | ~17 | ~8,200 | ✅ Updated Week 13 |
-| **Total** | **~72** | **~17,935** | ✅ Performance & Testing Complete |
+| **VS Code Extension** | 1 | ~600 | [DONE] Chunks 1.1-2.2 Complete |
+| **Backend (src/)** | ~22 | ~4,480 | [DONE] Chunks 1.1-5.4 Complete |
+| **Tests** | ~29 | ~4,055 | [DONE] 869 tests passing (878 total) |
+| **Scripts** | 3 | ~600 | [DONE] Accuracy & benchmark |
+| **Docs** | ~17 | ~8,200 | [DONE] Updated Week 13 |
+| **Total** | **~72** | **~17,935** | [DONE] Performance & Testing Complete |
 
 ### Extension Breakdown (vscode-extension/src/extension.ts)
 
@@ -630,38 +630,38 @@ See [RCA_UI_WIRING_GUIDE.md](RCA_UI_WIRING_GUIDE.md) for complete implementation
 | **Error Handling** | ~100 | handleAnalysisError() with 4 categories |
 | **Helper Functions** | ~80 | getErrorBadge (30+ types), getToolIcon, confidence helpers |
 | **Logging & Cleanup** | ~30 | log(), deactivate() |
-| **Total** | **~600** | ✅ Core UI Complete |
+| **Total** | **~600** | [DONE] Core UI Complete |
 
 ---
 
 ## Integration Readiness
 
 ### Backend Status (Kai's Work)
-- ✅ **Parsers:** 4 parsers supporting 29 error types (628 tests passing)
-- ✅ **Agent:** MinimalReactAgent with ReadFileTool & performance tracking
-- ✅ **LLM Client:** OllamaClient tested with DeepSeek-R1-Distill-Qwen-7B
-- ✅ **Accuracy:** 100% on 10-test validation (avg 75.8s latency)
-- ✅ **Database:** ChromaDB integration ready (optional for MVP)
-- ✅ **Caching:** RCACache with ErrorHasher implemented
-- ✅ **Tools:** ReadFileTool, LSPTool, ToolRegistry operational
-- ✅ **Monitoring:** PerformanceTracker with percentiles (Chunk 5.3)
-- ✅ **Testing:** Golden test suite with 7 reference cases (Chunk 5.4)
-- ✅ **Performance:** All targets achieved (p50 <60s, p90 <75s)
-- ✅ **Coverage:** 85%+ across all modules, 869/878 tests passing
+- [DONE] **Parsers:** 4 parsers supporting 29 error types (628 tests passing)
+- [DONE] **Agent:** MinimalReactAgent with ReadFileTool & performance tracking
+- [DONE] **LLM Client:** OllamaClient tested with DeepSeek-R1-Distill-Qwen-7B
+- [DONE] **Accuracy:** 100% on 10-test validation (avg 75.8s latency)
+- [DONE] **Database:** ChromaDB integration ready (optional for MVP)
+- [DONE] **Caching:** RCACache with ErrorHasher implemented
+- [DONE] **Tools:** ReadFileTool, LSPTool, ToolRegistry operational
+- [DONE] **Monitoring:** PerformanceTracker with percentiles (Chunk 5.3)
+- [DONE] **Testing:** Golden test suite with 7 reference cases (Chunk 5.4)
+- [DONE] **Performance:** All targets achieved (p50 <60s, p90 <75s)
+- [DONE] **Coverage:** 85%+ across all modules, 869/878 tests passing
 
 ### UI Status (Sokchea's Work)
-- ✅ **Extension:** Command registration & activation working
-- ✅ **Input:** User input with validation & sanitization complete
-- ✅ **Output:** Output channel with formatting, code context, confidence bar
-- ✅ **Error Badges:** 30+ error types with color coding
-- ✅ **Tool Feedback:** Progress updates and tool usage display
-- ✅ **Database UI:** Storage notifications and similar solutions display
-- ✅ **Cache UI:** Cache hit notifications with timestamps
-- ✅ **Feedback UI:** User feedback system (👍/👎/Skip)
-- ✅ **Android UI:** Compose & XML error tips and documentation links
-- ✅ **Error Handling:** 4 specific error categories with action buttons
-- ✅ **Configuration:** Settings for ollamaUrl & model defined
-- 🔄 **Integration Points:** Placeholders ready for backend wiring
+- [DONE] **Extension:** Command registration & activation working
+- [DONE] **Input:** User input with validation & sanitization complete
+- [DONE] **Output:** Output channel with formatting, code context, confidence bar
+- [DONE] **Error Badges:** 30+ error types with color coding
+- [DONE] **Tool Feedback:** Progress updates and tool usage display
+- [DONE] **Database UI:** Storage notifications and similar solutions display
+- [DONE] **Cache UI:** Cache hit notifications with timestamps
+- [DONE] **Feedback UI:** User feedback system ([LIKE]/[DISLIKE]/Skip)
+- [DONE] **Android UI:** Compose & XML error tips and documentation links
+- [DONE] **Error Handling:** 4 specific error categories with action buttons
+- [DONE] **Configuration:** Settings for ollamaUrl & model defined
+- [REFRESH] **Integration Points:** Placeholders ready for backend wiring
 
 ### Next Steps for Integration
 1. **Wire parsers:** Replace `parseError()` with Kai's `ErrorParser.parse()`
@@ -674,7 +674,7 @@ See [RCA_UI_WIRING_GUIDE.md](RCA_UI_WIRING_GUIDE.md) for complete implementation
 
 ## Milestones Completed
 
-### Week 1-2: MVP Backend & UI ✅
+### Week 1-2: MVP Backend & UI [DONE]
 - [x] Chunk 1.1: Extension Bootstrap & Backend Foundation
 - [x] Chunk 1.2: User Input Handling & Kotlin Parser
 - [x] Chunk 1.3: Output Display & Ollama Integration
@@ -683,16 +683,16 @@ See [RCA_UI_WIRING_GUIDE.md](RCA_UI_WIRING_GUIDE.md) for complete implementation
 - [x] Chunk 1.5 (Backend): MVP Testing & Refinement (100% accuracy)
 - [x] Chunk 1.5 (UI): MVP Polish with confidence & error handling
 
-### Week 9: Core UI Enhancements ✅
+### Week 9: Core UI Enhancements [DONE]
 - [x] Chunk 2.1 (UI): Error Type Badges expansion (30+ types)
 - [x] Chunk 2.2 (UI): Tool Execution Feedback with progress
 
-### Weeks 3-7: Advanced Backend ✅
+### Weeks 3-7: Advanced Backend [DONE]
 - [x] Chunk 2.1-2.4 (Backend): Error badges, tool feedback, accuracy metrics
 - [x] Chunk 3.1-3.4 (Backend): Database integration, caching, feedback
 - [x] Chunk 4.1-4.2 (Backend): Android parsers (Compose, XML)
 
-### Weeks 10-13: Database, Android, Polish Backend ✅
+### Weeks 10-13: Database, Android, Polish Backend [DONE]
 - [x] Chunk 3.1-3.2 (UI): Database storage & similar solutions display
 - [x] Chunk 3.3-3.4 (UI): Cache hit notifications & feedback system
 - [x] Chunk 4.1-4.2 (UI): Android Compose & XML error tips
@@ -738,7 +738,7 @@ See [RCA_UI_WIRING_GUIDE.md](RCA_UI_WIRING_GUIDE.md) for complete implementation
 
 ---
 
-**Status:** ✅ **Core UI Complete - Ready for Integration**  
+**Status:** [DONE] **Core UI Complete - Ready for Integration**  
 **Next Milestone:** Accuracy Metrics Display & Backend Integration  
 **Timeline:** Week 10 (December 23-27, 2025)
 
@@ -842,16 +842,16 @@ rca-agent/
 └── README.md                      # Project overview
 ```
 
-**Documentation Status:** ✅ **Week 8 Complete - UI MVP Ready for Integration**
+**Documentation Status:** [DONE] **Week 8 Complete - UI MVP Ready for Integration**
 
 **Key Changes (December 19, 2025):**
-- ✅ Completed Chunks 1.4-1.5 UI (Code Context Display & MVP Polish)
-- ✅ Updated DEVLOG.md with Week 8 entry
-- ✅ Created Chunk-1.4-1.5-UI-COMPLETE.md milestone
-- ✅ Enhanced vscode-extension/src/extension.ts (~470 lines, +120 new)
-- ✅ Added confidence visualization (bar + interpretation)
-- ✅ Implemented comprehensive error handling (4 categories)
-- ✅ Ready for backend integration (all placeholders in place)
+- [DONE] Completed Chunks 1.4-1.5 UI (Code Context Display & MVP Polish)
+- [DONE] Updated DEVLOG.md with Week 8 entry
+- [DONE] Created Chunk-1.4-1.5-UI-COMPLETE.md milestone
+- [DONE] Enhanced vscode-extension/src/extension.ts (~470 lines, +120 new)
+- [DONE] Added confidence visualization (bar + interpretation)
+- [DONE] Implemented comprehensive error handling (4 categories)
+- [DONE] Ready for backend integration (all placeholders in place)
 
 ---
 
@@ -861,12 +861,12 @@ rca-agent/
 
 | Component | Files | Lines | Status |
 |-----------|-------|-------|--------|
-| **VS Code Extension** | 1 | ~470 | ✅ Chunks 1.1-1.5 Complete |
-| **Backend (src/)** | ~20 | ~3,500 | ✅ Chunks 1.1-4.2 Complete |
-| **Tests** | ~25 | ~3,000 | ✅ 628 tests passing |
-| **Scripts** | 3 | ~600 | ✅ Accuracy & benchmark |
-| **Docs** | ~15 | ~5,000 | ✅ Updated Week 8 |
-| **Total** | **~64** | **~12,570** | ✅ MVP Ready |
+| **VS Code Extension** | 1 | ~470 | [DONE] Chunks 1.1-1.5 Complete |
+| **Backend (src/)** | ~20 | ~3,500 | [DONE] Chunks 1.1-4.2 Complete |
+| **Tests** | ~25 | ~3,000 | [DONE] 628 tests passing |
+| **Scripts** | 3 | ~600 | [DONE] Accuracy & benchmark |
+| **Docs** | ~15 | ~5,000 | [DONE] Updated Week 8 |
+| **Total** | **~64** | **~12,570** | [DONE] MVP Ready |
 
 ### Extension Breakdown (vscode-extension/src/extension.ts)
 
@@ -881,27 +881,27 @@ rca-agent/
 | **Error Handling** | ~100 | handleAnalysisError() with 4 categories |
 | **Helper Functions** | ~40 | getErrorBadge(), createConfidenceBar(), etc. |
 | **Logging & Cleanup** | ~30 | log(), deactivate() |
-| **Total** | **~470** | ✅ Complete MVP UI |
+| **Total** | **~470** | [DONE] Complete MVP UI |
 
 ---
 
 ## Integration Readiness
 
 ### Backend Status (Kai's Work)
-- ✅ **Parsers:** KotlinNPEParser, XMLParser, GradleParser ready (628 tests passing)
-- ✅ **Agent:** MinimalReactAgent with ReadFileTool integration complete
-- ✅ **LLM Client:** OllamaClient tested with hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
-- ✅ **Accuracy:** 100% on 10-test validation (avg 75.8s latency)
-- ✅ **Database:** ChromaDB integration ready (optional for MVP)
-- ✅ **Caching:** RCACache with ErrorHasher implemented
+- [DONE] **Parsers:** KotlinNPEParser, XMLParser, GradleParser ready (628 tests passing)
+- [DONE] **Agent:** MinimalReactAgent with ReadFileTool integration complete
+- [DONE] **LLM Client:** OllamaClient tested with hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
+- [DONE] **Accuracy:** 100% on 10-test validation (avg 75.8s latency)
+- [DONE] **Database:** ChromaDB integration ready (optional for MVP)
+- [DONE] **Caching:** RCACache with ErrorHasher implemented
 
 ### UI Status (Sokchea's Work)
-- ✅ **Extension:** Command registration & activation working
-- ✅ **Input:** User input with validation & sanitization complete
-- ✅ **Output:** Output channel with formatting, code context, confidence bar
-- ✅ **Error Handling:** 4 specific error categories with action buttons
-- ✅ **Configuration:** Settings for ollamaUrl & model defined
-- 🔄 **Integration Points:** Placeholders ready for backend wiring
+- [DONE] **Extension:** Command registration & activation working
+- [DONE] **Input:** User input with validation & sanitization complete
+- [DONE] **Output:** Output channel with formatting, code context, confidence bar
+- [DONE] **Error Handling:** 4 specific error categories with action buttons
+- [DONE] **Configuration:** Settings for ollamaUrl & model defined
+- [REFRESH] **Integration Points:** Placeholders ready for backend wiring
 
 ### Next Steps for Integration
 1. **Wire parsers:** Replace `parseError()` with Kai's `KotlinNPEParser`
@@ -914,20 +914,20 @@ rca-agent/
 
 ## Milestones Completed
 
-### Week 1-2: MVP Backend ✅
+### Week 1-2: MVP Backend [DONE]
 - [x] Chunk 1.1: Extension Bootstrap & Backend Foundation
 - [x] Chunk 1.2: User Input Handling & Kotlin Parser
 - [x] Chunk 1.3: Output Display & Ollama Integration
 
-### Week 1 Extended: Tool Infrastructure ✅
+### Week 1 Extended: Tool Infrastructure [DONE]
 - [x] Chunk 1.4 (Backend): ReadFileTool with code context (21 tests)
 - [x] Chunk 1.5 (Backend): MVP Testing & Refinement (100% accuracy)
 
-### Week 8: MVP UI Complete ✅
+### Week 8: MVP UI Complete [DONE]
 - [x] Chunk 1.4 (UI): Code Context Display in extension
 - [x] Chunk 1.5 (UI): MVP Polish with confidence & error handling
 
-### Weeks 3-7: Advanced Backend ✅
+### Weeks 3-7: Advanced Backend [DONE]
 - [x] Chunk 2.1-2.4: Error badges, tool feedback, accuracy metrics
 - [x] Chunk 3.1-3.4: Database integration, caching, feedback
 - [x] Chunk 4.1-4.2: Android parsers (Compose, XML)
@@ -967,7 +967,7 @@ rca-agent/
 
 ---
 
-**Status:** ✅ **MVP UI Complete - Ready for Integration**  
+**Status:** [DONE] **MVP UI Complete - Ready for Integration**  
 **Next Milestone:** Backend Integration & End-to-End Testing  
 **Timeline:** Week 9 (December 23-27, 2025)
 │   │       └── ReadFileTool.test.ts

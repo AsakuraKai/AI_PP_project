@@ -11,7 +11,7 @@ import { z } from 'zod';
 import * as path from 'path';
 
 async function main() {
-  console.log('🧪 Testing single test case with few-shot example loading\n');
+  console.log('[TEST] Testing single test case with few-shot example loading\n');
   
   // Initialize LLM
   const llmClient = new OllamaClient({
@@ -22,9 +22,9 @@ async function main() {
   
   try {
     await llmClient.connect();
-    console.log('✅ LLM connected\n');
+    console.log('[OK] LLM connected\n');
   } catch (error: any) {
-    console.error('❌ LLM connection failed:', error.message);
+    console.error('[X] LLM connection failed:', error.message);
     process.exit(1);
   }
   
@@ -65,7 +65,7 @@ async function main() {
     }
   });
   
-  console.log('\n📊 Result:');
+  console.log('\n[STATS] Result:');
   console.log(JSON.stringify(result, null, 2));
 }
 

@@ -1,18 +1,18 @@
-# Phase 3: Progressive Prompting Implementation
+﻿# Phase 3: Progressive Prompting Implementation
 
-**Status:** ✅ COMPLETED  
+**Status:** [DONE] COMPLETED  
 **Date:** December 31, 2025  
 **Implementation:** Optional fast-path feature for simple error analysis
 
 ---
 
-## 📋 Overview
+## [CLIPBOARD] Overview
 
 Phase 3 introduces **progressive prompting** as an optional fast-path that attempts to analyze errors in a single shot with increasing context levels before falling back to the full ReAct loop. This optimization can significantly reduce analysis time for straightforward errors while maintaining quality through OutputValidator gating.
 
 ---
 
-## 🎯 Goals
+## [TARGET] Goals
 
 1. **Speed Optimization**: Reduce analysis time for simple/common errors
 2. **Quality Preservation**: Only accept one-shot conclusions that meet quality thresholds
@@ -21,7 +21,7 @@ Phase 3 introduces **progressive prompting** as an optional fast-path that attem
 
 ---
 
-## 🏗️ Architecture
+## [BUILD] Architecture
 
 ### Progressive Levels
 
@@ -51,7 +51,7 @@ Progressive prompting operates in 3 levels with increasing context:
 
 ---
 
-## 🔧 Implementation Details
+## [TOOL] Implementation Details
 
 ### 1. Configuration Flag
 
@@ -65,7 +65,7 @@ export interface AgentConfig {
   useToolRegistry?: boolean;
   generateFix?: boolean;
   projectRoot?: string;
-  enableProgressivePrompting?: boolean; // 🆕 Phase 3
+  enableProgressivePrompting?: boolean; // [NEW] Phase 3
 }
 ```
 
@@ -124,7 +124,7 @@ if (this.enableProgressivePrompting && this.usePromptEngine) {
     const validation = this.outputValidator.validate(candidate, error);
     
     if (validation.score >= 0.75) {
-      console.log('✅ Progressive L1 sufficient, skipping ReAct loop');
+      console.log('[DONE] Progressive L1 sufficient, skipping ReAct loop');
       // Generate fix if enabled and return immediately
       return result;
     }
@@ -133,7 +133,7 @@ if (this.enableProgressivePrompting && this.usePromptEngine) {
   // Level 2 Attempt (if L1 failed)
   // ... similar logic with threshold 0.65 ...
 
-  console.log('↩️ Progressive prompting insufficient; proceeding with full ReAct loop');
+  console.log('[RETURN]️ Progressive prompting insufficient; proceeding with full ReAct loop');
 }
 
 // Continue with normal ReAct iteration loop...
@@ -166,14 +166,14 @@ if (this.generateFix) {
       parsedL1.thought || ''
     );
   } catch (fixError) {
-    console.warn('⚠ Fix generation failed (progressive):', fixError);
+    console.warn('[WARNING] Fix generation failed (progressive):', fixError);
   }
 }
 ```
 
 ---
 
-## 📊 Performance Characteristics
+## [CHART] Performance Characteristics
 
 ### Expected Speedup
 
@@ -193,7 +193,7 @@ if (this.generateFix) {
 
 ---
 
-## 🧪 Testing Strategy
+## [TEST] Testing Strategy
 
 ### Unit Tests
 
@@ -282,32 +282,32 @@ npm run test:progressive-prompting
 
 ---
 
-## 📈 Monitoring & Metrics
+## [GRAPH] Monitoring & Metrics
 
 ### Logging Output
 
 Progressive prompting emits detailed console logs:
 
 ```
-🔍 Progressive Prompting L1: Lightweight analysis...
-📊 Progressive L1 score: 82.5%
-✅ Progressive L1 sufficient, skipping ReAct loop
+[SEARCH] Progressive Prompting L1: Lightweight analysis...
+[CHART] Progressive L1 score: 82.5%
+[DONE] Progressive L1 sufficient, skipping ReAct loop
 ```
 
 ```
-🔍 Progressive Prompting L1: Lightweight analysis...
-📊 Progressive L1 score: 45.0%
-🔍 Progressive Prompting L2: Adding relevant examples...
-📊 Progressive L2 score: 68.3%
-✅ Progressive L2 sufficient, skipping ReAct loop
+[SEARCH] Progressive Prompting L1: Lightweight analysis...
+[CHART] Progressive L1 score: 45.0%
+[SEARCH] Progressive Prompting L2: Adding relevant examples...
+[CHART] Progressive L2 score: 68.3%
+[DONE] Progressive L2 sufficient, skipping ReAct loop
 ```
 
 ```
-🔍 Progressive Prompting L1: Lightweight analysis...
-📊 Progressive L1 score: 35.0%
-🔍 Progressive Prompting L2: Adding relevant examples...
-📊 Progressive L2 score: 52.0%
-↩️ Progressive prompting insufficient; proceeding with full ReAct loop
+[SEARCH] Progressive Prompting L1: Lightweight analysis...
+[CHART] Progressive L1 score: 35.0%
+[SEARCH] Progressive Prompting L2: Adding relevant examples...
+[CHART] Progressive L2 score: 52.0%
+[RETURN]️ Progressive prompting insufficient; proceeding with full ReAct loop
 ```
 
 ### Performance Tracker Integration
@@ -327,7 +327,7 @@ Metrics reported:
 
 ---
 
-## 🚀 Usage Guide
+## [LAUNCH] Usage Guide
 
 ### Enable Progressive Prompting
 
@@ -344,7 +344,7 @@ const agent = new MinimalReactAgent(llm, {
   maxIterations: 10,
   usePromptEngine: true,      // Required for progressive prompting
   useToolRegistry: true,
-  enableProgressivePrompting: true, // 🔥 Enable fast-path
+  enableProgressivePrompting: true, // [HOT] Enable fast-path
 });
 
 const result = await agent.analyze(parsedError);
@@ -362,16 +362,16 @@ const agent = new MinimalReactAgent(llm, {
 
 ---
 
-## 🔍 Trade-offs & Considerations
+## [SEARCH] Trade-offs & Considerations
 
-### Advantages ✅
+### Advantages [DONE]
 
 1. **Speed**: 50-70% faster for simple errors
 2. **Cost**: Reduced token usage
 3. **Quality**: Still validated by OutputValidator
 4. **Flexibility**: Graceful fallback ensures no coverage loss
 
-### Disadvantages ⚠️
+### Disadvantages [WARNING]
 
 1. **Complexity**: Additional code paths to maintain
 2. **Tuning**: Thresholds (0.75/0.65) may need adjustment per domain
@@ -392,7 +392,7 @@ const agent = new MinimalReactAgent(llm, {
 
 ---
 
-## 🔄 Future Enhancements
+## [REFRESH] Future Enhancements
 
 ### Level 3: Full Context
 Not yet implemented. Would include:
@@ -422,7 +422,7 @@ if (level === 2 && needsCodeContext) {
 
 ---
 
-## 📝 Code Files Modified
+## [NOTE] Code Files Modified
 
 1. **`src/types.ts`**
    - Added `enableProgressivePrompting?: boolean` to `AgentConfig`
@@ -438,7 +438,7 @@ if (level === 2 && needsCodeContext) {
 
 ---
 
-## ✅ Acceptance Criteria
+## [DONE] Acceptance Criteria
 
 - [x] Opt-in configuration flag (`enableProgressivePrompting`)
 - [x] Level 1 prompting (minimal context)
@@ -452,10 +452,10 @@ if (level === 2 && needsCodeContext) {
 
 ---
 
-## 📊 Validation Results
+## [CHART] Validation Results
 
 ### Unit Tests
-- **Status:** ✅ Passing
+- **Status:** [DONE] Passing
 - **Coverage:** MinimalReactAgent, PromptEngine
 - **Test Count:** 21 tests (including legacy mode compatibility)
 
@@ -470,7 +470,7 @@ if (level === 2 && needsCodeContext) {
 
 ---
 
-## 🎓 Key Learnings
+## [LEARN] Key Learnings
 
 1. **Quality Gating is Critical**: Without OutputValidator, L1 would accept low-quality responses
 2. **RAG Makes L2 Effective**: Level 2 success rate jumps from 20% to 60% with good examples
@@ -479,7 +479,7 @@ if (level === 2 && needsCodeContext) {
 
 ---
 
-## 📚 References
+## [DOCS] References
 
 - **OutputValidator:** `src/agent/OutputValidator.ts` (Phase 1)
 - **ChromaDB Integration:** `src/db/` (Chunk 3)

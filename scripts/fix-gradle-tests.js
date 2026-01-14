@@ -9,7 +9,7 @@ content = content.replace(/\.toBe\('dependency_conflict'\)/g, ".toBe('gradle_dep
 content = content.replace(/\.toBe\('build_script_syntax_error'\)/g, ".toBe('gradle_build_script_syntax_error')");
 
 fs.writeFileSync(file, content);
-console.log('✅ Fixed GradleParser.test.ts type names');
+console.log('[OK] Fixed GradleParser.test.ts type names');
 console.log('  - dependency_resolution_error → gradle_dependency_resolution_error');
 console.log('  - dependency_conflict → gradle_dependency_conflict');
 console.log('  - build_script_syntax_error → gradle_build_script_syntax_error');

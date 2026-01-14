@@ -465,7 +465,7 @@ export class Phase4TestSuite {
    * Run a single test case
    */
   async runTest(testCase: TestCase): Promise<TestResult> {
-    console.log(`\n🧪 Running Test ${testCase.id}: ${testCase.name}`);
+    console.log(`\n[TEST] Running Test ${testCase.id}: ${testCase.name}`);
     console.log(`   Error Type: ${testCase.errorType} | Complexity: ${testCase.complexity}`);
     console.log(`   Target Usability: ${testCase.targetUsability}%`);
     
@@ -495,14 +495,14 @@ export class Phase4TestSuite {
           });
       
       console.log(`   📂 Using test fixture: ${fixtureFolderName} (${testFixturePath})`);
-      console.log(`   🔍 Using agent: ${this.useValidation ? 'MultiPassAgent (Option C)' : 'MinimalReactAgent (Baseline)'}`);
+      console.log(`   [SEARCH] Using agent: ${this.useValidation ? 'MultiPassAgent (Option C)' : 'MinimalReactAgent (Baseline)'}`);
       
       // Run RCA Agent with test-specific agent
       const result = await testAgent.analyze(testCase.error);
       
       // Print validation metrics if using MultiPassAgent
       if (this.useValidation && testAgent instanceof MultiPassAgent) {
-        console.log(`   📊 Validation: Multi-hypothesis analysis with consensus building`);
+        console.log(`   [STATS] Validation: Multi-hypothesis analysis with consensus building`);
       }
       
       const duration = Date.now() - startTime;
@@ -528,17 +528,17 @@ export class Phase4TestSuite {
         improvement_over_baseline: improvement
       };
       
-      console.log(`   ✅ Completed in ${duration}ms`);
+      console.log(`   [OK] Completed in ${duration}ms`);
       console.log(`   Overall Usability: ${metrics.overall_usability}%`);
       if (improvement !== undefined) {
         console.log(`   Improvement: +${improvement}% over baseline`);
       }
-      console.log(`   Status: ${passed ? '✅ PASS' : '❌ FAIL'}`);
+      console.log(`   Status: ${passed ? '[OK] PASS' : '[X] FAIL'}`);
       
       return testResult;
       
     } catch (error: any) {
-      console.error(`   ❌ Test failed with error: ${error.message}`);
+      console.error(`   [X] Test failed with error: ${error.message}`);
       
       return {
         testCase,
@@ -668,7 +668,7 @@ export class Phase4TestSuite {
    */
   async runAllTests(): Promise<TestSuiteReport> {
     console.log('\n' + '='.repeat(80));
-    console.log('🚀 PHASE 4 TEST SUITE - RUNNING ALL 10 TESTS');
+    console.log('[LAUNCH] PHASE 4 TEST SUITE - RUNNING ALL 10 TESTS');
     console.log('='.repeat(80));
     
     const testCases = this.getAllTestCases();
@@ -807,28 +807,28 @@ export class Phase4TestSuite {
    */
   private printSummary(report: TestSuiteReport): void {
     console.log('\n' + '='.repeat(80));
-    console.log('📊 TEST SUITE SUMMARY');
+    console.log('[STATS] TEST SUITE SUMMARY');
     console.log('='.repeat(80));
     
-    console.log(`\n📈 Overall Results:`);
+    console.log(`\n[UP] Overall Results:`);
     console.log(`   Total Tests: ${report.total_tests}`);
     console.log(`   Passed: ${report.passed_tests} (${Math.round(report.passed_tests / report.total_tests * 100)}%)`);
     console.log(`   Failed: ${report.failed_tests}`);
     console.log(`   Average Usability: ${Math.round(report.average_usability)}%`);
     console.log(`   Average Latency: ${Math.round(report.average_latency_ms)}ms`);
     
-    console.log(`\n📋 By Error Type:`);
+    console.log(`\n[LIST] By Error Type:`);
     for (const [type, stats] of report.summary.by_error_type) {
       console.log(`   ${type}: ${stats.passed}/${stats.total} passed (${Math.round(stats.avg_usability)}% avg usability)`);
     }
     
-    console.log(`\n🎯 By Complexity:`);
+    console.log(`\n[TARGET] By Complexity:`);
     for (const [complexity, stats] of report.summary.by_complexity) {
       console.log(`   ${complexity}: ${stats.passed}/${stats.total} passed (${Math.round(stats.avg_usability)}% avg usability)`);
     }
     
     if (report.summary.improvements.length > 0) {
-      console.log(`\n📊 Improvements Over Baseline:`);
+      console.log(`\n[STATS] Improvements Over Baseline:`);
       for (const imp of report.summary.improvements) {
         console.log(`   Test ${imp.test_id} (${imp.name}): ${imp.baseline}% → ${imp.current}% (+${imp.improvement}%)`);
       }

@@ -1,4 +1,4 @@
-# Code Quality & Architecture Guide
+﻿# Code Quality & Architecture Guide
 
 **Date:** January 2-5, 2026  
 **Purpose:** Document code quality improvements and architecture patterns  
@@ -6,7 +6,7 @@
 
 ---
 
-## 📋 Table of Contents
+## [CLIPBOARD] Table of Contents
 
 1. [Code Duplication Resolution](#code-duplication-resolution)
 2. [Interactive Debugging Architecture](#interactive-debugging-architecture)
@@ -15,7 +15,7 @@
 
 ---
 
-## 🔍 Code Duplication Resolution
+## [SEARCH] Code Duplication Resolution
 
 ### Issue Identified
 
@@ -95,10 +95,10 @@ export function getTestStatus(usability: number): 'pass' | 'fail' {
 ```
 
 **Benefits:**
-- ✅ Single source of truth
-- ✅ Consistent structure across scripts
-- ✅ Type-safe comparisons
-- ✅ Easy maintenance
+- [DONE] Single source of truth
+- [DONE] Consistent structure across scripts
+- [DONE] Type-safe comparisons
+- [DONE] Easy maintenance
 
 ---
 
@@ -173,8 +173,8 @@ const status = getTestStatus(usability);
 
 ### Files Modified
 
-1. ✅ **Created:** `scripts/shared/test-types.ts` (98 LOC)
-2. ✅ **Refactored:** `scripts/phase4-quickstart.ts` (removed 40+ duplicate LOC)
+1. [DONE] **Created:** `scripts/shared/test-types.ts` (98 LOC)
+2. [DONE] **Refactored:** `scripts/phase4-quickstart.ts` (removed 40+ duplicate LOC)
 
 ### Files That Need Refactoring
 
@@ -201,10 +201,10 @@ const status = getTestStatus(usability);
 - Added code without DRY check
 
 **What Went Right:**
-- ✅ Caught issue immediately
-- ✅ Created proper fix with shared types
-- ✅ Documented issue and solution
-- ✅ Provided migration guide
+- [DONE] Caught issue immediately
+- [DONE] Created proper fix with shared types
+- [DONE] Documented issue and solution
+- [DONE] Provided migration guide
 
 **Best Practices Going Forward:**
 1. Always check existing code before creating interfaces
@@ -214,7 +214,7 @@ const status = getTestStatus(usability);
 
 ---
 
-## 💬 Interactive Debugging Architecture
+## [CHAT] Interactive Debugging Architecture
 
 ### Overview
 
@@ -367,7 +367,7 @@ async handleQuestion(question: string, context: string): Promise<string> {
 ```typescript
 showStepButtons(step: DebuggingStep) {
   stream.button({
-    title: '➡️ Continue to Next Step',
+    title: '[RIGHT] Continue to Next Step',
     command: 'rca-agent.nextStep'
   });
   stream.button({
@@ -416,18 +416,18 @@ private detectFollowUpQuestion(prompt: string, history): boolean {
 
 ---
 
-## ✅ Best Practices
+## [DONE] Best Practices
 
 ### 1. Always Check for Existing Patterns
 
 **Before creating new code:**
 ```typescript
-// ❌ BAD: Create new interface without checking
+// [FAIL] BAD: Create new interface without checking
 interface MyNewInterface {
   // ...
 }
 
-// ✅ GOOD: Search for existing similar interfaces
+// [DONE] GOOD: Search for existing similar interfaces
 // Use grep/search: "interface.*Result"
 // Found: TestResult, AnalysisResult, etc.
 // Reuse or extend existing!
@@ -439,10 +439,10 @@ interface MyNewInterface {
 
 **For test scripts:**
 ```typescript
-// ✅ Always import from shared module
+// [DONE] Always import from shared module
 import { TestCase, TestResult, TestMetrics } from './shared/test-types';
 
-// ❌ Never create local duplicates
+// [FAIL] Never create local duplicates
 ```
 
 ---
@@ -461,14 +461,14 @@ Each class has ONE clear responsibility.
 
 **When adding new features:**
 ```typescript
-// ✅ GOOD: Additive, doesn't break existing
+// [DONE] GOOD: Additive, doesn't break existing
 if (isNewFeatureRequest) {
   return newFeatureHandler();
 } else {
   return existingFeatureHandler(); // Still works!
 }
 
-// ❌ BAD: Changes existing behavior
+// [FAIL] BAD: Changes existing behavior
 return newFeatureHandler(); // Breaks existing users!
 ```
 
@@ -498,7 +498,7 @@ class ConversationalAgent { }
 
 ---
 
-## 🏗️ Architecture Patterns
+## [BUILD] Architecture Patterns
 
 ### 1. Tool Registry Pattern
 
@@ -633,7 +633,7 @@ async streamResponse(content: string, stream: ChatResponseStream): Promise<void>
 
 ---
 
-## 📊 Code Quality Metrics
+## [CHART] Code Quality Metrics
 
 ### Before Improvements
 - Duplicate interfaces: 3 types across 15+ files
@@ -649,7 +649,7 @@ async streamResponse(content: string, stream: ChatResponseStream): Promise<void>
 
 ---
 
-## 🚀 Future Improvements
+## [LAUNCH] Future Improvements
 
 ### Short-term
 1. Refactor remaining test scripts to use shared types
@@ -664,7 +664,7 @@ async streamResponse(content: string, stream: ChatResponseStream): Promise<void>
 
 ---
 
-## 📚 Related Documentation
+## [DOCS] Related Documentation
 
 - [Phase 4 Week 1-2 Complete](PHASE4_WEEK1-2_COMPLETE.md)
 - [Phase 4 Week 3-4 Complete](PHASE4_WEEK3-4_COMPLETE.md)
@@ -679,4 +679,4 @@ async streamResponse(content: string, stream: ChatResponseStream): Promise<void>
 
 ---
 
-*Code quality is not just about writing code—it's about writing maintainable, reusable, well-documented code that others (including future you) can understand and extend!* 🚀
+*Code quality is not just about writing code—it's about writing maintainable, reusable, well-documented code that others (including future you) can understand and extend!* [LAUNCH]

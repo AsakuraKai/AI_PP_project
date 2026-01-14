@@ -248,7 +248,7 @@ function compareMetric(
   const percentChange = baseline !== 0 ? (change / baseline) : 0;
 
   let status: 'improved' | 'degraded' | 'stable';
-  
+
   if (higherIsBetter) {
     if (percentChange > Math.abs(threshold) / 2) status = 'improved';
     else if (percentChange < threshold) status = 'degraded';
@@ -279,7 +279,7 @@ function generateComparisonReport(
   current: PerformanceMetrics
 ): ComparisonReport {
   const comparisons = compareMetrics(baseline, current);
-  
+
   const improvements = comparisons.filter(c => c.status === 'improved').length;
   const degradations = comparisons.filter(c => c.status === 'degraded').length;
   const stable = comparisons.filter(c => c.status === 'stable').length;
@@ -297,8 +297,8 @@ function generateComparisonReport(
     return false;
   });
 
-  const overallStatus = criticalDegradations.length > 0 ? 'fail' : 
-                        degradations > 0 ? 'warning' : 'pass';
+  const overallStatus = criticalDegradations.length > 0 ? 'fail' :
+    degradations > 0 ? 'warning' : 'pass';
 
   // Generate recommendations
   const recommendations = generateRecommendations(comparisons, current);
@@ -328,7 +328,7 @@ function generateRecommendations(
   const successRateComp = comparisons.find(c => c.metric === 'Success Rate');
   if (successRateComp && successRateComp.status === 'degraded') {
     recommendations.push(
-      '⚠️ Success rate has decreased. Review failed test cases and improve error handling.'
+      '[WARN] Success rate has decreased. Review failed test cases and improve error handling.'
     );
     if (current.successRate < 0.90) {
       recommendations.push(
@@ -341,7 +341,7 @@ function generateRecommendations(
   const avgLatency = comparisons.find(c => c.metric === 'Average Latency');
   if (avgLatency && avgLatency.status === 'degraded') {
     recommendations.push(
-      '⚠️ Latency has increased. Consider optimizing prompt engineering or reducing iterations.'
+      '[WARN] Latency has increased. Consider optimizing prompt engineering or reducing iterations.'
     );
     if (avgLatency.current > 90) {
       recommendations.push(
@@ -353,7 +353,7 @@ function generateRecommendations(
   const p95Latency = comparisons.find(c => c.metric === 'P95 Latency');
   if (p95Latency && p95Latency.current > 110) {
     recommendations.push(
-      '⚠️ P95 latency exceeds 110s threshold. Some complex tests are taking too long.'
+      '[WARN] P95 latency exceeds 110s threshold. Some complex tests are taking too long.'
     );
   }
 
@@ -361,7 +361,7 @@ function generateRecommendations(
   const confidenceComp = comparisons.find(c => c.metric === 'Average Confidence');
   if (confidenceComp && confidenceComp.status === 'degraded') {
     recommendations.push(
-      '⚠️ Confidence scores have decreased. Review agent reasoning quality and few-shot examples.'
+      '[WARN] Confidence scores have decreased. Review agent reasoning quality and few-shot examples.'
     );
     if (confidenceComp.current < 0.85) {
       recommendations.push(
@@ -373,7 +373,7 @@ function generateRecommendations(
   // Positive feedback
   if (recommendations.length === 0) {
     recommendations.push(
-      '✅ All metrics are stable or improved. Performance is meeting or exceeding baseline.'
+      '[OK] All metrics are stable or improved. Performance is meeting or exceeding baseline.'
     );
   }
 
@@ -386,25 +386,25 @@ function generateRecommendations(
 
 function displayComparisonReport(report: ComparisonReport): void {
   console.log('\n' + '='.repeat(80));
-  console.log('📊 PERFORMANCE COMPARISON REPORT');
+  console.log('[STATS] PERFORMANCE COMPARISON REPORT');
   console.log('='.repeat(80));
-  
-  const statusIcon = report.overallStatus === 'pass' ? '✅' : 
-                     report.overallStatus === 'warning' ? '⚠️' : '🔴';
-  
+
+  const statusIcon = report.overallStatus === 'pass' ? '[OK]' :
+    report.overallStatus === 'warning' ? '[WARN]' : '🔴';
+
   console.log(`\n${statusIcon} Overall Status: ${report.overallStatus.toUpperCase()}`);
   console.log(`Baseline: ${new Date(report.baselineDate).toLocaleDateString()}`);
   console.log(`Current:  ${new Date(report.currentDate).toLocaleDateString()}`);
-  
-  console.log('\n' + '-'.repeat(80));
-  console.log('📈 SUMMARY');
-  console.log('-'.repeat(80));
-  console.log(`Improvements: ${report.summary.improvements} ⬆️`);
-  console.log(`Stable:       ${report.summary.stable} ➡️`);
-  console.log(`Degradations: ${report.summary.degradations} ⬇️`);
 
   console.log('\n' + '-'.repeat(80));
-  console.log('🔍 DETAILED COMPARISON');
+  console.log('[UP] SUMMARY');
+  console.log('-'.repeat(80));
+  console.log(`Improvements: ${report.summary.improvements} [UP]`);
+  console.log(`Stable:       ${report.summary.stable} [SAME]`);
+  console.log(`Degradations: ${report.summary.degradations} [DOWN]`);
+
+  console.log('\n' + '-'.repeat(80));
+  console.log('[SEARCH] DETAILED COMPARISON');
   console.log('-'.repeat(80));
   console.log(
     `${'Metric'.padEnd(25)} ${'Baseline'.padEnd(12)} ${'Current'.padEnd(12)} ${'Change'.padEnd(12)} Status`
@@ -412,20 +412,20 @@ function displayComparisonReport(report: ComparisonReport): void {
   console.log('-'.repeat(80));
 
   for (const comp of report.comparisons) {
-    const statusIcon = comp.status === 'improved' ? '✅' :
-                       comp.status === 'degraded' ? '❌' : '➡️';
-    
+    const statusIcon = comp.status === 'improved' ? '[OK]' :
+      comp.status === 'degraded' ? '[X]' : '[SAME]';
+
     const baselineStr = formatMetricValue(comp.metric, comp.baseline);
     const currentStr = formatMetricValue(comp.metric, comp.current);
     const changeStr = formatChange(comp.change, comp.percentChange, comp.metric);
-    
+
     console.log(
       `${comp.metric.padEnd(25)} ${baselineStr.padEnd(12)} ${currentStr.padEnd(12)} ${changeStr.padEnd(12)} ${statusIcon}`
     );
   }
 
   console.log('\n' + '-'.repeat(80));
-  console.log('💡 RECOMMENDATIONS');
+  console.log('[IDEA] RECOMMENDATIONS');
   console.log('-'.repeat(80));
   for (const rec of report.recommendations) {
     console.log(`\n${rec}`);
@@ -459,7 +459,7 @@ function formatChange(change: number, percentChange: number, metric: string): st
 
 function loadResultsFile(filePath: string): PerformanceMetrics {
   const fullPath = path.resolve(filePath);
-  
+
   if (!fs.existsSync(fullPath)) {
     throw new Error(`Results file not found: ${fullPath}`);
   }
@@ -471,14 +471,14 @@ function loadResultsFile(filePath: string): PerformanceMetrics {
 function saveComparisonReport(report: ComparisonReport, outputPath?: string): void {
   const defaultPath = path.join(process.cwd(), 'performance-comparison.json');
   const finalPath = outputPath ? path.resolve(outputPath) : defaultPath;
-  
+
   fs.writeFileSync(finalPath, JSON.stringify(report, null, 2), 'utf-8');
-  console.log(`\n✅ Comparison report saved to: ${finalPath}`);
+  console.log(`\n[OK] Comparison report saved to: ${finalPath}`);
 }
 
 function getHistoricalResults(): PerformanceMetrics[] {
   const resultsDir = path.join(process.cwd(), 'performance-results');
-  
+
   if (!fs.existsSync(resultsDir)) {
     return [];
   }
@@ -583,9 +583,9 @@ async function main(): Promise<void> {
     const baseline = PHASE_1_BASELINE;
 
     if (options.history) {
-      console.log('\n📊 Historical Performance Trends');
+      console.log('\n[STATS] Historical Performance Trends');
       console.log('='.repeat(80));
-      
+
       const historical = getHistoricalResults();
       if (historical.length === 0) {
         console.log('\nNo historical results found. Run performance tests to generate data.');
@@ -604,18 +604,18 @@ async function main(): Promise<void> {
         const success = `${(result.successRate * 100).toFixed(1)}%`;
         const latency = `${(result.averageLatencyMs / 1000).toFixed(1)}s`;
         const confidence = `${(result.averageConfidence * 100).toFixed(1)}%`;
-        
+
         console.log(
           `${date.padEnd(20)} ${tests.padEnd(10)} ${success.padEnd(12)} ${latency.padEnd(15)} ${confidence}`
         );
       }
-      
+
       return;
     }
 
     // Load current results
     let current: PerformanceMetrics;
-    
+
     if (options.file) {
       current = loadResultsFile(options.file);
     } else {
@@ -624,7 +624,7 @@ async function main(): Promise<void> {
       if (fs.existsSync(defaultPath)) {
         current = loadResultsFile(defaultPath);
       } else {
-        console.error('\n❌ No results file found. Run performance tests first:');
+        console.error('\n[X] No results file found. Run performance tests first:');
         console.error('   npm run perf-test -- --output results.json');
         process.exit(1);
       }
@@ -643,7 +643,7 @@ async function main(): Promise<void> {
     process.exit(report.overallStatus === 'fail' ? 1 : 0);
 
   } catch (error) {
-    console.error('\n❌ Error:', error instanceof Error ? error.message : error);
+    console.error('\n[X] Error:', error instanceof Error ? error.message : error);
     process.exit(1);
   }
 }

@@ -120,7 +120,7 @@ export class HistoricalPatternTool extends Tool {
    * Execute historical pattern analysis
    */
   async execute(params: HistoricalPatternParams, _context?: ToolExecutionContext): Promise<ErrorPattern | null> {
-    console.log('🔍 Analyzing historical patterns...');
+    console.log('[SEARCH] Analyzing historical patterns...');
 
     try {
       this.historyPath = path.join(params.projectPath, '.rca-agent', 'history.json');
@@ -153,7 +153,7 @@ export class HistoricalPatternTool extends Tool {
       return pattern;
 
     } catch (error) {
-      console.warn('⚠️ Historical pattern analysis failed:', error);
+      console.warn('[WARN] Historical pattern analysis failed:', error);
       return null;
     }
   }
@@ -189,7 +189,7 @@ export class HistoricalPatternTool extends Tool {
       console.log('✓ Recorded error in history');
 
     } catch (error) {
-      console.warn('⚠️ Failed to record error:', error);
+      console.warn('[WARN] Failed to record error:', error);
     }
   }
 
@@ -210,7 +210,7 @@ export class HistoricalPatternTool extends Tool {
       }
 
     } catch (error) {
-      console.warn('⚠️ Failed to record feedback:', error);
+      console.warn('[WARN] Failed to record feedback:', error);
     }
   }
 
@@ -227,7 +227,7 @@ export class HistoricalPatternTool extends Tool {
       return JSON.parse(content);
 
     } catch (error) {
-      console.warn('⚠️ Failed to load history:', error);
+      console.warn('[WARN] Failed to load history:', error);
       return [];
     }
   }
@@ -245,7 +245,7 @@ export class HistoricalPatternTool extends Tool {
       fs.writeFileSync(this.historyPath, JSON.stringify(history, null, 2));
 
     } catch (error) {
-      console.warn('⚠️ Failed to save history:', error);
+      console.warn('[WARN] Failed to save history:', error);
     }
   }
 
