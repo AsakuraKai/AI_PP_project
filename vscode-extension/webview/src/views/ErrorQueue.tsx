@@ -10,20 +10,24 @@
  * - Quick navigation to source file
  * 
  * Phase 4 Enhancements:
- * - ✅ Loading skeletons for table rows
- * - ✅ Keyboard navigation (arrow keys, Enter)
- * - ✅ ARIA labels for accessibility
- * - ✅ Enhanced empty states
- * - ✅ Screen reader support
+ * - [OK] Loading skeletons for table rows
+ * - [OK] Keyboard navigation (arrow keys, Enter)
+ * - [OK] ARIA labels for accessibility
+ * - [OK] Enhanced empty states
+ * - [OK] Screen reader support
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Check, Clock, FileText, Pin, Play, RefreshCw, Search, Trash2, X, AlertCircle } from 'lucide-react';
 import { useErrorQueue, type FilterStatus, type FilterType } from '../hooks/useErrorQueue';
+import { useVSCode } from '../hooks/useVSCode';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
+import { Checkbox } from '../components/ui/checkbox';
 import { TableRowSkeleton } from '../components/ui/skeleton';
 import { EmptyState } from '../components/EmptyState';
+import { AnalysisProgress, type AnalysisProgressProps } from '../components/AnalysisProgress';
+import { AnalysisResult, type AnalysisResultData, type FeedbackStatus } from '../components/AnalysisResult';
 import { handleListKeyboard } from '../lib/accessibility';
 import { cn } from '../lib/utils';
 
@@ -53,10 +57,101 @@ export function ErrorQueue() {
     stats
   } = useErrorQueue();
 
+  const { postMessage } = useVSCode();
   const [focusedIndex, setFocusedIndex] = useState(0);
+  const [analysisProgress, setAnalysisProgress] = useState<AnalysisProgressProps | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<AnalysisResultData | null>(null);
+  const [feedbackStatus, setFeedbackStatus] = useState<FeedbackStatus>({ status: 'idle' });
 
   const hasSelection = selectedIds.size > 0;
   const allSelected = selectedIds.size === errors.length && errors.length > 0;
+
+  // Listen for analysis progress updates
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      const message = event.data;
+
+      switch (message.command) {
+        case 'analysisStarted':
+          setIsAnalyzing(true);
+          setAnalysisProgress({
+            iteration: 0,
+            maxIterations: message.maxIterations || 6,
+            progress: 0
+          });
+          break;
+
+        case 'analysisProgress':
+          setAnalysisProgress(message.progress);
+          break;
+
+        case 'analysisComplete':
+          setIsAnalyzing(false);
+          setAnalysisProgress(null);
+          setAnalysisResult(message.result);
+          setFeedbackStatus({ status: 'idle' });
+          break;
+
+        case 'analysisError':
+        case 'analysisCancelled':
+          setIsAnalyzing(false);
+          setAnalysisProgress(null);
+          break;
+
+        case 'feedbackResult': {
+          const newConfidence = message?.result?.newConfidence as number | undefined;
+          const msg = message?.result?.message as string | undefined;
+          if (typeof newConfidence === 'number') {
+            setAnalysisResult(prev => prev ? { ...prev, confidence: newConfidence } : prev);
+          }
+          setFeedbackStatus({ status: 'sent', message: msg || 'Thank you for your feedback!' });
+          break;
+        }
+
+        case 'feedbackError':
+          setFeedbackStatus({ status: 'error', message: message.error || 'Feedback failed' });
+          break;
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
+  const applyFix = (fixId: string) => {
+    postMessage('applyFixById', { fixId });
+  };
+
+  const exportResult = () => {
+    if (analysisResult) {
+      postMessage('exportResult', { result: analysisResult });
+    }
+  };
+
+  const submitFeedback = (type: 'positive' | 'negative') => {
+    if (!analysisResult || feedbackStatus.status === 'sending') return;
+
+    const meta = analysisResult.feedback;
+    if (!meta?.enabled || !meta.rcaId) {
+      setFeedbackStatus({ status: 'error', message: 'Feedback unavailable (no persisted rcaId)' });
+      return;
+    }
+
+    setFeedbackStatus({ status: 'sending' });
+    postMessage('submitFeedback', {
+      feedbackType: type,
+      rcaId: meta.rcaId,
+      errorHash: meta.errorHash
+    });
+  };
+
+  const resetAnalysis = () => {
+    setAnalysisResult(null);
+    setAnalysisProgress(null);
+    setIsAnalyzing(false);
+    setFeedbackStatus({ status: 'idle' });
+  };
 
   return (
     <div className="p-8 space-y-6" role="main" aria-label="Error Queue">
@@ -172,6 +267,13 @@ export function ErrorQueue() {
         )}
       </div>
 
+      {/* Analysis Progress Display */}
+      {isAnalyzing && analysisProgress && (
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6" role="region" aria-label="Analysis progress" aria-live="polite">
+          <AnalysisProgress {...analysisProgress} />
+        </div>
+      )}
+
       {/* Error List */}
       {loading ? (
         <div className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
@@ -204,11 +306,9 @@ export function ErrorQueue() {
           {/* Table Header */}
           <div className="grid grid-cols-12 gap-4 p-4 border-b border-zinc-800 bg-zinc-900/50 text-sm font-medium text-zinc-400" role="row">
             <div className="col-span-1 flex items-center" role="columnheader">
-              <input
-                type="checkbox"
+              <Checkbox
                 checked={allSelected}
-                onChange={() => allSelected ? deselectAll() : selectAll()}
-                className="rounded border-zinc-700 bg-zinc-800"
+                onCheckedChange={() => allSelected ? deselectAll() : selectAll()}
                 aria-label={allSelected ? 'Deselect all errors' : 'Select all errors'}
               />
             </div>
@@ -248,10 +348,22 @@ export function ErrorQueue() {
       )}
 
       {/* Footer Stats */}
-      {errors.length > 0 && (
+      {errors.length > 0 && !analysisResult && (
         <div className="text-sm text-zinc-500 text-center">
           Showing {stats.filtered} of {stats.total} errors
         </div>
+      )}
+
+      {/* Analysis Results */}
+      {analysisResult && (
+        <AnalysisResult
+          result={analysisResult}
+          feedbackStatus={feedbackStatus}
+          onApplyFix={applyFix}
+          onExport={exportResult}
+          onReset={resetAnalysis}
+          onSubmitFeedback={submitFeedback}
+        />
       )}
     </div>
   );
@@ -299,11 +411,9 @@ function ErrorRow({ error, selected, focused, onToggleSelection, onAnalyze, onRe
     >
       {/* Checkbox */}
       <div className="col-span-1 flex items-center" role="cell">
-        <input
-          type="checkbox"
+        <Checkbox
           checked={selected}
-          onChange={onToggleSelection}
-          className="rounded border-zinc-700 bg-zinc-800"
+          onCheckedChange={onToggleSelection}
           aria-label={`Select error: ${error.message}`}
         />
         {error.metadata?.pinned && (

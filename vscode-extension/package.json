@@ -82,6 +82,36 @@
         "command": "rca-agent.searchSimilar",
         "title": "RCA: Search Similar Errors",
         "category": "RCA Agent"
+      },
+      {
+        "command": "rca-agent.detectErrors",
+        "title": "RCA: Scan Workspace for Errors",
+        "category": "RCA Agent",
+        "icon": "$(search)"
+      },
+      {
+        "command": "rca-agent.showErrorQueue",
+        "title": "RCA: Show Error Queue Status",
+        "category": "RCA Agent",
+        "icon": "$(list-unordered)"
+      },
+      {
+        "command": "rca-agent.addManualError",
+        "title": "RCA: Add Error from Clipboard",
+        "category": "RCA Agent",
+        "icon": "$(add)"
+      },
+      {
+        "command": "rca-agent.captureTerminalErrors",
+        "title": "RCA: Capture Terminal Errors",
+        "category": "RCA Agent",
+        "icon": "$(terminal)"
+      },
+      {
+        "command": "rca-agent.testErrorFlow",
+        "title": "RCA: Test Error Detection Flow",
+        "category": "RCA Agent",
+        "icon": "$(beaker)"
       }
     ],
     "configuration": {
@@ -124,17 +154,12 @@
         "rcaAgent.autoDetectErrors": {
           "type": "boolean",
           "default": true,
-          "description": "Automatically detect and queue errors from VS Code diagnostics"
+          "description": "Automatically detect errors from VS Code diagnostics"
         },
-        "rcaAgent.educationalMode": {
+        "rcaAgent.watchBuildFiles": {
           "type": "boolean",
-          "default": false,
-          "description": "Enable educational mode with detailed explanations"
-        },
-        "rcaAgent.realtimeDetection": {
-          "type": "boolean",
-          "default": false,
-          "description": "Enable real-time error detection"
+          "default": true,
+          "description": "Watch build output files (build/outputs/**/*.log) for errors"
         }
       }
     }

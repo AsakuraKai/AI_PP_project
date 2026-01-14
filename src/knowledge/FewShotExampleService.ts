@@ -119,7 +119,7 @@ export class FewShotExampleService {
    */
   private async _loadDatabaseInternal(): Promise<void> {
     try {
-      console.log('🔄 Loading few-shot database...');
+      console.log('[SYNC] Loading few-shot database...');
       
       // 1. Load JSON database (version/dependency examples)
       const content = await fs.promises.readFile(this.examplesPath, 'utf-8');
@@ -182,7 +182,7 @@ export class FewShotExampleService {
       const totalCount = jsonExampleCount + tsExampleCount;
       this.isLoaded = true; // Mark as successfully loaded
       
-      console.log(`✅ Loaded ${totalCount} few-shot examples (${jsonExampleCount} JSON + ${tsExampleCount} TS) v${this.database?.version}`);
+      console.log(`[OK] Loaded ${totalCount} few-shot examples (${jsonExampleCount} JSON + ${tsExampleCount} TS) v${this.database?.version}`);
       console.log(`   Available categories: ${Object.keys(this.database.categories).join(', ')}`);
       console.log(`   Category counts:`, Object.fromEntries(
         Object.entries(this.database.categories).map(([k, v]) => [k, v.examples.length])

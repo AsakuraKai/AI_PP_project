@@ -6,6 +6,7 @@ import { AnalysisService } from './services/AnalysisService';
 import { FixApplicationService } from './services/FixApplicationService';
 import { ErrorQueueManager } from './services/ErrorQueueManager';
 import { StateManager } from './services/StateManager';
+import { AdvancedErrorDetector } from './services/AdvancedErrorDetector';
 
 // Webview Provider import (NEW - Phase 1)
 import { RCAWebviewProvider } from './webview/RCAWebviewProvider';
@@ -38,6 +39,7 @@ let analysisService: AnalysisService | undefined;
 let fixApplicationService: FixApplicationService | undefined;
 let errorQueueManager: ErrorQueueManager | undefined;
 let stateManager: StateManager | undefined;
+let advancedErrorDetector: AdvancedErrorDetector | undefined;
 
 // Chat/workflow instances (KEPT - Not UI related)
 let conversationalAgent: ConversationalAgent | undefined;
@@ -118,6 +120,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     log('error', 'Failed to register chat action commands', error);
   }
 
+  // Initialize Advanced Error Detector (after webview registration)
+  if (errorQueueManager) {
+    advancedErrorDetector = AdvancedErrorDetector.getInstance(context, errorQueueManager);
+    await advancedErrorDetector.startDetection();
+    log('info', 'Advanced error detection started (terminal, build files)');
+  }
+
   // Register Error Detection Commands
   try {
     log('info', 'Registering error detection commands...');
@@ -145,6 +154,62 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
               `Pending: ${pending}, Analyzing: ${analyzing}, Complete: ${complete}, Failed: ${failed}`
             );
           }
+        }
+      }),
+      vscode.commands.registerCommand('rca-agent.addManualError', async () => {
+        const errorText = await vscode.window.showInputBox({
+          prompt: 'Paste error message, stack trace, or build output',
+          placeHolder: 'e.g., NullPointerException at MainActivity.kt:42',
+          value: await vscode.env.clipboard.readText() // Pre-fill from clipboard
+        });
+
+        if (errorText && advancedErrorDetector) {
+          await advancedErrorDetector.addManualError(errorText);
+        }
+      }),
+      vscode.commands.registerCommand('rca-agent.captureTerminalErrors', async () => {
+        if (advancedErrorDetector) {
+          await advancedErrorDetector.captureActiveTerminalErrors();
+        }
+      }),
+      // Diagnostic command to test end-to-end flow
+      vscode.commands.registerCommand('rca-agent.testErrorFlow', async () => {
+        if (!errorQueueManager) {
+          vscode.window.showErrorMessage('ErrorQueueManager not initialized');
+          return;
+        }
+
+        // Create a test error
+        const testError = {
+          id: `test-${Date.now()}`,
+          timestamp: Date.now(),
+          message: 'TEST ERROR: This is a diagnostic test error',
+          type: 'runtime' as const,
+          filePath: '/test/TestFile.kt',
+          line: 42,
+          column: 10,
+          severity: 'error' as const,
+          status: 'pending' as const,
+          stackTrace: ['at TestFile.testMethod(TestFile.kt:42)', 'at TestRunner.main(TestRunner.kt:10)']
+        };
+
+        // Add to queue
+        log('info', `[TEST] Adding test error: ${testError.id}`);
+        errorQueueManager.addError(testError);
+
+        // Check queue
+        const allErrors = errorQueueManager.getAllErrors();
+        const foundError = allErrors.find(e => e.id === testError.id);
+
+        if (foundError) {
+          vscode.window.showInformationMessage(
+            `[OK] Test error added successfully!\n` +
+            `ID: ${testError.id}\n` +
+            `Total errors in queue: ${allErrors.length}\n` +
+            `Check RCA Agent view to see if it displays.`
+          );
+        } else {
+          vscode.window.showErrorMessage('[X] Test error was not added to queue');
         }
       })
     );

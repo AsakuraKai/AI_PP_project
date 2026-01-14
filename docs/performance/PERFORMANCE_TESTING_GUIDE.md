@@ -1,10 +1,10 @@
-# Performance Testing Guide
+﻿# Performance Testing Guide
 
 Complete guide for testing the RCA Agent's performance across multiple error types.
 
 ---
 
-## 📊 Overview
+## [CHART] Overview
 
 This guide covers the comprehensive performance test suite with **31 test cases** spanning:
 - **6 categories:** Kotlin, Gradle, Jetpack Compose, XML, Manifest, Multi-Layer
@@ -13,19 +13,19 @@ This guide covers the comprehensive performance test suite with **31 test cases*
 
 ---
 
-## 🎯 Test Dataset
+## [TARGET] Test Dataset
 
 ### Test Distribution
 
-| Category | Test Cases | Error Types | Complexity Range |
-|----------|------------|-------------|------------------|
-| **Kotlin** | 6 | lateinit, NPE, type_mismatch, unresolved_reference, compilation_error | Simple → Complex |
-| **Gradle** | 5 | dependency_conflict, resolution_error, task_failure | Simple → Complex |
-| **Jetpack Compose** | 8 | remember, recomposition, launched_effect, composition_local, modifier_chain, side_effect, derived_state, snapshot_state | Simple → Complex |
-| **XML** | 7 | inflation, missing_id, attribute_error, namespace_error, view_not_found, include_error, merge_error | Simple → Complex |
-| **Manifest** | 5 | undeclared_activity, missing_permission, merge_conflict, undeclared_service, undeclared_receiver | Simple → Complex |
-| **Multi-Layer** | 5 | Cross-cutting errors (Compose+Kotlin, Gradle+Manifest, etc.) | Complex → Edge-Case |
-| **TOTAL** | **31** | **26+** | All levels |
+| Category            | Test Cases | Error Types                                                                                                             | Complexity Range    |
+| ------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| **Kotlin**          | 6          | lateinit, NPE, type_mismatch, unresolved_reference, compilation_error                                                   | Simple → Complex    |
+| **Gradle**          | 5          | dependency_conflict, resolution_error, task_failure                                                                     | Simple → Complex    |
+| **Jetpack Compose** | 8          | remember, recomposition, launched_effect, composition_local, modifier_chain, side_effect, derived_state, snapshot_state | Simple → Complex    |
+| **XML**             | 7          | inflation, missing_id, attribute_error, namespace_error, view_not_found, include_error, merge_error                     | Simple → Complex    |
+| **Manifest**        | 5          | undeclared_activity, missing_permission, merge_conflict, undeclared_service, undeclared_receiver                        | Simple → Complex    |
+| **Multi-Layer**     | 5          | Cross-cutting errors (Compose+Kotlin, Gradle+Manifest, etc.)                                                            | Complex → Edge-Case |
+| **TOTAL**           | **31**     | **26+**                                                                                                                 | All levels          |
 
 ### Complexity Levels
 
@@ -36,7 +36,7 @@ This guide covers the comprehensive performance test suite with **31 test cases*
 
 ---
 
-## 🚀 Quick Start
+## [LAUNCH] Quick Start
 
 ### Prerequisites
 
@@ -63,7 +63,7 @@ npm run perf-test
 
 ---
 
-## 📋 Usage Examples
+## [CLIPBOARD] Usage Examples
 
 ### 1. Run All Tests
 
@@ -180,12 +180,12 @@ npm run perf-test -- --complexity complex --output complex-results.json
 
 ---
 
-## 📈 Understanding the Report
+## [GRAPH] Understanding the Report
 
 ### Sample Output
 
 ```
-📈 PERFORMANCE TEST REPORT
+[GRAPH] PERFORMANCE TEST REPORT
 ================================================================================
 
 Timestamp: 2025-12-23T10:30:45.123Z
@@ -195,7 +195,7 @@ Success: 29 (93.5%)
 Failure: 2 (6.5%)
 
 --------------------------------------------------------------------------------
-⏱️  LATENCY METRICS
+[TIMER]  LATENCY METRICS
 --------------------------------------------------------------------------------
 Total Duration: 2310.5s (38.5 minutes)
 Average Latency: 74.5s
@@ -234,7 +234,7 @@ MULTI-LAYER:
   Avg Latency: 98.7s | Avg Confidence: 82.1%
 
 --------------------------------------------------------------------------------
-🎯 BY COMPLEXITY
+[TARGET] BY COMPLEXITY
 --------------------------------------------------------------------------------
 
 SIMPLE:
@@ -254,7 +254,7 @@ EDGE-CASE:
   Avg Latency: 115.3s | Avg Confidence: 78.2%
 
 --------------------------------------------------------------------------------
-❌ FAILED TESTS
+[FAIL] FAILED TESTS
 --------------------------------------------------------------------------------
 
 CP-002: Infinite recomposition loop
@@ -268,19 +268,19 @@ ML-005: All layers combined
 
 ---
 
-## 🎯 Success Criteria
+## [TARGET] Success Criteria
 
 ### Target Metrics
 
-| Metric | Target | Notes |
-|--------|--------|-------|
-| **Overall Success Rate** | ≥90% | 28+ out of 31 tests passing |
-| **Simple Success Rate** | 100% | All 8 baseline tests must pass |
-| **Medium Success Rate** | ≥93% | 14+ out of 15 tests passing |
-| **Complex Success Rate** | ≥85% | 6+ out of 7 tests passing |
-| **Average Latency** | <80s | Below Phase 1 target of 90s |
-| **P95 Latency** | <110s | 95% of tests under 110s |
-| **Average Confidence** | ≥85% | High-quality analysis |
+| Metric                   | Target | Notes                          |
+| ------------------------ | ------ | ------------------------------ |
+| **Overall Success Rate** | ≥90%   | 28+ out of 31 tests passing    |
+| **Simple Success Rate**  | 100%   | All 8 baseline tests must pass |
+| **Medium Success Rate**  | ≥93%   | 14+ out of 15 tests passing    |
+| **Complex Success Rate** | ≥85%   | 6+ out of 7 tests passing      |
+| **Average Latency**      | <80s   | Below Phase 1 target of 90s    |
+| **P95 Latency**          | <110s  | 95% of tests under 110s        |
+| **Average Confidence**   | ≥85%   | High-quality analysis          |
 
 ### Phase 1 Baseline Comparison
 
@@ -297,7 +297,7 @@ ML-005: All layers combined
 
 ---
 
-## 🔍 Test Case Details
+## [SEARCH] Test Case Details
 
 ### Kotlin Tests (KT-001 to KT-006)
 
@@ -355,7 +355,7 @@ ML-005: All layers combined
 
 ---
 
-## 🛠️ Troubleshooting
+## [FIX] Troubleshooting
 
 ### Common Issues
 
@@ -394,7 +394,7 @@ npm run perf-test -- --max-iterations 5 --complexity complex
 
 ---
 
-## 📊 Analyzing Results
+## [CHART] Analyzing Results
 
 ### JSON Export Structure
 
@@ -439,15 +439,15 @@ npm run perf-test -- --max-iterations 5 --complexity complex
 
 ---
 
-## 🎯 Best Practices
+## [TARGET] Best Practices
 
 ### When to Run Performance Tests
 
-✅ **Before merging to main:** Ensure no regressions  
-✅ **After agent improvements:** Validate enhancements  
-✅ **After model upgrades:** Test new LLM behavior  
-✅ **Weekly regression check:** Maintain quality  
-✅ **Before releases:** Final validation
+[DONE] **Before merging to main:** Ensure no regressions  
+[DONE] **After agent improvements:** Validate enhancements  
+[DONE] **After model upgrades:** Test new LLM behavior  
+[DONE] **Weekly regression check:** Maintain quality  
+[DONE] **Before releases:** Final validation
 
 ### Test Strategy
 
@@ -488,7 +488,7 @@ npm run perf-test -- --max-iterations 5 --complexity complex
 
 ---
 
-## 📚 Related Documentation
+## [DOCS] Related Documentation
 
 - [Phase 1 Completion Summary](../COMPLETION_SUMMARY.md)
 - [Agent API Documentation](./api/Agent.md)

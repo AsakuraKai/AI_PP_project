@@ -1,4 +1,4 @@
-# Phase 4 - Integration Notes
+﻿# Phase 4 - Integration Notes
 
 **Created:** January 9, 2026  
 **Phase:** Polish & Launch (Week 4)  
@@ -8,7 +8,7 @@
 
 ## Summary of Day 1 Work
 
-### ✅ Completed
+### [DONE] Completed
 
 1. **Documentation Structure**
    - Created comprehensive COMPONENT_SPECS.md with all 7 views documented
@@ -333,14 +333,14 @@ Same pattern will be used for ErrorQueue, AgentState, Metrics.
 
 ## Dependencies Status
 
-### Already Installed ✅
+### Already Installed [DONE]
 - React 19.2.0
 - Tailwind CSS 4.1.18
 - shadcn/ui components (@radix-ui/*)
 - Lucide React (icons)
 - Vite 7.2.5
 
-### To Install for Testing ⏳
+### To Install for Testing [TIMER]
 - @testing-library/react
 - @testing-library/jest-dom
 - @testing-library/user-event

@@ -40,12 +40,12 @@ describe('DocumentSynthesizer', () => {
       const markdown = synthesizer.synthesize(rca, error);
 
       // Check for main sections
-      expect(markdown).toContain('# 🔍 Root Cause Analysis: Lateinit');
-      expect(markdown).toContain('## 📋 Summary');
-      expect(markdown).toContain('## 🎯 Root Cause');
-      expect(markdown).toContain('## 🛠️ Fix Guidelines');
-      expect(markdown).toContain('## 🔧 Analysis Tools Used');
-      expect(markdown).toContain('## 📊 Analysis Metadata');
+      expect(markdown).toContain('# [SEARCH] Root Cause Analysis: Lateinit');
+      expect(markdown).toContain('## [LIST] Summary');
+      expect(markdown).toContain('## [TARGET] Root Cause');
+      expect(markdown).toContain('## [BUILD] Fix Guidelines');
+      expect(markdown).toContain('## [TOOL] Analysis Tools Used');
+      expect(markdown).toContain('## [STATS] Analysis Metadata');
 
       // Check content
       expect(markdown).toContain('lateinit property user has not been initialized');
@@ -74,7 +74,7 @@ describe('DocumentSynthesizer', () => {
         includeCodeContext: true,
       });
 
-      expect(markdown).toContain('## 📄 Code Context');
+      expect(markdown).toContain('## [FILE] Code Context');
       expect(markdown).toContain('```kotlin');
       expect(markdown).toContain('val name = user.name');
     });
@@ -128,14 +128,14 @@ describe('DocumentSynthesizer', () => {
         includeMetadata: false,
       });
 
-      expect(markdown).not.toContain('## 📄 Code Context');
-      expect(markdown).not.toContain('## 🔧 Analysis Tools Used');
-      expect(markdown).not.toContain('## 📊 Analysis Metadata');
+      expect(markdown).not.toContain('## [FILE] Code Context');
+      expect(markdown).not.toContain('## [TOOL] Analysis Tools Used');
+      expect(markdown).not.toContain('## [STATS] Analysis Metadata');
 
       // Should still have required sections
-      expect(markdown).toContain('## 📋 Summary');
-      expect(markdown).toContain('## 🎯 Root Cause');
-      expect(markdown).toContain('## 🛠️ Fix Guidelines');
+      expect(markdown).toContain('## [LIST] Summary');
+      expect(markdown).toContain('## [TARGET] Root Cause');
+      expect(markdown).toContain('## [BUILD] Fix Guidelines');
     });
 
     it('should handle framework metadata', () => {
@@ -297,9 +297,9 @@ describe('DocumentSynthesizer', () => {
 
       const markdown = synthesizer.synthesize(rca, error);
 
-      expect(markdown).toContain('📖 Read File');
-      expect(markdown).toContain('🔍 Find Callers (LSP)');
-      expect(markdown).toContain('🗄️ Vector Search');
+      expect(markdown).toContain('[READ] Read File');
+      expect(markdown).toContain('[SEARCH] Find Callers (LSP)');
+      expect(markdown).toContain('[DB] Vector Search');
     });
 
     it('should format custom tool names', () => {
@@ -553,7 +553,7 @@ describe('DocumentSynthesizer', () => {
 
       const markdown = synthesizer.synthesize(rca, error);
 
-      expect(markdown).toContain('## 🛠️ Fix Guidelines');
+      expect(markdown).toContain('## [BUILD] Fix Guidelines');
       // Should not crash, even with empty array
     });
 

@@ -19,6 +19,7 @@ import { ErrorParser } from '../../../src/utils/ErrorParser';
 import { ChromaDBClient } from '../../../src/db/ChromaDBClient';
 import { RCACache } from '../../../src/cache/RCACache';
 import { NetworkTimeoutHandler } from './NetworkTimeoutHandler';
+import { calculateQualityScore } from '../../../src/db/schemas/rca-collection';
 
 /**
  * Progress callback for analysis updates (uses shared AgentState)
@@ -65,9 +66,14 @@ export class AnalysisService {
       const config = vscode.workspace.getConfiguration('rcaAgent');
       const ollamaUrl = config.get<string>('ollamaUrl', 'http://localhost:11434');
       const model = config.get<string>('model', 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest');
-      const chromaPath = config.get<string>('chromaDbPath', './chroma');
+      // Note: Despite the setting name, ChromaDBClient expects a server URL.
+      // Default to localhost URL to match start.py (`chroma run --host localhost --port 8000`).
+      const chromaConfigValue = config.get<string>('chromaDbPath', 'http://localhost:8000');
+      const chromaUrl = /^https?:\/\//i.test(chromaConfigValue)
+        ? chromaConfigValue
+        : 'http://localhost:8000';
 
-      console.log('[AnalysisService] Initializing with:', { ollamaUrl, model, chromaPath });
+      console.log('[AnalysisService] Initializing with:', { ollamaUrl, model, chromaUrl });
 
       // Initialize Ollama client
       this._client = new OllamaClient({ baseUrl: ollamaUrl, model });
@@ -77,7 +83,7 @@ export class AnalysisService {
 
       // Initialize ChromaDB client (optional - gracefully handles failure)
       try {
-        this._chromaDB = await ChromaDBClient.create({ url: chromaPath });
+        this._chromaDB = await ChromaDBClient.create({ url: chromaUrl });
         console.log('[AnalysisService] ChromaDB initialized successfully');
       } catch (error) {
         const err = error as Error;
@@ -190,6 +196,13 @@ export class AnalysisService {
    */
   getChromaDB(): ChromaDBClient | undefined {
     return this._chromaDB;
+  }
+
+  /**
+   * Get RCACache instance (used by feedback and metrics)
+   */
+  getCache(): RCACache | undefined {
+    return this._cache;
   }
 
   /**
@@ -352,12 +365,68 @@ export class AnalysisService {
 
       const result = analysisResult.data!;
 
+      // Compute a stable error hash for feedback/caching.
+      const errorHash = this._cache?.getHash(parsed);
+
+      // If ChromaDB is available, persist the analysis result so feedback can update it.
+      // (When Chroma isn't available, feedback will be disabled in the UI.)
+      let rcaId: string | undefined;
+      if (this._chromaDB) {
+        try {
+          const storageLanguage = (parsed.language === 'proguard') ? 'gradle' : parsed.language;
+          const base = {
+            error_message: parsed.message,
+            error_type: parsed.type,
+            language: storageLanguage,
+            root_cause: result.rootCause,
+            fix_guidelines: result.fixGuidelines,
+            confidence: result.confidence,
+            user_validated: false,
+            quality_score: 0,
+            file_path: parsed.filePath,
+            line_number: parsed.line,
+            code_context: result.codeContext,
+            metadata: {
+              source: 'vscode-extension',
+              toolsUsed: result.toolsUsed,
+              iterations: result.iterations
+            }
+          };
+
+          const quality_score = calculateQualityScore({
+            ...base,
+            created_at: Date.now()
+          });
+
+          rcaId = await this._chromaDB.addRCA({
+            ...base,
+            quality_score
+          });
+
+          // Cache the stored document for fast repeat lookups.
+          if (errorHash && this._cache) {
+            const stored = await this._chromaDB.getById(rcaId);
+            if (stored) {
+              this._cache.set(errorHash, stored);
+            }
+          }
+        } catch (persistError) {
+          console.warn('[AnalysisService] Failed to persist RCA to ChromaDB:', persistError);
+          rcaId = undefined;
+        }
+      }
+
       // Search for similar errors in ChromaDB
       const similarErrors = await this._searchSimilarErrors(parsed);
 
       // Return backend result directly (types are compatible)
       console.log('[AnalysisService] Analysis complete:', result);
-      return result;
+      return {
+        ...result,
+        // Extra fields for UI feedback wiring (kept optional and additive)
+        rcaId,
+        errorHash
+      } as any;
 
     } catch (error) {
       console.error('[AnalysisService] Analysis failed:', error);

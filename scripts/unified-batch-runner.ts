@@ -40,7 +40,7 @@ const TEST_FUNCTIONS = [
  */
 async function runBatchTests(config: BatchConfig = {}): Promise<void> {
   console.log('\n' + '='.repeat(80));
-  console.log('🧪 UNIFIED BATCH TEST RUNNER');
+  console.log('[TEST] UNIFIED BATCH TEST RUNNER');
   console.log('='.repeat(80));
 
   // Determine which tests to run
@@ -54,7 +54,7 @@ async function runBatchTests(config: BatchConfig = {}): Promise<void> {
     testsToRun = TEST_FUNCTIONS.filter(t => t.id >= start && t.id <= end);
   }
 
-  console.log(`\n📋 Running ${testsToRun.length} test(s):\n`);
+  console.log(`\n[LIST] Running ${testsToRun.length} test(s):\n`);
   testsToRun.forEach(t => console.log(`   ${t.id}. ${t.name}`));
   console.log('');
 
@@ -71,24 +71,24 @@ async function runBatchTests(config: BatchConfig = {}): Promise<void> {
   for (const test of testsToRun) {
     try {
       console.log(`\n${'='.repeat(80)}`);
-      console.log(`▶ Starting Test ${test.id}: ${test.name}`);
+      console.log(`[START] Starting Test ${test.id}: ${test.name}`);
       console.log('='.repeat(80));
 
       await test.fn();
       results.passed++;
 
-      console.log(`\n✅ Test ${test.id} completed successfully`);
+      console.log(`\n[OK] Test ${test.id} completed successfully`);
     } catch (error) {
       results.failed++;
       results.errors.push({ test: test.id, error });
 
-      console.error(`\n❌ Test ${test.id} failed:`, error);
+      console.error(`\n[X] Test ${test.id} failed:`, error);
 
       if (!config.continueOnError) {
-        console.error('\n⚠️  Stopping batch execution due to test failure');
+        console.error('\n[WARN]  Stopping batch execution due to test failure');
         break;
       } else {
-        console.log('\n⚠️  Continuing to next test...');
+        console.log('\n[WARN]  Continuing to next test...');
       }
     }
   }
@@ -97,16 +97,16 @@ async function runBatchTests(config: BatchConfig = {}): Promise<void> {
 
   // Print summary
   console.log('\n' + '='.repeat(80));
-  console.log('📊 BATCH TEST SUMMARY');
+  console.log('[STATS] BATCH TEST SUMMARY');
   console.log('='.repeat(80));
   console.log(`\nTotal Tests: ${results.total}`);
-  console.log(`✅ Passed: ${results.passed}`);
-  console.log(`❌ Failed: ${results.failed}`);
-  console.log(`⏱️  Total Time: ${(totalTime / 1000).toFixed(2)}s`);
-  console.log(`📈 Success Rate: ${((results.passed / results.total) * 100).toFixed(1)}%`);
+  console.log(`[OK] Passed: ${results.passed}`);
+  console.log(`[X] Failed: ${results.failed}`);
+  console.log(`[TIME]  Total Time: ${(totalTime / 1000).toFixed(2)}s`);
+  console.log(`[UP] Success Rate: ${((results.passed / results.total) * 100).toFixed(1)}%`);
 
   if (results.errors.length > 0) {
-    console.log('\n❌ Failed Tests:');
+    console.log('\n[X] Failed Tests:');
     results.errors.forEach(({ test, error }) => {
       console.log(`   Test ${test}: ${error.message || error}`);
     });
@@ -166,11 +166,11 @@ if (require.main === module) {
 
   runBatchTests(config)
     .then(() => {
-      console.log('\n✅ Batch execution complete!');
+      console.log('\n[OK] Batch execution complete!');
       process.exit(0);
     })
     .catch(error => {
-      console.error('\n❌ Batch execution failed:', error);
+      console.error('\n[X] Batch execution failed:', error);
       process.exit(1);
     });
 }

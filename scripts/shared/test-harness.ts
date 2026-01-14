@@ -104,8 +104,8 @@ export class TestHarness {
    * Initialize LLM and Agent (common setup across all tests)
    */
   async initialize(projectRoot: string): Promise<void> {
-    console.log('🤖 Initializing RCA agent...');
-    
+    console.log('[INIT] Initializing RCA agent...');
+
     this.llm = new OllamaClient({
       model: this.config.model!,
       baseUrl: this.config.baseUrl!,
@@ -118,14 +118,14 @@ export class TestHarness {
       projectRoot: projectRoot,
     });
 
-    console.log('✅ Agent initialized\n');
+    console.log('[OK] Agent initialized\n');
   }
 
   /**
    * Create test project structure (common across all tests)
    */
   async setupTestProject(projectRoot: string, testFiles: Record<string, string>): Promise<void> {
-    console.log('📁 Creating test project...');
+    console.log('[FOLDER] Creating test project...');
     await fs.mkdir(projectRoot, { recursive: true });
 
     for (const [filename, content] of Object.entries(testFiles)) {
@@ -133,15 +133,15 @@ export class TestHarness {
       await fs.mkdir(path.dirname(filePath), { recursive: true });
       await fs.writeFile(filePath, content);
     }
-    
-    console.log('✅ Test project created\n');
+
+    console.log('[OK] Test project created\n');
   }
 
   /**
    * Run a single test (unified execution flow)
    */
   async runTest(testConfig: TestConfig): Promise<TestResult> {
-    console.log(`\n🧪 ${testConfig.testName.toUpperCase()}\n`);
+    console.log(`\n[TEST] ${testConfig.testName.toUpperCase()}\n`);
     console.log('='.repeat(80));
 
     // Setup test project if files provided
@@ -153,7 +153,7 @@ export class TestHarness {
     await this.initialize(testConfig.projectRoot);
 
     // Run analysis
-    console.log('🔍 Running RCA analysis...\n');
+    console.log('[SEARCH] Running RCA analysis...\n');
     const startTime = Date.now();
 
     try {
@@ -217,7 +217,7 @@ export class TestHarness {
 
       return testResult;
     } catch (error) {
-      console.error('❌ Test failed with error:', error);
+      console.error('[X] Test failed with error:', error);
       throw error;
     }
   }
@@ -245,7 +245,7 @@ export class TestHarness {
 
     // Diagnosis accuracy
     if (expectedDiagnosis && expectedDiagnosis.length > 0) {
-      const matches = expectedDiagnosis.filter(keyword => 
+      const matches = expectedDiagnosis.filter(keyword =>
         rootCause.includes(keyword.toLowerCase())
       );
       diagnosis = Math.min(100, (matches.length / expectedDiagnosis.length) * 100);
@@ -255,7 +255,7 @@ export class TestHarness {
 
     // Solution specificity
     if (expectedSolution && expectedSolution.length > 0) {
-      const matches = expectedSolution.filter(keyword => 
+      const matches = expectedSolution.filter(keyword =>
         fixText.includes(keyword.toLowerCase())
       );
       solution = Math.min(100, (matches.length / expectedSolution.length) * 100);
@@ -328,7 +328,7 @@ export class TestHarness {
    */
   private displayResults(result: any, latency: number): void {
     console.log('\n' + '='.repeat(80));
-    console.log('🔍 AGENT OUTPUT\n');
+    console.log('[SEARCH] AGENT OUTPUT\n');
     console.log('Root Cause:', result.rootCause || 'N/A');
     console.log('\nFix Guidelines:', result.fixGuidelines || 'N/A');
     if (result.codeFix) {
@@ -343,7 +343,7 @@ export class TestHarness {
    */
   private displayMetrics(metrics: TestMetrics, testNumber: number): void {
     console.log('\n' + '='.repeat(80));
-    console.log(`📈 TEST ${testNumber} METRICS\n`);
+    console.log(`[UP] TEST ${testNumber} METRICS\n`);
     console.log(`Diagnosis Accuracy:      ${metrics.diagnosis_accuracy.toFixed(0)}% ${this.getStatusEmoji(metrics.diagnosis_accuracy, 80)}`);
     console.log(`Solution Specificity:    ${metrics.solution_specificity.toFixed(0)}% ${this.getStatusEmoji(metrics.solution_specificity, 70)}`);
     console.log(`File Identification:     ${metrics.file_identification.toFixed(0)}% ${this.getStatusEmoji(metrics.file_identification, 70)}`);
@@ -359,7 +359,7 @@ export class TestHarness {
    */
   private displayImprovement(baseline: any, metrics: TestMetrics): void {
     console.log('\n' + '='.repeat(80));
-    console.log('📊 IMPROVEMENT FROM BASELINE\n');
+    console.log('[STATS] IMPROVEMENT FROM BASELINE\n');
     console.log(`Usability:   ${baseline.usability}% → ${metrics.overall_usability}% (${this.formatDiff(metrics.overall_usability - baseline.usability)}%)`);
     console.log(`Diagnosis:   ${baseline.diagnosis}% → ${metrics.diagnosis_accuracy}% (${this.formatDiff(metrics.diagnosis_accuracy - baseline.diagnosis)}%)`);
     console.log(`Solution:    ${baseline.solution}% → ${metrics.solution_specificity}% (${this.formatDiff(metrics.solution_specificity - baseline.solution)}%)`);
@@ -372,14 +372,14 @@ export class TestHarness {
    */
   private displaySummary(result: TestResult): void {
     console.log('\n' + '='.repeat(80));
-    console.log('📝 TEST SUMMARY\n');
+    console.log('[NOTE] TEST SUMMARY\n');
 
     if (result.status === 'passed') {
-      console.log('✅ TEST PASSED - Usability target exceeded!');
+      console.log('[OK] TEST PASSED - Usability target exceeded!');
     } else if (result.status === 'partial') {
-      console.log('⚠️  TEST PARTIAL - Usability acceptable but below target');
+      console.log('[WARN]  TEST PARTIAL - Usability acceptable but below target');
     } else {
-      console.log('❌ TEST FAILED - Usability below acceptable threshold');
+      console.log('[X] TEST FAILED - Usability below acceptable threshold');
     }
 
     console.log(`\nTarget: 75%+ usability`);
@@ -415,9 +415,9 @@ export class TestHarness {
    * Get status emoji based on value and target
    */
   private getStatusEmoji(value: number, target: number): string {
-    if (value >= target) return '✅';
-    if (value >= target * 0.8) return '⚠️';
-    return '❌';
+    if (value >= target) return '[OK]';
+    if (value >= target * 0.8) return '[WARN]';
+    return '[X]';
   }
 
   /**

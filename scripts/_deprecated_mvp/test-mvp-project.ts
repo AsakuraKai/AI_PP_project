@@ -25,9 +25,9 @@ interface TestResult {
 
 async function testMVPProjectError(): Promise<void> {
   console.log('='.repeat(80));
-  console.log('🧪 RCA AGENT - REAL-WORLD PROJECT TEST');
+  console.log('[TEST] RCA AGENT - REAL-WORLD PROJECT TEST');
   console.log('='.repeat(80));
-  console.log('\n📁 Project: MVP Android App (Lab3)');
+  console.log('\n[FOLDER] Project: MVP Android App (Lab3)');
   console.log('📍 Location: c:\\Users\\Admin\\OneDrive\\Desktop\\Nuclear Creation\\AI\\AI_PP_project\\MVP\n');
 
   const results: TestResult[] = [];
@@ -69,18 +69,18 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 `;
 
-  console.log('📋 Test Case: Invalid AGP Version in Version Catalog');
+  console.log('[LIST] Test Case: Invalid AGP Version in Version Catalog');
   console.log('-'.repeat(80));
   console.log('Error Type: Gradle Dependency Resolution Error');
   console.log('File: gradle/libs.versions.toml');
   console.log('Issue: AGP version 8.10.0 does not exist');
-  console.log('\n🔍 Error Message:\n', gradleBuildError.trim().substring(0, 200) + '...\n');
+  console.log('\n[SEARCH] Error Message:\n', gradleBuildError.trim().substring(0, 200) + '...\n');
 
   const startTime = Date.now();
   
   try {
     // Parse the error
-    console.log('⚙️  Step 1: Parsing error...');
+    console.log('[CONFIG]  Step 1: Parsing error...');
     const parser = new GradleParser();
     const parsed = parser.parse(gradleBuildError);
     
@@ -88,12 +88,12 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
       throw new Error('Failed to parse error');
     }
     
-    console.log('✅ Parsed successfully');
+    console.log('[OK] Parsed successfully');
     console.log(`   Type: ${parsed.type}`);
     console.log(`   Message: ${parsed.message.substring(0, 100)}...`);
     
     // Analyze with RCA Agent
-    console.log('\n⚙️  Step 2: Analyzing with RCA Agent...');
+    console.log('\n[CONFIG]  Step 2: Analyzing with RCA Agent...');
     const ollamaClient = new OllamaClient({
       baseUrl: 'http://localhost:11434',
       model: 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest',
@@ -111,12 +111,12 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
     
     const duration = (analysisEnd - startTime) / 1000;
     
-    console.log('\n✅ Analysis Complete!');
-    console.log(`⏱️  Duration: ${duration.toFixed(2)}s`);
-    console.log(`🔄 Iterations: ${result.iterations || 0}`);
-    console.log(`📊 Confidence: ${(result.confidence * 100).toFixed(0)}%`);
-    console.log(`\n📝 Root Cause:\n${result.rootCause}`);
-    console.log(`\n💡 Fix Guidelines:\n${result.fixGuidelines.join('\n')}`);
+    console.log('\n[OK] Analysis Complete!');
+    console.log(`[TIME]  Duration: ${duration.toFixed(2)}s`);
+    console.log(`[SYNC] Iterations: ${result.iterations || 0}`);
+    console.log(`[STATS] Confidence: ${(result.confidence * 100).toFixed(0)}%`);
+    console.log(`\n[NOTE] Root Cause:\n${result.rootCause}`);
+    console.log(`\n[IDEA] Fix Guidelines:\n${result.fixGuidelines.join('\n')}`);
     
     // Record result
     results.push({
@@ -132,7 +132,7 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
     });
     
     // Verify correctness
-    console.log('\n🎯 Verification:');
+    console.log('\n[TARGET] Verification:');
     const correctKeywords = ['8.10.0', 'version', 'AGP', 'gradle', 'plugin'];
     const fixText = result.fixGuidelines.join(' ');
     const foundKeywords = correctKeywords.filter(kw => 
@@ -159,14 +159,14 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
       report
     );
     
-    console.log(`✅ Report saved to: docs/REAL-PROJECT-TEST/TEST_REPORT.md`);
+    console.log(`[OK] Report saved to: docs/REAL-PROJECT-TEST/TEST_REPORT.md`);
     
   } catch (error: any) {
     const endTime = Date.now();
     const duration = (endTime - startTime) / 1000;
     
-    console.error('\n❌ Test Failed!');
-    console.error(`⏱️  Duration: ${duration.toFixed(2)}s`);
+    console.error('\n[X] Test Failed!');
+    console.error(`[TIME]  Duration: ${duration.toFixed(2)}s`);
     console.error(`📛 Error: ${error.message}`);
     
     results.push({
@@ -185,7 +185,7 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
   
   // Print summary
   console.log('\n' + '='.repeat(80));
-  console.log('📊 TEST SUMMARY');
+  console.log('[STATS] TEST SUMMARY');
   console.log('='.repeat(80));
   console.log(`Total Tests: 1`);
   console.log(`Passed: ${results.filter(r => r.success).length}`);
@@ -209,11 +209,11 @@ function generateReport(
 **Generated:** ${timestamp}  
 **Project:** MVP Android App (Lab3)  
 **Test Duration:** ${result.duration.toFixed(2)}s  
-**Status:** ${result.success ? '✅ PASSED' : '❌ FAILED'}
+**Status:** ${result.success ? '[OK] PASSED' : '[X] FAILED'}
 
 ---
 
-## 🎯 Test Objective
+## [TARGET] Test Objective
 
 Test the RCA Agent on a **real-world Android project error** from the MVP folder to:
 - Validate parsing of Gradle build errors
@@ -223,7 +223,7 @@ Test the RCA Agent on a **real-world Android project error** from the MVP folder
 
 ---
 
-## 📋 Test Case: Invalid AGP Version
+## [LIST] Test Case: Invalid AGP Version
 
 ### Project Details
 - **Path:** \`c:\\Users\\Admin\\OneDrive\\Desktop\\Nuclear Creation\\AI\\AI_PP_project\\MVP\`
@@ -263,10 +263,10 @@ ${errorMessage.trim()}
 ### Results
 | Metric | Value | Status |
 |--------|-------|--------|
-| **Duration** | ${result.duration.toFixed(2)}s | ${result.duration < 90 ? '✅ Under 90s target' : '⚠️ Over target'} |
-| **Iterations** | ${result.iterations} | ${result.iterations <= 3 ? '✅ Within limit' : '⚠️ Over limit'} |
-| **Confidence** | ${result.confidence}% | ${result.confidence >= 70 ? '✅ High confidence' : '⚠️ Low confidence'} |
-| **Success** | ${result.success ? 'Yes' : 'No'} | ${result.success ? '✅ PASS' : '❌ FAIL'} |
+| **Duration** | ${result.duration.toFixed(2)}s | ${result.duration < 90 ? '[OK] Under 90s target' : '[WARN] Over target'} |
+| **Iterations** | ${result.iterations} | ${result.iterations <= 3 ? '[OK] Within limit' : '[WARN] Over limit'} |
+| **Confidence** | ${result.confidence}% | ${result.confidence >= 70 ? '[OK] High confidence' : '[WARN] Low confidence'} |
+| **Success** | ${result.success ? 'Yes' : 'No'} | ${result.success ? '[OK] PASS' : '[X] FAIL'} |
 
 ### Root Cause Identified
 \`\`\`
@@ -284,14 +284,14 @@ ${analysisResult.toolsUsed?.join(', ') || 'Not recorded'
 
 ---
 
-## ✅ What Went Right
+## [OK] What Went Right
 
 ${result.success ? `
-1. **✅ Error Parsing:** Successfully detected Gradle dependency resolution error
-2. **✅ Context Extraction:** Correctly identified relevant file (libs.versions.toml)
-3. **✅ Root Cause:** Accurately pinpointed invalid AGP version ${result.confidence >= 70 ? '(High confidence)' : ''}
-4. **✅ Performance:** Completed analysis in ${result.duration.toFixed(2)}s ${result.duration < 90 ? '(under target)' : ''}
-5. **✅ Suggested Fix:** Provided actionable solution with correct version
+1. **[OK] Error Parsing:** Successfully detected Gradle dependency resolution error
+2. **[OK] Context Extraction:** Correctly identified relevant file (libs.versions.toml)
+3. **[OK] Root Cause:** Accurately pinpointed invalid AGP version ${result.confidence >= 70 ? '(High confidence)' : ''}
+4. **[OK] Performance:** Completed analysis in ${result.duration.toFixed(2)}s ${result.duration < 90 ? '(under target)' : ''}
+5. **[OK] Suggested Fix:** Provided actionable solution with correct version
 
 ### Key Strengths:
 - Gradle parser correctly identified dependency resolution error
@@ -302,23 +302,23 @@ ${result.success ? `
 
 ---
 
-## ❌ What Went Wrong
+## [X] What Went Wrong
 
 ${!result.success ? `
-1. **❌ Analysis Failed:** ${result.errorDetails}
-2. **❌ Root Cause:** Not identified
-3. **❌ Duration:** ${result.duration.toFixed(2)}s before failure
+1. **[X] Analysis Failed:** ${result.errorDetails}
+2. **[X] Root Cause:** Not identified
+3. **[X] Duration:** ${result.duration.toFixed(2)}s before failure
 
 ### Issues Encountered:
 - ${result.errorDetails}
 ` : result.confidence < 70 ? `
-1. **⚠️ Low Confidence:** Analysis confidence was ${result.confidence}% (target: 70%+)
-2. **⚠️ Reasoning Depth:** May need more iterations for complex errors
+1. **[WARN] Low Confidence:** Analysis confidence was ${result.confidence}% (target: 70%+)
+2. **[WARN] Reasoning Depth:** May need more iterations for complex errors
 ` : 'No significant issues encountered'}
 
 ---
 
-## 📈 Performance Analysis
+## [UP] Performance Analysis
 
 ### Timing Breakdown
 - **Parsing:** <1ms (estimated)
@@ -337,7 +337,7 @@ ${!result.success ? `
 ## 🎓 Lessons Learned
 
 ### Parser Performance
-- **Gradle Parser:** ${result.success ? '✅ Working correctly on version catalog errors' : '❌ Failed to parse error'}
+- **Gradle Parser:** ${result.success ? '[OK] Working correctly on version catalog errors' : '[X] Failed to parse error'}
 - **Error Detection:** Successfully identified dependency resolution issues
 - **Context Awareness:** Correctly linked error to libs.versions.toml file
 
@@ -348,23 +348,23 @@ ${!result.success ? `
 
 ### Real-World Applicability
 ${result.success ? `
-- ✅ Successfully handles real Android project errors
-- ✅ Understands Gradle version catalog syntax
-- ✅ Provides developer-friendly explanations
-- ✅ Performance suitable for IDE integration
+- [OK] Successfully handles real Android project errors
+- [OK] Understands Gradle version catalog syntax
+- [OK] Provides developer-friendly explanations
+- [OK] Performance suitable for IDE integration
 ` : `
-- ❌ Needs improvement for reliable real-world usage
-- ⚠️ May require better error handling
+- [X] Needs improvement for reliable real-world usage
+- [WARN] May require better error handling
 `}
 
 ---
 
-## 🔧 Recommendations
+## [TOOL] Recommendations
 
 ### For Production Deployment:
-1. ${result.success ? '✅ Gradle parser is production-ready' : '❌ Fix Gradle parser issues before deployment'}
-2. ${result.duration < 90 ? '✅ Performance meets IDE integration requirements' : '⚠️ Consider caching for faster responses'}
-3. ${result.confidence >= 70 ? '✅ Confidence levels are acceptable' : '⚠️ Improve confidence scoring'}
+1. ${result.success ? '[OK] Gradle parser is production-ready' : '[X] Fix Gradle parser issues before deployment'}
+2. ${result.duration < 90 ? '[OK] Performance meets IDE integration requirements' : '[WARN] Consider caching for faster responses'}
+3. ${result.confidence >= 70 ? '[OK] Confidence levels are acceptable' : '[WARN] Improve confidence scoring'}
 4. Add more test cases for other version catalog errors
 5. Test with different AGP/Kotlin versions
 
@@ -382,16 +382,16 @@ ${!result.success || result.confidence < 70 ? `
 
 ---
 
-## 📊 Verdict
+## [STATS] Verdict
 
-**Overall Assessment:** ${result.success && result.confidence >= 70 ? '✅ **EXCELLENT**' : result.success ? '⚠️ **GOOD** (with minor issues)' : '❌ **NEEDS IMPROVEMENT**'}
+**Overall Assessment:** ${result.success && result.confidence >= 70 ? '[OK] **EXCELLENT**' : result.success ? '[WARN] **GOOD** (with minor issues)' : '[X] **NEEDS IMPROVEMENT**'}
 
 ${result.success && result.confidence >= 70 ? `
 The RCA Agent successfully analyzed a real-world Android project error with:
-- ✅ Accurate root cause identification
-- ✅ Fast performance (${result.duration.toFixed(2)}s)
-- ✅ High confidence (${result.confidence}%)
-- ✅ Actionable fix suggestion
+- [OK] Accurate root cause identification
+- [OK] Fast performance (${result.duration.toFixed(2)}s)
+- [OK] High confidence (${result.confidence}%)
+- [OK] Actionable fix suggestion
 
 **Ready for Phase 2 integration** with VS Code extension.
 ` : result.success ? `

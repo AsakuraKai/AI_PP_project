@@ -99,7 +99,7 @@ describe('ResponseValidator', () => {
       const result = validator.validateResponse(response);
 
       expect(result.breakdown.hasExactFilePath).toBe(true);
-      expect(result.strengths).toContain('✅ Includes exact file path with line number');
+      expect(result.strengths).toContain('[OK] Includes exact file path with line number');
     });
 
     it('should detect exact file path with colon format', () => {
@@ -128,7 +128,7 @@ describe('ResponseValidator', () => {
       const result = validator.validateResponse(response);
 
       expect(result.breakdown.hasExactFilePath).toBe(false);
-      expect(result.issues).toContain('❌ Missing exact file path with line number (e.g., "gradle/libs.versions.toml at line 5")');
+      expect(result.issues).toContain('[X] Missing exact file path with line number (e.g., "gradle/libs.versions.toml at line 5")');
     });
   });
 
@@ -145,7 +145,7 @@ describe('ResponseValidator', () => {
       const result = validator.validateResponse(response);
 
       expect(result.breakdown.hasVersionValidation).toBe(true);
-      expect(result.strengths).toContain('✅ Includes specific version numbers');
+      expect(result.strengths).toContain('[OK] Includes specific version numbers');
     });
 
     it('should reject vague version references', () => {
@@ -160,7 +160,7 @@ describe('ResponseValidator', () => {
       const result = validator.validateResponse(response);
 
       expect(result.breakdown.hasVersionValidation).toBe(false);
-      expect(result.issues).toContain('❌ Missing specific version numbers (e.g., "AGP 8.7.3" not "latest version")');
+      expect(result.issues).toContain('[X] Missing specific version numbers (e.g., "AGP 8.7.3" not "latest version")');
     });
   });
 
@@ -180,7 +180,7 @@ describe('ResponseValidator', () => {
       const result = validator.validateResponse(response);
 
       expect(result.breakdown.hasCodeExample).toBe(true);
-      expect(result.strengths).toContain('✅ Includes code example with before/after');
+      expect(result.strengths).toContain('[OK] Includes code example with before/after');
     });
 
     it('should detect before/after format', () => {
@@ -212,7 +212,7 @@ describe('ResponseValidator', () => {
       const result = validator.validateResponse(response);
 
       expect(result.breakdown.hasCodeExample).toBe(false);
-      expect(result.issues).toContain('⚠️ Missing code example showing before/after (recommended)');
+      expect(result.issues).toContain('[WARN] Missing code example showing before/after (recommended)');
     });
   });
 
@@ -229,7 +229,7 @@ describe('ResponseValidator', () => {
       const result = validator.validateResponse(response);
 
       expect(result.breakdown.hasActualNames).toBe(true);
-      expect(result.strengths).toContain('✅ References actual variable/function names');
+      expect(result.strengths).toContain('[OK] References actual variable/function names');
     });
 
     it('should detect function calls', () => {
@@ -258,7 +258,7 @@ describe('ResponseValidator', () => {
       const result = validator.validateResponse(response);
 
       expect(result.breakdown.hasActualNames).toBe(false);
-      expect(result.issues).toContain('⚠️ Missing specific variable/function names (generic references used)');
+      expect(result.issues).toContain('[WARN] Missing specific variable/function names (generic references used)');
     });
   });
 
@@ -278,7 +278,7 @@ describe('ResponseValidator', () => {
       const result = validator.validateResponse(response);
 
       expect(result.breakdown.hasVerificationSteps).toBe(true);
-      expect(result.strengths).toContain('✅ Includes verification/testing steps');
+      expect(result.strengths).toContain('[OK] Includes verification/testing steps');
     });
 
     it('should detect testing instructions', () => {
@@ -310,7 +310,7 @@ describe('ResponseValidator', () => {
       const result = validator.validateResponse(response);
 
       expect(result.breakdown.hasVerificationSteps).toBe(false);
-      expect(result.issues).toContain('⚠️ Missing verification steps (how to test the fix)');
+      expect(result.issues).toContain('[WARN] Missing verification steps (how to test the fix)');
     });
   });
 
@@ -330,7 +330,7 @@ describe('ResponseValidator', () => {
       const result = validator.validateResponse(response);
 
       expect(result.breakdown.hasCompatibilityCheck).toBe(true);
-      expect(result.strengths).toContain('✅ Mentions version compatibility');
+      expect(result.strengths).toContain('[OK] Mentions version compatibility');
     });
 
     it('should detect compatible with patterns', () => {

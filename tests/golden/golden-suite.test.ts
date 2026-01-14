@@ -217,7 +217,7 @@ describeGolden('Golden Test Suite', () => {
   // Test each golden case
   goldenTestCases.forEach((testCase, index) => {
     it(`[Golden ${index + 1}] ${testCase.name}`, async () => {
-      console.log(`\n🔍 Running golden test: ${testCase.name}`);
+      console.log(`\n[SEARCH] Running golden test: ${testCase.name}`);
       console.log(`   Error: ${testCase.error.message}`);
 
       const startTime = Date.now();
@@ -262,7 +262,7 @@ describeGolden('Golden Test Suite', () => {
 
   describe('Golden Suite Summary', () => {
     it('should run all golden tests', async () => {
-      console.log(`\n📊 Golden Test Suite Summary`);
+      console.log(`\n[STATS] Golden Test Suite Summary`);
       console.log(`   Total test cases: ${goldenTestCases.length}`);
       console.log(`   Coverage:`);
       
@@ -314,7 +314,7 @@ describeGolden('Golden Test Suite', () => {
       const passRate = passedCount / results.length;
       const avgConfidence = results.reduce((sum, r) => sum + r.confidence, 0) / results.length;
 
-      console.log(`\n📈 Regression Check:`);
+      console.log(`\n[UP] Regression Check:`);
       console.log(`   Pass rate: ${(passRate * 100).toFixed(1)}% (${passedCount}/${results.length})`);
       console.log(`   Avg confidence: ${(avgConfidence * 100).toFixed(1)}%`);
 

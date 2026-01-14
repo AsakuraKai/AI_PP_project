@@ -1,11 +1,11 @@
-# 🔌 VS Code Extension - Complete User Guide
+﻿# 🔌 VS Code Extension - Complete User Guide
 
 > **AI-Powered Root Cause Analysis (RCA) Agent for Kotlin/Android Development**  
 > Version: 2.0 | Last Updated: December 24, 2025
 
 ---
 
-## 📋 Table of Contents
+## [CLIPBOARD] Table of Contents
 
 1. [Overview](#overview)
 2. [Features](#features)
@@ -18,14 +18,14 @@
 
 ---
 
-## 🎯 Overview
+## [TARGET] Overview
 
 The RCA Agent VS Code Extension is an **AI-powered debugging assistant** that analyzes Kotlin/Android errors and provides:
-- ✅ Root cause identification
-- ✅ Actionable fix guidelines
-- ✅ Educational explanations (beginner-friendly)
-- ✅ Performance metrics & caching
-- ✅ Learning from past errors
+- [DONE] Root cause identification
+- [DONE] Actionable fix guidelines
+- [DONE] Educational explanations (beginner-friendly)
+- [DONE] Performance metrics & caching
+- [DONE] Learning from past errors
 
 **Technology Stack:**
 - **Frontend**: TypeScript, VS Code Extension API
@@ -35,14 +35,14 @@ The RCA Agent VS Code Extension is an **AI-powered debugging assistant** that an
 
 ---
 
-## ✨ Features
+## [SPARKLE] Features
 
-### 1. **Automatic Error Analysis** 🔍
+### 1. **Automatic Error Analysis** [SEARCH]
 - Select any error message or stack trace in your editor
 - Press `Ctrl+Shift+R` (or `Cmd+Shift+R` on Mac)
 - Get instant AI-powered root cause analysis
 
-### 2. **Multi-Language Support** 🌐
+### 2. **Multi-Language Support** [WEB]
 - **Kotlin**: 6+ error types (NPE, lateinit, unresolved reference, etc.)
 - **Jetpack Compose**: 8+ error types (remember, recomposition, LaunchedEffect, etc.)
 - **XML Layouts**: 7+ error types (inflation, missing ID, attributes, etc.)
@@ -51,7 +51,7 @@ The RCA Agent VS Code Extension is an **AI-powered debugging assistant** that an
 
 **Total: 26+ error types supported**
 
-### 3. **Interactive Webview** 🎨
+### 3. **Interactive Webview** [DESIGN]
 - Beautiful, theme-aware UI that matches VS Code theme
 - Real-time progress updates during analysis
 - Agent thought process visualization
@@ -59,30 +59,30 @@ The RCA Agent VS Code Extension is an **AI-powered debugging assistant** that an
 - Code snippet highlighting
 - Copy-to-clipboard buttons
 
-### 4. **Educational Mode** 🎓
+### 4. **Educational Mode** [LEARN]
 - Beginner-friendly explanations
 - "What/Why/How" learning structure
 - Code examples and best practices
 - Perfect for students and junior developers
 
-**Toggle with**: `Ctrl+Shift+E` or Command Palette → "Toggle Educational Mode 🎓"
+**Toggle with**: `Ctrl+Shift+E` or Command Palette → "Toggle Educational Mode [LEARN]"
 
-### 5. **Performance Metrics** ⚡
+### 5. **Performance Metrics** [FAST]
 - Total analysis time
 - LLM inference time
 - Tool execution time
 - Cache hit rate
 - Token usage (prompt/completion)
 
-**Toggle with**: `Ctrl+Shift+P` or Command Palette → "Toggle Performance Metrics ⚡"
+**Toggle with**: `Ctrl+Shift+P` or Command Palette → "Toggle Performance Metrics [FAST]"
 
-### 6. **Smart Caching** 💾
+### 6. **Smart Caching** [SAVE]
 - Remembers previously analyzed errors
 - Instant results for repeated errors (<5s vs 75s)
 - Automatic cache invalidation on negative feedback
 - 60%+ cache hit rate for common errors
 
-### 7. **User Feedback Loop** 👍👎
+### 7. **User Feedback Loop** [LIKE][DISLIKE]
 - Rate analysis results (helpful/not helpful)
 - Provide optional comments
 - Improves future analyses
@@ -90,7 +90,7 @@ The RCA Agent VS Code Extension is an **AI-powered debugging assistant** that an
 
 ---
 
-## 🏗️ Architecture
+## [BUILD] Architecture
 
 ```
 vscode-extension/
@@ -146,22 +146,22 @@ Backend Integration (../src/):
 
 ---
 
-## 🖥️ UI Components
+## [DESKTOP] UI Components
 
 ### 1. **Output Channel** (Text-Based)
 
 When you run `Ctrl+Shift+R`, results appear in the **"RCA Agent"** output panel:
 
 ```
-🔴 ERROR ANALYSIS
+[RED] ERROR ANALYSIS
 ════════════════════════════════════════════════════
 
-📄 File: MainActivity.kt:42
-🔍 Error Type: lateinit
-💬 Error Message: lateinit property viewBinding has not been initialized
+[FILE] File: MainActivity.kt:42
+[SEARCH] Error Type: lateinit
+[CHAT] Error Message: lateinit property viewBinding has not been initialized
 
 ────────────────────────────────────────────────────
-🎯 ROOT CAUSE
+[TARGET] ROOT CAUSE
 ────────────────────────────────────────────────────
 
 The property 'viewBinding' was accessed before being initialized
@@ -169,7 +169,7 @@ in onCreate(). The binding is created in setContentView() which
 is called after the property access.
 
 ────────────────────────────────────────────────────
-🛠️  FIX GUIDELINES
+[FIX]  FIX GUIDELINES
 ────────────────────────────────────────────────────
 
 1. Move the viewBinding access after setContentView() call
@@ -177,14 +177,14 @@ is called after the property access.
 3. Consider using nullable type: private var viewBinding: ViewBinding? = null
 
 ────────────────────────────────────────────────────
-📊 METADATA
+[CHART] METADATA
 ────────────────────────────────────────────────────
 
-✅ Confidence: 85%
-🔧 Tools Used: ReadFileTool, LSPTool
-🔄 Iterations: 2
-⏱️  Analysis Time: 12.5s
-💾 Cache: MISS (stored for future use)
+[DONE] Confidence: 85%
+[TOOL] Tools Used: ReadFileTool, LSPTool
+[REFRESH] Iterations: 2
+[TIMER]  Analysis Time: 12.5s
+[SAVE] Cache: MISS (stored for future use)
 ```
 
 ### 2. **Interactive Webview** (Visual UI)
@@ -192,7 +192,7 @@ is called after the property access.
 When you run `Ctrl+Shift+W`, results open in a side panel with:
 
 **Header Section:**
-- 🔴/🟠/🔵 Error severity badge
+- [RED]/🟠/🔵 Error severity badge
 - Error type & file location
 - Confidence meter (visual bar)
 
@@ -202,33 +202,33 @@ When you run `Ctrl+Shift+W`, results open in a side panel with:
 - Agent's thought process in real-time
 
 **Results Section:**
-- 📝 Error message (highlighted)
-- 🎯 Root cause analysis
-- 🛠️ Fix guidelines (numbered list)
-- 📄 Code snippet (with syntax highlighting)
-- 🔗 Clickable file/line references
+- [NOTE] Error message (highlighted)
+- [TARGET] Root cause analysis
+- [FIX] Fix guidelines (numbered list)
+- [FILE] Code snippet (with syntax highlighting)
+- [LINK] Clickable file/line references
 
 **Educational Section** (if enabled):
-- 🎓 "What" - Error explanation
-- 🎓 "Why" - Common causes
-- 🎓 "How" - Prevention strategies
-- 📖 Code examples
+- [LEARN] "What" - Error explanation
+- [LEARN] "Why" - Common causes
+- [LEARN] "How" - Prevention strategies
+- [BOOK] Code examples
 
 **Performance Section** (if enabled):
-- ⚡ Total analysis time
-- 🧠 LLM inference time
-- 🔧 Tool execution time
-- 💾 Cache hit rate
-- 📊 Token usage
+- [FAST] Total analysis time
+- [BRAIN] LLM inference time
+- [TOOL] Tool execution time
+- [SAVE] Cache hit rate
+- [CHART] Token usage
 
 **Footer Section:**
-- 👍 "Helpful" button
-- 👎 "Not Helpful" button
-- 📋 Copy code button
+- [LIKE] "Helpful" button
+- [DISLIKE] "Not Helpful" button
+- [CLIPBOARD] Copy code button
 
 ---
 
-## ⌨️ Commands & Shortcuts
+## [KEYBOARD] Commands & Shortcuts
 
 ### Main Commands
 
@@ -244,8 +244,8 @@ When you run `Ctrl+Shift+W`, results open in a side panel with:
 Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac) and type:
 - `RCA Agent: Analyze Error`
 - `RCA Agent: Analyze Error (Webview)`
-- `RCA Agent: Toggle Educational Mode 🎓`
-- `RCA Agent: Toggle Performance Metrics ⚡`
+- `RCA Agent: Toggle Educational Mode [LEARN]`
+- `RCA Agent: Toggle Performance Metrics [FAST]`
 
 ### Usage Flow
 
@@ -253,11 +253,11 @@ Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac) and type:
 2. **Paste or select** in VS Code editor
 3. **Press shortcut** (`Ctrl+Shift+R` or `Ctrl+Shift+W`)
 4. **View results** in output channel or webview
-5. **Provide feedback** (optional - 👍/👎 buttons)
+5. **Provide feedback** (optional - [LIKE]/[DISLIKE] buttons)
 
 ---
 
-## 🚀 How to Run in Real-Time (On Another Project)
+## [LAUNCH] How to Run in Real-Time (On Another Project)
 
 ### Prerequisites
 
@@ -410,8 +410,8 @@ curl http://localhost:8000/api/v1/heartbeat
    - Educational notes (if enabled)
 
 6. **Provide feedback:**
-   - Click 👍 if analysis was helpful
-   - Click 👎 if analysis was incorrect
+   - Click [LIKE] if analysis was helpful
+   - Click [DISLIKE] if analysis was incorrect
    - Optionally provide comments
 
 ---
@@ -457,11 +457,11 @@ ollama pull codellama:7b
 #### 3. **Enable Educational Mode** (for learning):
 
 - Press `Ctrl+Shift+E`
-- Or: `Ctrl+Shift+P` → "Toggle Educational Mode 🎓"
+- Or: `Ctrl+Shift+P` → "Toggle Educational Mode [LEARN]"
 
 #### 4. **Enable Performance Metrics** (for optimization):
 
-- Press `Ctrl+Shift+P` → "Toggle Performance Metrics ⚡"
+- Press `Ctrl+Shift+P` → "Toggle Performance Metrics [FAST]"
 - Or update settings:
 ```json
 {
@@ -488,9 +488,9 @@ Exception in thread "main" java.lang.NullPointerException
 
 **Output:**
 ```
-🎯 ROOT CAUSE: Accessing nullable property without null check
-🛠️  FIX: Use safe call (?.) or Elvis operator (?:)
-✅ Confidence: 92%
+[TARGET] ROOT CAUSE: Accessing nullable property without null check
+[FIX]  FIX: Use safe call (?.) or Elvis operator (?:)
+[DONE] Confidence: 92%
 ```
 
 ---
@@ -535,7 +535,7 @@ in project ':app'. Resolved versions: 1.5.0 and 1.6.0
 
 ---
 
-## ⚙️ Configuration
+## [SETTINGS] Configuration
 
 ### Extension Settings
 
@@ -570,7 +570,7 @@ Access via `File > Preferences > Settings > Extensions > RCA Agent`
 
 ---
 
-## 🐛 Troubleshooting
+## [BUG] Troubleshooting
 
 ### Issue: "Could not connect to Ollama"
 
@@ -652,10 +652,10 @@ Access via `File > Preferences > Settings > Extensions > RCA Agent`
 
 2. Supported error formats:
    ```
-   ✅ Exception in thread "main" kotlin.UninitializedPropertyAccessException...
-   ✅ Error: Unresolved reference: getString at MainActivity.kt:35
-   ✅ Caused by: java.lang.NullPointerException at MyClass.kt:10
-   ❌ "Something went wrong" (too vague)
+   [DONE] Exception in thread "main" kotlin.UninitializedPropertyAccessException...
+   [DONE] Error: Unresolved reference: getString at MainActivity.kt:35
+   [DONE] Caused by: java.lang.NullPointerException at MyClass.kt:10
+   [FAIL] "Something went wrong" (too vague)
    ```
 
 3. Check supported error types:
@@ -722,7 +722,7 @@ Access via `File > Preferences > Settings > Extensions > RCA Agent`
 
 ---
 
-## 📊 Performance Benchmarks
+## [CHART] Performance Benchmarks
 
 **Hardware:** RTX 3070 Ti (8GB VRAM), Ryzen 5 5600x, 32GB RAM  
 **Model:** hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest (~5GB)
@@ -738,7 +738,7 @@ Access via `File > Preferences > Settings > Extensions > RCA Agent`
 
 ---
 
-## 🎓 Educational Mode Details
+## [LEARN] Educational Mode Details
 
 **What You Get:**
 - "What" - Clear error explanation
@@ -748,23 +748,23 @@ Access via `File > Preferences > Settings > Extensions > RCA Agent`
 **Example Output:**
 
 ```
-🎓 LEARNING NOTES
+[LEARN] LEARNING NOTES
 ════════════════════════════════════════════════════
 
-📚 WHAT is a lateinit error?
+[DOCS] WHAT is a lateinit error?
 ─────────────────────────────────────────────────────
 A lateinit property is a non-null variable that will be
 initialized later. This error occurs when you access it
 before initialization.
 
-📚 WHY did this happen?
+[DOCS] WHY did this happen?
 ─────────────────────────────────────────────────────
 Common causes:
 • Accessed in wrong lifecycle phase (e.g., before onCreate)
 • Forgot to call initialization method
 • Conditional initialization didn't execute
 
-📚 HOW to prevent this?
+[DOCS] HOW to prevent this?
 ─────────────────────────────────────────────────────
 1. Use ::property.isInitialized check:
    if (::viewBinding.isInitialized) { ... }
@@ -780,32 +780,32 @@ Common causes:
 
 ---
 
-## 🔄 Feedback System
+## [REFRESH] Feedback System
 
 **How It Works:**
 1. After each analysis, you see feedback prompt
-2. Click 👍 "Yes, helpful!" or 👎 "Not helpful"
-3. For 👎, optionally provide comments
+2. Click [LIKE] "Yes, helpful!" or [DISLIKE] "Not helpful"
+3. For [DISLIKE], optionally provide comments
 4. System updates knowledge base automatically
 
 **Effects of Feedback:**
 
-**Positive (👍):**
-- ✅ Confidence score +20%
-- ✅ Solution prioritized in future searches
-- ✅ Quality score increased in database
-- ✅ Cache entry preserved
+**Positive ([LIKE]):**
+- [DONE] Confidence score +20%
+- [DONE] Solution prioritized in future searches
+- [DONE] Quality score increased in database
+- [DONE] Cache entry preserved
 
-**Negative (👎):**
-- ❌ Confidence score -50%
-- ❌ Cache entry invalidated (re-analysis next time)
-- ❌ Quality score decreased in database
-- ❌ Solution de-prioritized in searches
-- 📝 User comment stored for improvement
+**Negative ([DISLIKE]):**
+- [FAIL] Confidence score -50%
+- [FAIL] Cache entry invalidated (re-analysis next time)
+- [FAIL] Quality score decreased in database
+- [FAIL] Solution de-prioritized in searches
+- [NOTE] User comment stored for improvement
 
 ---
 
-## 📚 Additional Resources
+## [DOCS] Additional Resources
 
 - **Main Documentation**: [README.md](../README.md)
 - **Quick Start**: [QUICKSTART.md](QUICKSTART.md)
@@ -819,11 +819,11 @@ Common causes:
 
 Found a bug or want to request a feature?
 1. Open an issue on GitHub
-2. Use the feedback system (👍/👎 buttons)
+2. Use the feedback system ([LIKE]/[DISLIKE] buttons)
 3. Provide detailed error logs from "RCA Agent Debug" channel
 
 ---
 
-## 📄 License
+## [FILE] License
 
 MIT License - See [LICENSE](../LICENSE)

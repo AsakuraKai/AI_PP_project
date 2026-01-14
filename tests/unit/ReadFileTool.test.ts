@@ -274,12 +274,12 @@ describe('ReadFileTool', () => {
 
     it('should handle files with special characters', async () => {
       const testFile = path.join(tempDir, 'test-special.kt');
-      const content = 'val emoji = "🎯"\nval unicode = "こんにちは"\nval symbols = "@#$%"';
+      const content = 'val emoji = "[TARGET]"\nval unicode = "こんにちは"\nval symbols = "@#$%"';
       await fs.writeFile(testFile, content, 'utf-8');
 
       const result = await tool.execute(testFile, 2);
 
-      expect(result).toContain('🎯');
+      expect(result).toContain('[TARGET]');
       expect(result).toContain('こんにちは');
       expect(result).toContain('@#$%');
     });

@@ -176,7 +176,7 @@ BUILD FAILED in 937ms
     
     try {
       // Step 1: Parse
-      this.log('⚙️  Step 1: Parsing error...');
+      this.log('[CONFIG]  Step 1: Parsing error...');
       const parsed = testCase.error.metadata?.errorDetails
         ? this.parser.parse(testCase.error.metadata.errorDetails[0])
         : testCase.error;
@@ -185,12 +185,12 @@ BUILD FAILED in 937ms
         throw new Error('Failed to parse error');
       }
       
-      this.log('✅ Parsed successfully');
+      this.log('[OK] Parsed successfully');
       this.log(`   Type: ${parsed.type}`);
       this.log(`   Message: ${parsed.message.substring(0, 80)}...\n`);
       
       // Step 2: Analyze
-      this.log('⚙️  Step 2: Analyzing with RCA Agent...');
+      this.log('[CONFIG]  Step 2: Analyzing with RCA Agent...');
       this.log(`   Model: ${this.config.model.name.split('/').pop()}`);
       this.log(`   Max Iterations: 3`);
       this.log(`   Timeout: ${this.config.model.timeout / 1000}s\n`);
@@ -274,15 +274,15 @@ BUILD FAILED in 937ms
    */
   private printTestHeader(testCase: TestCase): void {
     if (this.config.format === 'simple') {
-      console.log(`\n🧪 ${testCase.name}`);
-      console.log(`📋 ${testCase.description}`);
+      console.log(`\n[TEST] ${testCase.name}`);
+      console.log(`[LIST] ${testCase.description}`);
     } else {
       console.log('='.repeat(80));
-      console.log(`🧪 ${testCase.name.toUpperCase()}`);
+      console.log(`[TEST] ${testCase.name.toUpperCase()}`);
       console.log('='.repeat(80));
-      console.log(`\n📋 ${testCase.description}`);
-      console.log(`📁 Location: ${testCase.error.filePath}`);
-      console.log(`❌ Issue: ${testCase.error.message}\n`);
+      console.log(`\n[LIST] ${testCase.description}`);
+      console.log(`[FOLDER] Location: ${testCase.error.filePath}`);
+      console.log(`[X] Issue: ${testCase.error.message}\n`);
     }
   }
 
@@ -291,21 +291,21 @@ BUILD FAILED in 937ms
    */
   private printTestResults(result: TestResult, testCase: TestCase): void {
     console.log('\n' + '='.repeat(80));
-    console.log('✅ ANALYSIS COMPLETE');
+    console.log('[OK] ANALYSIS COMPLETE');
     console.log('='.repeat(80));
     
     // Performance metrics
-    console.log(`\n⏱️  Duration: ${result.duration.toFixed(2)}s`);
-    console.log(`🔄 Iterations: ${result.iterations}`);
-    console.log(`📊 Confidence: ${(result.confidence * 100).toFixed(0)}%`);
+    console.log(`\n[TIME]  Duration: ${result.duration.toFixed(2)}s`);
+    console.log(`[SYNC] Iterations: ${result.iterations}`);
+    console.log(`[STATS] Confidence: ${(result.confidence * 100).toFixed(0)}%`);
     
     // Root cause and fixes
     if (this.config.format !== 'simple') {
-      console.log(`\n📝 Root Cause:`);
+      console.log(`\n[NOTE] Root Cause:`);
       console.log('-'.repeat(80));
       console.log(result.rootCause);
       
-      console.log(`\n💡 Fix Guidelines:`);
+      console.log(`\n[IDEA] Fix Guidelines:`);
       console.log('-'.repeat(80));
       result.fixGuidelines.forEach((fix, idx) => {
         console.log(`${idx + 1}. ${fix}`);
@@ -313,26 +313,26 @@ BUILD FAILED in 937ms
     }
     
     // Verification
-    console.log(`\n🎯 Verification:`);
+    console.log(`\n[TARGET] Verification:`);
     console.log(`   Keywords: ${result.keywordsFound.length}/${testCase.expectedKeywords.length} (${result.keywordsFound.join(', ')})`);
-    console.log(`   Accuracy: ${result.accuracy ? '✅ PASS' : '❌ FAIL'}`);
-    console.log(`   Performance: ${result.duration < this.config.performanceTarget ? '✅' : '⚠️'} (${result.duration.toFixed(2)}s vs ${this.config.performanceTarget}s target)`);
-    console.log(`   Confidence: ${result.confidence >= this.config.confidenceTarget ? '✅' : '⚠️'} (${(result.confidence * 100).toFixed(0)}% vs ${(this.config.confidenceTarget * 100).toFixed(0)}% target)`);
+    console.log(`   Accuracy: ${result.accuracy ? '[OK] PASS' : '[X] FAIL'}`);
+    console.log(`   Performance: ${result.duration < this.config.performanceTarget ? '[OK]' : '[WARN]'} (${result.duration.toFixed(2)}s vs ${this.config.performanceTarget}s target)`);
+    console.log(`   Confidence: ${result.confidence >= this.config.confidenceTarget ? '[OK]' : '[WARN]'} (${(result.confidence * 100).toFixed(0)}% vs ${(this.config.confidenceTarget * 100).toFixed(0)}% target)`);
     
     // Specificity validation
     if (result.specificityScore !== undefined && testCase.mvpBaseline) {
-      console.log(`\n📊 Specificity Analysis:`);
+      console.log(`\n[STATS] Specificity Analysis:`);
       console.log(`   Score: ${result.specificityScore}/100 (${result.specificityLevel})`);
       console.log(`   Baseline: ${testCase.mvpBaseline.specificity}%`);
       console.log(`   Improvement: +${result.specificityScore - testCase.mvpBaseline.specificity} points`);
-      console.log(`   Target: 70%+ ${result.specificityScore >= 70 ? '✅ MET' : '⚠️ IN PROGRESS'}`);
+      console.log(`   Target: 70%+ ${result.specificityScore >= 70 ? '[OK] MET' : '[WARN] IN PROGRESS'}`);
       
       if (result.validationResult && this.config.format === 'detailed') {
         console.log(`\n   Breakdown:`);
-        console.log(`   - Exact File Path: ${result.validationResult.breakdown.hasExactFilePath ? '✅' : '❌'}`);
-        console.log(`   - Version Validation: ${result.validationResult.breakdown.hasVersionValidation ? '✅' : '❌'}`);
-        console.log(`   - Code Example: ${result.validationResult.breakdown.hasCodeExample ? '✅' : '❌'}`);
-        console.log(`   - Actual Names: ${result.validationResult.breakdown.hasActualNames ? '✅' : '❌'}`);
+        console.log(`   - Exact File Path: ${result.validationResult.breakdown.hasExactFilePath ? '[OK]' : '[X]'}`);
+        console.log(`   - Version Validation: ${result.validationResult.breakdown.hasVersionValidation ? '[OK]' : '[X]'}`);
+        console.log(`   - Code Example: ${result.validationResult.breakdown.hasCodeExample ? '[OK]' : '[X]'}`);
+        console.log(`   - Actual Names: ${result.validationResult.breakdown.hasActualNames ? '[OK]' : '[X]'}`);
       }
     }
   }
@@ -342,13 +342,13 @@ BUILD FAILED in 937ms
    */
   private printTestError(result: TestResult, error: Error): void {
     console.log('\n' + '='.repeat(80));
-    console.log('❌ TEST FAILED');
+    console.log('[X] TEST FAILED');
     console.log('='.repeat(80));
-    console.log(`\n⏱️  Duration: ${result.duration.toFixed(2)}s`);
+    console.log(`\n[TIME]  Duration: ${result.duration.toFixed(2)}s`);
     console.log(`📛 Error: ${error.message}`);
     
     if (error.message.includes('ECONNREFUSED') || error.message.includes('connect')) {
-      console.log('\n💡 TIP: Make sure Ollama is running:');
+      console.log('\n[IDEA] TIP: Make sure Ollama is running:');
       console.log('   ollama serve');
     }
   }
@@ -369,7 +369,7 @@ BUILD FAILED in 937ms
 
 **Generated:** ${timestamp}  
 **Duration:** ${result.duration.toFixed(2)}s  
-**Status:** ${result.success ? '✅ PASSED' : '❌ FAILED'}
+**Status:** ${result.success ? '[OK] PASSED' : '[X] FAILED'}
 
 ---
 
@@ -388,10 +388,10 @@ BUILD FAILED in 937ms
 
 | Metric | Value | Status |
 |--------|-------|--------|
-| Duration | ${result.duration.toFixed(2)}s | ${result.duration < this.config.performanceTarget ? '✅' : '⚠️'} |
-| Iterations | ${result.iterations} | ${result.iterations <= 3 ? '✅' : '⚠️'} |
-| Confidence | ${(result.confidence * 100).toFixed(0)}% | ${result.confidence >= this.config.confidenceTarget ? '✅' : '⚠️'} |
-| Accuracy | ${result.accuracy ? 'PASS' : 'FAIL'} | ${result.accuracy ? '✅' : '❌'} |
+| Duration | ${result.duration.toFixed(2)}s | ${result.duration < this.config.performanceTarget ? '[OK]' : '[WARN]'} |
+| Iterations | ${result.iterations} | ${result.iterations <= 3 ? '[OK]' : '[WARN]'} |
+| Confidence | ${(result.confidence * 100).toFixed(0)}% | ${result.confidence >= this.config.confidenceTarget ? '[OK]' : '[WARN]'} |
+| Accuracy | ${result.accuracy ? 'PASS' : 'FAIL'} | ${result.accuracy ? '[OK]' : '[X]'} |
 
 ### Root Cause
 
@@ -406,7 +406,7 @@ ${result.fixGuidelines.map((fix, idx) => `${idx + 1}. ${fix}`).join('\n')}
 ### Verification
 
 - **Keywords Found:** ${result.keywordsFound.length}/${testCase.expectedKeywords.length} (${result.keywordsFound.join(', ')})
-- **Verdict:** ${result.accuracy ? '✅ PASS' : '❌ FAIL'}
+- **Verdict:** ${result.accuracy ? '[OK] PASS' : '[X] FAIL'}
 
 ${result.specificityScore !== undefined && testCase.mvpBaseline ? `
 ### Specificity Analysis
@@ -414,21 +414,21 @@ ${result.specificityScore !== undefined && testCase.mvpBaseline ? `
 - **Score:** ${result.specificityScore}/100 (${result.specificityLevel})
 - **Baseline:** ${testCase.mvpBaseline.specificity}%
 - **Improvement:** +${result.specificityScore - testCase.mvpBaseline.specificity} points
-- **Target:** 70%+ ${result.specificityScore >= 70 ? '✅ MET' : '⚠️ IN PROGRESS'}
+- **Target:** 70%+ ${result.specificityScore >= 70 ? '[OK] MET' : '[WARN] IN PROGRESS'}
 
 **Breakdown:**
-- Exact File Path: ${result.validationResult?.breakdown.hasExactFilePath ? '✅' : '❌'}
-- Version Validation: ${result.validationResult?.breakdown.hasVersionValidation ? '✅' : '❌'}
-- Code Example: ${result.validationResult?.breakdown.hasCodeExample ? '✅' : '❌'}
-- Actual Names: ${result.validationResult?.breakdown.hasActualNames ? '✅' : '❌'}
-- Verification Steps: ${result.validationResult?.breakdown.hasVerificationSteps ? '✅' : '❌'}
+- Exact File Path: ${result.validationResult?.breakdown.hasExactFilePath ? '[OK]' : '[X]'}
+- Version Validation: ${result.validationResult?.breakdown.hasVersionValidation ? '[OK]' : '[X]'}
+- Code Example: ${result.validationResult?.breakdown.hasCodeExample ? '[OK]' : '[X]'}
+- Actual Names: ${result.validationResult?.breakdown.hasActualNames ? '[OK]' : '[X]'}
+- Verification Steps: ${result.validationResult?.breakdown.hasVerificationSteps ? '[OK]' : '[X]'}
 ` : ''}
 
 ---
 
 ## Verdict
 
-**Overall:** ${result.success && result.accuracy ? '✅ EXCELLENT' : result.success ? '⚠️ GOOD' : '❌ FAILED'}
+**Overall:** ${result.success && result.accuracy ? '[OK] EXCELLENT' : result.success ? '[WARN] GOOD' : '[X] FAILED'}
 
 ${result.success && result.accuracy ? 
   'The RCA Agent successfully analyzed the error with high accuracy and confidence.' :
@@ -469,11 +469,11 @@ ${result.success && result.accuracy ?
     
     return `
 ═══════════════════════════════════════════════════════════
-📊 TEST SUMMARY
+[STATS] TEST SUMMARY
 ═══════════════════════════════════════════════════════════
 Total Tests:      ${total}
-Passed:           ${passed} ✅
-Failed:           ${failed} ${failed > 0 ? '❌' : ''}
+Passed:           ${passed} [OK]
+Failed:           ${failed} ${failed > 0 ? '[X]' : ''}
 Avg Duration:     ${avgDuration.toFixed(2)}s
 Avg Confidence:   ${(avgConfidence * 100).toFixed(0)}%
 ═══════════════════════════════════════════════════════════
@@ -504,7 +504,7 @@ async function main() {
   const testCase = UnifiedMVPTestRunner.getStandardMVPCase();
   
   // Run test
-  console.log('\n🚀 Running Unified MVP Test...\n');
+  console.log('\n[LAUNCH] Running Unified MVP Test...\n');
   const result = await runner.runTest(testCase);
   
   // Save report
@@ -522,7 +522,7 @@ async function main() {
 // Run if executed directly
 if (require.main === module) {
   main().catch(error => {
-    console.error('\n❌ Fatal error:', error);
+    console.error('\n[X] Fatal error:', error);
     process.exit(1);
   });
 }

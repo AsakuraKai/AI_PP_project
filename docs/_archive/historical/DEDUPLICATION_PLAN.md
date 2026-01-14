@@ -1,4 +1,4 @@
-# Project Deduplication & Redundancy Analysis Plan
+﻿# Project Deduplication & Redundancy Analysis Plan
 
 **Generated:** January 2, 2026  
 **Purpose:** Systematic chunk-by-chunk analysis to identify duplicate and redundant code  
@@ -6,7 +6,7 @@
 
 ---
 
-## 📋 **ANALYSIS STRATEGY**
+## [CLIPBOARD] **ANALYSIS STRATEGY**
 
 ### **Phase 1: Test Infrastructure Consolidation**
 **Goal:** Identify redundant test runners and consolidate test scripts
@@ -28,7 +28,7 @@
 
 ---
 
-## 🔍 **CHUNK 1: Test Runner Consolidation**
+## [SEARCH] **CHUNK 1: Test Runner Consolidation**
 
 ### **Related Files:**
 ```
@@ -44,10 +44,10 @@ scripts/phase4-quickstart.ts
 ```
 
 ### **Potential Duplications:**
-- ✅ Multiple test runners for same test cases (chunk7, chunk8, chunk9)
-- ✅ Similar validation logic across phase1/phase2 scripts
-- ✅ Duplicate test setup/teardown code
-- ✅ Redundant result formatting
+- [DONE] Multiple test runners for same test cases (chunk7, chunk8, chunk9)
+- [DONE] Similar validation logic across phase1/phase2 scripts
+- [DONE] Duplicate test setup/teardown code
+- [DONE] Redundant result formatting
 
 ### **Questions to Answer:**
 1. Can chunk7/8/9 runners be merged into one unified runner?
@@ -63,7 +63,7 @@ scripts/phase4-quickstart.ts
 
 ---
 
-## 🔍 **CHUNK 2: MVP Test Script Consolidation**
+## [SEARCH] **CHUNK 2: MVP Test Script Consolidation**
 
 ### **Related Files:**
 ```
@@ -75,10 +75,10 @@ scripts/test-chunk3-improvements.ts
 ```
 
 ### **Potential Duplications:**
-- ✅ Multiple MVP test implementations (v1, v2, enhanced)
-- ✅ Duplicate agent initialization code
-- ✅ Similar test case definitions
-- ✅ Redundant result validation
+- [DONE] Multiple MVP test implementations (v1, v2, enhanced)
+- [DONE] Duplicate agent initialization code
+- [DONE] Similar test case definitions
+- [DONE] Redundant result validation
 
 ### **Questions to Answer:**
 1. What's the difference between simple-mvp-test and simple-mvp-test-v2?
@@ -94,7 +94,7 @@ scripts/test-chunk3-improvements.ts
 
 ---
 
-## 🔍 **CHUNK 3: Individual Test Script Analysis**
+## [SEARCH] **CHUNK 3: Individual Test Script Analysis**
 
 ### **Related Files:**
 ```
@@ -107,10 +107,10 @@ scripts/chunk8-test10-navigation.ts     # Test 10: Navigation
 ```
 
 ### **Potential Duplications:**
-- ✅ Similar test setup code in each script
-- ✅ Duplicate agent initialization
-- ✅ Redundant result formatting
-- ✅ Similar error handling patterns
+- [DONE] Similar test setup code in each script
+- [DONE] Duplicate agent initialization
+- [DONE] Redundant result formatting
+- [DONE] Similar error handling patterns
 
 ### **Questions to Answer:**
 1. Why do individual tests exist when batch runners exist?
@@ -126,7 +126,7 @@ scripts/chunk8-test10-navigation.ts     # Test 10: Navigation
 
 ---
 
-## 🔍 **CHUNK 4: Parser Implementation Analysis**
+## [SEARCH] **CHUNK 4: Parser Implementation Analysis**
 
 ### **Related Files:**
 ```
@@ -139,10 +139,10 @@ src/utils/parsers/XMLParser.ts
 ```
 
 ### **Potential Duplications:**
-- ✅ KotlinNPEParser vs KotlinParser - overlap?
-- ✅ Error extraction logic duplicated across parsers
-- ✅ Similar regex patterns
-- ✅ Duplicate file path extraction
+- [DONE] KotlinNPEParser vs KotlinParser - overlap?
+- [DONE] Error extraction logic duplicated across parsers
+- [DONE] Similar regex patterns
+- [DONE] Duplicate file path extraction
 
 ### **Questions to Answer:**
 1. Is KotlinNPEParser redundant with KotlinParser?
@@ -158,13 +158,13 @@ src/utils/parsers/XMLParser.ts
 
 ---
 
-## 🔍 **CHUNK 5: Tool Implementation Review**
+## [SEARCH] **CHUNK 5: Tool Implementation Review**
 
 ### **Related Files:**
 ```
 # Core Tool Registry
 src/tools/ToolRegistry.ts
-vscode-extension/src/tools/ToolRegistry.ts  # ⚠️ DUPLICATE?
+vscode-extension/src/tools/ToolRegistry.ts  # [WARNING] DUPLICATE?
 
 # File Operations
 src/tools/ReadFileTool.ts
@@ -186,10 +186,10 @@ vscode-extension/src/tools/WorkspaceSearchTool.ts  # Similar?
 ```
 
 ### **Potential Duplications:**
-- ⚠️ **CRITICAL:** Two ToolRegistry implementations (src vs extension)
-- ✅ File operation tools may overlap
-- ✅ Command execution tools may be redundant
-- ✅ Search functionality duplicated
+- [WARNING] **CRITICAL:** Two ToolRegistry implementations (src vs extension)
+- [DONE] File operation tools may overlap
+- [DONE] Command execution tools may be redundant
+- [DONE] Search functionality duplicated
 
 ### **Questions to Answer:**
 1. Why are there two ToolRegistry implementations?
@@ -205,7 +205,7 @@ vscode-extension/src/tools/WorkspaceSearchTool.ts  # Similar?
 
 ---
 
-## 🔍 **CHUNK 6: Agent State Management** ✅ COMPLETED
+## [SEARCH] **CHUNK 6: Agent State Management** [DONE] COMPLETED
 
 ### **Related Files:**
 ```
@@ -216,24 +216,24 @@ vscode-extension/src/views/AgentStateViewer.ts
 ```
 
 ### **Duplications Found & Resolved:**
-- ✅ **RESOLVED:** State management type definitions duplicated (127 lines removed)
-- ✅ **RESOLVED:** Event interfaces defined in multiple locations (consolidated to shared module)
-- ✅ **RESOLVED:** AgentState and AnalysisProgress were duplicate concepts (merged)
-- ✅ **RESOLVED:** LearningMetrics defined in both backend and extension (unified)
+- [DONE] **RESOLVED:** State management type definitions duplicated (127 lines removed)
+- [DONE] **RESOLVED:** Event interfaces defined in multiple locations (consolidated to shared module)
+- [DONE] **RESOLVED:** AgentState and AnalysisProgress were duplicate concepts (merged)
+- [DONE] **RESOLVED:** LearningMetrics defined in both backend and extension (unified)
 
 ### **Actions Completed:**
-- ✅ Created shared state types module (`src/agent/types.ts`)
-- ✅ Consolidated 9 type definitions into single source of truth
-- ✅ Updated all imports across 6 files
-- ✅ Removed 127 lines of duplicate code
-- ✅ Zero compilation errors
-- ✅ Documented in `docs/CHUNK6_CONSOLIDATION.md`
+- [DONE] Created shared state types module (`src/agent/types.ts`)
+- [DONE] Consolidated 9 type definitions into single source of truth
+- [DONE] Updated all imports across 6 files
+- [DONE] Removed 127 lines of duplicate code
+- [DONE] Zero compilation errors
+- [DONE] Documented in `docs/CHUNK6_CONSOLIDATION.md`
 
-**Status:** ✅ **COMPLETE** - All state types consolidated, single source of truth established
+**Status:** [DONE] **COMPLETE** - All state types consolidated, single source of truth established
 
 ---
 
-## 🔍 **CHUNK 7: Knowledge Base & Examples**
+## [SEARCH] **CHUNK 7: Knowledge Base & Examples**
 
 ### **Related Files:**
 ```
@@ -243,7 +243,7 @@ src/knowledge/SemanticExampleService.ts
 
 # Example Data
 src/knowledge/few-shot-examples.json
-src/knowledge/few-shot-examples-compiled.json  # ⚠️ DUPLICATE?
+src/knowledge/few-shot-examples-compiled.json  # [WARNING] DUPLICATE?
 
 # Individual Example Files
 src/knowledge/few-shot-examples/index.ts
@@ -260,9 +260,9 @@ src/knowledge/compatibility-matrix.json
 ```
 
 ### **Potential Duplications:**
-- ⚠️ few-shot-examples.json vs few-shot-examples-compiled.json
-- ✅ Example data duplicated across individual files and JSON
-- ✅ Similar example service logic
+- [WARNING] few-shot-examples.json vs few-shot-examples-compiled.json
+- [DONE] Example data duplicated across individual files and JSON
+- [DONE] Similar example service logic
 
 ### **Questions to Answer:**
 1. What's the difference between examples.json and compiled.json?
@@ -278,7 +278,7 @@ src/knowledge/compatibility-matrix.json
 
 ---
 
-## 🔍 **CHUNK 8: VS Code Extension Commands**
+## [SEARCH] **CHUNK 8: VS Code Extension Commands**
 
 ### **Related Files:**
 ```
@@ -289,9 +289,9 @@ vscode-extension/src/commands/TreeViewCommands.ts
 ```
 
 ### **Potential Duplications:**
-- ✅ Similar command registration patterns
-- ✅ Duplicate error handling
-- ✅ Similar context validation
+- [DONE] Similar command registration patterns
+- [DONE] Duplicate error handling
+- [DONE] Similar context validation
 
 ### **Questions to Answer:**
 1. Is there shared command infrastructure?
@@ -305,7 +305,7 @@ vscode-extension/src/commands/TreeViewCommands.ts
 
 ---
 
-## 🔍 **CHUNK 9: VS Code Extension Services** ✅ COMPLETED
+## [SEARCH] **CHUNK 9: VS Code Extension Services** [DONE] COMPLETED
 
 ### **Related Files:**
 ```
@@ -320,26 +320,26 @@ vscode-extension/src/services/BaseService.ts               # NEW: Base class (CO
 ```
 
 ### **Duplications Found & Resolved:**
-- ✅ **RESOLVED:** Service initialization patterns duplicated (125 lines removed)
-- ✅ **RESOLVED:** Singleton management in 7 services (unified with decorator)
-- ✅ **RESOLVED:** Configuration loading duplicated (70 lines removed)
-- ✅ **RESOLVED:** Disposal logic in every service (unified in base class)
-- ✅ **RESOLVED:** Event emitter patterns (standardized)
+- [DONE] **RESOLVED:** Service initialization patterns duplicated (125 lines removed)
+- [DONE] **RESOLVED:** Singleton management in 7 services (unified with decorator)
+- [DONE] **RESOLVED:** Configuration loading duplicated (70 lines removed)
+- [DONE] **RESOLVED:** Disposal logic in every service (unified in base class)
+- [DONE] **RESOLVED:** Event emitter patterns (standardized)
 
 ### **Actions Completed:**
-- ✅ Created `BaseService` class with singleton decorator
-- ✅ Refactored 5 services to use base class (2 kept as-is for specific reasons)
-- ✅ Unified configuration management (`getConfig`, `updateConfig`)
-- ✅ Standardized disposal patterns
-- ✅ Removed 180 lines of duplicate code
-- ✅ Zero breaking changes
-- ✅ Documented in `docs/CHUNK9_10_CONSOLIDATION.md`
+- [DONE] Created `BaseService` class with singleton decorator
+- [DONE] Refactored 5 services to use base class (2 kept as-is for specific reasons)
+- [DONE] Unified configuration management (`getConfig`, `updateConfig`)
+- [DONE] Standardized disposal patterns
+- [DONE] Removed 180 lines of duplicate code
+- [DONE] Zero breaking changes
+- [DONE] Documented in `docs/CHUNK9_10_CONSOLIDATION.md`
 
-**Status:** ✅ **COMPLETE** - All service patterns consolidated, single source of truth established
+**Status:** [DONE] **COMPLETE** - All service patterns consolidated, single source of truth established
 
 ---
 
-## 🔍 **CHUNK 10: VS Code Extension Integrations** ✅ COMPLETED
+## [SEARCH] **CHUNK 10: VS Code Extension Integrations** [DONE] COMPLETED
 
 ### **Related Files:**
 ```
@@ -352,27 +352,27 @@ vscode-extension/src/integrations/BaseProvider.ts         # NEW: Base class (CON
 ```
 
 ### **Duplications Found & Resolved:**
-- ✅ **RESOLVED:** Provider registration patterns duplicated (eliminated)
-- ✅ **RESOLVED:** Document analysis logic in 5 providers (60 lines removed)
-- ✅ **RESOLVED:** Error detection in 4 providers (unified validation)
-- ✅ **RESOLVED:** Cache implementations in 2 providers (50 lines removed)
-- ✅ **RESOLVED:** Diagnostic checking in 4 providers (unified methods)
+- [DONE] **RESOLVED:** Provider registration patterns duplicated (eliminated)
+- [DONE] **RESOLVED:** Document analysis logic in 5 providers (60 lines removed)
+- [DONE] **RESOLVED:** Error detection in 4 providers (unified validation)
+- [DONE] **RESOLVED:** Cache implementations in 2 providers (50 lines removed)
+- [DONE] **RESOLVED:** Diagnostic checking in 4 providers (unified methods)
 
 ### **Actions Completed:**
-- ✅ Created `BaseProvider` class with common patterns
-- ✅ Refactored 4 providers to use base class (1 kept as-is for UI management)
-- ✅ Unified document validation logic
-- ✅ Consolidated cache management with TTL
-- ✅ Standardized error queue integration
-- ✅ Removed 125 lines of duplicate code
-- ✅ Zero breaking changes
-- ✅ Documented in `docs/CHUNK9_10_CONSOLIDATION.md`
+- [DONE] Created `BaseProvider` class with common patterns
+- [DONE] Refactored 4 providers to use base class (1 kept as-is for UI management)
+- [DONE] Unified document validation logic
+- [DONE] Consolidated cache management with TTL
+- [DONE] Standardized error queue integration
+- [DONE] Removed 125 lines of duplicate code
+- [DONE] Zero breaking changes
+- [DONE] Documented in `docs/CHUNK9_10_CONSOLIDATION.md`
 
-**Status:** ✅ **COMPLETE** - All provider patterns consolidated, single source of truth established
+**Status:** [DONE] **COMPLETE** - All provider patterns consolidated, single source of truth established
 
 ---
 
-## 🔍 **CHUNK 11: Test Fixtures & Datasets** ✅ COMPLETED
+## [SEARCH] **CHUNK 11: Test Fixtures & Datasets** [DONE] COMPLETED
 
 ### **Related Files:**
 ```
@@ -387,25 +387,25 @@ tests/fixtures/test-4-xml-inflation/           # Standardized naming
 ```
 
 ### **Duplications Found & Resolved:**
-- ✅ **RESOLVED:** 3 duplicate/empty test fixture directories removed (`test2-kotlin-lateinit`, `test3-compose-breakage`, minimal `test4-xml-layout`)
-- ✅ **RESOLVED:** Naming inconsistencies standardized to hyphenated format (`test-N-description/`)
-- ✅ **RESOLVED:** Test dataset utility functions consolidated into unified interface
-- ✅ **RESOLVED:** Created single entry point for all 70+ test cases across 3 datasets
+- [DONE] **RESOLVED:** 3 duplicate/empty test fixture directories removed (`test2-kotlin-lateinit`, `test3-compose-breakage`, minimal `test4-xml-layout`)
+- [DONE] **RESOLVED:** Naming inconsistencies standardized to hyphenated format (`test-N-description/`)
+- [DONE] **RESOLVED:** Test dataset utility functions consolidated into unified interface
+- [DONE] **RESOLVED:** Created single entry point for all 70+ test cases across 3 datasets
 
 ### **Actions Completed:**
-- ✅ Removed 3 redundant test fixture directories
-- ✅ Standardized all test fixture naming to `test-N-description/` format
-- ✅ Created `unified-test-dataset.ts` with consolidated search/filter functions
-- ✅ Created comprehensive `tests/fixtures/README.md` documentation
-- ✅ Maintained backwards compatibility (original dataset files still importable)
-- ✅ Zero breaking changes
-- ✅ Documented in `docs/CHUNK11_12_CONSOLIDATION.md`
+- [DONE] Removed 3 redundant test fixture directories
+- [DONE] Standardized all test fixture naming to `test-N-description/` format
+- [DONE] Created `unified-test-dataset.ts` with consolidated search/filter functions
+- [DONE] Created comprehensive `tests/fixtures/README.md` documentation
+- [DONE] Maintained backwards compatibility (original dataset files still importable)
+- [DONE] Zero breaking changes
+- [DONE] Documented in `docs/CHUNK11_12_CONSOLIDATION.md`
 
-**Status:** ✅ **COMPLETE** - Test fixtures consolidated, unified interface established, 3 directories removed
+**Status:** [DONE] **COMPLETE** - Test fixtures consolidated, unified interface established, 3 directories removed
 
 ---
 
-## 🔍 **CHUNK 12: Configuration & Build Files** ✅ COMPLETED
+## [SEARCH] **CHUNK 12: Configuration & Build Files** [DONE] COMPLETED
 
 ### **Related Files:**
 ```
@@ -424,30 +424,30 @@ vscode-extension/.eslintrc.json
 ```
 
 ### **Duplications Found & Resolved:**
-- ✅ **RESOLVED:** TypeScript configuration ~80% duplicated (30 lines removed)
-- ✅ **RESOLVED:** Created shared `tsconfig.base.json` as single source of truth
-- ✅ **ANALYZED:** Dependencies appropriately separated by concern (no consolidation needed)
-- ✅ **RESOLVED:** Reduced root tsconfig.json by 35%, extension by 39%
+- [DONE] **RESOLVED:** TypeScript configuration ~80% duplicated (30 lines removed)
+- [DONE] **RESOLVED:** Created shared `tsconfig.base.json` as single source of truth
+- [DONE] **ANALYZED:** Dependencies appropriately separated by concern (no consolidation needed)
+- [DONE] **RESOLVED:** Reduced root tsconfig.json by 35%, extension by 39%
 
 ### **Actions Completed:**
-- ✅ Created `tsconfig.base.json` with shared compiler options
-- ✅ Refactored root `tsconfig.json` to extend base (9 lines vs 20 lines)
-- ✅ Refactored extension `tsconfig.json` to extend base (14 lines vs 23 lines)
-- ✅ Audited dependencies - verified appropriate separation
-- ✅ Verified zero compilation errors
-- ✅ Documented in `docs/CHUNK11_12_CONSOLIDATION.md`
+- [DONE] Created `tsconfig.base.json` with shared compiler options
+- [DONE] Refactored root `tsconfig.json` to extend base (9 lines vs 20 lines)
+- [DONE] Refactored extension `tsconfig.json` to extend base (14 lines vs 23 lines)
+- [DONE] Audited dependencies - verified appropriate separation
+- [DONE] Verified zero compilation errors
+- [DONE] Documented in `docs/CHUNK11_12_CONSOLIDATION.md`
 
 **Dependency Analysis Results:**
-- **Shared runtime deps:** 1 (node-fetch) ✅ Appropriate
-- **Shared dev deps:** 5 (TypeScript tooling) ✅ Appropriate
-- **Root-only:** Backend tools (ChromaDB, UUID, Zod) ✅ Correct separation
-- **Extension-only:** VS Code types ✅ Correct separation
+- **Shared runtime deps:** 1 (node-fetch) [DONE] Appropriate
+- **Shared dev deps:** 5 (TypeScript tooling) [DONE] Appropriate
+- **Root-only:** Backend tools (ChromaDB, UUID, Zod) [DONE] Correct separation
+- **Extension-only:** VS Code types [DONE] Correct separation
 
-**Status:** ✅ **COMPLETE** - Configuration files consolidated, 30 lines of duplicate config eliminated
+**Status:** [DONE] **COMPLETE** - Configuration files consolidated, 30 lines of duplicate config eliminated
 
 ---
 
-## 🔍 **CHUNK 13: Database & Caching** ✅ COMPLETED
+## [SEARCH] **CHUNK 13: Database & Caching** [DONE] COMPLETED
 
 ### **Related Files:**
 ```
@@ -460,25 +460,25 @@ src/cache/ErrorHasher.ts
 ```
 
 ### **Duplications Found & Resolved:**
-- ✅ **RESOLVED:** Quality scoring calculation duplicated in `rca-collection.ts` (20 lines removed)
-- ✅ **RESOLVED:** Duplicate `CachedAnalysis` interface in RCAHoverProvider (7 lines removed)
-- ✅ **DOCUMENTED:** Mock error hashing in extension (marked for future backend integration)
-- ✅ **VERIFIED:** Normalize functions serve different purposes (no duplication)
+- [DONE] **RESOLVED:** Quality scoring calculation duplicated in `rca-collection.ts` (20 lines removed)
+- [DONE] **RESOLVED:** Duplicate `CachedAnalysis` interface in RCAHoverProvider (7 lines removed)
+- [DONE] **DOCUMENTED:** Mock error hashing in extension (marked for future backend integration)
+- [DONE] **VERIFIED:** Normalize functions serve different purposes (no duplication)
 
 ### **Actions Completed:**
-- ✅ Consolidated quality scoring to use `QualityScorer` class as single source of truth
-- ✅ Removed duplicate interface definition in RCAHoverProvider
-- ✅ Fixed interface properties to match actual usage
-- ✅ Verified caching patterns are clean and non-duplicate
-- ✅ Documented mock hashing for future replacement
-- ✅ Zero compilation errors
-- ✅ Documented in `docs/CHUNK13_CONSOLIDATION.md`
+- [DONE] Consolidated quality scoring to use `QualityScorer` class as single source of truth
+- [DONE] Removed duplicate interface definition in RCAHoverProvider
+- [DONE] Fixed interface properties to match actual usage
+- [DONE] Verified caching patterns are clean and non-duplicate
+- [DONE] Documented mock hashing for future replacement
+- [DONE] Zero compilation errors
+- [DONE] Documented in `docs/CHUNK13_CONSOLIDATION.md`
 
-**Status:** ✅ **COMPLETE** - Quality scoring unified, 27 lines removed, single source of truth established
+**Status:** [DONE] **COMPLETE** - Quality scoring unified, 27 lines removed, single source of truth established
 
 ---
 
-## 🔍 **CHUNK 14: Utility Functions** ✅ COMPLETED
+## [SEARCH] **CHUNK 14: Utility Functions** [DONE] COMPLETED
 
 ### **Related Files:**
 ```
@@ -490,23 +490,23 @@ vscode-extension/src/utils/ErrorHandler.ts
 ```
 
 ### **Duplications Found & Resolved:**
-- ✅ **RESOLVED:** Path normalization duplicated in FileResolver (15 lines removed)
-- ✅ **RESOLVED:** Created shared `PathUtils` utility class
-- ✅ **ANALYZED:** ErrorHandler is extension-specific (appropriate separation)
-- ✅ **VERIFIED:** Other utilities are domain-specific (no duplication)
+- [DONE] **RESOLVED:** Path normalization duplicated in FileResolver (15 lines removed)
+- [DONE] **RESOLVED:** Created shared `PathUtils` utility class
+- [DONE] **ANALYZED:** ErrorHandler is extension-specific (appropriate separation)
+- [DONE] **VERIFIED:** Other utilities are domain-specific (no duplication)
 
 ### **Actions Completed:**
-- ✅ Created `PathUtils` class with 8 cross-platform path methods
-- ✅ Refactored FileResolver to use PathUtils.relative() (11 instances)
-- ✅ Removed private `normalizePath()` method from FileResolver
-- ✅ Verified zero compilation errors
-- ✅ Documented in `docs/CHUNK14_15_CONSOLIDATION.md`
+- [DONE] Created `PathUtils` class with 8 cross-platform path methods
+- [DONE] Refactored FileResolver to use PathUtils.relative() (11 instances)
+- [DONE] Removed private `normalizePath()` method from FileResolver
+- [DONE] Verified zero compilation errors
+- [DONE] Documented in `docs/CHUNK14_15_CONSOLIDATION.md`
 
-**Status:** ✅ **COMPLETE** - Path utilities consolidated, 15 lines removed
+**Status:** [DONE] **COMPLETE** - Path utilities consolidated, 15 lines removed
 
 ---
 
-## 🔍 **CHUNK 15: Chat & Conversational AI** ✅ COMPLETED
+## [SEARCH] **CHUNK 15: Chat & Conversational AI** [DONE] COMPLETED
 
 ### **Related Files:**
 ```
@@ -522,28 +522,28 @@ src/agent/BasePromptEngine.ts                   # NEW: Shared prompt utilities (
 ```
 
 ### **Duplications Found & Resolved:**
-- ✅ **RESOLVED:** JSON parsing duplicated between backend and chat (205 lines removed)
-- ✅ **RESOLVED:** Response validation duplicated (65 lines removed)
-- ✅ **RESOLVED:** Created `BasePromptEngine` abstract class
-- ✅ **ANALYZED:** Context collection is chat-specific (appropriate)
-- ✅ **ANALYZED:** Response streaming is chat-specific (appropriate)
+- [DONE] **RESOLVED:** JSON parsing duplicated between backend and chat (205 lines removed)
+- [DONE] **RESOLVED:** Response validation duplicated (65 lines removed)
+- [DONE] **RESOLVED:** Created `BasePromptEngine` abstract class
+- [DONE] **ANALYZED:** Context collection is chat-specific (appropriate)
+- [DONE] **ANALYZED:** Response streaming is chat-specific (appropriate)
 
 ### **Actions Completed:**
-- ✅ Created `BasePromptEngine` with 4 core methods (extractJSON, validateResponse, etc.)
-- ✅ Refactored PromptEngine to extend BasePromptEngine
-- ✅ Removed 205 lines of duplicate JSON parsing logic
-- ✅ Removed 65 lines of duplicate validation logic
-- ✅ Added 3 utility methods (detectLanguage, formatDiff, formatCodeBlock)
-- ✅ Verified zero compilation errors
-- ✅ Documented in `docs/CHUNK14_15_CONSOLIDATION.md`
+- [DONE] Created `BasePromptEngine` with 4 core methods (extractJSON, validateResponse, etc.)
+- [DONE] Refactored PromptEngine to extend BasePromptEngine
+- [DONE] Removed 205 lines of duplicate JSON parsing logic
+- [DONE] Removed 65 lines of duplicate validation logic
+- [DONE] Added 3 utility methods (detectLanguage, formatDiff, formatCodeBlock)
+- [DONE] Verified zero compilation errors
+- [DONE] Documented in `docs/CHUNK14_15_CONSOLIDATION.md`
 
 **Future:** ChatPromptEngine can extend BasePromptEngine to save ~150 more lines
 
-**Status:** ✅ **COMPLETE** - Prompt engine consolidated, 270 lines removed (220 net after infrastructure)
+**Status:** [DONE] **COMPLETE** - Prompt engine consolidated, 270 lines removed (220 net after infrastructure)
 
 ---
 
-## 🔍 **CHUNK 14: Utility Functions**
+## [SEARCH] **CHUNK 14: Utility Functions**
 
 ### **Related Files:**
 ```
@@ -554,9 +554,9 @@ vscode-extension/src/utils/ErrorHandler.ts
 ```
 
 ### **Potential Duplications:**
-- ✅ File path resolution logic
-- ✅ Error handling patterns
-- ✅ String formatting utilities
+- [DONE] File path resolution logic
+- [DONE] Error handling patterns
+- [DONE] String formatting utilities
 
 ### **Questions to Answer:**
 1. Is file resolution logic shared?
@@ -570,7 +570,7 @@ vscode-extension/src/utils/ErrorHandler.ts
 
 ---
 
-## 🔍 **CHUNK 15: Chat & Conversational AI**
+## [SEARCH] **CHUNK 15: Chat & Conversational AI**
 
 ### **Related Files:**
 ```
@@ -584,9 +584,9 @@ vscode-extension/src/chat/GuidedDebuggingWorkflow.ts
 ```
 
 ### **Potential Duplications:**
-- ✅ Similar prompt generation logic with backend
-- ✅ Duplicate context collection
-- ✅ Similar response streaming
+- [DONE] Similar prompt generation logic with backend
+- [DONE] Duplicate context collection
+- [DONE] Similar response streaming
 
 ### **Questions to Answer:**
 1. Is ChatPromptEngine duplicating backend PromptEngine?
@@ -600,26 +600,26 @@ vscode-extension/src/chat/GuidedDebuggingWorkflow.ts
 
 ---
 
-## 📊 **SUMMARY OF CRITICAL DUPLICATIONS**
+## [CHART] **SUMMARY OF CRITICAL DUPLICATIONS**
 
-### **✅ ALL CHUNKS COMPLETED:**
-1. **CHUNK 1: Test Runner Consolidation** - Unified test infrastructure created ✅
-2. **CHUNK 2: MVP Test Script Consolidation** - 412 lines removed (44% reduction) ✅
-3. **CHUNK 3: Individual Test Script Analysis** - Test harness consolidated ✅
-4. **CHUNK 4: Parser Implementation Analysis** - Parser base classes created ✅
-5. **CHUNK 5: Tool Implementation Review** - Tool architecture unified ✅
-6. **CHUNK 6: Agent State Management** - 127 lines removed, 9 types consolidated ✅
-7. **CHUNK 7: Knowledge Base & Examples** - Example data consolidated ✅
-8. **CHUNK 8: VS Code Extension Commands** - Command patterns unified ✅
-9. **CHUNK 9: VS Code Extension Services** - 180 lines removed, 5 services refactored ✅
-10. **CHUNK 10: VS Code Extension Integrations** - 125 lines removed, 4 providers refactored ✅
-11. **CHUNK 11: Test Fixtures & Datasets** - 3 directories removed, unified test interface created ✅
-12. **CHUNK 12: Configuration & Build Files** - 30 lines removed, shared TypeScript config created ✅
-13. **CHUNK 13: Database & Caching** - 27 lines removed, quality scoring unified ✅
-14. **CHUNK 14: Utility Functions** - 15 lines removed, PathUtils created ✅
-15. **CHUNK 15: Chat & Conversational AI** - 205 lines removed, BasePromptEngine created ✅
+### **[DONE] ALL CHUNKS COMPLETED:**
+1. **CHUNK 1: Test Runner Consolidation** - Unified test infrastructure created [DONE]
+2. **CHUNK 2: MVP Test Script Consolidation** - 412 lines removed (44% reduction) [DONE]
+3. **CHUNK 3: Individual Test Script Analysis** - Test harness consolidated [DONE]
+4. **CHUNK 4: Parser Implementation Analysis** - Parser base classes created [DONE]
+5. **CHUNK 5: Tool Implementation Review** - Tool architecture unified [DONE]
+6. **CHUNK 6: Agent State Management** - 127 lines removed, 9 types consolidated [DONE]
+7. **CHUNK 7: Knowledge Base & Examples** - Example data consolidated [DONE]
+8. **CHUNK 8: VS Code Extension Commands** - Command patterns unified [DONE]
+9. **CHUNK 9: VS Code Extension Services** - 180 lines removed, 5 services refactored [DONE]
+10. **CHUNK 10: VS Code Extension Integrations** - 125 lines removed, 4 providers refactored [DONE]
+11. **CHUNK 11: Test Fixtures & Datasets** - 3 directories removed, unified test interface created [DONE]
+12. **CHUNK 12: Configuration & Build Files** - 30 lines removed, shared TypeScript config created [DONE]
+13. **CHUNK 13: Database & Caching** - 27 lines removed, quality scoring unified [DONE]
+14. **CHUNK 14: Utility Functions** - 15 lines removed, PathUtils created [DONE]
+15. **CHUNK 15: Chat & Conversational AI** - 205 lines removed, BasePromptEngine created [DONE]
 
-**🎉 PROJECT CONSOLIDATION: 100% COMPLETE!**
+**[SUCCESS] PROJECT CONSOLIDATION: 100% COMPLETE!**
 
 **Total Impact:**
 - **Lines Removed:** 1,100+ lines of duplicate code
@@ -632,7 +632,7 @@ vscode-extension/src/chat/GuidedDebuggingWorkflow.ts
 
 ---
 
-## 📋 **CONSOLIDATION DOCUMENTATION**
+## [CLIPBOARD] **CONSOLIDATION DOCUMENTATION**
 
 All consolidation work is documented in detail:
 - [CHUNK1_CONSOLIDATION.md](../docs/CHUNK1_CONSOLIDATION.md) - Test Infrastructure
@@ -648,80 +648,80 @@ All consolidation work is documented in detail:
 
 ---
 
-## 📊 **SUMMARY OF CRITICAL DUPLICATIONS** (Historical)
+## [CHART] **SUMMARY OF CRITICAL DUPLICATIONS** (Historical)
 
 ---
 
-## 📋 **RECOMMENDED ACTION SEQUENCE**
+## [CLIPBOARD] **RECOMMENDED ACTION SEQUENCE**
 
-### **✅ Week 1: Critical Duplications (COMPLETE)**
-1. ✅ Reconcile ToolRegistry implementations
-2. ✅ Compare and unify PromptEngine logic
-3. ✅ Create unified test runner
-4. ✅ Clarify example data compilation
+### **[DONE] Week 1: Critical Duplications (COMPLETE)**
+1. [DONE] Reconcile ToolRegistry implementations
+2. [DONE] Compare and unify PromptEngine logic
+3. [DONE] Create unified test runner
+4. [DONE] Clarify example data compilation
 
-### **✅ Week 2: Medium Priority (COMPLETE)**
-1. ✅ Consolidate MVP test scripts
-2. ✅ Unify file operation tools
-3. ✅ Standardize state management
-4. ✅ Fix test fixture naming
+### **[DONE] Week 2: Medium Priority (COMPLETE)**
+1. [DONE] Consolidate MVP test scripts
+2. [DONE] Unify file operation tools
+3. [DONE] Standardize state management
+4. [DONE] Fix test fixture naming
 
-### **✅ Week 3: Code Quality (COMPLETE)**
-1. ✅ Extract common base classes
-2. ✅ Create shared interfaces
-3. ✅ Standardize error handling
-4. ✅ Document architectural decisions
+### **[DONE] Week 3: Code Quality (COMPLETE)**
+1. [DONE] Extract common base classes
+2. [DONE] Create shared interfaces
+3. [DONE] Standardize error handling
+4. [DONE] Document architectural decisions
 
-### **✅ Week 4: Optimization (COMPLETE)**
-1. ✅ **Remove dead code** - Old test files moved to _deprecated folders
-2. ✅ **Archive deprecated files** - 17 files moved to _deprecated_chunk1, _deprecated_mvp, _deprecated_chunk3
-3. ✅ **Clean up compiled artifacts** - .js, .d.ts, .map files removed from git tracking
-4. ✅ Update documentation - Consolidation docs complete
-5. ✅ **Fix TypeScript compilation** - 13 critical errors fixed (35→15 errors, 95% functional)
-6. ✅ Create migration guide - Documented in consolidation files
+### **[DONE] Week 4: Optimization (COMPLETE)**
+1. [DONE] **Remove dead code** - Old test files moved to _deprecated folders
+2. [DONE] **Archive deprecated files** - 17 files moved to _deprecated_chunk1, _deprecated_mvp, _deprecated_chunk3
+3. [DONE] **Clean up compiled artifacts** - .js, .d.ts, .map files removed from git tracking
+4. [DONE] Update documentation - Consolidation docs complete
+5. [DONE] **Fix TypeScript compilation** - 13 critical errors fixed (35→15 errors, 95% functional)
+6. [DONE] Create migration guide - Documented in consolidation files
 
 ---
 
-## 🎯 **SUCCESS METRICS**
+## [TARGET] **SUCCESS METRICS**
 
-### **✅ Achieved:**
-- **Code Reduction:** ✅ 1,100+ lines removed (15-20% target met)
-- **Test Consolidation:** ✅ Unified runners created (chunk1, chunk2, chunk3)
-- **Dependency Reduction:** ✅ Eliminated duplicate dependencies
-- **Build Time:** ✅ Improved by consolidating build configs
-- **Maintainability:** ✅ Single source of truth for each feature
-- **TypeScript Compilation:** ✅ 95% functional (35→15 errors, only warnings remain)
+### **[DONE] Achieved:**
+- **Code Reduction:** [DONE] 1,100+ lines removed (15-20% target met)
+- **Test Consolidation:** [DONE] Unified runners created (chunk1, chunk2, chunk3)
+- **Dependency Reduction:** [DONE] Eliminated duplicate dependencies
+- **Build Time:** [DONE] Improved by consolidating build configs
+- **Maintainability:** [DONE] Single source of truth for each feature
+- **TypeScript Compilation:** [DONE] 95% functional (35→15 errors, only warnings remain)
 
-### **✅ Week 4 Cleanup Complete:**
-- **File Cleanup:** ✅ 17 deprecated files archived
-- **Build Artifacts:** ✅ .gitignore updated, compiled files excluded
-- **Repository Size:** ✅ Clean organization with _deprecated folders
-- **Compilation Errors:** ✅ 13 critical errors fixed (54% reduction)
+### **[DONE] Week 4 Cleanup Complete:**
+- **File Cleanup:** [DONE] 17 deprecated files archived
+- **Build Artifacts:** [DONE] .gitignore updated, compiled files excluded
+- **Repository Size:** [DONE] Clean organization with _deprecated folders
+- **Compilation Errors:** [DONE] 13 critical errors fixed (54% reduction)
 - **Remaining:** 10 low-priority warnings + 5 test path issues
 
 ---
 
-## 🎉 **POST-CONSOLIDATION CLEANUP (WEEK 4)** ✅ COMPLETE
+## [SUCCESS] **POST-CONSOLIDATION CLEANUP (WEEK 4)** [DONE] COMPLETE
 
 ### **All Cleanup Tasks Completed:** (January 3, 2026)
-✅ **Task 1:** Moved 17 deprecated files to organized folders
+[DONE] **Task 1:** Moved 17 deprecated files to organized folders
 - 8 files → `scripts/_deprecated_chunk1/` (test runners)
 - 3 files → `scripts/_deprecated_mvp/` (MVP test variants)  
 - 6 files → `scripts/_deprecated_chunk3/` (individual test scripts)
 - Created README.md in each folder explaining consolidation
 
-✅ **Task 2:** Cleaned up compiled TypeScript artifacts
+[DONE] **Task 2:** Cleaned up compiled TypeScript artifacts
 - Verified `.gitignore` excludes compiled file patterns
 - Removed .js, .d.ts, .map files from git tracking
 - Files regenerated locally on build
 
-✅ **Task 3:** Documentation & Build Verification
+[DONE] **Task 3:** Documentation & Build Verification
 - All consolidation docs up to date
 - Migration guides created
 - Build successfully compiles (95% functional)
 - Created comprehensive `docs/WEEK4_CLEANUP_COMPLETE.md`
 
-✅ **Task 4:** TypeScript Compilation Status
+[DONE] **Task 4:** TypeScript Compilation Status
 - **35 → 15 errors** (13 critical errors fixed, 57% reduction)
 - Fixed: Language type, OllamaConfig, ToolRegistry, tool registration, type imports
 - Remaining: 10 low-priority warnings (TS6133/TS6138) + 5 test path issues
@@ -730,20 +730,20 @@ All consolidation work is documented in detail:
 **See:** [docs/WEEK4_CLEANUP_COMPLETE.md](../docs/WEEK4_CLEANUP_COMPLETE.md) for full cleanup report
 
 ---
-� **TYPESCRIPT COMPILATION ERROR FIXES** ✅ COMPLETE
+� **TYPESCRIPT COMPILATION ERROR FIXES** [DONE] COMPLETE
 
 **Status:** January 3, 2026 - **95% Functional** (15 low-priority errors remain)
 
 ### **Critical Fixes Completed (13 errors):**
-1. ✅ **Language Type** - Added 'proguard' to union type (fixed 2 errors)
-2. ✅ **OllamaConfig** - Added temperature & numPredict properties (fixed 4 errors)  
-3. ✅ **OllamaClient** - Added health() method alias (fixed 2 errors)
-4. ✅ **ToolRegistry** - Fixed getInstance() singleton pattern (fixed 2 errors)
-5. ✅ **Tool Registration** - Added proper Zod schemas (fixed 6 errors)
-6. ✅ **AgentConfig** - Added tools & enableCaching properties (fixed 2 errors)
-7. ✅ **ErrorParser** - Fixed IParser type reference (fixed 1 error)
-8. ✅ **JetpackComposeParser** - Changed extractFileInfo to protected (fixed 1 error)
-9. ✅ **LLMError** - Fixed constructor signature (fixed 1 error)
+1. [DONE] **Language Type** - Added 'proguard' to union type (fixed 2 errors)
+2. [DONE] **OllamaConfig** - Added temperature & numPredict properties (fixed 4 errors)  
+3. [DONE] **OllamaClient** - Added health() method alias (fixed 2 errors)
+4. [DONE] **ToolRegistry** - Fixed getInstance() singleton pattern (fixed 2 errors)
+5. [DONE] **Tool Registration** - Added proper Zod schemas (fixed 6 errors)
+6. [DONE] **AgentConfig** - Added tools & enableCaching properties (fixed 2 errors)
+7. [DONE] **ErrorParser** - Fixed IParser type reference (fixed 1 error)
+8. [DONE] **JetpackComposeParser** - Changed extractFileInfo to protected (fixed 1 error)
+9. [DONE] **LLMError** - Fixed constructor signature (fixed 1 error)
 
 ### **Remaining Non-Critical Issues (15 errors):**
 
@@ -758,7 +758,7 @@ All consolidation work is documented in detail:
 
 ### **Build Status:**
 ```bash
-npm run build  # ✅ Compiles with warnings only
+npm run build  # [DONE] Compiles with warnings only
 # 95% functional - all core functionality works
 # Remaining issues are cosmetic (warnings) or isolated (test paths)
 ```
@@ -767,10 +767,10 @@ npm run build  # ✅ Compiles with warnings only
 
 ---
 
-## 📝 **TASK 1: Move Old Test Files to _deprecated Folders** ✅ COMPLETE
-## 📝 **TASK 1: Move Old Test Files to _deprecated Folders**
+## [NOTE] **TASK 1: Move Old Test Files to _deprecated Folders** [DONE] COMPLETE
+## [NOTE] **TASK 1: Move Old Test Files to _deprecated Folders**
 
-**Priority:** 🔴 HIGH  
+**Priority:** [RED] HIGH  
 **Estimated Time:** 15 minutes  
 **Impact:** Reduces confusion, separates working code from archived code
 
@@ -805,14 +805,14 @@ See docs/CHUNK1_CONSOLIDATION.md for details.
 ```
 
 **Files Moved:**
-1. ❌ `chunk7-run-all-tests.ts` → Replaced by `run-all-tests.ts`
-2. ❌ `chunk8-run-all-tests.ts` → Replaced by `run-all-tests.ts`
-3. ❌ `chunk9-retest-all.ts` → Replaced by `run-all-tests.ts`
-4. ❌ `phase1-validation.ts` → Replaced by `run-phase-tests.ts`
-5. ❌ `phase1-quick-retest.ts` → Replaced by `run-phase-tests.ts`
-6. ❌ `test-phase1-quick.ts` → Replaced by `run-phase-tests.ts`
-7. ❌ `test-phase2-validation.ts` → Replaced by `run-phase-tests.ts`
-8. ❌ `phase4-quickstart.ts` → Documentation only, archived
+1. [FAIL] `chunk7-run-all-tests.ts` → Replaced by `run-all-tests.ts`
+2. [FAIL] `chunk8-run-all-tests.ts` → Replaced by `run-all-tests.ts`
+3. [FAIL] `chunk9-retest-all.ts` → Replaced by `run-all-tests.ts`
+4. [FAIL] `phase1-validation.ts` → Replaced by `run-phase-tests.ts`
+5. [FAIL] `phase1-quick-retest.ts` → Replaced by `run-phase-tests.ts`
+6. [FAIL] `test-phase1-quick.ts` → Replaced by `run-phase-tests.ts`
+7. [FAIL] `test-phase2-validation.ts` → Replaced by `run-phase-tests.ts`
+8. [FAIL] `phase4-quickstart.ts` → Documentation only, archived
 
 ---
 
@@ -840,9 +840,9 @@ See docs/CHUNK2_CONSOLIDATION.md for details.
 ```
 
 **Files Moved:**
-1. ❌ `simple-mvp-test.ts` → Replaced by `unified-mvp-test.ts --simple`
-2. ❌ `simple-mvp-test-v2.ts` → Replaced by `unified-mvp-test.ts --detailed`
-3. ❌ `test-mvp-project.ts` → Replaced by `unified-mvp-test.ts --detailed`
+1. [FAIL] `simple-mvp-test.ts` → Replaced by `unified-mvp-test.ts --simple`
+2. [FAIL] `simple-mvp-test-v2.ts` → Replaced by `unified-mvp-test.ts --detailed`
+3. [FAIL] `test-mvp-project.ts` → Replaced by `unified-mvp-test.ts --detailed`
 
 ---
 
@@ -877,18 +877,18 @@ See docs/CHUNK3_CONSOLIDATION_COMPLETE.md for details.
 ```
 
 **Files Moved:**
-1. ❌ `chunk7-test1-agp-retest.ts` → Replaced by `chunk7-test1-agp-refactored.ts`
-2. ❌ `chunk8-test6-manifest.ts` → Replaced by `chunk8-test6-manifest-refactored.ts`
-3. ❌ `chunk8-test7-gradle-network.ts` → Replaced by `chunk8-test7-gradle-network-refactored.ts`
-4. ❌ `chunk8-test8-build-cache.ts` → Replaced by `chunk8-test8-build-cache-refactored.ts`
-5. ❌ `chunk8-test9-proguard.ts` → Replaced by `chunk8-test9-proguard-refactored.ts`
-6. ❌ `chunk8-test10-navigation.ts` → Replaced by `chunk8-test10-navigation-refactored.ts`
+1. [FAIL] `chunk7-test1-agp-retest.ts` → Replaced by `chunk7-test1-agp-refactored.ts`
+2. [FAIL] `chunk8-test6-manifest.ts` → Replaced by `chunk8-test6-manifest-refactored.ts`
+3. [FAIL] `chunk8-test7-gradle-network.ts` → Replaced by `chunk8-test7-gradle-network-refactored.ts`
+4. [FAIL] `chunk8-test8-build-cache.ts` → Replaced by `chunk8-test8-build-cache-refactored.ts`
+5. [FAIL] `chunk8-test9-proguard.ts` → Replaced by `chunk8-test9-proguard-refactored.ts`
+6. [FAIL] `chunk8-test10-navigation.ts` → Replaced by `chunk8-test10-navigation-refactored.ts`
 
 ---
 
-## 📝 **TASK 2: Clean Up Compiled Artifacts**
+## [NOTE] **TASK 2: Clean Up Compiled Artifacts**
 
-**Priority:** 🔴 HIGH  
+**Priority:** [RED] HIGH  
 **Estimated Time:** 10 minutes  
 **Impact:** Reduces repository size, cleaner git status
 
@@ -953,9 +953,9 @@ npm run build
 
 ---
 
-## 📝 **TASK 3: Verify No Broken Imports**
+## [NOTE] **TASK 3: Verify No Broken Imports**
 
-**Priority:** 🟡 MEDIUM  
+**Priority:** [YELLOW] MEDIUM  
 **Estimated Time:** 10 minutes  
 **Impact:** Ensures codebase still compiles after moving files
 
@@ -985,7 +985,7 @@ npm run build
 # Should complete with zero errors
 ```
 
-**Expected:** ✅ Build succeeds with zero TypeScript errors
+**Expected:** [DONE] Build succeeds with zero TypeScript errors
 
 ---
 
@@ -1005,9 +1005,9 @@ npm run | Select-String "test"
 
 ---
 
-## 📝 **TASK 4: Run Full Test Suite**
+## [NOTE] **TASK 4: Run Full Test Suite**
 
-**Priority:** 🔴 HIGH  
+**Priority:** [RED] HIGH  
 **Estimated Time:** 30 minutes (test execution time)  
 **Impact:** Validates all refactoring works correctly
 
@@ -1021,7 +1021,7 @@ npm test
 # Current baseline: 878/878 passing, 99% coverage
 ```
 
-**Expected:** ✅ All unit tests pass (878/878)
+**Expected:** [DONE] All unit tests pass (878/878)
 
 ---
 
@@ -1034,7 +1034,7 @@ npm run test:phase4
 # Tests 10 diverse error cases
 ```
 
-**Expected:** ✅ All 10 test cases pass with good metrics
+**Expected:** [DONE] All 10 test cases pass with good metrics
 
 ---
 
@@ -1051,13 +1051,13 @@ npm run test:phase1
 npx ts-node scripts/unified-mvp-test.ts --validation
 ```
 
-**Expected:** ✅ All new runners execute successfully
+**Expected:** [DONE] All new runners execute successfully
 
 ---
 
-## 📝 **TASK 5: Optional Cleanup (After 2-Week Verification)**
+## [NOTE] **TASK 5: Optional Cleanup (After 2-Week Verification)**
 
-**Priority:** 🟢 LOW  
+**Priority:** [GREEN] LOW  
 **Estimated Time:** 5 minutes  
 **Impact:** Further reduces repository size
 
@@ -1081,9 +1081,9 @@ git commit -m "chore: remove deprecated files after 2-week verification period"
 
 ---
 
-## 📝 **TASK 6: Update Documentation**
+## [NOTE] **TASK 6: Update Documentation**
 
-**Priority:** 🟡 MEDIUM  
+**Priority:** [YELLOW] MEDIUM  
 **Estimated Time:** 10 minutes  
 **Impact:** Ensures developers know what happened
 
@@ -1141,7 +1141,7 @@ Create `docs/CLEANUP_SUMMARY.md`:
 # Post-Consolidation Cleanup Summary
 
 **Date:** January 3, 2026  
-**Status:** ✅ COMPLETE
+**Status:** [DONE] COMPLETE
 
 ## Files Moved to _deprecated
 - 8 files → \`scripts/_deprecated_chunk1/\`
@@ -1171,7 +1171,7 @@ See consolidation docs for full details.
 
 ---
 
-## ✅ **COMPLETION CHECKLIST**
+## [DONE] **COMPLETION CHECKLIST**
 
 Use this to track progress:
 
@@ -1206,7 +1206,7 @@ Use this to track progress:
 
 ---
 
-## 📊 **EXPECTED OUTCOMES**
+## [CHART] **EXPECTED OUTCOMES**
 
 ### **Before Cleanup:**
 ```
@@ -1235,12 +1235,12 @@ scripts/
 ### **Metrics:**
 - **Files reduced:** 150 → 30 (80% reduction)
 - **Git tracked:** 150 → 30 (80% reduction)
-- **Repository clarity:** 📈 Significantly improved
+- **Repository clarity:** [GRAPH] Significantly improved
 - **Developer confusion:** 📉 Eliminated
 
 ---
 
-## 🚀 **QUICK START COMMANDS**
+## [LAUNCH] **QUICK START COMMANDS**
 
 Copy-paste these to execute all cleanup tasks:
 
@@ -1277,7 +1277,7 @@ git rm --cached scripts/**/*.d.ts.map 2>$null
 npm run build
 npm test
 
-Write-Host "✅ Cleanup complete! Review changes and commit." -ForegroundColor Green
+Write-Host "[DONE] Cleanup complete! Review changes and commit." -ForegroundColor Green
 ```
 
 ---
@@ -1291,7 +1291,7 @@ Write-Host "✅ Cleanup complete! Review changes and commit." -ForegroundColor G
 ---
 
 **Next Steps:**
-1. ✅ All 15 chunks consolidated
-2. ❌ **URGENT:** Execute Week 4 cleanup tasks
-3. ⚠️ Verify all tests pass after cleanup
-4. ✅ Update documentation (this file updated)
+1. [DONE] All 15 chunks consolidated
+2. [FAIL] **URGENT:** Execute Week 4 cleanup tasks
+3. [WARNING] Verify all tests pass after cleanup
+4. [DONE] Update documentation (this file updated)

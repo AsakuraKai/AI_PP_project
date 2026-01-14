@@ -1,4 +1,4 @@
-# Phase 4: Testing & Validation - Complete Guide
+﻿# Phase 4: Testing & Validation - Complete Guide
 
 **Status:** 70% Complete (7/10 tests)  
 **Duration:** January 2-8, 2026  
@@ -7,7 +7,7 @@
 
 ---
 
-## 📋 Table of Contents
+## [CLIPBOARD] Table of Contents
 
 1. [Executive Summary](#executive-summary)
 2. [Test Matrix (10 Scenarios)](#test-matrix-10-scenarios)
@@ -19,7 +19,7 @@
 
 ---
 
-## 🎯 Executive Summary
+## [TARGET] Executive Summary
 
 Phase 4 validates RCA Agent's real-world effectiveness through 10 diverse Android error scenarios. After completing chat UI (Phase 2-3), we now test whether the system achieves 85%+ usability across different error types and complexity levels.
 
@@ -27,16 +27,16 @@ Phase 4 validates RCA Agent's real-world effectiveness through 10 diverse Androi
 - Tests Completed: 7/10 (70%)
 - Tests Passed: 2/7 (29%)
 - Average Usability: 67.4% (84% of 80% target)
-- Average Latency: 7,021ms (✅ <15s)
+- Average Latency: 7,021ms ([DONE] <15s)
 - Improvement Range: -3% to +45%
 
 **Key Finding:** Agent excels at gradle-dependency errors (85%) but struggles with other error types due to missing few-shot examples.
 
 ---
 
-## 🧪 Test Matrix (10 Scenarios)
+## [TEST] Test Matrix (10 Scenarios)
 
-### ✅ Test 1: AGP Version Conflict
+### [DONE] Test 1: AGP Version Conflict
 **Status:** PASS | **Usability:** 85% | **Duration:** 8,275ms
 
 **Error Type:** gradle-dependency  
@@ -50,16 +50,16 @@ Could not find com.android.tools.build:gradle:8.10.0
 
 **Root Cause:** AGP 8.10.0 doesn't exist (version skips)
 
-**Baseline → Result:** 40% → 85% (+45% ✨)
+**Baseline → Result:** 40% → 85% (+45% [SPARKLE])
 
 **Strengths:**
-- ✅ Correctly identified exact file and line number
-- ✅ Suggested specific version (8.7.3)
-- ✅ Provided before/after code snippets
-- ✅ High confidence (0.95)
+- [DONE] Correctly identified exact file and line number
+- [DONE] Suggested specific version (8.7.3)
+- [DONE] Provided before/after code snippets
+- [DONE] High confidence (0.95)
 
 **Weaknesses:**
-- ⚠️ Could not generate automated fix (file not found)
+- [WARNING] Could not generate automated fix (file not found)
 
 **Implementation Files:**
 - `scripts/chunk7-test1-agp-retest.ts`
@@ -67,7 +67,7 @@ Could not find com.android.tools.build:gradle:8.10.0
 
 ---
 
-### ❌ Test 2: Kotlin lateinit NPE
+### [FAIL] Test 2: Kotlin lateinit NPE
 **Status:** FAIL | **Usability:** 56% | **Duration:** 4,121ms
 
 **Error Type:** kotlin-npe  
@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity() {
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.fetchData() // ❌ Crash: not initialized
+        viewModel.fetchData() // [FAIL] Crash: not initialized
     }
 }
 ```
@@ -93,14 +93,14 @@ lateinit property viewModel has not been initialized
 ```
 
 **Strengths:**
-- ✅ Identified the problem (accessing before initialization)
-- ✅ Provided code examples
+- [DONE] Identified the problem (accessing before initialization)
+- [DONE] Provided code examples
 
 **Weaknesses:**
-- ❌ No few-shot examples for kotlin-npe
-- ❌ Generic advice (not specific to error context)
-- ⚠️ Lower confidence (0.7)
-- ❌ Solution quality only 56%
+- [FAIL] No few-shot examples for kotlin-npe
+- [FAIL] Generic advice (not specific to error context)
+- [WARNING] Lower confidence (0.7)
+- [FAIL] Solution quality only 56%
 
 **Root Cause of Failure:** Missing few-shot examples for Kotlin NPE scenarios
 
@@ -109,13 +109,13 @@ lateinit property viewModel has not been initialized
 override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-    viewModel.fetchData() // ✅ Now safe
+    viewModel.fetchData() // [DONE] Now safe
 }
 ```
 
 ---
 
-### ❌ Test 3: Compose API Breakage
+### [FAIL] Test 3: Compose API Breakage
 **Status:** FAIL | **Usability:** 68% | **Duration:** 12,321ms (3 attempts)
 
 **Error Type:** compose-deprecation  
@@ -126,7 +126,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
 ```kotlin
 @Composable
 fun HomeScreen() {
-    // ❌ rememberCoroutineScope() moved in Compose 1.6.0
+    // [FAIL] rememberCoroutineScope() moved in Compose 1.6.0
     val scope = androidx.compose.runtime.rememberCoroutineScope()
 }
 ```
@@ -137,14 +137,14 @@ Unresolved reference: rememberCoroutineScope
 ```
 
 **Strengths:**
-- ✅ Eventually generated valid response after retries
-- ✅ Identified file and suggested version (1.6.0)
+- [DONE] Eventually generated valid response after retries
+- [DONE] Identified file and suggested version (1.6.0)
 
 **Weaknesses:**
-- ❌ No few-shot examples for compose-deprecation
-- ❌ Failed twice with invalid JSON before succeeding
-- ❌ Missing code examples (20% score)
-- ⚠️ Took longest time due to retries
+- [FAIL] No few-shot examples for compose-deprecation
+- [FAIL] Failed twice with invalid JSON before succeeding
+- [FAIL] Missing code examples (20% score)
+- [WARNING] Took longest time due to retries
 
 **Root Cause of Failure:** No compose-specific examples → struggled with JSON formatting
 
@@ -154,13 +154,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 
 @Composable
 fun HomeScreen() {
-    val scope = rememberCoroutineScope() // ✅ Fixed
+    val scope = rememberCoroutineScope() // [DONE] Fixed
 }
 ```
 
 ---
 
-### ❌ Test 4: XML Layout Inflation
+### [FAIL] Test 4: XML Layout Inflation
 **Status:** FAIL | **Usability:** 54% | **Duration:** 12,657ms (2 regenerations)
 
 **Error Type:** xml-layout  
@@ -184,13 +184,13 @@ Caused by: java.lang.ClassNotFoundException
 ```
 
 **Strengths:**
-- ✅ Identified the problematic attribute (android:textFontWeight)
+- [DONE] Identified the problematic attribute (android:textFontWeight)
 
 **Weaknesses:**
-- ❌ No few-shot examples for xml-layout
-- ❌ Generic advice without specific fix
-- ❌ Required regeneration (didn't meet quality threshold initially)
-- ❌ Only 30% file specificity, 20% code examples
+- [FAIL] No few-shot examples for xml-layout
+- [FAIL] Generic advice without specific fix
+- [FAIL] Required regeneration (didn't meet quality threshold initially)
+- [FAIL] Only 30% file specificity, 20% code examples
 
 **Root Cause of Failure:** Missing XML/Android-specific examples
 
@@ -204,7 +204,7 @@ dependencies {
 
 ---
 
-### ✅ Test 5: Multi-Module Dependency Conflict
+### [DONE] Test 5: Multi-Module Dependency Conflict
 **Status:** PASS | **Usability:** 71% | **Duration:** 6,563ms
 
 **Error Type:** gradle-dependency  
@@ -219,13 +219,13 @@ Duplicate class kotlin.collections.CollectionsKt found in modules:
 ```
 
 **Strengths:**
-- ✅ Correctly identified conflicting versions (2.6.0 vs 2.5.0)
-- ✅ Provided specific file and line number
-- ✅ Included before/after code snippets
-- ✅ High confidence (1.0)
+- [DONE] Correctly identified conflicting versions (2.6.0 vs 2.5.0)
+- [DONE] Provided specific file and line number
+- [DONE] Included before/after code snippets
+- [DONE] High confidence (1.0)
 
 **Weaknesses:**
-- ⚠️ Slightly exceeds target (71% vs 70% - marginal pass)
+- [WARNING] Slightly exceeds target (71% vs 70% - marginal pass)
 
 **Expected Fix:**
 ```kotlin
@@ -241,7 +241,7 @@ allprojects {
 
 ---
 
-### ❌ Test 6: Manifest Permission Missing
+### [FAIL] Test 6: Manifest Permission Missing
 **Status:** FAIL | **Usability:** 62% (Baseline: 65%) | **Duration:** 4,631ms
 
 **Error Type:** manifest-permission  
@@ -260,13 +260,13 @@ java.lang.SecurityException: Permission denied (missing INTERNET permission?)
 ```
 
 **Strengths:**
-- ✅ Identified the missing permission (CAMERA)
-- ✅ Provided XML code example
+- [DONE] Identified the missing permission (CAMERA)
+- [DONE] Provided XML code example
 
 **Weaknesses:**
-- ❌ No few-shot examples for manifest-permission
-- ❌ Only 30% file specificity (didn't specify exact line numbers)
-- ❌ Generic advice
+- [FAIL] No few-shot examples for manifest-permission
+- [FAIL] Only 30% file specificity (didn't specify exact line numbers)
+- [FAIL] Generic advice
 - **REGRESSION:** Performed worse than baseline (-3%)
 
 **Root Cause of Failure:** No manifest-specific examples
@@ -279,7 +279,7 @@ java.lang.SecurityException: Permission denied (missing INTERNET permission?)
 
 ---
 
-### ❌ Test 7: Gradle Network Failure
+### [FAIL] Test 7: Gradle Network Failure
 **Status:** FAIL | **Usability:** 68% (Baseline: 60%) | **Duration:** 4,649ms
 
 **Error Type:** gradle-network  
@@ -290,7 +290,7 @@ java.lang.SecurityException: Permission denied (missing INTERNET permission?)
 ```kotlin
 // settings.gradle.kts using deprecated JCenter
 repositories {
-    jcenter() // ❌ Shut down in 2021
+    jcenter() // [FAIL] Shut down in 2021
 }
 ```
 
@@ -301,13 +301,13 @@ Received status code 403: Forbidden
 ```
 
 **Strengths:**
-- ✅ Modest improvement over baseline (+8%)
-- ✅ Identified settings.gradle.kts as the issue
+- [DONE] Modest improvement over baseline (+8%)
+- [DONE] Identified settings.gradle.kts as the issue
 
 **Weaknesses:**
-- ❌ No few-shot examples for gradle-network
-- ❌ Generic troubleshooting steps
-- ❌ Only 20% version specificity, 20% code examples
+- [FAIL] No few-shot examples for gradle-network
+- [FAIL] Generic troubleshooting steps
+- [FAIL] Only 20% version specificity, 20% code examples
 
 **Root Cause of Failure:** Missing network/configuration error examples
 
@@ -315,13 +315,13 @@ Received status code 403: Forbidden
 ```kotlin
 // settings.gradle.kts
 repositories {
-    mavenCentral() // ✅ Replace JCenter
+    mavenCentral() // [DONE] Replace JCenter
 }
 ```
 
 ---
 
-### ⏸️ Test 8: Build Cache Corruption
+### [PAUSE]️ Test 8: Build Cache Corruption
 **Status:** NOT COMPLETED  
 **Error Type:** gradle-cache  
 **Complexity:** Low
@@ -342,7 +342,7 @@ rm -rf ~/.gradle/caches/
 
 ---
 
-### ⏸️ Test 9: ProGuard Rule Missing
+### [PAUSE]️ Test 9: ProGuard Rule Missing
 **Status:** NOT COMPLETED  
 **Error Type:** proguard-rules  
 **Complexity:** High
@@ -361,7 +361,7 @@ java.lang.ClassNotFoundException: com.example.model.User
 
 ---
 
-### ⏸️ Test 10: Navigation Argument Mismatch
+### [PAUSE]️ Test 10: Navigation Argument Mismatch
 **Status:** NOT COMPLETED  
 **Error Type:** navigation-component  
 **Complexity:** Medium
@@ -382,19 +382,19 @@ Expected String but was Int
 
 ---
 
-## 📊 Test Results Summary
+## [CHART] Test Results Summary
 
 ### Usability Scores
 
 | Test # | Name | Usability | Target | Δ | Pass/Fail |
 |--------|------|-----------|--------|---|-----------|
-| 1 | AGP Version Conflict | 85% | 80% | +5% | ✅ PASS |
-| 2 | Kotlin lateinit NPE | 56% | 75% | -19% | ❌ FAIL |
-| 3 | Compose API Breakage | 68% | 75% | -7% | ❌ FAIL |
-| 4 | XML Layout Inflation | 54% | 70% | -16% | ❌ FAIL |
-| 5 | Multi-Module Dependency | 71% | 70% | +1% | ✅ PASS |
-| 6 | Manifest Permission | 62% | 80% | -18% | ❌ FAIL |
-| 7 | Gradle Network Failure | 68% | 75% | -7% | ❌ FAIL |
+| 1 | AGP Version Conflict | 85% | 80% | +5% | [DONE] PASS |
+| 2 | Kotlin lateinit NPE | 56% | 75% | -19% | [FAIL] FAIL |
+| 3 | Compose API Breakage | 68% | 75% | -7% | [FAIL] FAIL |
+| 4 | XML Layout Inflation | 54% | 70% | -16% | [FAIL] FAIL |
+| 5 | Multi-Module Dependency | 71% | 70% | +1% | [DONE] PASS |
+| 6 | Manifest Permission | 62% | 80% | -18% | [FAIL] FAIL |
+| 7 | Gradle Network Failure | 68% | 75% | -7% | [FAIL] FAIL |
 | **Average (7 tests)** | **66.4%** | **75%** | **-8.6%** | **29% pass rate** |
 
 ### Performance Breakdown
@@ -407,7 +407,7 @@ Expected String but was Int
 | **Code Examples** | 80-100% | 20% | 54% |
 | **Version Suggestions** | 90-100% | 20% | 62% |
 
-### Latency Performance ✅
+### Latency Performance [DONE]
 
 All tests completed well under the 15-second target:
 - **Fastest:** 4,121ms (Test 2)
@@ -416,7 +416,7 @@ All tests completed well under the 15-second target:
 
 ---
 
-## 🔴 Failure Analysis
+## [RED] Failure Analysis
 
 ### Top 3 Failure Modes
 
@@ -437,7 +437,7 @@ All tests completed well under the 15-second target:
 - Complete before/after code snippets
 - Version-specific guidance
 
-**Priority:** 🔴 CRITICAL
+**Priority:** [RED] CRITICAL
 
 ---
 
@@ -452,8 +452,8 @@ All tests completed well under the 15-second target:
 - File-level targeting
 
 **Example:**  
-❌ BAD: "Add permission to AndroidManifest.xml"  
-✅ GOOD: "Add `<uses-permission android:name=\"android.permission.CAMERA\" />` to AndroidManifest.xml at line 8"
+[FAIL] BAD: "Add permission to AndroidManifest.xml"  
+[DONE] GOOD: "Add `<uses-permission android:name=\"android.permission.CAMERA\" />` to AndroidManifest.xml at line 8"
 
 **Solution:** Strengthen prompt engineering rules:
 - Enforce mandatory line number references
@@ -461,7 +461,7 @@ All tests completed well under the 15-second target:
 - Demand before/after code diffs
 - Add validation for response specificity
 
-**Priority:** 🟡 HIGH
+**Priority:** [YELLOW] HIGH
 
 ---
 
@@ -480,20 +480,20 @@ All tests completed well under the 15-second target:
 - Use structured output mode if available
 - Implement better error recovery
 
-**Priority:** 🟢 MEDIUM
+**Priority:** [GREEN] MEDIUM
 
 ---
 
-## 🎯 Action Plan
+## [TARGET] Action Plan
 
-### ✅ Completed Today
+### [DONE] Completed Today
 
-1. ✅ Verified Ollama and Chroma are running
-2. ✅ Fixed Phase4TestSuite compilation errors
-3. ✅ Ran 7/10 test cases successfully
-4. ✅ Analyzed results and identified failure patterns
-5. ✅ Created comprehensive test results document
-6. ✅ Identified top 3 failure modes
+1. [DONE] Verified Ollama and Chroma are running
+2. [DONE] Fixed Phase4TestSuite compilation errors
+3. [DONE] Ran 7/10 test cases successfully
+4. [DONE] Analyzed results and identified failure patterns
+5. [DONE] Created comprehensive test results document
+6. [DONE] Identified top 3 failure modes
 
 ---
 
@@ -580,13 +580,13 @@ npm run test:phase4
 
 **Example additions:**
 ```
-❌ ULTRA BAD EXAMPLES (NEVER DO THIS):
+[FAIL] ULTRA BAD EXAMPLES (NEVER DO THIS):
 - "Check the gradle file"
 - "Update the dependency"
 - "Fix the layout"
 - "Add the permission"
 
-✅ EXCELLENT EXAMPLES (ALWAYS DO THIS):
+[DONE] EXCELLENT EXAMPLES (ALWAYS DO THIS):
 - "Update gradle/libs.versions.toml at line 2: change agp = \"8.10.0\" to agp = \"8.7.3\""
 - "Add implementation(\"androidx.compose.material3:material3:1.6.0\") to app/build.gradle.kts at line 45"
 - "Modify app/src/main/res/layout/activity_main.xml at line 12: remove android:textFontWeight attribute"
@@ -650,7 +650,7 @@ npm run test:phase4
 
 ---
 
-## 💻 Implementation Guide
+## [CODE] Implementation Guide
 
 ### Test Framework Structure
 
@@ -684,12 +684,12 @@ class Phase4TestRunner {
     const results: TestResult[] = [];
     
     for (const testCase of testCases) {
-      console.log(`\n📋 Running Test Case ${testCase.id}: ${testCase.name}`);
+      console.log(`\n[CLIPBOARD] Running Test Case ${testCase.id}: ${testCase.name}`);
       const result = await this.runTest(testCase);
       results.push(result);
       
-      console.log(`✅ Usability: ${result.usabilityScore}%`);
-      console.log(`⏱️  Duration: ${result.duration}s`);
+      console.log(`[DONE] Usability: ${result.usabilityScore}%`);
+      console.log(`[TIMER]  Duration: ${result.duration}s`);
     }
     
     return results;
@@ -736,21 +736,21 @@ class Phase4TestRunner {
 
 ```
 tests/real-world/
-├── test-case-1-agp-version/        ✅ Complete
-├── test-case-2-lateinit-npe/       ⏳ To be created
-├── test-case-3-compose-breakage/   ⏳ To be created
-├── test-case-4-xml-inflation/      ⏳ To be created
-├── test-case-5-multi-module/       ⏳ To be created
-├── test-case-6-manifest/           ✅ Complete
-├── test-case-7-gradle-network/     ✅ Complete
-├── test-case-8-build-cache/        ✅ Complete
-├── test-case-9-proguard/           ✅ Complete
-└── test-case-10-navigation/        ✅ Complete
+├── test-case-1-agp-version/        [DONE] Complete
+├── test-case-2-lateinit-npe/       [TIMER] To be created
+├── test-case-3-compose-breakage/   [TIMER] To be created
+├── test-case-4-xml-inflation/      [TIMER] To be created
+├── test-case-5-multi-module/       [TIMER] To be created
+├── test-case-6-manifest/           [DONE] Complete
+├── test-case-7-gradle-network/     [DONE] Complete
+├── test-case-8-build-cache/        [DONE] Complete
+├── test-case-9-proguard/           [DONE] Complete
+└── test-case-10-navigation/        [DONE] Complete
 ```
 
 ---
 
-## 📊 Metrics Framework
+## [CHART] Metrics Framework
 
 ### Usability Calculation Formula
 
@@ -788,7 +788,7 @@ function scoreSolutionSpecificity(analysis: RCAAnalysis): number {
 
 ---
 
-## 🔧 Commands Reference
+## [TOOL] Commands Reference
 
 ```bash
 # Run all Phase 4 tests
@@ -809,7 +809,7 @@ curl http://localhost:8000/api/v1/heartbeat
 
 ---
 
-## 📝 Progress Tracking
+## [NOTE] Progress Tracking
 
 **Phase 4 Completion Status:**
 
@@ -844,17 +844,17 @@ curl http://localhost:8000/api/v1/heartbeat
 
 ---
 
-## 🎯 Success Criteria
+## [TARGET] Success Criteria
 
 **Phase 4 is considered successful if:**
 
-1. ✅ **Usability Target Met:** Average usability ≥85% across 10 test cases
-2. ✅ **Pass Rate:** At least 8/10 tests achieve ≥80% usability
-3. ✅ **No Regressions:** Diagnosis accuracy maintained at 100%
-4. ✅ **Performance:** Maintained <15s response time (currently 7.6s)
-5. ✅ **Test Coverage:** All 10 diverse scenarios tested
-6. ✅ **Documentation:** Complete implementation and test reports
-7. ✅ **Quality:** No critical bugs, comprehensive error handling
+1. [DONE] **Usability Target Met:** Average usability ≥85% across 10 test cases
+2. [DONE] **Pass Rate:** At least 8/10 tests achieve ≥80% usability
+3. [DONE] **No Regressions:** Diagnosis accuracy maintained at 100%
+4. [DONE] **Performance:** Maintained <15s response time (currently 7.6s)
+5. [DONE] **Test Coverage:** All 10 diverse scenarios tested
+6. [DONE] **Documentation:** Complete implementation and test reports
+7. [DONE] **Quality:** No critical bugs, comprehensive error handling
 
 ---
 
@@ -865,4 +865,4 @@ curl http://localhost:8000/api/v1/heartbeat
 
 ---
 
-*Phase 4 validates whether RCA Agent achieves production-ready quality through rigorous real-world testing. Current results show promise (67.4%) but require targeted improvements to hit 85%+ target!* 🚀
+*Phase 4 validates whether RCA Agent achieves production-ready quality through rigorous real-world testing. Current results show promise (67.4%) but require targeted improvements to hit 85%+ target!* [LAUNCH]

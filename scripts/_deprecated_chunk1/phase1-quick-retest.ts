@@ -27,7 +27,7 @@ const TESTS = [
 const PHASE_1_TARGET = 65; // Overall target
 const EXPECTED_AVERAGE = 67.8; // Achieved in Phase 1
 
-console.log('🚀 PHASE 1 QUICK RE-TEST\n');
+console.log('[LAUNCH] PHASE 1 QUICK RE-TEST\n');
 console.log('================================================================================\n');
 console.log('Running 5 core validation tests to confirm Phase 1 stability');
 console.log(`Expected: ${EXPECTED_AVERAGE}% average (all tests 66-72%)\n`);
@@ -47,7 +47,7 @@ for (const test of TESTS) {
     const scriptPath = path.join(__dirname, test.script);
     
     if (!fs.existsSync(scriptPath)) {
-      console.error(`❌ Script not found: ${test.script}`);
+      console.error(`[X] Script not found: ${test.script}`);
       results.push({
         testNumber: test.num,
         testName: test.name,
@@ -74,7 +74,7 @@ for (const test of TESTS) {
     const latencyMatch = output.match(/Latency:\s+(\d+(?:\.\d+)?)(?:ms|s)/);
 
     if (!usabilityMatch) {
-      console.error('⚠️ Could not parse usability from output');
+      console.error('[WARN] Could not parse usability from output');
       console.log('Last 500 chars of output:', output.slice(-500));
       results.push({
         testNumber: test.num,
@@ -90,7 +90,7 @@ for (const test of TESTS) {
     const latency = latencyMatch ? parseFloat(latencyMatch[1]) : duration;
     const passed = usability >= test.target - 5; // Allow 5% margin
 
-    console.log(`✅ Test ${test.num} completed: ${usability}% usability`);
+    console.log(`[OK] Test ${test.num} completed: ${usability}% usability`);
     console.log(`   Target: ${test.target}% → Actual: ${usability}% (${passed ? 'PASSED' : 'FAILED'})`);
     console.log(`   Latency: ${latency.toFixed(1)}s`);
 
@@ -107,7 +107,7 @@ for (const test of TESTS) {
     if (passed) passedTests++;
 
   } catch (error: any) {
-    console.error(`❌ Test ${test.num} failed with error:`, error.message);
+    console.error(`[X] Test ${test.num} failed with error:`, error.message);
     results.push({
       testNumber: test.num,
       testName: test.name,
@@ -124,13 +124,13 @@ const avgLatency = totalLatency / TESTS.length;
 const passRate = (passedTests / TESTS.length) * 100;
 
 console.log('\n\n================================================================================');
-console.log('📊 PHASE 1 RE-TEST RESULTS');
+console.log('[STATS] PHASE 1 RE-TEST RESULTS');
 console.log('================================================================================\n');
 
 console.log('Individual Test Results:');
 console.log('--------------------------------------------------------------------------------');
 results.forEach((result) => {
-  const status = result.passed ? '✅ PASS' : '❌ FAIL';
+  const status = result.passed ? '[OK] PASS' : '[X] FAIL';
   console.log(
     `Test ${result.testNumber}: ${result.testName.padEnd(25)} ${result.usability.toFixed(1)}%  ${status}`
   );
@@ -154,19 +154,19 @@ console.log('PHASE 1 STATUS');
 console.log('================================================================================\n');
 
 if (avgUsability >= PHASE_1_TARGET && passedTests >= 4) {
-  console.log('✅ PHASE 1 STABLE - Ready to proceed to Phase 2\n');
+  console.log('[OK] PHASE 1 STABLE - Ready to proceed to Phase 2\n');
   console.log(`   Average usability: ${avgUsability.toFixed(1)}% (target: ${PHASE_1_TARGET}%)`);
   console.log(`   Tests passing: ${passedTests}/5 (80%+)`);
   console.log(`   Performance: ${avgLatency.toFixed(1)}s average\n`);
-  console.log('🚀 You can now start Phase 2 with confidence!');
+  console.log('[LAUNCH] You can now start Phase 2 with confidence!');
 } else if (avgUsability >= PHASE_1_TARGET - 5) {
-  console.log('⚠️ PHASE 1 MOSTLY STABLE - Minor issues detected\n');
+  console.log('[WARN] PHASE 1 MOSTLY STABLE - Minor issues detected\n');
   console.log(`   Average usability: ${avgUsability.toFixed(1)}% (target: ${PHASE_1_TARGET}%)`);
   console.log(`   Tests passing: ${passedTests}/5`);
   console.log(`   Gap: ${(PHASE_1_TARGET - avgUsability).toFixed(1)}%\n`);
   console.log('Recommendation: Review failed tests before Phase 2');
 } else {
-  console.log('❌ PHASE 1 REGRESSION DETECTED - Do not proceed to Phase 2\n');
+  console.log('[X] PHASE 1 REGRESSION DETECTED - Do not proceed to Phase 2\n');
   console.log(`   Average usability: ${avgUsability.toFixed(1)}% (target: ${PHASE_1_TARGET}%)`);
   console.log(`   Tests passing: ${passedTests}/5`);
   console.log(`   Gap: ${(PHASE_1_TARGET - avgUsability).toFixed(1)}%\n`);

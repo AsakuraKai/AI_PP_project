@@ -1,18 +1,18 @@
-# Phase 4: Custom Modelfile & Advanced Features
+﻿# Phase 4: Custom Modelfile & Advanced Features
 
-**Status:** ✅ COMPLETED  
+**Status:** [DONE] COMPLETED  
 **Date:** December 31, 2025  
 **Implementation:** Optional custom Ollama model with baked-in system rules
 
 ---
 
-## 📋 Overview
+## [CLIPBOARD] Overview
 
 Phase 4 introduces a **custom Ollama modelfile** that bakes strict JSON formatting rules and Android/Kotlin-specific system prompts directly into the model configuration. This reduces prompt overhead, improves output consistency, and provides better control over model behavior for the RCA Agent.
 
 ---
 
-## 🎯 Goals
+## [TARGET] Goals
 
 1. **Reduce Prompt Overhead**: System rules in modelfile → shorter prompts
 2. **Improve Consistency**: Baked-in rules → more reliable JSON output
@@ -22,7 +22,7 @@ Phase 4 introduces a **custom Ollama modelfile** that bakes strict JSON formatti
 
 ---
 
-## 🏗️ Architecture
+## [BUILD] Architecture
 
 ### Custom Modelfile Design
 
@@ -104,7 +104,7 @@ PARAMETER stop "</think>"
 
 ---
 
-## 🔧 Implementation Details
+## [TOOL] Implementation Details
 
 ### 1. Modelfile Creation
 
@@ -136,17 +136,17 @@ constructor(config?: OllamaConfig) {
   this.model = envModel || config?.model || 'hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest';
   
   if (envModel) {
-    console.log(`🔧 Using custom model from environment: ${envModel}`);
+    console.log(`[TOOL] Using custom model from environment: ${envModel}`);
   }
 }
 ```
 
 **Key Design Decisions:**
-- ✅ Environment variables take precedence over config
-- ✅ Falls back to default if neither is set
-- ✅ Supports both `AI_PP_OLLAMA_MODEL` and `OLLAMA_MODEL`
-- ✅ Logs when custom model is used (for debugging)
-- ✅ No breaking changes to existing code
+- [DONE] Environment variables take precedence over config
+- [DONE] Falls back to default if neither is set
+- [DONE] Supports both `AI_PP_OLLAMA_MODEL` and `OLLAMA_MODEL`
+- [DONE] Logs when custom model is used (for debugging)
+- [DONE] No breaking changes to existing code
 
 ### 3. Model Installation Process
 
@@ -174,7 +174,7 @@ ollama run android-debug-optimized
 
 ---
 
-## 📊 Performance Characteristics
+## [CHART] Performance Characteristics
 
 ### Prompt Reduction
 
@@ -203,7 +203,7 @@ Custom modelfile reduces variance in:
 
 ---
 
-## 🚀 Usage Guide
+## [LAUNCH] Usage Guide
 
 ### Installation Steps
 
@@ -276,12 +276,12 @@ console.log('Using model:', config.model);
 
 Or look for console output:
 ```
-🔧 Using custom model from environment: android-debug-optimized:latest
+[TOOL] Using custom model from environment: android-debug-optimized:latest
 ```
 
 ---
 
-## 🔍 Modelfile Parameter Reference
+## [SEARCH] Modelfile Parameter Reference
 
 ### SYSTEM Section
 
@@ -333,7 +333,7 @@ Or look for console output:
 
 ---
 
-## 🧪 Testing Strategy
+## [TEST] Testing Strategy
 
 ### Unit Tests
 
@@ -350,7 +350,7 @@ export AI_PP_OLLAMA_MODEL=android-debug-optimized:latest
 npm test -- tests/integration/
 
 # Verify logs show custom model
-# Expected: "🔧 Using custom model from environment: android-debug-optimized:latest"
+# Expected: "[TOOL] Using custom model from environment: android-debug-optimized:latest"
 ```
 
 **Test 2: Baseline Comparison**
@@ -394,7 +394,7 @@ npm run test:accuracy -- --verbose
 
 ---
 
-## 📈 Monitoring & Metrics
+## [GRAPH] Monitoring & Metrics
 
 ### Model Usage Logging
 
@@ -402,14 +402,14 @@ OllamaClient logs when custom model is used:
 
 ```typescript
 if (envModel) {
-  console.log(`🔧 Using custom model from environment: ${envModel}`);
+  console.log(`[TOOL] Using custom model from environment: ${envModel}`);
 }
 ```
 
 **Log Output Examples:**
 
 ```
-🔧 Using custom model from environment: android-debug-optimized:latest
+[TOOL] Using custom model from environment: android-debug-optimized:latest
 ✓ Connected to Ollama (model: android-debug-optimized:latest)
 ```
 
@@ -444,7 +444,7 @@ node scripts/compare-accuracy.js default-results.json custom-results.json
 
 ---
 
-## 🔄 Future Enhancements
+## [REFRESH] Future Enhancements
 
 ### Domain-Specific Variants
 
@@ -498,7 +498,7 @@ Periodically fine-tune modelfile based on OutputValidator feedback:
 
 ---
 
-## 📝 Code Files Modified
+## [NOTE] Code Files Modified
 
 1. **`src/llm/OllamaClient.ts`**
    - Added environment variable support for custom model selection
@@ -512,7 +512,7 @@ Periodically fine-tune modelfile based on OutputValidator feedback:
 
 ---
 
-## ✅ Acceptance Criteria
+## [DONE] Acceptance Criteria
 
 - [x] Custom modelfile created with baked-in system prompt
 - [x] Environment variable support in OllamaClient
@@ -526,20 +526,20 @@ Periodically fine-tune modelfile based on OutputValidator feedback:
 
 ---
 
-## 📊 Validation Results
+## [CHART] Validation Results
 
 ### Model Installation
-- **Status:** ✅ Verified
+- **Status:** [DONE] Verified
 - **Command:** `ollama create android-debug-optimized -f android-debug-optimized.modelfile`
 - **Output:** Model created successfully
 
 ### Environment Variable Support
-- **Status:** ✅ Tested
+- **Status:** [DONE] Tested
 - **Platforms:** Windows (PowerShell, CMD), Linux (bash)
 - **Fallback:** Works correctly when not set
 
 ### Backward Compatibility
-- **Status:** ✅ Confirmed
+- **Status:** [DONE] Confirmed
 - **Default behavior:** Unchanged (uses base model)
 - **Test suite:** 21/21 passing with and without custom model
 
@@ -550,7 +550,7 @@ Periodically fine-tune modelfile based on OutputValidator feedback:
 
 ---
 
-## 🎓 Key Learnings
+## [LEARN] Key Learnings
 
 1. **Baking System Prompt is Powerful**: ~80% reduction in prompt overhead
 2. **Stop Tokens Are Critical**: Prevents DeepSeek-R1 from outputting reasoning tags
@@ -560,7 +560,7 @@ Periodically fine-tune modelfile based on OutputValidator feedback:
 
 ---
 
-## 🔗 Related Documentation
+## [LINK] Related Documentation
 
 - **Phase 1:** Output validation and quality scoring
 - **Phase 2:** Retry strategies and progressive temperature
@@ -570,7 +570,7 @@ Periodically fine-tune modelfile based on OutputValidator feedback:
 
 ---
 
-## 📚 References
+## [DOCS] References
 
 - **Ollama Modelfile Syntax:** https://github.com/ollama/ollama/blob/main/docs/modelfile.md
 - **DeepSeek-R1 Model:** https://huggingface.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF
@@ -579,7 +579,7 @@ Periodically fine-tune modelfile based on OutputValidator feedback:
 
 ---
 
-## 🎯 Production Checklist
+## [TARGET] Production Checklist
 
 Before deploying custom model to production:
 
@@ -594,7 +594,7 @@ Before deploying custom model to production:
 
 ---
 
-## 🐛 Troubleshooting
+## [BUG] Troubleshooting
 
 ### Issue: Model not found
 

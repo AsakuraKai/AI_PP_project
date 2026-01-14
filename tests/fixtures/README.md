@@ -3,7 +3,7 @@
 **Last Updated:** January 3, 2026  
 **Purpose:** Consolidated test fixtures for RCA Agent testing
 
-## 📁 Directory Structure
+## [FOLDER] Directory Structure
 
 All test fixtures follow a standardized naming convention: `test-N-description/`
 
@@ -25,7 +25,7 @@ All test fixtures follow a standardized naming convention: `test-N-description/`
 - `test-4-xml-inflation/`: Custom view class name typo (`CustonButton` vs `CustomButton`)
 - `test4-xml-layout/`: Invalid XML attribute (`android:textFontWeight` not available)
 
-## 📊 Test Datasets
+## [STATS] Test Datasets
 
 Three TypeScript datasets provide comprehensive test coverage:
 
@@ -51,7 +51,7 @@ Three TypeScript datasets provide comprehensive test coverage:
   - Edge Cases: Extreme failure modes
 - Categories: Kotlin (6), Gradle (5), Compose (8), XML (7), Manifest (5), Multi-layer (5+)
 
-### 4. `unified-test-dataset.ts` - Unified Interface ✨ NEW
+### 4. `unified-test-dataset.ts` - Unified Interface [FEATURE] NEW
 - **70+ total test cases** from all datasets
 - Provides unified search and filtering across all datasets
 - Backwards compatible with existing imports
@@ -70,16 +70,16 @@ const test = findTestById('TC001');
 const hardTests = getTestsByDifficultyAcrossAll('hard');
 ```
 
-## 🔧 Consolidated Changes (Jan 3, 2026)
+## [TOOL] Consolidated Changes (Jan 3, 2026)
 
 ### Removed Duplicates:
-1. ❌ `test2-kotlin-lateinit/` - Redundant with `test-2-lateinit-npe/` (had less content)
-2. ❌ `test3-compose-breakage/` - Empty duplicate of `test-3-compose-breakage/`
-3. ❌ `test4-xml-layout/` - Empty directory (content in `test-4-xml-inflation/`)
+1. [X] `test2-kotlin-lateinit/` - Redundant with `test-2-lateinit-npe/` (had less content)
+2. [X] `test3-compose-breakage/` - Empty duplicate of `test-3-compose-breakage/`
+3. [X] `test4-xml-layout/` - Empty directory (content in `test-4-xml-inflation/`)
 
 ### Kept Distinct:
-- ✅ `test-4-xml-inflation/` and original `test4-xml-layout/activity_main.xml` test **different errors**
-- ✅ All hyphenated directories (`test-N-description/`) are primary fixtures
+- [OK] `test-4-xml-inflation/` and original `test4-xml-layout/activity_main.xml` test **different errors**
+- [OK] All hyphenated directories (`test-N-description/`) are primary fixtures
 
 ### Benefits:
 - **Eliminated:** 3 duplicate/empty directories
@@ -87,7 +87,7 @@ const hardTests = getTestsByDifficultyAcrossAll('hard');
 - **Unified:** Single entry point for all test datasets
 - **Improved:** Documentation clarity
 
-## 🎯 Usage Guidelines
+## [TARGET] Usage Guidelines
 
 ### For Test Scripts:
 ```typescript
@@ -107,7 +107,7 @@ import { getAllTestCases } from './fixtures/unified-test-dataset';
 - Provide error.log with actual error output
 - Include minimal reproducible code
 
-## 📈 Statistics
+## [UP] Statistics
 
 ```
 Total Test Cases: 70+

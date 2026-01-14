@@ -57,11 +57,11 @@ Could not resolve all files for configuration ':classpath'.
   try {
     const parsed = parser.parse(errorLog, '/path/to/project');
     if (!parsed) {
-      console.error('❌ Failed to parse error');
+      console.error('[X] Failed to parse error');
       return;
     }
     
-    console.log('📝 Error parsed successfully\n');
+    console.log('[NOTE] Error parsed successfully\n');
     console.log('Starting analysis...\n');
     
     const result = await agent.analyze(parsed);
@@ -97,10 +97,10 @@ Could not resolve all files for configuration ':classpath'.
     const hasCodeExamples = /before:|after:|```/.test(result.rootCause + result.fixGuidelines.join(' '));
     const hasVerification = /gradlew|gradle|build|test|verify/i.test(result.rootCause + result.fixGuidelines.join(' '));
     
-    console.log(`- File paths with line numbers: ${hasLineNumbers ? '✅ YES' : '❌ NO'}`);
-    console.log(`- Specific version numbers: ${hasSpecificVersions ? '✅ YES' : '❌ NO'}`);
-    console.log(`- Code examples (before/after): ${hasCodeExamples ? '✅ YES' : '❌ NO'}`);
-    console.log(`- Verification steps: ${hasVerification ? '✅ YES' : '❌ NO'}`);
+    console.log(`- File paths with line numbers: ${hasLineNumbers ? '[OK] YES' : '[X] NO'}`);
+    console.log(`- Specific version numbers: ${hasSpecificVersions ? '[OK] YES' : '[X] NO'}`);
+    console.log(`- Code examples (before/after): ${hasCodeExamples ? '[OK] YES' : '[X] NO'}`);
+    console.log(`- Verification steps: ${hasVerification ? '[OK] YES' : '[X] NO'}`);
     console.log();
     
     // Calculate approximate quality score
@@ -114,15 +114,15 @@ Could not resolve all files for configuration ':classpath'.
     console.log();
     
     if (qualityScore >= 70) {
-      console.log('✅ Quality target achieved! Phase 1 strengthening working.');
+      console.log('[OK] Quality target achieved! Phase 1 strengthening working.');
     } else if (qualityScore >= 55) {
-      console.log('⚠️ Quality acceptable (55-70%). May need fine-tuning.');
+      console.log('[WARN] Quality acceptable (55-70%). May need fine-tuning.');
     } else {
-      console.log('❌ Quality below target. Review validation logic.');
+      console.log('[X] Quality below target. Review validation logic.');
     }
     
   } catch (error) {
-    console.error('❌ Test failed:', error);
+    console.error('[X] Test failed:', error);
     console.error('Stack:', error instanceof Error ? error.stack : '');
   }
   

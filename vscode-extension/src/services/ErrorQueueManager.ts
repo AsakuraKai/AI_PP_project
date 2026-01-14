@@ -99,6 +99,8 @@ export class ErrorQueueManager {
     const diagnostics = vscode.languages.getDiagnostics(uri);
     const errors = diagnostics.filter(d => d.severity === vscode.DiagnosticSeverity.Error);
 
+    console.log(`[ErrorQueueManager] Processing ${uri.fsPath}: found ${errors.length} errors`);
+
     for (const diagnostic of errors) {
       const errorItem: ErrorItem = {
         id: this._generateId(uri, diagnostic),
@@ -118,6 +120,7 @@ export class ErrorQueueManager {
       };
 
       this.addError(errorItem);
+      console.log(`[ErrorQueueManager] Added error: ${errorItem.message.substring(0, 50)}...`);
     }
   }
 
@@ -351,7 +354,22 @@ export class ErrorQueueManager {
     }
 
     try {
-      const document = await vscode.workspace.openTextDocument(error.filePath);
+      console.log(`[ErrorQueueManager] Opening error location: ${error.filePath}`);
+
+      // Validate and resolve file path
+      const resolvedPath = await this.resolveFilePath(error.filePath);
+
+      if (!resolvedPath) {
+        console.log(`[ErrorQueueManager] File not found: ${error.filePath}`);
+        vscode.window.showWarningMessage(
+          `File not found: ${error.filePath}`,
+          'Dismiss'
+        );
+        return;
+      }
+
+      console.log(`[ErrorQueueManager] Resolved path: ${resolvedPath.toString()}`);
+      const document = await vscode.workspace.openTextDocument(resolvedPath);
       const editor = await vscode.window.showTextDocument(document);
 
       // Move cursor to error location
@@ -361,9 +379,66 @@ export class ErrorQueueManager {
         new vscode.Range(position, position),
         vscode.TextEditorRevealType.InCenter
       );
-    } catch (err) {
-      vscode.window.showErrorMessage(`Could not open file: ${error.filePath}`);
+    } catch (err: any) {
+      console.error(`[ErrorQueueManager] Error opening file:`, err);
+      vscode.window.showErrorMessage(
+        `Could not open file: ${error.filePath}\nError: ${err.message}`,
+        'Dismiss'
+      );
     }
+  }
+
+  /**
+   * Resolve file path - try to find the file in workspace
+   */
+  private async resolveFilePath(filePath: string): Promise<vscode.Uri | null> {
+    console.log(`[ErrorQueueManager] Resolving file path: ${filePath}`);
+
+    // Try as-is first (absolute path)
+    try {
+      const uri = vscode.Uri.file(filePath);
+      console.log(`[ErrorQueueManager] Trying URI: ${uri.toString()}`);
+      await vscode.workspace.fs.stat(uri);
+      console.log(`[ErrorQueueManager] File exists at: ${uri.toString()}`);
+      return uri;
+    } catch (err: any) {
+      console.log(`[ErrorQueueManager] File not found at absolute path: ${err.message}`);
+      // File doesn't exist at absolute path
+    }
+
+    // Try relative to workspace folders
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (workspaceFolders) {
+      console.log(`[ErrorQueueManager] Searching in ${workspaceFolders.length} workspace folders`);
+      for (const folder of workspaceFolders) {
+        try {
+          // Extract just the filename if it's a full path
+          const fileName = filePath.includes('/') || filePath.includes('\\')
+            ? filePath.split(/[/\\]/).pop() || filePath
+            : filePath;
+
+          console.log(`[ErrorQueueManager] Searching for filename: ${fileName} in ${folder.uri.fsPath}`);
+
+          // Search for file in workspace
+          const files = await vscode.workspace.findFiles(
+            `**/${fileName}`,
+            '**/node_modules/**',
+            1
+          );
+
+          if (files.length > 0) {
+            console.log(`[ErrorQueueManager] Found file in workspace: ${files[0].toString()}`);
+            return files[0];
+          }
+        } catch (err: any) {
+          console.log(`[ErrorQueueManager] Search failed in folder: ${err.message}`);
+          continue;
+        }
+      }
+    }
+
+    console.log(`[ErrorQueueManager] File could not be resolved`);
+    return null;
   }
 
   /**

@@ -1,8 +1,8 @@
-# RCA Agent - Roadmap & Status
+﻿# RCA Agent - Roadmap & Status
 
 **Version:** 8.0 (Production Ready!)  
 **Updated:** January 5, 2026  
-**Status:** 🎉 ALL PHASES COMPLETE - PRODUCTION READY!
+**Status:** [SUCCESS] ALL PHASES COMPLETE - PRODUCTION READY!
 
 **Team Roles:**
 - **Kai:** Backend (parsers, agents, tools, database, prompt engineering)
@@ -12,7 +12,7 @@
 - **Panel UI:** Error queue, batch processing, persistent view, action buttons
 - **Chat UI:** Conversational @rca-agent, context-aware, multi-turn, full tool access
 
-## 📊 Final Metrics (Production Ready)
+## [CHART] Final Metrics (Production Ready)
 
 **Code:** ~25,000 LOC (Backend: 15K | Panel: 2.5K | Chat: 2.9K | Interactive: 2.4K | Docs: 1.6K)  
 **Tests:** 816/826 passing (99%)  
@@ -21,7 +21,7 @@
 **Accuracy:** 61% baseline (Test 2: 76%, Test 10: 73%)  
 **Error Types:** 26+ supported (Kotlin, Gradle, Compose, XML, Manifest)
 
-## 🏗️ Architecture Overview
+## [BUILD] Architecture Overview
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -53,7 +53,7 @@
 - **Sokchea:** VS Code API, UI, terminal integration
 - **Kai:** AI/ML logic, parsers, knowledge bases, prompts
 
-## 🎯 Key Learnings (13 Weeks)
+## [TARGET] Key Learnings (13 Weeks)
 
 **Technical:**
 - Templates > Raw examples for small models
@@ -76,17 +76,17 @@
 
 **Full Details:** `docs/LEARNINGS.md`
 
-## 📋 All Phases Complete
+## [CLIPBOARD] All Phases Complete
 
 | Phase | Status | LOC | Key Achievements |
 |-------|--------|-----|------------------|
-| Phase 1: Backend | ✅ | 15,000 | Parsers, agents, tools, database (26+ error types) |
-| Phase 2: Panel UI | ✅ | 2,500 | Error queue, batch processing, webview |
-| Phase 3: Chat UI | ✅ | 2,900 | @rca-agent, context collector, streaming |
-| Phase 4: Interactive | ✅ | 2,390 | Hover, code actions, workflows, 11 test iterations |
-| Phase 5: Optimization | ✅ | 300 | Caching, parallel execution, tool polish |
-| Phase 6: Polish | ✅ | 200 | Enhanced UX, error messages, settings |
-| Phase 7: Documentation | ✅ | 1,600 | USER_GUIDE, DEVELOPER_GUIDE, LEARNINGS |
+| Phase 1: Backend | [DONE] | 15,000 | Parsers, agents, tools, database (26+ error types) |
+| Phase 2: Panel UI | [DONE] | 2,500 | Error queue, batch processing, webview |
+| Phase 3: Chat UI | [DONE] | 2,900 | @rca-agent, context collector, streaming |
+| Phase 4: Interactive | [DONE] | 2,390 | Hover, code actions, workflows, 11 test iterations |
+| Phase 5: Optimization | [DONE] | 300 | Caching, parallel execution, tool polish |
+| Phase 6: Polish | [DONE] | 200 | Enhanced UX, error messages, settings |
+| Phase 7: Documentation | [DONE] | 1,600 | USER_GUIDE, DEVELOPER_GUIDE, LEARNINGS |
 
 **What's Next (All Optional):**
 - Demo video  
@@ -96,57 +96,57 @@
 
 ---
 
-## 📊 Final Results (January 5, 2026)
+## [CHART] Final Results (January 5, 2026)
 
-### What's Working ✅ (All Phases Complete)
+### What's Working [DONE] (All Phases Complete)
 **Backend Infrastructure (Phase 1 - 15,000 LOC):**
 - Parser accuracy: 100% (26+ error types: Kotlin, Gradle, Compose, XML, Manifest)
 - Test coverage: 99% (816/826 tests passing)
-- Performance: 11.7s average latency (87% faster than 90s target! 🎉)
+- Performance: 11.7s average latency (87% faster than 90s target! [SUCCESS])
 - Infrastructure: 100% complete (82 few-shot examples, templates, validation)
 
 **Panel UI (Phase 2 - 2,500 LOC):**
-- RCAPanelProvider with WebView integration ✅
-- ErrorQueueManager with batch processing ✅
-- StateManager for panel state synchronization ✅
-- Inline analysis display with action buttons ✅
-- Error history tracking and filtering ✅
+- RCAPanelProvider with WebView integration [DONE]
+- ErrorQueueManager with batch processing [DONE]
+- StateManager for panel state synchronization [DONE]
+- Inline analysis display with action buttons [DONE]
+- Error history tracking and filtering [DONE]
 
 **Chat UI (Phase 3 - 2,900 LOC):**
-- RCAChatParticipant (@rca-agent) ✅
-- ChatRequestRouter for intent detection ✅
-- ContextCollector for workspace awareness ✅
-- ResponseStreamer for markdown formatting ✅
-- TerminalTool and GradleCommandHelper ✅
+- RCAChatParticipant (@rca-agent) [DONE]
+- ChatRequestRouter for intent detection [DONE]
+- ContextCollector for workspace awareness [DONE]
+- ResponseStreamer for markdown formatting [DONE]
+- TerminalTool and GradleCommandHelper [DONE]
 
 **Interactive Features (Phase 4 - 2,390 LOC):**
-- RCAHoverProvider for inline explanations ✅
-- RealtimeErrorDetector for auto-detection ✅
-- ConversationalAgent with multi-turn memory ✅
-- GuidedWorkflowEngine with 10+ workflows ✅
-- Template-based approach: 61% avg usability (production baseline) ✅
+- RCAHoverProvider for inline explanations [DONE]
+- RealtimeErrorDetector for auto-detection [DONE]
+- ConversationalAgent with multi-turn memory [DONE]
+- GuidedWorkflowEngine with 10+ workflows [DONE]
+- Template-based approach: 61% avg usability (production baseline) [DONE]
 
 - **Phase 5 Backend Tools:**
-  - VersionLookupTool: Caching (5-min TTL) + migration paths with breaking change detection ✅
-  - FixGenerator: Multi-file fix support + related file detection ✅
-  - FileResolver: buildSrc + Kotlin DSL + composite builds support ✅
-  - ToolOrchestrator: Smart tool selection + parallel execution + result caching ✅
+  - VersionLookupTool: Caching (5-min TTL) + migration paths with breaking change detection [DONE]
+  - FixGenerator: Multi-file fix support + related file detection [DONE]
+  - FileResolver: buildSrc + Kotlin DSL + composite builds support [DONE]
+  - ToolOrchestrator: Smart tool selection + parallel execution + result caching [DONE]
 
 - **Phase 6 UI/UX:**
-  - Enhanced error messages with emoji indicators and contextual help ✅
-  - Recovery suggestions with step-by-step instructions ✅
-  - Alternative solutions for common issues (Ollama, model, timeout) ✅
-  - Improved markdown rendering with syntax highlighting ✅
-  - Interactive elements (clickable file paths, copy buttons) ✅
-  - Settings panel with feature toggles ✅
+  - Enhanced error messages with emoji indicators and contextual help [DONE]
+  - Recovery suggestions with step-by-step instructions [DONE]
+  - Alternative solutions for common issues (Ollama, model, timeout) [DONE]
+  - Improved markdown rendering with syntax highlighting [DONE]
+  - Interactive elements (clickable file paths, copy buttons) [DONE]
+  - Settings panel with feature toggles [DONE]
 
 - **Phase 7 Documentation:**
-  - USER_GUIDE.md (400+ lines) - Installation, features, troubleshooting ✅
-  - DEVELOPER_GUIDE.md (700+ lines) - Architecture, extending, contributing ✅
-  - LEARNINGS.md (500+ lines) - Key insights from 13 weeks ✅
-  - Updated README.md with Phase 7 status ✅
+  - USER_GUIDE.md (400+ lines) - Installation, features, troubleshooting [DONE]
+  - DEVELOPER_GUIDE.md (700+ lines) - Architecture, extending, contributing [DONE]
+  - LEARNINGS.md (500+ lines) - Key insights from 13 weeks [DONE]
+  - Updated README.md with Phase 7 status [DONE]
 
-### Key Learnings 🎓
+### Key Learnings [LEARN]
 **After 11 iterations and 13 weeks of development:**
 
 **Technical Learnings:**
@@ -173,17 +173,17 @@
 
 **See Full Details:** `docs/LEARNINGS.md` for comprehensive insights
 
-### What's Next 🔮 (All Optional - Ready When You Are!)
+### What's Next [FUTURE] (All Optional - Ready When You Are!)
 - **Demo Video** (optional): Record screen capture showing agent analyzing real Android errors
 - **Blog Post** (optional): Document the 13-week journey, learnings, and insights
 - **VS Code Marketplace** (optional): Publish extension for public use when ready to share
 - **Community Engagement** (optional): Share on Reddit, Dev.to, Medium, GitHub Discussions
 
-## 📋 Test Results (11 Iterations)
+## [CLIPBOARD] Test Results (11 Iterations)
 
 **Best Iterations:**
-- Iteration 2 (Async fixes): 61.4% - Fixed loading race conditions ✅
-- Iteration 11 (Templates): 61.0% - Production baseline ✅ WINNER
+- Iteration 2 (Async fixes): 61.4% - Fixed loading race conditions [DONE]
+- Iteration 11 (Templates): 61.0% - Production baseline [DONE] WINNER
 
 **Top Performers:**
 - Test 2 (Kotlin NPE): 76% usability
@@ -194,23 +194,23 @@
 
 ---
 
-**Status:** ✅ Core development 100% complete! All future work is optional and can be done when inspired.
+**Status:** [DONE] Core development 100% complete! All future work is optional and can be done when inspired.
 
 ---
 
-## 🎯 Usage Examples (What It Will Look Like)
+## [TARGET] Usage Examples (What It Will Look Like)
 
 ### Example 1: Simple Error Analysis
 ```
 User: @rca-agent My gradle build is failing with AGP version error
 
-🤖 RCA Agent: I can help! Let me check your gradle files...
+[BOT] RCA Agent: I can help! Let me check your gradle files...
 
 [Using WorkspaceSearchTool to find gradle/libs.versions.toml]
 [Using ReadFileTool to read the file]
 [Using VersionLookupTool to check valid AGP versions]
 
-📊 Analysis Complete:
+[CHART] Analysis Complete:
 
 **Root Cause:** 
 You're using AGP version 8.10.0 in gradle/libs.versions.toml:6, 
@@ -224,9 +224,9 @@ but that version doesn't exist. The latest stable is 8.7.3.
 ```
 
 **Additional Info:**
-- AGP 8.7.3 is compatible with Kotlin 1.9.0+ (you're using 1.9.22 ✅)
+- AGP 8.7.3 is compatible with Kotlin 1.9.0+ (you're using 1.9.22 [DONE])
 - Released: November 15, 2024
-- Requires JDK 17+ (you have JDK 17 ✅)
+- Requires JDK 17+ (you have JDK 17 [DONE])
 
 [Apply Fix] [Run ./gradlew sync] [Explain More]
 ```
@@ -235,14 +235,14 @@ but that version doesn't exist. The latest stable is 8.7.3.
 ```
 User: @rca-agent I have tons of errors in my Android project, help!
 
-🤖 RCA Agent: I see 47 diagnostics in your workspace. Let me prioritize...
+[BOT] RCA Agent: I see 47 diagnostics in your workspace. Let me prioritize...
 
 [Analyzing all diagnostics from VS Code]
 
 Found 3 critical build-blocking errors:
-1. 🔴 AGP version conflict (gradle/libs.versions.toml:6)
-2. 🔴 Unresolved reference: User (UserRepository.kt:15)
-3. 🟡 Compose API deprecated (HomeScreen.kt:88)
+1. [RED] AGP version conflict (gradle/libs.versions.toml:6)
+2. [RED] Unresolved reference: User (UserRepository.kt:15)
+3. [YELLOW] Compose API deprecated (HomeScreen.kt:88)
 
 Should I:
 1. Fix them one by one (with explanation)
@@ -256,14 +256,14 @@ Should I:
 ```
 User: @rca-agent why am I getting NullPointerException at MainActivity.kt:42?
 
-🤖 RCA Agent: [Reads MainActivity.kt]
+[BOT] RCA Agent: [Reads MainActivity.kt]
 
 The crash happens because `getUserById()` returns null when the user 
 isn't found, but you're accessing `user.name` without checking.
 
 User: show me how to fix it
 
-🤖 RCA Agent: Here are 3 ways:
+[BOT] RCA Agent: Here are 3 ways:
 
 **Option 1: Safe call operator (recommended)**
 ```kotlin
@@ -288,7 +288,7 @@ Which approach fits your codebase better?
 
 User: use option 1
 
-🤖 RCA Agent: Applied fix to MainActivity.kt:42!
+[BOT] RCA Agent: Applied fix to MainActivity.kt:42!
 
 [View Diff] [Run App] [Undo]
 ```
@@ -297,14 +297,14 @@ User: use option 1
 ```
 User: @rca-agent run gradle clean and rebuild
 
-🤖 RCA Agent: Running commands...
+[BOT] RCA Agent: Running commands...
 
 ```bash
 $ ./gradlew clean
-✅ BUILD SUCCESSFUL in 2s
+[DONE] BUILD SUCCESSFUL in 2s
 
 $ ./gradlew build
-❌ BUILD FAILED
+[FAIL] BUILD FAILED
 ```
 
 Found error in build output:
@@ -320,21 +320,21 @@ Want me to analyze and fix this error?
 
 ---
 
-## �🗺️ Roadmap Overview (Streamlined for Real-World Impact)
+## �[LOCATION] Roadmap Overview (Streamlined for Real-World Impact)
 
 **New Philosophy:** Focus on HIGH-IMPACT improvements that make the agent actually useful in complex projects. Skip experimental features until core usability is solid.
 
-### Phase 2: VS Code Extension Enhancement 🔄
+### Phase 2: VS Code Extension Enhancement [REFRESH]
 **Duration:** 3-4 weeks (streamlined from 5-chunk plan)  
 **Status:** With Sokchea (Frontend Developer)  
 **Goal:** Panel-based UI with essential features only
 
 **What Changed:** Cut scope to ONLY essentials:
-- ✅ Keep: Panel UI, error queue, batch processing, history
-- ❌ Remove for now: Chat interface, visual debugging, educational modes
+- [DONE] Keep: Panel UI, error queue, batch processing, history
+- [FAIL] Remove for now: Chat interface, visual debugging, educational modes
 - **Why:** These are nice-to-have, not core usability
 
-### Phase 3: Solution Quality Enhancement (HIGHEST PRIORITY) 🔴
+### Phase 3: Solution Quality Enhancement (HIGHEST PRIORITY) [RED]
 **Duration:** 2-3 weeks  
 **Goal:** Get from 40% → 80% usability by fixing solution specificity
 
@@ -356,7 +356,7 @@ Want me to analyze and fix this error?
 
 **Success Metric:** Usability 40% → 80%+
 
-### Phase 4: Real-World Testing & Iteration 🎯
+### Phase 4: Real-World Testing & Iteration [TARGET]
 **Duration:** 2 weeks  
 **Goal:** Test on 20+ complex Android projects, fix edge cases
 
@@ -371,7 +371,7 @@ Want me to analyze and fix this error?
 
 ---
 
-## 🔮 Optional Future Activities (When You Feel Like It!)
+## [FUTURE] Optional Future Activities (When You Feel Like It!)
 
 **All core development complete!** The following are optional activities for sharing or expanding:
 
@@ -391,7 +391,7 @@ Want me to analyze and fix this error?
 
 ---
 
-### 📝 Optional: Write Blog Post
+### [NOTE] Optional: Write Blog Post
 **Why:** Share your learnings with other developers  
 **What:** Document your 13-week journey building an AI debugging assistant  
 **When:** When you have time and inspiration
@@ -407,7 +407,7 @@ Want me to analyze and fix this error?
 
 ---
 
-### 📦 Optional: Publish to VS Code Marketplace
+### [PACKAGE] Optional: Publish to VS Code Marketplace
 **Why:** Let others use your extension  
 **What:** Package and publish extension for public download  
 **When:** When you're ready to support users
@@ -440,7 +440,7 @@ Want me to analyze and fix this error?
 
 ---
 
-### 🚀 Optional: Future Enhancements (Ideas for Later)
+### [LAUNCH] Optional: Future Enhancements (Ideas for Later)
 
 **If you ever want to expand the project:**
 
@@ -473,9 +473,9 @@ Want me to analyze and fix this error?
 
 ---
 
-## 🎉 Victory Lap - Everything Complete!
+## [SUCCESS] Victory Lap - Everything Complete!
 
-### 📊 Final Statistics
+### [CHART] Final Statistics
 
 **Total Implementation:**
 - **~25,000 LOC** across all phases
@@ -522,18 +522,18 @@ Want me to analyze and fix this error?
 - Enhanced UI/UX with contextual help
 - Complete documentation suite
 
-### 🎊 You're Done! Now What?
+### [CELEBRATE] You're Done! Now What?
 
-**Option 1: Take a Break** 🏖️  
+**Option 1: Take a Break** [BEACH]  
 You've earned it! This is a complete, production-ready project. Rest, relax, work on something else.
 
-**Option 2: Share Your Work** 📢  
+**Option 2: Share Your Work** [ANNOUNCE]  
 - Record a demo video showing the agent in action
 - Write a blog post about your journey and learnings
 - Publish to VS Code Marketplace for others to use
 - Engage with the dev community (Reddit, Dev.to, Twitter)
 
-**Option 3: Keep Building** 🚀  
+**Option 3: Keep Building** [LAUNCH]  
 - Add support for more languages (TypeScript, Python, Rust)
 - Test with better LLM models (GPT-4, Claude) for higher accuracy
 - Build advanced features (autonomous fixes, visual graphs)
@@ -545,41 +545,41 @@ You've earned it! This is a complete, production-ready project. Rest, relax, wor
 - Accept pull requests and issues
 - Build a community around it
 
-**Remember:** All future work is OPTIONAL. Your project is complete, production-ready, and something to be proud of! 🎉
+**Remember:** All future work is OPTIONAL. Your project is complete, production-ready, and something to be proud of! [SUCCESS]
 
 ---
 
-## 🎉 What You've Already Built (Be Proud!)
+## [SUCCESS] What You've Already Built (Be Proud!)
 
-### ✅ Backend Awesomeness (Phase 1 + 3)
+### [DONE] Backend Awesomeness (Phase 1 + 3)
 - **26+ error parsers** - Understands Kotlin, Gradle, Compose, XML errors
 - **MinimalReactAgent** - Smart reasoning with tool execution
 - **Knowledge bases:**
-  - 156 AGP versions loaded ✅
-  - 52 Kotlin versions loaded ✅
-  - 39 few-shot examples ✅
-  - Compatibility matrix ✅
+  - 156 AGP versions loaded [DONE]
+  - 52 Kotlin versions loaded [DONE]
+  - 39 few-shot examples [DONE]
+  - Compatibility matrix [DONE]
 - **Intelligent tools:**
   - VersionLookupTool (finds valid versions)
   - FixGenerator (creates code diffs)
   - FileResolver (finds exact files)
   - AndroidDocsSearchTool, DependencyGraphTool, and more!
-- **ChatPromptEngine** - Conversational, specificity-focused prompts ✅
+- **ChatPromptEngine** - Conversational, specificity-focused prompts [DONE]
 - **869 passing tests** (99% coverage!)
 - **10.35s response time** (blazing fast!)
 
-### ✅ Frontend Coolness (Phase 2)
-- **Chat participant** - Just type "@rca-agent" in VS Code! ✅
-- **Context-aware** - Sees your files, errors, terminal automatically ✅
-- **Multi-turn conversations** - Can ask follow-up questions ✅
-- **Action buttons** - Apply Fix, Explain More, Search Similar ✅
+### [DONE] Frontend Coolness (Phase 2)
+- **Chat participant** - Just type "@rca-agent" in VS Code! [DONE]
+- **Context-aware** - Sees your files, errors, terminal automatically [DONE]
+- **Multi-turn conversations** - Can ask follow-up questions [DONE]
+- **Action buttons** - Apply Fix, Explain More, Search Similar [DONE]
 - **Tool integration:**
-  - Terminal capture & execution ✅
-  - File read/write operations ✅
-  - Workspace search ✅
+  - Terminal capture & execution [DONE]
+  - File read/write operations [DONE]
+  - Workspace search [DONE]
 ---
 
-## 🔮 Optional Future Activities
+## [FUTURE] Optional Future Activities
 
 **All core development complete!** The following are optional:
 
@@ -593,7 +593,7 @@ You've earned it! This is a complete, production-ready project. Rest, relax, wor
 
 ---
 
-## 🎉 Project Complete!
+## [SUCCESS] Project Complete!
 
 **Final Status:** All 7 phases complete (January 5, 2026)
 
@@ -610,7 +610,7 @@ You've earned it! This is a complete, production-ready project. Rest, relax, wor
 - VS Code Marketplace publication
 - Community sharing (when ready)
 
-**Reminder:** Built for fun and learning. Project succeeded! 🎉
+**Reminder:** Built for fun and learning. Project succeeded! [SUCCESS]
 
 **Tasks:**
 1. **Day 1-2:** Build AGP version database
@@ -629,7 +629,7 @@ You've earned it! This is a complete, production-ready project. Rest, relax, wor
 
 **Success Metric:** Agent can suggest valid versions 90%+ of the time
 
-### Week 2: Prompt Engineering (QUICK WIN) ⚡
+### Week 2: Prompt Engineering (QUICK WIN) [FAST]
 **Goal:** Fix vague solutions (17% → 70%)
 
 **Tasks:**
@@ -652,7 +652,7 @@ You've earned it! This is a complete, production-ready project. Rest, relax, wor
 
 **Success Metric:** Solution quality 17% → 70%
 
-### Week 3: Fix Generation (CODE DIFFS) 📝
+### Week 3: Fix Generation (CODE DIFFS) [NOTE]
 **Goal:** Generate actual code changes (0% → 60%)
 
 **Tasks:**
@@ -667,22 +667,22 @@ You've earned it! This is a complete, production-ready project. Rest, relax, wor
 
 **Success Metric:** Agent shows code diffs 60%+ of the time
 
-### Week 4: Testing & Validation 🧪
+### Week 4: Testing & Validation [TEST]
 **Goal:** Test on 10+ diverse errors, reach 80% usability
 
 **Test Matrix:**
 ```
 Error Types to Test:
-✅ Gradle dependency (AGP version) - already tested
-⏳ Kotlin NPE (lateinit not initialized)
-⏳ Compose API breakage (1.5.0 → 1.6.0)
-⏳ XML layout inflation error
-⏳ Manifest permission missing
-⏳ Multi-module dependency conflict
-⏳ Gradle sync failed (network issue)
-⏳ Build cache corruption
-⏳ R8/ProGuard rule missing
-⏳ Jetpack Navigation argument mismatch
+[DONE] Gradle dependency (AGP version) - already tested
+[TIMER] Kotlin NPE (lateinit not initialized)
+[TIMER] Compose API breakage (1.5.0 → 1.6.0)
+[TIMER] XML layout inflation error
+[TIMER] Manifest permission missing
+[TIMER] Multi-module dependency conflict
+[TIMER] Gradle sync failed (network issue)
+[TIMER] Build cache corruption
+[TIMER] R8/ProGuard rule missing
+[TIMER] Jetpack Navigation argument mismatch
 ```
 
 **Success Metric:** 80%+ usability across all error types
@@ -722,7 +722,7 @@ These are fun experimental ideas for later:
 
 ---
 
-# �🔴 PHASE 2-3 INTEGRATED: CHAT PARTICIPANT + BACKEND INTELLIGENCE
+# �[RED] PHASE 2-3 INTEGRATED: CHAT PARTICIPANT + BACKEND INTELLIGENCE
 
 **Duration:** 6 weeks (2 weeks UI + 4 weeks Backend)  
 **Focus:** Modern conversational interface + Solution quality improvements  
@@ -730,11 +730,11 @@ These are fun experimental ideas for later:
 **Architecture:** VS Code Chat Participant (like GitHub Copilot)
 
 **Why This Approach:**
-- ✅ **Conversational**: "@rca-agent fix gradle error" → multi-turn chat (like Copilot)
-- ✅ **Context-aware**: Agent sees files, diagnostics, terminal automatically
-- ✅ **Tool access**: Can read files, run commands, apply edits, search docs
-- ✅ **Better for Android**: Handles hundreds of errors intelligently
-- ✅ **Parallel tracks**: Sokchea builds UI, Kai builds intelligence
+- [DONE] **Conversational**: "@rca-agent fix gradle error" → multi-turn chat (like Copilot)
+- [DONE] **Context-aware**: Agent sees files, diagnostics, terminal automatically
+- [DONE] **Tool access**: Can read files, run commands, apply edits, search docs
+- [DONE] **Better for Android**: Handles hundreds of errors intelligently
+- [DONE] **Parallel tracks**: Sokchea builds UI, Kai builds intelligence
 
 **Team Split:**
 - **Sokchea (Frontend):** Chat participant, terminal integration, workspace tools, UI
@@ -742,31 +742,31 @@ These are fun experimental ideas for later:
 
 ---
 
-# 🎨 PHASE 2: CHAT PARTICIPANT UI ✅ COMPLETE
+# [DESIGN] PHASE 2: CHAT PARTICIPANT UI [DONE] COMPLETE
 
 **Duration:** 2 weeks (completed in 1 day!)  
 **Owner:** Sokchea (Frontend Developer)  
-**Status:** ✅ COMPLETE (January 1, 2026)  
+**Status:** [DONE] COMPLETE (January 1, 2026)  
 **Delivered:** 2,100+ LOC (chat participant, tools, commands, tests)  
 **Achievement:** Transformed UX from command-based → conversational interface
 
 ---
 
-## ✅ Phase 2-3 Completion Summary
+## [DONE] Phase 2-3 Completion Summary
 
 **Total Delivered:** 2,900+ LOC of production code  
 **Key Features:**
-- ✅ RCAChatParticipant.ts - `@rca-agent` integration
-- ✅ ChatRequestRouter.ts - Intent detection (analyze, fix, explain, build, batch)
-- ✅ ContextCollector.ts - Workspace context gathering (files, diagnostics, terminal)
-- ✅ ResponseStreamer.ts - Markdown streaming with action buttons
-- ✅ TerminalTool.ts - Real-time terminal output capture (1000-line cache)
-- ✅ GradleCommandHelper.ts - Gradle command shortcuts
-- ✅ ChatActionCommands.ts - Apply Fix, Explain More, Search Similar
-- ✅ FixApplicationService.ts - Fix generation and application with diff preview
-- ✅ ChatPromptEngine.ts - Conversational, specificity-focused prompts
-- ✅ ErrorHandler.ts - Comprehensive error handling (585 LOC)
-- ✅ Integration tests - 420 LOC covering all workflows
+- [DONE] RCAChatParticipant.ts - `@rca-agent` integration
+- [DONE] ChatRequestRouter.ts - Intent detection (analyze, fix, explain, build, batch)
+- [DONE] ContextCollector.ts - Workspace context gathering (files, diagnostics, terminal)
+- [DONE] ResponseStreamer.ts - Markdown streaming with action buttons
+- [DONE] TerminalTool.ts - Real-time terminal output capture (1000-line cache)
+- [DONE] GradleCommandHelper.ts - Gradle command shortcuts
+- [DONE] ChatActionCommands.ts - Apply Fix, Explain More, Search Similar
+- [DONE] FixApplicationService.ts - Fix generation and application with diff preview
+- [DONE] ChatPromptEngine.ts - Conversational, specificity-focused prompts
+- [DONE] ErrorHandler.ts - Comprehensive error handling (585 LOC)
+- [DONE] Integration tests - 420 LOC covering all workflows
 
 **Metrics:**
 - Performance: 10.35s maintained (88% faster than target)
@@ -777,10 +777,10 @@ These are fun experimental ideas for later:
 
 ---
 
-## Week 1: Chat Participant Foundation ✅ COMPLETE
+## Week 1: Chat Participant Foundation [DONE] COMPLETE
 
 ### 2.1: VS Code Chat Integration
-**Priority:** 🔴 CRITICAL  
+**Priority:** [RED] CRITICAL  
 **Duration:** 3-4 days
 
 **Tasks:**
@@ -881,7 +881,7 @@ These are fun experimental ideas for later:
 ---
 
 ### 2.2: Terminal Integration
-**Priority:** 🔴 CRITICAL  
+**Priority:** [RED] CRITICAL  
 **Duration:** 2-3 days
 
 **Tasks:**
@@ -966,7 +966,7 @@ These are fun experimental ideas for later:
 ## Week 2: Workspace Tools & Agent Integration
 
 ### 2.3: Workspace File Operations
-**Priority:** 🔴 CRITICAL  
+**Priority:** [RED] CRITICAL  
 **Duration:** 3 days
 
 **Tasks:**
@@ -1051,7 +1051,7 @@ These are fun experimental ideas for later:
 ---
 
 ### 2.4: Backend Integration (Sokchea wires, Kai implements)
-**Priority:** 🔴 CRITICAL  
+**Priority:** [RED] CRITICAL  
 **Duration:** 3-4 days
 
 **Tasks:**
@@ -1118,13 +1118,13 @@ These are fun experimental ideas for later:
        stream: vscode.ChatResponseStream
      ) {
        // Stream markdown response
-       stream.markdown(`## 🔍 Root Cause Analysis\n\n`);
+       stream.markdown(`## [SEARCH] Root Cause Analysis\n\n`);
        stream.markdown(`**Error Type:** ${result.errorType}\n\n`);
        stream.markdown(`**Root Cause:**\n${result.rootCause}\n\n`);
        
        // Stream code fixes
        if (result.fixGuidelines) {
-         stream.markdown(`## 🛠️ Fix Guidelines\n\n`);
+         stream.markdown(`## [FIX] Fix Guidelines\n\n`);
          result.fixGuidelines.forEach((fix, i) => {
            stream.markdown(`${i + 1}. ${fix}\n`);
          });
@@ -1154,18 +1154,18 @@ These are fun experimental ideas for later:
 
 ---
 
-# 🔴 PHASE 3: BACKEND INTELLIGENCE ✅ COMPLETE
+# [RED] PHASE 3: BACKEND INTELLIGENCE [DONE] COMPLETE
 
 **Duration:** 4 weeks (completed in 1 day!)  
 **Owner:** Kai (Backend Developer)  
-**Status:** ✅ COMPLETE (January 1, 2026)  
+**Status:** [DONE] COMPLETE (January 1, 2026)  
 **Delivered:** 800+ LOC (chat prompts, version knowledge, fix generation)  
 **Achievement:** Chat-optimized prompts + specificity improvements
 
 **What Changed from Original Plan:**
-- ❌ Removed: Multi-pass reasoning, semantic code search, historical patterns (nice-to-have)
-- ✅ Kept: Version knowledge, prompt engineering, fix generation (MUST-have)
-- ✅ Added: Chat-optimized prompts, tool execution in conversational flow
+- [FAIL] Removed: Multi-pass reasoning, semantic code search, historical patterns (nice-to-have)
+- [DONE] Kept: Version knowledge, prompt engineering, fix generation (MUST-have)
+- [DONE] Added: Chat-optimized prompts, tool execution in conversational flow
 - **Why:** Focus on 20% of features that deliver 80% of value
 
 ---
@@ -1173,7 +1173,7 @@ These are fun experimental ideas for later:
 ## Week 1: Version Knowledge Base (Parallel with Sokchea's Week 1)
 
 ### 3.1: Domain Knowledge Database (STREAMLINED)
-**Priority:** 🔴 CRITICAL  
+**Priority:** [RED] CRITICAL  
 **Impact:** Eliminate version hallucinations (0% → 90%)
 
 **Tasks:**
@@ -1248,7 +1248,7 @@ These are fun experimental ideas for later:
 ## Week 2: Prompt Engineering Overhaul (Parallel with Sokchea's Week 2)
 
 ### 3.2: Chat-Optimized System Prompts
-**Priority:** 🔴 CRITICAL  
+**Priority:** [RED] CRITICAL  
 **Impact:** Better specificity (17% → 70%) + Chat-friendly responses
 
 **NEW: Chat-Optimized Prompt Structure**
@@ -1302,7 +1302,7 @@ Remember: You can ask the user for more context or suggest running commands to g
 ```
 
 ### 3.2: Context-Aware System Prompts (SIMPLIFIED)
-**Priority:** 🔴 CRITICAL  
+**Priority:** [RED] CRITICAL  
 **Impact:** Better specificity (17% → 70%)
 
 **Tasks:**
@@ -1313,22 +1313,22 @@ Remember: You can ask the user for more context or suggest running commands to g
    CRITICAL RULES FOR SOLUTIONS:
    
    1. File Paths: MUST be exact with line numbers
-      ❌ Bad: "Update build.gradle"
-      ✅ Good: "Update gradle/libs.versions.toml line 5"
+      [FAIL] Bad: "Update build.gradle"
+      [DONE] Good: "Update gradle/libs.versions.toml line 5"
    
    2. Version Numbers: MUST be specific and validated
-      ❌ Bad: "Update to latest AGP"
-      ✅ Good: "Update to AGP 8.7.3 (stable, released Nov 2024)"
+      [FAIL] Bad: "Update to latest AGP"
+      [DONE] Good: "Update to AGP 8.7.3 (stable, released Nov 2024)"
       
    3. Code Examples: MUST show before/after
-      ❌ Bad: "Change the version"
-      ✅ Good:
+      [FAIL] Bad: "Change the version"
+      [DONE] Good:
       Before: agp = "8.10.0"
       After:  agp = "8.7.3"
    
    4. Verification Steps: MUST explain how to test fix
-      ❌ Bad: "This should fix it"
-      ✅ Good: "Run './gradlew build' to verify fix works"
+      [FAIL] Bad: "This should fix it"
+      [DONE] Good: "Run './gradlew build' to verify fix works"
    `;
    ```
 
@@ -1376,7 +1376,7 @@ Remember: You can ask the user for more context or suggest running commands to g
 ## Week 3: Fix Generation & File Resolution
 
 ### 3.3: Code Diff Generation (NEW FEATURE)
-**Priority:** 🟡 HIGH  
+**Priority:** [YELLOW] HIGH  
 **Impact:** Visual code fixes (0% → 60%)
 
 **Tasks:**
@@ -1452,7 +1452,7 @@ Remember: You can ask the user for more context or suggest running commands to g
 ## Week 4: Testing & Iteration
 
 ### 3.4: Real-World Validation (ESSENTIAL)
-**Priority:** 🔴 CRITICAL  
+**Priority:** [RED] CRITICAL  
 **Goal:** Test on 10 diverse error types, measure improvement
 
 **Test Suite:**
@@ -1517,7 +1517,7 @@ const TEST_CASES = [
 
 ---
 
-# 🔴 PHASE 3: Intelligence Enhancement (HIGH PRIORITY)
+# [RED] PHASE 3: Intelligence Enhancement (HIGH PRIORITY)
 **Duration:** 4-8 weeks  
 **Focus:** Getting accuracy from 50% → 80%+
 
@@ -1532,7 +1532,7 @@ Based on Phase 2.5 analysis, these are the highest-impact improvements for accur
 Stop LLM from giving generic/wrong answers by adding more context
 
 ### 3.1: Context-Aware System Prompts
-**Priority:** 🔴 CRITICAL (HIGHEST IMPACT)  
+**Priority:** [RED] CRITICAL (HIGHEST IMPACT)  
 **Impact:** +50% usability improvement expected (40% → 90%)
 **Why:** MVP test shows diagnosis is perfect, but solutions are too vague
 
@@ -1627,7 +1627,7 @@ Stop LLM from giving generic/wrong answers by adding more context
 ---
 
 ### 3.2: Domain Knowledge Database
-**Priority:** 🔴 CRITICAL (2ND HIGHEST IMPACT)  
+**Priority:** [RED] CRITICAL (2ND HIGHEST IMPACT)  
 **Impact:** Eliminate version hallucinations (MVP test: agent didn't know valid AGP versions)
 **Why:** LLM can't suggest versions it doesn't know exist
 
@@ -1728,7 +1728,7 @@ Stop LLM from giving generic/wrong answers by adding more context
 ---
 
 ### 3.3: Multi-Pass Reasoning
-**Priority:** 🟡 HIGH  
+**Priority:** [YELLOW] HIGH  
 **Impact:** Better root cause identification through deeper analysis
 
 **Tasks:**
@@ -1815,7 +1815,7 @@ Stop LLM from giving generic/wrong answers by adding more context
 ## Week 3-4: Advanced Tool Development
 
 ### 3.4: Intelligent Code Analysis Tools
-**Priority:** 🟡 HIGH  
+**Priority:** [YELLOW] HIGH  
 **Impact:** Better context understanding and fix generation
 
 **Tasks:**
@@ -1922,7 +1922,7 @@ Stop LLM from giving generic/wrong answers by adding more context
 ---
 
 ### 3.5: Fix Generation & Validation
-**Priority:** 🟡 HIGH  
+**Priority:** [YELLOW] HIGH  
 **Impact:** Generate code fixes, not just explanations
 
 **Tasks:**
@@ -2015,13 +2015,13 @@ Stop LLM from giving generic/wrong answers by adding more context
 ## Week 5-6: Performance & Testing
 
 ### 3.6: Latency Optimization (OPTIONAL)
-**Priority:** 🟢 LOW (MVP test: already excellent at 10.35s!)  
+**Priority:** [GREEN] LOW (MVP test: already excellent at 10.35s!)  
 **Goal:** Maintain current 10.35s performance (already 88% faster than target)
 **Note:** Performance is NOT a problem. Focus on solution quality instead.
 
 **Success Metrics (Already Exceeded!):**
-- ✅ Median latency: 10.35s (already 88% faster than 90s target!)
-- ✅ P90 latency: <20s (achieved)
+- [DONE] Median latency: 10.35s (already 88% faster than 90s target!)
+- [DONE] P90 latency: <20s (achieved)
 - Cache hit rate: 60% → 80% (nice to have)
 - First response (streaming): <3s (nice to have)
 
@@ -2097,8 +2097,8 @@ Stop LLM from giving generic/wrong answers by adding more context
    ```
 
 **Success Metrics (Already Exceeded!):**
-- ✅ Median latency: 10.35s (already 88% faster than 90s target!)
-- ✅ P90 latency: <20s (achieved)
+- [DONE] Median latency: 10.35s (already 88% faster than 90s target!)
+- [DONE] P90 latency: <20s (achieved)
 - Cache hit rate: 60% → 80% (nice to have)
 - First response (streaming): <3s (nice to have)
 
@@ -2114,7 +2114,7 @@ Stop LLM from giving generic/wrong answers by adding more context
 ---
 
 ### 3.7: Accuracy Testing & Validation
-**Priority:** 🔴 CRITICAL  
+**Priority:** [RED] CRITICAL  
 **Goal:** Systematically measure and improve accuracy
 
 **Tasks:**
@@ -2191,7 +2191,7 @@ Stop LLM from giving generic/wrong answers by adding more context
 ## Week 7-8: Learning & Iteration
 
 ### 3.8: Community-Driven Knowledge Base (Fun Experiment!)
-**Priority:** 🟢 MEDIUM  
+**Priority:** [GREEN] MEDIUM  
 **Impact:** Crowdsource fixes from user community
 **Note:** Since this is a hobby project, we can experiment with fun community features without worrying about moderation costs or legal stuff!
 
@@ -2294,7 +2294,7 @@ Stop LLM from giving generic/wrong answers by adding more context
 ---
 
 ### 3.9: Continuous Learning from Production
-**Priority:** 🟢 MEDIUM  
+**Priority:** [GREEN] MEDIUM  
 **Impact:** Agent improves automatically over time
 **Privacy:** All learning is local-only! No telemetry, no cloud upload, your code never leaves your machine
 
@@ -2364,30 +2364,30 @@ Stop LLM from giving generic/wrong answers by adding more context
 
 ---
 
-# 🟡 PHASE 4: Real-Time Features & Interactive Debugging
+# [YELLOW] PHASE 4: Real-Time Features & Interactive Debugging
 **Duration:** 4-6 weeks  
-**Status:** ✅ Week 1-4 COMPLETE (January 2, 2026)  
+**Status:** [DONE] Week 1-4 COMPLETE (January 2, 2026)  
 **Focus:** Real-time error detection + conversational debugging
 
-## ✅ Phase 4 Week 1-4 Completion Summary
+## [DONE] Phase 4 Week 1-4 Completion Summary
 
 **Completed:** January 2, 2026  
 **Delivered:** ~1,600 LOC of real-time and interactive features
 
-**Week 1-2: Real-Time Error Detection ✅**
-- ✅ RCAHoverProvider - Inline error explanations on hover
-- ✅ RealtimeErrorDetector - File change monitoring (debounced 500ms)
-- ✅ Enhanced RCACodeActionProvider - Context-specific quick fixes
-- ✅ Extension wiring - Registered all providers
-- ✅ New commands: toggleRealtimeDetection, detectErrors
+**Week 1-2: Real-Time Error Detection [DONE]**
+- [DONE] RCAHoverProvider - Inline error explanations on hover
+- [DONE] RealtimeErrorDetector - File change monitoring (debounced 500ms)
+- [DONE] Enhanced RCACodeActionProvider - Context-specific quick fixes
+- [DONE] Extension wiring - Registered all providers
+- [DONE] New commands: toggleRealtimeDetection, detectErrors
 
-**Week 3-4: Interactive Debugging ✅**
-- ✅ ConversationalAgent (540 LOC) - Multi-turn conversations with history
-- ✅ GuidedDebuggingWorkflow (550 LOC) - 6-step debugging workflow
-- ✅ Session management - Separate conversations per error
-- ✅ Context tracking - Remembers files, errors, fixes discussed
-- ✅ Conversation export - Save to Markdown
-- ✅ Integration tests - Full workflow coverage
+**Week 3-4: Interactive Debugging [DONE]**
+- [DONE] ConversationalAgent (540 LOC) - Multi-turn conversations with history
+- [DONE] GuidedDebuggingWorkflow (550 LOC) - 6-step debugging workflow
+- [DONE] Session management - Separate conversations per error
+- [DONE] Context tracking - Remembers files, errors, fixes discussed
+- [DONE] Conversation export - Save to Markdown
+- [DONE] Integration tests - Full workflow coverage
 
 **Key Features:**
 1. **Real-Time Detection:** Errors detected as you type (500ms debounce)
@@ -2406,7 +2406,7 @@ Stop LLM from giving generic/wrong answers by adding more context
 ## Week 1-2: Real-Time Features
 
 ### 4.1: Contextual Error Detection
-**Priority:** 🔴 CRITICAL  
+**Priority:** [RED] CRITICAL  
 **Impact:** Catch errors before build
 
 **Tasks:**
@@ -2492,7 +2492,7 @@ Stop LLM from giving generic/wrong answers by adding more context
 ---
 
 ## Week 3-4: Interactive Debugging
-**Priority:** 🟡 HIGH  
+**Priority:** [YELLOW] HIGH  
 **Impact:** Conversational debugging (like ChatGPT for errors)
 
 **Why It's Cool:**
@@ -2586,7 +2586,7 @@ Imagine asking "Why does this error happen?" and getting a conversation, not jus
 ## Week 5-6: Fun Experimental Features
 
 ### 4.5: Visual Debugging
-**Priority:** 🟢 MEDIUM  
+**Priority:** [GREEN] MEDIUM  
 **Impact:** See what's happening, not just read text
 
 **Tasks:**
@@ -2620,7 +2620,7 @@ Imagine asking "Why does this error happen?" and getting a conversation, not jus
 ---
 
 ### 4.6: Educational Features
-**Priority:** 🟢 MEDIUM  
+**Priority:** [GREEN] MEDIUM  
 **Impact:** Learn while debugging
 
 **Tasks:**
@@ -2655,7 +2655,7 @@ Imagine asking "Why does this error happen?" and getting a conversation, not jus
 
 ---
 
-# 🎨 PHASE 5: Experimental Fun Stuff (The Best Part!)
+# [DESIGN] PHASE 5: Experimental Fun Stuff (The Best Part!)
 **Duration:** Ongoing (forever!)  
 **Focus:** Try cool ideas without pressure, monetization concerns, or corporate nonsense  
 **Mindset:** This is where we get to be creative and try stuff that big companies can't/won't  
@@ -2749,14 +2749,14 @@ const best = combineResults(results);
 
 ---
 
-# 📊 Success Metrics (Hobby Project Edition)
+# [CHART] Success Metrics (Hobby Project Edition)
 
 **Focus on learning and actual value, not vanity metrics**
 
 ### What Actually Matters
 | Metric | Current (MVP Test) | Target |
 |--------|-------------------|--------|
-| Diagnosis Accuracy | 100% ✅ | 100% (maintain) |
+| Diagnosis Accuracy | 100% [DONE] | 100% (maintain) |
 | Solution Usability | 40% | 90%+ |
 | Helps Me Debug | Sometimes | Most of the time |
 | Fun to Work On | Yes | Hell yes |
@@ -2767,17 +2767,17 @@ const best = combineResults(results);
 |--------|---------|--------|
 | GitHub Stars | 0 | 100+ |
 | Active Users | 1 (me) | 10-50 friends |
-| Performance | 10.35s ✅ | Already excellent! |
+| Performance | 10.35s [DONE] | Already excellent! |
 
 ### Don't Care About
-- ❌ Revenue (it's free!)
-- ❌ Enterprise customers
-- ❌ Market share
-- ❌ Investors
+- [FAIL] Revenue (it's free!)
+- [FAIL] Enterprise customers
+- [FAIL] Market share
+- [FAIL] Investors
 
 ---
 
-# 🛠️ Tech Stack (Hobby Project)
+# [FIX] Tech Stack (Hobby Project)
 
 ## Current Setup (LLM/Vector DB Focused)
 - **LLM:** DeepSeek-R1-Distill-Qwen-7B (~5GB) - Reasoning model for RCA
@@ -2827,34 +2827,34 @@ Fix Presented to User
 
 ---
 
-# 🎯 Priority Matrix (Updated with MVP Test Data)
+# [TARGET] Priority Matrix (Updated with MVP Test Data)
 
 ## Do First (Proven High Impact)
-1. 🔴 **Better prompts with specificity** (40% → 90% usability)
+1. [RED] **Better prompts with specificity** (40% → 90% usability)
    - MVP test: Diagnosis perfect, solutions too vague
    - Add: exact files, version numbers, code snippets
    
-2. 🔴 **Domain knowledge database** (enable version suggestions)
+2. [RED] **Domain knowledge database** (enable version suggestions)
    - MVP test: Couldn't suggest valid AGP versions
    - Add: AGP 7.x-9.x, Kotlin versions, compatibility matrix
    
-3. 🔴 **Fix generation with code diffs** (0% → 85% code examples)
+3. [RED] **Fix generation with code diffs** (0% → 85% code examples)
    - MVP test: No before/after code shown
    - Generate actual diffs, not just text descriptions
    
-4. 🔴 **File path resolution** (30% → 95% accuracy)
+4. [RED] **File path resolution** (30% → 95% accuracy)
    - MVP test: Said "build.gradle", actual file is "libs.versions.toml"
    - Add: intelligent file detection from project structure
    
-5. 🟡 **More MVP project tests** (validate improvements)
+5. [YELLOW] **More MVP project tests** (validate improvements)
    - Test Kotlin errors, Compose errors, XML errors
    - Build comprehensive real-world dataset
 
 ## Do Later (Cool but Not Urgent)
-6. 🟢 Real-time error detection
-7. 🟢 Chat interface
-8. 🟢 Visual debugging
-9. 🟢 Educational modes
+6. [GREEN] Real-time error detection
+7. [GREEN] Chat interface
+8. [GREEN] Visual debugging
+9. [GREEN] Educational modes
 10. ~~Latency reduction~~ (already excellent at 10.35s!)
 
 ## Maybe Someday (Experiments)
@@ -2864,19 +2864,19 @@ Fix Presented to User
 14. 🔵 Community knowledge base
 
 ## Definitely Not (Too Complex for Hobby)
-- ❌ Enterprise features
-- ❌ SSO/Authentication
-- ❌ Multi-tenancy
-- ❌ Custom model fine-tuning
-- ❌ Kubernetes deployment
-- ❌ Compliance (GDPR, SOC 2, etc.)
-- ❌ Audit logging
-- ❌ Cost management
-- ❌ SLA monitoring
+- [FAIL] Enterprise features
+- [FAIL] SSO/Authentication
+- [FAIL] Multi-tenancy
+- [FAIL] Custom model fine-tuning
+- [FAIL] Kubernetes deployment
+- [FAIL] Compliance (GDPR, SOC 2, etc.)
+- [FAIL] Audit logging
+- [FAIL] Cost management
+- [FAIL] SLA monitoring
 
 ---
 
-# 🛠️ Tech Stack (Hobby Project)
+# [FIX] Tech Stack (Hobby Project)
 
 ## Current Setup (Works Fine)
 - **LLM:** DeepSeek-R1-Distill-Qwen-7B (~5GB)
@@ -2893,15 +2893,15 @@ Fix Presented to User
 - **Deployment:** GitHub Releases for distribution
 
 ## What NOT to Add
-- ❌ Microservices (overkill)
-- ❌ Kubernetes (way overkill)
-- ❌ Cloud infrastructure (expensive)
-- ❌ Complex CI/CD (GitHub Actions is enough)
-- ❌ Message queues (not needed)
+- [FAIL] Microservices (overkill)
+- [FAIL] Kubernetes (way overkill)
+- [FAIL] Cloud infrastructure (expensive)
+- [FAIL] Complex CI/CD (GitHub Actions is enough)
+- [FAIL] Message queues (not needed)
 
 ---
 
-# 📝 Risks & Reality Checks
+# [NOTE] Risks & Reality Checks
 
 ## Hobby Project Risks
 
@@ -2935,16 +2935,16 @@ Fix Presented to User
 
 ---
 
-# 🏆 Success = Learning + Working Product
+# [TROPHY] Success = Learning + Working Product
 
 **After 6-12 months, success looks like:**
 
 1. **Learned a TON**
-   - AI/LLM integration ✅
-   - VS Code extension development ✅
-   - Vector databases ✅
-   - Agent reasoning patterns ✅
-   - TypeScript best practices ✅
+   - AI/LLM integration [DONE]
+   - VS Code extension development [DONE]
+   - Vector databases [DONE]
+   - Agent reasoning patterns [DONE]
+   - TypeScript best practices [DONE]
 
 2. **Built Something Useful**
    - Actually helps debug Android errors
@@ -2964,7 +2964,7 @@ Fix Presented to User
    - Small community using it
    - Featured in newsletters/blogs
 
-**The Real Goal:** Build something cool while learning cutting-edge tech. Everything else is bonus! 🚀
+**The Real Goal:** Build something cool while learning cutting-edge tech. Everything else is bonus! [LAUNCH]
 
 ---
 
@@ -2972,4 +2972,4 @@ Fix Presented to User
 **Last Updated:** December 25, 2025  
 **Next Review:** Whenever you feel like it  
 **Owner:** You (and it's awesome!)  
-**Reminder:** This is for FUN. No stress, no deadlines, just building cool stuff! 🎉
+**Reminder:** This is for FUN. No stress, no deadlines, just building cool stuff! [SUCCESS]

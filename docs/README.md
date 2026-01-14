@@ -1,4 +1,4 @@
-# 🚀 RCA Agent: Local-First AI Debugging Assistant
+# [LAUNCH] RCA Agent: Local-First AI Debugging Assistant
 
 **Mission:** Build a local-first debugging assistant for Kotlin/Android development that provides deep root cause analysis using unlimited LLM iterations.
 
@@ -8,24 +8,24 @@
 
 ---
 
-## 📊 Project Status (December 20, 2025)
+## [CHART] Project Status (December 20, 2025)
 
-| Component | Status | Tests | Description |
-|-----------|--------|-------|-------------|
-| **Chunks 1.1-1.5 (MVP)** | ✅ Complete | 83/83 | Basic RCA agent with Ollama |
-| **Chunks 2.1-2.4 (Tools)** | ✅ Complete | 109/109 | ErrorParser, LSP, PromptEngine |
-| **Chunks 3.1-3.4 (DB)** | ✅ Complete | 44/44 | ChromaDB, Cache, Feedback |
-| **Chunk 4.1 (Compose)** | ✅ Complete | 20/20 | Jetpack Compose parser |
-| **Chunk 4.2 (XML)** | ✅ Complete | 43/43 | XML Layout parser |
-| **Chunk 4.3 (Gradle)** | ✅ Complete | 26/26 | AndroidBuildTool |
-| **Chunk 5.1 (Streaming)** | ✅ Complete | 56/56 | AgentStateStream, DocumentSynthesizer |
-| **Chunk 5.2 (Educational)** | ✅ Complete | 24/24 | EducationalAgent with sync/async |
-| **Chunk 5.3 (Performance)** | ✅ Complete | 20/20 | PerformanceTracker with metrics |
-| **Chunk 5.4 (Testing)** | ✅ Complete | 9/9 | Golden test suite with 7 cases |
-| **Chunk 5.5 (Documentation)** | ✅ Complete | 0/0 | Complete API, architecture, performance docs |
-| **Overall** | 🎉 100% Complete | **869/878** | **PHASE 1 COMPLETE!** |
+| Component                     | Status                  | Tests       | Description                                  |
+| ----------------------------- | ----------------------- | ----------- | -------------------------------------------- |
+| **Chunks 1.1-1.5 (MVP)**      | [DONE] Complete         | 83/83       | Basic RCA agent with Ollama                  |
+| **Chunks 2.1-2.4 (Tools)**    | [DONE] Complete         | 109/109     | ErrorParser, LSP, PromptEngine               |
+| **Chunks 3.1-3.4 (DB)**       | [DONE] Complete         | 44/44       | ChromaDB, Cache, Feedback                    |
+| **Chunk 4.1 (Compose)**       | [DONE] Complete         | 20/20       | Jetpack Compose parser                       |
+| **Chunk 4.2 (XML)**           | [DONE] Complete         | 43/43       | XML Layout parser                            |
+| **Chunk 4.3 (Gradle)**        | [DONE] Complete         | 26/26       | AndroidBuildTool                             |
+| **Chunk 5.1 (Streaming)**     | [DONE] Complete         | 56/56       | AgentStateStream, DocumentSynthesizer        |
+| **Chunk 5.2 (Educational)**   | [DONE] Complete         | 24/24       | EducationalAgent with sync/async             |
+| **Chunk 5.3 (Performance)**   | [DONE] Complete         | 20/20       | PerformanceTracker with metrics              |
+| **Chunk 5.4 (Testing)**       | [DONE] Complete         | 9/9         | Golden test suite with 7 cases               |
+| **Chunk 5.5 (Documentation)** | [DONE] Complete         | 0/0         | Complete API, architecture, performance docs |
+| **Overall**                   | [SUCCESS] 100% Complete | **869/878** | **PHASE 1 COMPLETE!**                        |
 
-**Current Milestone:** Week 13 - **PHASE 1 BACKEND COMPLETE** ✅  
+**Current Milestone:** Week 13 - **PHASE 1 BACKEND COMPLETE** [DONE]  
 **Next:** VS Code Extension Integration (Sokchea's work)
 
 See [DEVLOG.md](DEVLOG.md) for detailed weekly progress and current status.  
@@ -33,7 +33,7 @@ See [testing/TESTING_COMPLETE.md](testing/TESTING_COMPLETE.md) for comprehensive
 
 ---
 
-## 🎯 What This Does
+## [TARGET] What This Does
 
 **AI-Powered Local Debugging Assistant:**
 - Analyzes Kotlin/Android errors on your machine (complete privacy)
@@ -43,15 +43,15 @@ See [testing/TESTING_COMPLETE.md](testing/TESTING_COMPLETE.md) for comprehensive
 - Educational mode explains concepts while debugging
 
 **Supported Error Types (Phase 1):**
-- ✅ Kotlin: NPE, lateinit, type mismatches, imports, compilation
-- ✅ Jetpack Compose: remember, recomposition, LaunchedEffect
-- ✅ XML Layouts: inflation, resources, attributes
-- ⏳ Gradle: dependency conflicts, build failures (next)
-- ⏳ Manifest: merge conflicts, permissions (planned)
+- [DONE] Kotlin: NPE, lateinit, type mismatches, imports, compilation
+- [DONE] Jetpack Compose: remember, recomposition, LaunchedEffect
+- [DONE] XML Layouts: inflation, resources, attributes
+- [TIMER] Gradle: dependency conflicts, build failures (next)
+- [TIMER] Manifest: merge conflicts, permissions (planned)
 
 ---
 
-## 🏁 Quick Start
+## [FINISH] Quick Start
 
 ### Prerequisites (10 minutes)
 ```bash
@@ -166,9 +166,9 @@ npm run test:coverage       # Test coverage report
 
 ---
 
-## 📚 Documentation
+## [DOCS] Documentation
 
-**📑 For complete documentation index, see [DOCS_INDEX.md](DOCS_INDEX.md)**
+**[FILE] For complete documentation index, see [DOCS_INDEX.md](DOCS_INDEX.md)**
 
 ### API Documentation (New!)
 - **[api/Agent.md](api/Agent.md)** - Agent APIs (MinimalReactAgent, EducationalAgent, PromptEngine, etc.)
@@ -203,13 +203,13 @@ npm run test:coverage       # Test coverage report
 
 ---
 
-## 🔧 Performance (RTX 3070 Ti)
+## [TOOL] Performance (RTX 3070 Ti)
 
 **Actual Results (Latest Test Run):**
-- ✅ Average Latency: **75.8s** (target: <90s)
-- ✅ Accuracy: **100%** (10/10 test cases)
-- ✅ Parse Rate: **100%**
-- ✅ Max Latency: 111.5s (2 tests over 90s individual target)
+- [DONE] Average Latency: **75.8s** (target: <90s)
+- [DONE] Accuracy: **100%** (10/10 test cases)
+- [DONE] Parse Rate: **100%**
+- [DONE] Max Latency: 111.5s (2 tests over 90s individual target)
 
 **Model Performance:**
 - Primary: hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest (5GB)
@@ -218,32 +218,32 @@ npm run test:coverage       # Test coverage report
 
 ---
 
-## 💡 Why Local LLMs?
+## [IDEA] Why Local LLMs?
 
 **Advantages Over Cloud Services:**
 
-| Cloud (Copilot, etc.) | Local Agent | Your Advantage |
-|----------------------|-------------|----------------|
-| 8K token limit | Unlimited context | Analyze entire files |
-| Rate limited (5/hour) | Unlimited iterations | Deeper root causes |
-| No sensitive data | Full access | Debug production code |
-| General model | Model swapping | Specialized per task |
-| No learning | Learns your patterns | Gets better over time |
-| Per-token cost | Zero cost | Unlimited analyses |
+| Cloud (Copilot, etc.) | Local Agent          | Your Advantage        |
+| --------------------- | -------------------- | --------------------- |
+| 8K token limit        | Unlimited context    | Analyze entire files  |
+| Rate limited (5/hour) | Unlimited iterations | Deeper root causes    |
+| No sensitive data     | Full access          | Debug production code |
+| General model         | Model swapping       | Specialized per task  |
+| No learning           | Learns your patterns | Gets better over time |
+| Per-token cost        | Zero cost            | Unlimited analyses    |
 
 **Core Innovation:** Local = unlimited iterations, complete privacy, zero cost, continuous learning.
 
 ---
 
-## 🎓 Learning Focus
+## [LEARN] Learning Focus
 
 This project is about **learning**, not external validation:
 
-- 🧠 LLM agent architecture (ReAct pattern, tool use)
-- 💾 Vector databases (ChromaDB, embeddings, RAG)
-- 🤖 AI-assisted development workflows
-- 🛠️ Building useful tools for real problems
-- 📈 Local AI deployment and optimization
+- [BRAIN] LLM agent architecture (ReAct pattern, tool use)
+- [SAVE] Vector databases (ChromaDB, embeddings, RAG)
+- [BOT] AI-assisted development workflows
+- [FIX] Building useful tools for real problems
+- [GRAPH] Local AI deployment and optimization
 
 **Success = Learning + Useful Tool**
 
@@ -251,7 +251,7 @@ No deadlines, no pressure, no publication goals. Just building something cool.
 
 ---
 
-## 🐛 Troubleshooting
+## [BUG] Troubleshooting
 
 ### Ollama Issues
 ```bash
@@ -276,9 +276,9 @@ No deadlines, no pressure, no publication goals. Just building something cool.
 
 ---
 
-## 🚀 Next Steps
+## [LAUNCH] Next Steps
 
-**✅ Phase 1 Backend - COMPLETE!**
+**[DONE] Phase 1 Backend - COMPLETE!**
 - All 5 chunks complete (MVP → Tools → Database → Android → Polish)
 - 869/878 tests passing (99% pass rate)
 - 85% test coverage
@@ -298,4 +298,4 @@ No deadlines, no pressure, no publication goals. Just building something cool.
 
 ---
 
-**🌟 Ready to dive in? Check [DEVLOG.md](DEVLOG.md) for current progress or [API_CONTRACTS.md](API_CONTRACTS.md) to understand the system architecture.**
+**[STAR] Ready to dive in? Check [DEVLOG.md](DEVLOG.md) for current progress or [API_CONTRACTS.md](API_CONTRACTS.md) to understand the system architecture.**

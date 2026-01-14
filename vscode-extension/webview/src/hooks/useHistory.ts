@@ -9,7 +9,7 @@
  * - Real-time updates from extension
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useVSCode } from './useVSCode';
 
 export interface HistoryItem {
@@ -26,6 +26,11 @@ export interface HistoryItem {
     confidence?: number;
     fixes?: any[];
     analysis?: string;
+    feedback?: {
+      enabled: boolean;
+      rcaId?: string;
+      errorHash?: string;
+    };
   };
   duration?: number;
   success: boolean;
@@ -37,24 +42,27 @@ export type SortOrder = 'asc' | 'desc';
 
 export function useHistory() {
   const { postMessage } = useVSCode();
-  
+
   const [historyItems, setHistoryItems] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
   const [sortBy, setSortBy] = useState<SortBy>('timestamp');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
-  
+
+  const [feedbackStatusById, setFeedbackStatusById] = useState<Record<string, { status: 'idle' | 'sending' | 'sent' | 'error'; message?: string }>>({});
+  const pendingFeedbackByRcaIdRef = useRef<Record<string, string>>({});
+
   // Callbacks
   const loadHistory = useCallback(() => {
     postMessage('getHistory');
   }, [postMessage]);
-  
+
   const refreshHistory = useCallback(() => {
     setLoading(true);
     postMessage('refreshHistory');
   }, [postMessage]);
-  
+
   const searchHistory = useCallback((query: string) => {
     setSearchQuery(query);
     if (query.trim()) {
@@ -63,90 +71,164 @@ export function useHistory() {
       loadHistory();
     }
   }, [postMessage, loadHistory]);
-  
+
   const reanalyzeError = useCallback((historyId: string) => {
     postMessage('reanalyzeFromHistory', { historyId });
   }, [postMessage]);
-  
+
   const deleteHistoryItem = useCallback((historyId: string) => {
     postMessage('deleteHistoryItem', { historyId });
   }, [postMessage]);
-  
+
   const clearHistory = useCallback(() => {
     if (confirm('Are you sure you want to clear all history? This cannot be undone.')) {
       postMessage('clearHistory');
     }
   }, [postMessage]);
-  
+
   const exportToMarkdown = useCallback((historyId: string) => {
     postMessage('exportHistoryItem', { historyId });
   }, [postMessage]);
-  
+
   const exportAllToMarkdown = useCallback(() => {
     postMessage('exportAllHistory');
   }, [postMessage]);
-  
+
+  const submitFeedback = useCallback((historyId: string, feedbackType: 'positive' | 'negative') => {
+    const item = historyItems.find(h => h.id === historyId);
+    const meta = item?.result?.feedback;
+
+    if (!item || !meta?.enabled || !meta.rcaId) {
+      setFeedbackStatusById(prev => ({
+        ...prev,
+        [historyId]: { status: 'error', message: 'Feedback unavailable (no persisted rcaId)' }
+      }));
+      return;
+    }
+
+    pendingFeedbackByRcaIdRef.current[meta.rcaId] = historyId;
+    setFeedbackStatusById(prev => ({
+      ...prev,
+      [historyId]: { status: 'sending' }
+    }));
+
+    postMessage('submitFeedback', {
+      feedbackType,
+      rcaId: meta.rcaId,
+      errorHash: meta.errorHash
+    });
+  }, [postMessage, historyItems]);
+
   // Load history on mount
   useEffect(() => {
     loadHistory();
-    
+
     // Refresh every 60 seconds (less frequent than dashboard since history changes less)
     const interval = setInterval(() => {
       loadHistory();
     }, 60000);
-    
+
     return () => clearInterval(interval);
   }, [loadHistory]);
-  
+
   // Listen for updates from extension
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       const message = event.data;
-      
+
       switch (message.command) {
         case 'historyData':
           setHistoryItems(message.history || []);
           setLoading(false);
           break;
-          
+
         case 'historyUpdated':
           setHistoryItems(message.history || []);
           break;
-          
+
         case 'searchHistoryResults':
           setHistoryItems(message.results || []);
           setLoading(false);
           break;
-          
+
         case 'historyItemDeleted':
           setHistoryItems(prev => prev.filter(item => item.id !== message.id));
           break;
-          
+
         case 'historyCleared':
           setHistoryItems([]);
           break;
+
+        case 'feedbackResult': {
+          const rcaId = message?.result?.rcaId as string | undefined;
+          const newConfidence = message?.result?.newConfidence as number | undefined;
+          const msg = message?.result?.message as string | undefined;
+
+          if (rcaId && typeof newConfidence === 'number') {
+            setHistoryItems(prev => prev.map(item => {
+              if (item.result.feedback?.rcaId === rcaId) {
+                return {
+                  ...item,
+                  result: {
+                    ...item.result,
+                    confidence: newConfidence
+                  }
+                };
+              }
+              return item;
+            }));
+          }
+
+          const historyId = rcaId ? pendingFeedbackByRcaIdRef.current[rcaId] : undefined;
+          if (historyId) {
+            setFeedbackStatusById(prev => ({
+              ...prev,
+              [historyId]: { status: 'sent', message: msg || 'Feedback submitted' }
+            }));
+            if (rcaId) {
+              delete pendingFeedbackByRcaIdRef.current[rcaId];
+            }
+          }
+          break;
+        }
+
+        case 'feedbackError': {
+          const rcaId = message?.rcaId as string | undefined;
+          const historyId = rcaId ? pendingFeedbackByRcaIdRef.current[rcaId] : undefined;
+
+          if (historyId) {
+            setFeedbackStatusById(prev => ({
+              ...prev,
+              [historyId]: { status: 'error', message: message.error || 'Feedback failed' }
+            }));
+            if (rcaId) {
+              delete pendingFeedbackByRcaIdRef.current[rcaId];
+            }
+          }
+          break;
+        }
       }
     };
-    
+
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
   }, []);
-  
+
   // Apply filters and sorting
   const filteredItems = historyItems.filter(item => {
     // Filter by status
     if (filterStatus === 'success' && !item.success) return false;
     if (filterStatus === 'failed' && item.success) return false;
-    
+
     // If there's a search query, it's already filtered by the backend
     // But we can do additional client-side filtering if needed
     return true;
   });
-  
+
   // Sort items
   const sortedItems = [...filteredItems].sort((a, b) => {
     let comparison = 0;
-    
+
     switch (sortBy) {
       case 'timestamp':
         comparison = a.timestamp - b.timestamp;
@@ -158,19 +240,19 @@ export function useHistory() {
         comparison = (a.duration || 0) - (b.duration || 0);
         break;
     }
-    
+
     return sortOrder === 'asc' ? comparison : -comparison;
   });
-  
+
   // Group by date for timeline view
   const groupedByDate = sortedItems.reduce((groups, item) => {
     const date = new Date(item.timestamp);
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
-    
+
     let groupKey: string;
-    
+
     if (date.toDateString() === today.toDateString()) {
       groupKey = 'Today';
     } else if (date.toDateString() === yesterday.toDateString()) {
@@ -182,15 +264,15 @@ export function useHistory() {
     } else {
       groupKey = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     }
-    
+
     if (!groups[groupKey]) {
       groups[groupKey] = [];
     }
     groups[groupKey].push(item);
-    
+
     return groups;
   }, {} as Record<string, HistoryItem[]>);
-  
+
   // Calculate stats
   const stats = {
     total: historyItems.length,
@@ -203,7 +285,7 @@ export function useHistory() {
       ? Math.round(historyItems.reduce((sum, item) => sum + (item.result.confidence || 0), 0) / historyItems.length * 100) / 100
       : 0
   };
-  
+
   return {
     historyItems: sortedItems,
     groupedByDate,
@@ -217,6 +299,7 @@ export function useHistory() {
     sortOrder,
     setSortOrder,
     stats,
+    feedbackStatusById,
     loadHistory,
     refreshHistory,
     searchHistory,
@@ -224,6 +307,7 @@ export function useHistory() {
     deleteHistoryItem,
     clearHistory,
     exportToMarkdown,
-    exportAllToMarkdown
+    exportAllToMarkdown,
+    submitFeedback
   };
 }

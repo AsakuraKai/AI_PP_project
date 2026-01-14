@@ -1,4 +1,4 @@
-# 🚀 RCA Agent: Local-First Deep Code Analysis - Project Roadmap
+﻿# [LAUNCH] RCA Agent: Local-First Deep Code Analysis - Project Roadmap
 
 > **Mission:** Build a local-first debugging assistant that leverages unlimited context, iterations, and continuous learning to provide deep root cause analysis for code errors - starting with Kotlin/Android development.
 
@@ -10,7 +10,7 @@
 
 ---
 
-## 📚 Documentation Structure
+## [DOCS] Documentation Structure
 
 This roadmap is organized into focused, digestible documents:
 
@@ -24,15 +24,15 @@ This roadmap is organized into focused, digestible documents:
 ### Phase Implementation Guides
 | Phase | Document | Status | Progress | Description |
 |-------|----------|--------|----------|-------------|
-| **Phase 1** | **[Foundation & Kotlin/Android](phases/Phase1-Foundation-Kotlin-Android.md)** | 🎯 Active | **Chunks 1-4.1 ✅ COMPLETE** (Week 6) | Complete Kotlin/Android debugging support (Weeks 1-12) |
-| **Phase 2** | **[TypeScript/JavaScript Support](phases/Phase2-TypeScript-JavaScript.md)** | ⏳ Planned | Not Started | Web development debugging (When Phase 1 complete) |
-| **Phase 3** | **[Python Support](phases/Phase3-Python.md)** | ⏳ Planned | Not Started | Python debugging for data science, backend, scripting |
-| **Phase 4** | **[Advanced Features](phases/Phase4-Advanced-Features.md)** | ⏳ Planned | Not Started | Fine-tuning, refactoring, security, polish |
-| **Phase 5+** | **[Future Extensions](phases/Phase5-Future-Extensions.md)** | 💡 Optional | Not Started | Additional languages, team features, cloud sync |
+| **Phase 1** | **[Foundation & Kotlin/Android](phases/Phase1-Foundation-Kotlin-Android.md)** | [TARGET] Active | **Chunks 1-4.1 [DONE] COMPLETE** (Week 6) | Complete Kotlin/Android debugging support (Weeks 1-12) |
+| **Phase 2** | **[TypeScript/JavaScript Support](phases/Phase2-TypeScript-JavaScript.md)** | [TIMER] Planned | Not Started | Web development debugging (When Phase 1 complete) |
+| **Phase 3** | **[Python Support](phases/Phase3-Python.md)** | [TIMER] Planned | Not Started | Python debugging for data science, backend, scripting |
+| **Phase 4** | **[Advanced Features](phases/Phase4-Advanced-Features.md)** | [TIMER] Planned | Not Started | Fine-tuning, refactoring, security, polish |
+| **Phase 5+** | **[Future Extensions](phases/Phase5-Future-Extensions.md)** | [IDEA] Optional | Not Started | Additional languages, team features, cloud sync |
 
 ---
 
-## 💡 Why This Project Exists
+## [IDEA] Why This Project Exists
 
 ### The Local LLM Advantage
 
@@ -49,7 +49,7 @@ This roadmap is organized into focused, digestible documents:
 
 ### Six Core Advantages
 
-#### 🔓 **Advantage 1: Extended Context Windows**
+#### [UNLOCKED] **Advantage 1: Extended Context Windows**
 - **Reality:** 4K-8K tokens (most 7B models), 16K-32K (specialized models)
 - **Practical sweet spot:** 8K-12K tokens for best performance
 - **For large codebases:** Use hierarchical summarization + relevance filtering
@@ -57,21 +57,21 @@ This roadmap is organized into focused, digestible documents:
 
 **Enables:** Cross-file dependency analysis, architectural issue detection, complete call graph tracing
 
-#### ♾️ **Advantage 2: Unlimited Iterations**
+#### [INFINITY] **Advantage 2: Unlimited Iterations**
 - **Cloud:** "5 API calls remaining this hour"
 - **Local:** "Run 100 iterations until we find root cause"
 - **No cost, no limits**
 
 **Enables:** Exhaustive hypothesis testing, binary search through error space, deep recursion
 
-#### 🔒 **Advantage 3: Complete Privacy**
+#### [LOCK] **Advantage 3: Complete Privacy**
 - Everything runs on your machine
 - No code sent to external servers
 - Full access to secrets, configs, production data
 
 **Enables:** Full codebase access, config analysis, real error context
 
-#### 🎓 **Advantage 4: Custom Fine-Tuning (Advanced - Phase 4)**
+#### [LEARN] **Advantage 4: Custom Fine-Tuning (Advanced - Phase 4)**
 - Fine-tune on YOUR team's specific error patterns
 - **Reality:** 24GB+ VRAM (full fine-tuning) OR 12GB+ (QLoRA/4-bit)
 - **Simpler alternative:** RAG with vector DB (included in Phase 1-3)
@@ -79,14 +79,14 @@ This roadmap is organized into focused, digestible documents:
 
 **Enables:** Team-specific error recognition, codebase-aware suggestions
 
-#### 📈 **Advantage 5: Persistent Learning**
+#### [GRAPH] **Advantage 5: Persistent Learning**
 - Every error makes the system smarter
 - Vector DB stores validated solutions
 - Next similar error = instant solution
 
 **Enables:** Gets better over time as you use it, learns your coding patterns
 
-#### 🔄 **Advantage 6: Free Model Swapping = Unlimited Language Support**
+#### [REFRESH] **Advantage 6: Free Model Swapping = Unlimited Language Support**
 - **Cloud:** "You get the model we give you"
 - **Local:** "Switch between ANY model instantly, zero API cost"
 
@@ -116,7 +116,7 @@ for (const model of ['qwen-coder:7b', 'codellama:7b', 'deepseek-coder:6.7b']) {
 
 ---
 
-## 🎯 Project Goals
+## [TARGET] Project Goals
 
 ### Main Goal
 > Build a working local debugging assistant that actually helps with Kotlin/Android development, then expand to other languages **at my own pace**.
@@ -124,11 +124,11 @@ for (const model of ['qwen-coder:7b', 'codellama:7b', 'deepseek-coder:6.7b']) {
 ### Success Metrics (Keep It Simple)
 
 **Phase 1: Kotlin/Android Working**
-- ✅ Successfully analyzes common Kotlin errors (NullPointerException, lateinit, etc.)
-- ✅ Handles Android-specific issues (lifecycle, Compose, Gradle)
-- ✅ Completes analysis in <60s on your GPU
-- ✅ Actually useful in real development
-- ✅ Learning about LLM agents and RAG systems
+- [DONE] Successfully analyzes common Kotlin errors (NullPointerException, lateinit, etc.)
+- [DONE] Handles Android-specific issues (lifecycle, Compose, Gradle)
+- [DONE] Completes analysis in <60s on your GPU
+- [DONE] Actually useful in real development
+- [DONE] Learning about LLM agents and RAG systems
 
 **Later Phases: Multi-Language Support (No Timeline)**
 - Add TypeScript/JavaScript support when ready
@@ -145,7 +145,7 @@ for (const model of ['qwen-coder:7b', 'codellama:7b', 'deepseek-coder:6.7b']) {
 
 ---
 
-## 💻 Hardware & Infrastructure
+## [CODE] Hardware & Infrastructure
 
 ### Your Setup
 - **GPU:** RTX 3070 Ti (8GB VRAM)
@@ -156,7 +156,7 @@ for (const model of ['qwen-coder:7b', 'codellama:7b', 'deepseek-coder:6.7b']) {
 ### Recommended Models for Your Setup
 | Model Size | VRAM Usage | Your Speed | Best For |
 |-----------|-----------|------------|----------|
-| **7B-8B (Q8)** | ~4-5GB | 4-6s/iter | Main debugging (Kotlin, Android) ✅ |
+| **7B-8B (Q8)** | ~4-5GB | 4-6s/iter | Main debugging (Kotlin, Android) [DONE] |
 | **3B-4B (Q8)** | ~2-3GB | 2-3s/iter | Fast feedback loops |
 | **7B-8B (Q4)** | ~2-3GB | 3-4s/iter | Alternative for lighter load |
 
@@ -187,13 +187,13 @@ Total Storage Needed: ~40-60GB
 **Target: Full RCA Analysis Time (Your 3070 Ti)**
 | Mode | Iterations | Model | Your Time | Status |
 |------|-----------|-------|-----------|--------|
-| Standard | 8-10 | hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest (Q8) | 35-50s | 🟢 Excellent |
-| Fast | 6-8 | qwen-coder:3b (Q8) | 16-24s | 🟢 Great |
-| Educational | 8-10 | hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest (Q8) | 60-80s | 🟢 Good |
+| Standard | 8-10 | hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest (Q8) | 35-50s | [GREEN] Excellent |
+| Fast | 6-8 | qwen-coder:3b (Q8) | 16-24s | [GREEN] Great |
+| Educational | 8-10 | hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest (Q8) | 60-80s | [GREEN] Good |
 
 ---
 
-## 🚀 Phase Overview
+## [LAUNCH] Phase Overview
 
 ### **Phase 1: Foundation & Kotlin/Android Complete**
 > **Current Focus** - Build a fully working debugging assistant for Kotlin/Android development
@@ -202,14 +202,14 @@ Total Storage Needed: ~40-60GB
 **[→ View Detailed Phase 1 Guide](phases/Phase1-Foundation-Kotlin-Android.md)**
 
 **What Phase 1 Delivers:**
-- ✅ VS Code extension that works
-- ✅ Analyzes Kotlin errors (NullPointerException, lateinit, scope functions, etc.)
-- ✅ Handles Android-specific issues (lifecycle, Jetpack Compose, Gradle builds)
-- ✅ Parses XML layouts and Groovy build scripts
-- ✅ Vector DB learning from your errors
-- ✅ Fast analysis (<60s) on your GPU
-- ✅ Educational mode for learning
-- ✅ Actually useful in real Android projects
+- [DONE] VS Code extension that works
+- [DONE] Analyzes Kotlin errors (NullPointerException, lateinit, scope functions, etc.)
+- [DONE] Handles Android-specific issues (lifecycle, Jetpack Compose, Gradle builds)
+- [DONE] Parses XML layouts and Groovy build scripts
+- [DONE] Vector DB learning from your errors
+- [DONE] Fast analysis (<60s) on your GPU
+- [DONE] Educational mode for learning
+- [DONE] Actually useful in real Android projects
 
 **Phase 1 Milestones:**
 - **Weeks 1-2:** Foundation (Extension setup, Vector DB, Tool infrastructure)
@@ -218,10 +218,10 @@ Total Storage Needed: ~40-60GB
 - **Weeks 9-12:** UI & Synthesis (Webview panel, document generation, feedback loop)
 
 **Phase 1 is complete when:**
-- ✅ Can analyze real Kotlin/Android errors from your projects
-- ✅ Provides useful root cause analysis
-- ✅ Completes in <60s on your GPU
-- ✅ You actually use it during development
+- [DONE] Can analyze real Kotlin/Android errors from your projects
+- [DONE] Provides useful root cause analysis
+- [DONE] Completes in <60s on your GPU
+- [DONE] You actually use it during development
 
 ---
 
@@ -287,7 +287,7 @@ Total Storage Needed: ~40-60GB
 
 ---
 
-## 🏁 Quick Start
+## [FINISH] Quick Start
 
 ### For Development Setup
 1. Clone this repository
@@ -304,17 +304,17 @@ Total Storage Needed: ~40-60GB
 
 ---
 
-## 📊 Simple Success Metrics
+## [CHART] Simple Success Metrics
 
 ### Phase 1 Success (Kotlin/Android)
-- ✅ Can analyze 10+ different Kotlin error types
-- ✅ Handles Android lifecycle errors correctly
-- ✅ Understands Jetpack Compose issues
-- ✅ Parses Gradle build errors
-- ✅ Completes analysis in <60s on your GPU
-- ✅ Actually helps when debugging
-- ✅ Learns from your errors (vector DB)
-- ✅ You use it regularly
+- [DONE] Can analyze 10+ different Kotlin error types
+- [DONE] Handles Android lifecycle errors correctly
+- [DONE] Understands Jetpack Compose issues
+- [DONE] Parses Gradle build errors
+- [DONE] Completes analysis in <60s on your GPU
+- [DONE] Actually helps when debugging
+- [DONE] Learns from your errors (vector DB)
+- [DONE] You use it regularly
 
 ### Overall Project Success
 - **Usability:** You actually use it while coding
@@ -327,7 +327,7 @@ Total Storage Needed: ~40-60GB
 
 ---
 
-## 🎓 Learning Goals
+## [LEARN] Learning Goals
 
 ### Core Learning Objectives
 - Understand how LLM agents work deeply
@@ -346,23 +346,23 @@ Total Storage Needed: ~40-60GB
 
 ---
 
-## 🎯 Production-Ready Features Summary
+## [TARGET] Production-Ready Features Summary
 
 ### Core Capabilities
-✅ **Local-First Architecture** - Zero cloud dependencies, full privacy  
-✅ **Educational Mode** - Learning-focused explanations for skill development  
-✅ **Unlimited Language Support** - Model swapping eliminates language constraints  
-✅ **Comprehensive Android Support** - Modern Native (Kotlin+Compose), Traditional (Java+XML), Cross-Platform (Flutter+Dart)  
-✅ **Free Model Swapping** - Hot-swap between specialized models per language (3B-8B) without restart  
-✅ **Intelligent Caching** - 90% faster for repeat errors  
-✅ **Persistent State** - Resume from checkpoint on crash  
-✅ **Dynamic Iterations** - Auto-adjust complexity (6-12 iterations)  
-✅ **Parallel Tool Execution** - 3x faster analysis  
-✅ **Self-Reflection** - Agent backtracks when hypothesis wrong  
-✅ **Quality Management** - Auto-prune low-quality RCAs from vector DB  
-✅ **Fix Validation** - Verify suggested code compiles  
-✅ **Observability** - Performance metrics, token tracking  
-✅ **Security** - Prompt injection defense, input sanitization  
+[DONE] **Local-First Architecture** - Zero cloud dependencies, full privacy  
+[DONE] **Educational Mode** - Learning-focused explanations for skill development  
+[DONE] **Unlimited Language Support** - Model swapping eliminates language constraints  
+[DONE] **Comprehensive Android Support** - Modern Native (Kotlin+Compose), Traditional (Java+XML), Cross-Platform (Flutter+Dart)  
+[DONE] **Free Model Swapping** - Hot-swap between specialized models per language (3B-8B) without restart  
+[DONE] **Intelligent Caching** - 90% faster for repeat errors  
+[DONE] **Persistent State** - Resume from checkpoint on crash  
+[DONE] **Dynamic Iterations** - Auto-adjust complexity (6-12 iterations)  
+[DONE] **Parallel Tool Execution** - 3x faster analysis  
+[DONE] **Self-Reflection** - Agent backtracks when hypothesis wrong  
+[DONE] **Quality Management** - Auto-prune low-quality RCAs from vector DB  
+[DONE] **Fix Validation** - Verify suggested code compiles  
+[DONE] **Observability** - Performance metrics, token tracking  
+[DONE] **Security** - Prompt injection defense, input sanitization  
 
 ### Modes of Operation
 - **Standard Mode:** Balanced speed/accuracy (~60s on GPU, ~100s on CPU)
@@ -372,7 +372,7 @@ Total Storage Needed: ~40-60GB
 
 ---
 
-## 📝 Development Philosophy
+## [NOTE] Development Philosophy
 
 ### Development Approach: Practical & Iterative
 - **Solo developer** with heavy AI assistant support
@@ -394,7 +394,7 @@ Total Storage Needed: ~40-60GB
 
 ---
 
-## 📖 Additional Resources
+## [BOOK] Additional Resources
 
 ### Project Documentation
 - **[DEVLOG.md](DEVLOG.md)** - Weekly development journal
@@ -425,76 +425,76 @@ This is a personal learning project, but you can:
 
 ---
 
-## 📈 Current Progress Snapshot (Week 5 Complete)
+## [GRAPH] Current Progress Snapshot (Week 5 Complete)
 
-### ✅ Completed Chunks
-- **Chunk 1.1-1.3** (Week 1): Core Backend Foundation ✅
+### [DONE] Completed Chunks
+- **Chunk 1.1-1.3** (Week 1): Core Backend Foundation [DONE]
   - OllamaClient, KotlinNPEParser, MinimalReactAgent
   - 41 tests passing, 90%+ coverage
   
-- **Chunk 1.4** (Week 1 Extended): File Reading Tool ✅
+- **Chunk 1.4** (Week 1 Extended): File Reading Tool [DONE]
   - ReadFileTool with context extraction
   - 71 tests passing, 88%+ coverage
   
-- **Chunk 1.5** (Week 2): MVP Testing & Validation ✅
+- **Chunk 1.5** (Week 2): MVP Testing & Validation [DONE]
   - 100% accuracy (10/10 test cases)
   - 27.9s average latency (3.2x faster than target)
   - 83 tests passing, production-ready
   
-- **Chunk 2.1** (Week 3): Full Error Parser ✅
+- **Chunk 2.1** (Week 3): Full Error Parser [DONE]
   - Multi-language parsing (Kotlin, Gradle)
   - 11 error types supported
   - 109 new tests (192 total passing)
   
-- **Chunk 2.2** (Week 3): LSP Integration & Tool Registry ✅
+- **Chunk 2.2** (Week 3): LSP Integration & Tool Registry [DONE]
   - ToolRegistry with Zod validation
   - LSPTool placeholder implementation
   - 88 new tests (280 total passing)
   
-- **Chunk 2.3** (Week 3): Prompt Engineering ✅
+- **Chunk 2.3** (Week 3): Prompt Engineering [DONE]
   - PromptEngine with system prompts
   - 4 few-shot examples
   - 25 new tests (281 total passing)
   
-- **Chunk 2.4** (Week 3-4): Agent Integration & Testing ✅
+- **Chunk 2.4** (Week 3-4): Agent Integration & Testing [DONE]
   - Full agent integration with tools and prompts
   - Dynamic tool execution and iteration management
   - 268/272 tests passing (98.5%)
   - A/B testing infrastructure ready
 
-- **Chunk 3.1** (Week 4): ChromaDB Setup ✅
+- **Chunk 3.1** (Week 4): ChromaDB Setup [DONE]
   - ChromaDBClient with connection management
   - RCADocument storage and retrieval
   - 42 tests (ChromaDBClient + schemas)
   
-- **Chunk 3.2** (Week 4): Embedding & Search ✅
+- **Chunk 3.2** (Week 4): Embedding & Search [DONE]
   - EmbeddingService with sentence-transformers
   - Semantic similarity search
   - QualityScorer for ranking
   - 60 tests (EmbeddingService + QualityScorer)
 
-- **Chunk 3.3** (Week 4): Caching System ✅
+- **Chunk 3.3** (Week 4): Caching System [DONE]
   - ErrorHasher with SHA-256 hashing
   - RCACache with TTL management
   - Automatic cleanup and LRU-like eviction
   - 91 new tests (460 total passing)
 
-- **Chunk 3.4** (Week 4-5): User Feedback System ✅
+- **Chunk 3.4** (Week 4-5): User Feedback System [DONE]
   - FeedbackHandler for thumbs up/down processing
   - QualityManager for auto-pruning low-quality RCAs
   - Confidence adjustment (+20% positive, -50% negative)
   - 6-month expiration policy, <0.3 quality threshold
   - 76 new tests (536 total passing)
 
-### 🎯 Current Status
+### [TARGET] Current Status
 - **Overall:** 536/536 tests passing (100%)
 - **Coverage:** 90%+ across all modules
 - **Build Time:** ~15s
-- **Production Ready:** Chunks 1.1-3.4 complete ✅ (CHUNK 3 COMPLETE!)
+- **Production Ready:** Chunks 1.1-3.4 complete [DONE] (CHUNK 3 COMPLETE!)
 - **Next:** Chunk 4.1 - Jetpack Compose Parser
 
-### 🚀 Next Milestone: Chunk 4.1 - Jetpack Compose Parser
-**Prerequisites:** ✅ All Complete
+### [LAUNCH] Next Milestone: Chunk 4.1 - Jetpack Compose Parser
+**Prerequisites:** [DONE] All Complete
 - Full error parsing system (Kotlin, Gradle)
 - ChromaDB with embedding and search ready
 - User feedback system operational

@@ -87,7 +87,7 @@ export class SemanticExampleService {
     if (this.initialized) return;
 
     try {
-      console.log('🔧 Initializing SemanticExampleService...');
+      console.log('[TOOL] Initializing SemanticExampleService...');
       
       // Try to get existing collection
       try {
@@ -106,8 +106,8 @@ export class SemanticExampleService {
       console.log('✓ SemanticExampleService initialized');
 
     } catch (error) {
-      console.warn('⚠️ Failed to initialize ChromaDB:', error);
-      console.warn('⚠️ Semantic search will be unavailable. Make sure ChromaDB is running.');
+      console.warn('[WARN] Failed to initialize ChromaDB:', error);
+      console.warn('[WARN] Semantic search will be unavailable. Make sure ChromaDB is running.');
       this.initialized = false;
     }
   }
@@ -146,7 +146,7 @@ export class SemanticExampleService {
       console.log(`✓ Added example: ${example.errorType}`);
 
     } catch (error) {
-      console.warn('⚠️ Failed to add example:', error);
+      console.warn('[WARN] Failed to add example:', error);
     }
   }
 
@@ -155,7 +155,7 @@ export class SemanticExampleService {
    */
   async findSimilarExamples(error: ParsedError, limit?: number): Promise<SemanticSearchResult[]> {
     if (!this.isAvailable()) {
-      console.warn('⚠️ ChromaDB not available, returning empty results');
+      console.warn('[WARN] ChromaDB not available, returning empty results');
       return [];
     }
 
@@ -164,7 +164,7 @@ export class SemanticExampleService {
       const searchQuery = this.createSearchQuery(error);
       const maxResults = limit || this.maxExamples;
 
-      console.log(`🔍 Searching for similar examples (query: "${searchQuery.substring(0, 80)}...")`);
+      console.log(`[SEARCH] Searching for similar examples (query: "${searchQuery.substring(0, 80)}...")`);
 
       // Query ChromaDB with semantic search
       const results = await this.collection!.query({
@@ -207,7 +207,7 @@ export class SemanticExampleService {
       return topResults;
 
     } catch (error) {
-      console.warn('⚠️ Semantic search failed:', error);
+      console.warn('[WARN] Semantic search failed:', error);
       return [];
     }
   }
@@ -237,7 +237,7 @@ export class SemanticExampleService {
       return uniqueResults.slice(0, this.maxExamples);
 
     } catch (error) {
-      console.warn('⚠️ Related pattern search failed:', error);
+      console.warn('[WARN] Related pattern search failed:', error);
       return [];
     }
   }
@@ -398,13 +398,13 @@ export class SemanticExampleService {
       throw new Error('SemanticExampleService not initialized');
     }
 
-    console.log(`📦 Bulk adding ${examples.length} examples to ChromaDB...`);
+    console.log(`[PACKAGE] Bulk adding ${examples.length} examples to ChromaDB...`);
 
     for (const example of examples) {
       try {
         await this.addExample(example);
       } catch (error) {
-        console.warn(`⚠️ Failed to add example ${example.id}:`, error);
+        console.warn(`[WARN] Failed to add example ${example.id}:`, error);
       }
     }
 
@@ -425,7 +425,7 @@ export class SemanticExampleService {
       });
       console.log('✓ Cleared example collection');
     } catch (error) {
-      console.warn('⚠️ Failed to clear examples:', error);
+      console.warn('[WARN] Failed to clear examples:', error);
     }
   }
 }

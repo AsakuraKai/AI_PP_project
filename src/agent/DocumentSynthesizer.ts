@@ -27,13 +27,13 @@ import { RCAResult, ParsedError, AgentState } from '../types';
 export interface SynthesisOptions {
   /** Include code context in output */
   includeCodeContext?: boolean;
-  
+
   /** Include tool execution details */
   includeToolDetails?: boolean;
-  
+
   /** Include metadata section */
   includeMetadata?: boolean;
-  
+
   /** Maximum code snippet length */
   maxCodeLength?: number;
 }
@@ -93,7 +93,7 @@ export class DocumentSynthesizer {
    */
   private generateHeader(error: ParsedError): string {
     const errorType = this.formatErrorType(error.type);
-    return `# 🔍 Root Cause Analysis: ${errorType}\n`;
+    return `# [SEARCH] Root Cause Analysis: ${errorType}\n`;
   }
 
   /**
@@ -101,11 +101,11 @@ export class DocumentSynthesizer {
    */
   private generateSummary(rca: RCAResult, error: ParsedError): string {
     const confidence = this.formatConfidence(rca.confidence);
-    const location = error.filePath !== 'unknown' 
+    const location = error.filePath !== 'unknown'
       ? `[${error.filePath}:${error.line}](${error.filePath}#L${error.line})`
       : 'Unknown location';
 
-    return `## 📋 Summary
+    return `## [LIST] Summary
 
 **Error Type:** ${this.formatErrorType(error.type)}  
 **Location:** ${location}  
@@ -122,7 +122,7 @@ ${error.message}
    * Generate root cause section
    */
   private generateRootCauseSection(rca: RCAResult): string {
-    return `## 🎯 Root Cause
+    return `## [TARGET] Root Cause
 
 ${rca.rootCause}`;
   }
@@ -135,7 +135,7 @@ ${rca.rootCause}`;
       .map((guideline, index) => `${index + 1}. ${guideline}`)
       .join('\n');
 
-    return `## 🛠️ Fix Guidelines
+    return `## [BUILD] Fix Guidelines
 
 ${steps}`;
   }
@@ -149,14 +149,14 @@ ${steps}`;
     maxLength: number
   ): string {
     let codeContext = rca.codeContext || '';
-    
+
     if (codeContext.length > maxLength) {
       codeContext = codeContext.slice(0, maxLength) + '\n...[truncated]';
     }
 
     const language = this.getCodeLanguage(error.language);
 
-    return `## 📄 Code Context
+    return `## [FILE] Code Context
 
 **File:** ${error.filePath}  
 **Line:** ${error.line}
@@ -173,7 +173,7 @@ ${codeContext}
     const tools = rca.toolsUsed || [];
     const toolList = tools.map(tool => `- ${this.formatToolName(tool)}`).join('\n');
 
-    return `## 🔧 Analysis Tools Used
+    return `## [TOOL] Analysis Tools Used
 
 ${toolList}`;
   }
@@ -201,7 +201,7 @@ ${toolList}`;
       const customMetadata = Object.entries(error.metadata)
         .map(([key, value]) => `**${this.formatMetadataKey(key)}:** ${value}`)
         .join('  \n');
-      
+
       if (customMetadata) {
         metadata.push(customMetadata);
       }
@@ -211,7 +211,7 @@ ${toolList}`;
       return '';
     }
 
-    return `## 📊 Analysis Metadata
+    return `## [STATS] Analysis Metadata
 
 ${metadata.join('  \n')}`;
   }
@@ -233,7 +233,7 @@ ${metadata.join('  \n')}`;
     const percentage = Math.round(confidence * 100);
     const bars = Math.round(confidence * 10);
     const visualization = '█'.repeat(bars) + '░'.repeat(10 - bars);
-    
+
     let label: string;
     if (confidence >= 0.8) {
       label = 'High';
@@ -265,10 +265,10 @@ ${metadata.join('  \n')}`;
    */
   private formatToolName(tool: string): string {
     const toolNames: Record<string, string> = {
-      read_file: '📖 Read File',
-      find_callers: '🔍 Find Callers (LSP)',
-      vector_search_db: '🗄️ Vector Search',
-      android_build_tool: '🔨 Android Build Analysis',
+      read_file: '[READ] Read File',
+      find_callers: '[SEARCH] Find Callers (LSP)',
+      vector_search_db: '[DB] Vector Search',
+      android_build_tool: '[BUILD] Android Build Analysis',
     };
 
     return toolNames[tool] || tool.replace(/_/g, ' ');

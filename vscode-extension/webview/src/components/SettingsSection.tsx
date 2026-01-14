@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Settings, Check, X } from 'lucide-react';
 import { Switch } from './ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { useVSCode, useVSCodeMessage } from '../hooks/useVSCode';
+import { useVSCode } from '../hooks/useVSCode';
 
 interface SettingsSectionProps {
   collapsed: boolean;
