@@ -63,7 +63,7 @@ async function main() {
     console.log('   [OK] Tools registered');
     
     // Initialize agent
-    console.log('\n🤖 Initializing RCA Agent...');
+    console.log('\n[INIT] Initializing RCA Agent...');
     const agent = new MinimalReactAgent(llmClient, {
       maxIterations: 5,
       tools: toolRegistry,

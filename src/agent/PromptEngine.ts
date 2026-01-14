@@ -29,16 +29,16 @@ import { TemplateEngine } from './TemplateEngine'; // ITERATION 11: Template-bas
 export interface FewShotExample {
   /** Error description */
   error: string;
-  
+
   /** Agent's thought process */
   thought: string;
-  
+
   /** Action taken */
   action: string;
-  
+
   /** Observation from action */
   observation: string;
-  
+
   /** Final analysis */
   conclusion: {
     rootCause: string;
@@ -76,7 +76,7 @@ export class PromptEngine extends BasePromptEngine {
       const category = this.templateEngine.classifyForTemplate(error);
       return this.templateEngine.getTemplatePrompt(category);
     }
-    
+
     // Fallback to original verbose prompt
     return `You are an expert Kotlin/Android debugging assistant specializing in root cause analysis.
 
@@ -556,15 +556,15 @@ Always respond with valid JSON:
     iteration: number;
   }): string {
     const { error, previousResponse, specificIssues } = params;
-    
+
     // Extract core diagnosis to preserve
-    const coreDiagnosis = previousResponse.rootCause || 
-                         previousResponse.thought || 
-                         'analysis incomplete';
-    
+    const coreDiagnosis = previousResponse.rootCause ||
+      previousResponse.thought ||
+      'analysis incomplete';
+
     // Identify error domain for domain-specific examples
     const errorDomain = this.classifyErrorDomain(error);
-    
+
     return `You're improving a previous analysis. **CRITICAL: Keep the core diagnosis intact.**
 
 **YOUR PREVIOUS DIAGNOSIS (PRESERVE THIS):**
@@ -619,7 +619,7 @@ ENHANCED (same diagnosis + detail):
     const msg = error.message.toLowerCase();
     const stack = error.stackTrace?.map(f => f.file).join(' ').toLowerCase() || '';
     const combined = msg + ' ' + stack;
-    
+
     if (combined.includes('permission') || combined.includes('securityexception')) {
       return 'permission';
     }
@@ -638,7 +638,7 @@ ENHANCED (same diagnosis + detail):
     if (combined.includes('null') || combined.includes('npe')) {
       return 'null-pointer';
     }
-    
+
     return 'general';
   }
 
@@ -796,7 +796,7 @@ ${example.conclusion.fixGuidelines.map(step => `    - ${step}`).join('\n')}
       try {
         // Ensure few-shot examples are loaded before use (fixes race condition)
         await this.ensureFewShotLoaded();
-        
+
         // Use only 1 most relevant example to avoid noise
         const relevantExamples = await this.fewShotService.findRelevantExamples(error, 1);
         if (relevantExamples.length > 0) {
@@ -903,7 +903,7 @@ Consider using the read_file tool to examine the code at the error location.\n`;
       try {
         // Ensure database is loaded (idempotent)
         await this.ensureFewShotLoaded();
-        
+
         const relevantExamples = await this.fewShotService.findRelevantExamples(error, exampleCount);
         if (relevantExamples.length > 0) {
           prompt += this.fewShotService.formatExamplesForPrompt(relevantExamples);
@@ -1004,7 +1004,7 @@ Respond ONLY with valid JSON (no other text):
 
       if (!validation.valid) {
         console.warn(`Response validation failed: ${validation.error}`);
-        
+
         // Try to salvage what we can from the JSON
         if (json.thought && typeof json.thought === 'string') {
           // Has thought, so partially valid
@@ -1014,8 +1014,8 @@ Respond ONLY with valid JSON (no other text):
               thought: json.thought,
               action: null,
               rootCause: json.rootCause || 'Analysis incomplete - see thought field for details',
-              fixGuidelines: Array.isArray(json.fixGuidelines) && json.fixGuidelines.length > 0 
-                ? json.fixGuidelines 
+              fixGuidelines: Array.isArray(json.fixGuidelines) && json.fixGuidelines.length > 0
+                ? json.fixGuidelines
                 : ['Review the thought process above', 'Examine error context and code'],
               confidence: typeof json.confidence === 'number' ? json.confidence : 0.3,
             };
@@ -1027,7 +1027,7 @@ Respond ONLY with valid JSON (no other text):
             };
           }
         }
-        
+
         // Cannot salvage - return minimal response
         return {
           thought: JSON.stringify(json).substring(0, 200) || response.substring(0, 200),

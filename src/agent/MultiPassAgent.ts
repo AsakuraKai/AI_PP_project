@@ -32,22 +32,22 @@ import { TemplateEngine } from './TemplateEngine'; // Phase 5: Template integrat
 export interface Hypothesis {
   /** Unique ID for this hypothesis */
   id: string;
-  
+
   /** Hypothesized root cause */
   rootCause: string;
-  
+
   /** Evidence supporting this hypothesis */
   evidence: string[];
-  
+
   /** Evidence contradicting this hypothesis */
   contradictions: string[];
-  
+
   /** Confidence score (0-1) based on evidence */
   confidence: number;
-  
+
   /** Fix guidelines if this hypothesis is correct */
   fixGuidelines: string[];
-  
+
   /** Tools that provided evidence */
   toolsUsed: string[];
 }
@@ -58,10 +58,10 @@ export interface Hypothesis {
 export interface MultiPassConfig extends AgentConfig {
   /** Number of hypotheses to generate (default: 3) */
   numHypotheses?: number;
-  
+
   /** Whether to enable consensus building (default: false) */
   enableConsensus?: boolean;
-  
+
   /** Minimum evidence items required per hypothesis (default: 2) */
   minEvidenceItems?: number;
 }
@@ -118,7 +118,7 @@ export class MultiPassAgent extends MinimalReactAgent {
     } catch (err) {
       analysisStart();
       console.error('[X] Multi-pass analysis failed:', err);
-      
+
       // Fallback to single-pass analysis
       console.log('[WARN] Falling back to single-pass analysis...');
       return super.analyze(error);
@@ -143,7 +143,7 @@ export class MultiPassAgent extends MinimalReactAgent {
         hypotheses,
         i
       );
-      
+
       try {
         const response = await this.llm.generate(diversityPrompt, {
           temperature: 0.2 + (i * 0.15), // Increase temperature for diversity
@@ -164,9 +164,9 @@ export class MultiPassAgent extends MinimalReactAgent {
 
     return hypotheses;
   }
-  
+
   // ========== Phase 5: Template Integration Methods ==========
-  
+
   /**
    * Build template-aware diversity prompt
    * Phase 5: Leverage templates for structured hypothesis generation
@@ -179,12 +179,12 @@ export class MultiPassAgent extends MinimalReactAgent {
   ): string {
     // Get template-based prompt for this error category
     const templatePrompt = this.templateEngine.getTemplatePrompt(errorCategory);
-    
+
     // Add diversity instructions
     const diversityHint = existingHypotheses.length > 0
       ? `\n\n**DIVERSITY REQUIREMENT**: This is hypothesis #${iteration + 1}. Generate a DIFFERENT perspective from:\n${existingHypotheses.map(h => `- ${h.rootCause.substring(0, 60)}...`).join('\n')}`
       : '';
-    
+
     return `${templatePrompt}
 
 **ERROR DETAILS**:
@@ -248,7 +248,7 @@ OUTPUT ONLY VALID JSON:`;
       if (!jsonMatch) return null;
 
       const parsed = JSON.parse(jsonMatch[0]);
-      
+
       return {
         id: `hypothesis_${index}`,
         rootCause: parsed.rootCause || 'Unknown',
@@ -274,14 +274,14 @@ OUTPUT ONLY VALID JSON:`;
       try {
         // Use single-pass analysis to gather evidence
         const evidenceResult = await super.analyze(error);
-        
+
         // Check if evidence supports this hypothesis
         const evidence = this.extractEvidence(evidenceResult, hypothesis);
         const contradictions = this.detectContradictions(evidenceResult, hypothesis);
-        
+
         // Update confidence based on evidence
         const evidenceScore = this.calculateEvidenceScore(evidence, contradictions);
-        
+
         validatedHypotheses.push({
           ...hypothesis,
           evidence,
@@ -312,7 +312,7 @@ OUTPUT ONLY VALID JSON:`;
     // Check if root cause mentions similar concepts
     const hypothesisKeywords = this.extractKeywords(hypothesis.rootCause);
     const resultKeywords = this.extractKeywords(result.rootCause);
-    
+
     const commonKeywords = hypothesisKeywords.filter(k => resultKeywords.includes(k));
     if (commonKeywords.length > 0) {
       evidence.push(`Root cause analysis mentions: ${commonKeywords.join(', ')}`);
@@ -358,7 +358,7 @@ OUTPUT ONLY VALID JSON:`;
   private calculateEvidenceScore(evidence: string[], contradictions: string[]): number {
     const baseScore = Math.min(evidence.length / this.minEvidenceItems, 1.0);
     const contradictionPenalty = contradictions.length * 0.2;
-    
+
     return Math.max(0, baseScore - contradictionPenalty);
   }
 
@@ -371,7 +371,7 @@ OUTPUT ONLY VALID JSON:`;
       .replace(/[^\w\s]/g, ' ')
       .split(/\s+/)
       .filter(w => w.length > 4); // Filter short words
-    
+
     return [...new Set(words)]; // Unique keywords
   }
 
@@ -416,14 +416,14 @@ OUTPUT ONLY VALID JSON:`;
 
     // Filter strong hypotheses
     const strongHypotheses = hypotheses.filter(h => h.confidence > 0.5);
-    
+
     if (strongHypotheses.length === 0) {
       return this.selectBestHypothesis(hypotheses);
     }
 
     // Create consensus prompt
     const consensusPrompt = this.buildConsensusPrompt(strongHypotheses);
-    
+
     try {
       const response = await this.llm.generate(consensusPrompt, {
         temperature: 0.1,
@@ -431,7 +431,7 @@ OUTPUT ONLY VALID JSON:`;
       });
 
       const parsed = this.parseConsensusResponse(response.text);
-      
+
       return {
         error: '',
         rootCause: parsed.rootCause,
@@ -451,7 +451,7 @@ OUTPUT ONLY VALID JSON:`;
    * Build prompt for consensus generation
    */
   private buildConsensusPrompt(hypotheses: Hypothesis[]): string {
-    const hypothesesText = hypotheses.map((h, i) => 
+    const hypothesesText = hypotheses.map((h, i) =>
       `**Hypothesis ${i + 1}** (confidence: ${(h.confidence * 100).toFixed(0)}%):\n${h.rootCause}\n\nEvidence: ${h.evidence.join(', ') || 'None'}`
     ).join('\n\n');
 
@@ -478,7 +478,7 @@ OUTPUT ONLY VALID JSON:`;
       if (!jsonMatch) throw new Error('No JSON found');
 
       const parsed = JSON.parse(jsonMatch[0]);
-      
+
       return {
         rootCause: parsed.rootCause || 'Unable to build consensus',
         fixGuidelines: parsed.fixGuidelines || ['Review individual hypotheses'],

@@ -129,8 +129,8 @@ export class UIEventManager {
             id: `activity-${Date.now()}`,
             timestamp: latestItem.timestamp,
             message: wasSuccessful
-                ? `✓ Analyzed: ${this._truncate(latestItem.error.message, 50)}`
-                : `⚠ Low confidence: ${this._truncate(latestItem.error.message, 50)}`,
+                ? `[OK] Analyzed: ${this._truncate(latestItem.error.message, 50)}`
+                : `[WARN] Low confidence: ${this._truncate(latestItem.error.message, 50)}`,
             type: wasSuccessful ? 'success' : 'error',
             metadata: {
                 duration: latestItem.duration,

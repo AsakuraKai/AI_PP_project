@@ -46,7 +46,7 @@ export function Dashboard() {
       }
     }
   }, [loading]);
-  
+
   return (
     <div className="p-8 space-y-8" role="main" aria-label="Dashboard">
       {/* Screen reader announcements */}
@@ -57,7 +57,7 @@ export function Dashboard() {
         aria-atomic="true"
         className="sr-only"
       />
-      
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -78,7 +78,7 @@ export function Dashboard() {
           <span>Refresh</span>
         </Button>
       </div>
-      
+
       {/* Statistics Grid */}
       <div
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
@@ -102,7 +102,7 @@ export function Dashboard() {
               variant={stats.pendingErrors > 0 ? 'warning' : 'success'}
               aria-label={`${stats.pendingErrors} pending errors, ${stats.pendingErrors === 0 ? 'all clear' : 'ready to analyze'}`}
             />
-            
+
             <StatsCard
               title="Analyses Today"
               value={stats.analyzesPerformed}
@@ -114,7 +114,7 @@ export function Dashboard() {
               }}
               aria-label={`${stats.analyzesPerformed} analyses today, up 12%`}
             />
-            
+
             <StatsCard
               title="Success Rate"
               value={`${stats.successRate}%`}
@@ -123,7 +123,7 @@ export function Dashboard() {
               variant={stats.successRate >= 80 ? 'success' : 'warning'}
               aria-label={`${stats.successRate}% success rate`}
             />
-            
+
             <StatsCard
               title="Avg Time"
               value={`${stats.averageTime}s`}
@@ -138,7 +138,7 @@ export function Dashboard() {
           </>
         )}
       </div>
-      
+
       {/* Quick Actions */}
       <div
         className="bg-zinc-900 border border-zinc-800 rounded-lg p-6"
@@ -156,7 +156,7 @@ export function Dashboard() {
             <Play className="h-4 w-4" aria-hidden="true" />
             <span>Analyze All Errors</span>
           </Button>
-          
+
           <Button
             variant="outline"
             onClick={scanWorkspace}
@@ -167,7 +167,7 @@ export function Dashboard() {
             <Search className="h-4 w-4" aria-hidden="true" />
             <span>Scan Workspace</span>
           </Button>
-          
+
           <Button
             variant="outline"
             onClick={openSettings}
@@ -179,7 +179,7 @@ export function Dashboard() {
           </Button>
         </div>
       </div>
-      
+
       {/* Two-column layout for Activity and Status */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Activity */}
@@ -189,7 +189,7 @@ export function Dashboard() {
           aria-label="Recent activity"
         >
           <h2 className="text-xl font-light mb-4">Recent Activity</h2>
-          
+
           {loading ? (
             <div className="space-y-3">
               <ActivityItemSkeleton />
@@ -242,7 +242,7 @@ export function Dashboard() {
             </div>
           )}
         </div>
-        
+
         {/* System Status */}
         <div
           className="bg-zinc-900 border border-zinc-800 rounded-lg p-6"
@@ -250,7 +250,7 @@ export function Dashboard() {
           aria-label="System status"
         >
           <h2 className="text-xl font-light mb-4">System Status</h2>
-          
+
           <div className="space-y-4">
             {/* Ollama Connection */}
             <div className="flex items-start gap-3" role="status">
@@ -272,7 +272,7 @@ export function Dashboard() {
                 )}
               </div>
             </div>
-            
+
             {/* Model Info */}
             {ollamaStatus.connected && ollamaStatus.model && (
               <div className="flex items-start gap-3">
@@ -283,7 +283,7 @@ export function Dashboard() {
                 </div>
               </div>
             )}
-            
+
             {/* Response Time */}
             {ollamaStatus.connected && ollamaStatus.responseTime && (
               <div className="flex items-start gap-3">
@@ -294,7 +294,7 @@ export function Dashboard() {
                 </div>
               </div>
             )}
-            
+
             {/* Workspace Health */}
             <div className="flex items-start gap-3 pt-4 border-t border-zinc-800">
               <CheckCircle2 className="shrink-0 w-4 h-4 text-green-500 mt-0.5" aria-hidden="true" />
@@ -316,16 +316,16 @@ export function Dashboard() {
 function formatTimestamp(timestamp: number): string {
   const now = Date.now();
   const diff = now - timestamp;
-  
+
   const seconds = Math.floor(diff / 1000);
   if (seconds < 60) return `${seconds}s ago`;
-  
+
   const minutes = Math.floor(seconds / 60);
   if (minutes < 60) return `${minutes}m ago`;
-  
+
   const hours = Math.floor(minutes / 60);
   if (hours < 24) return `${hours}h ago`;
-  
+
   const days = Math.floor(hours / 24);
   return `${days}d ago`;
 }
