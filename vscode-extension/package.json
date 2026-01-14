@@ -1,0 +1,191 @@
+{
+  "name": "rca-agent-extension",
+  "displayName": "RCA Agent - Root Cause Analysis",
+  "description": "AI-powered debugging assistant for Kotlin/Android - Backend services available, UI removed",
+  "version": "3.0.0",
+  "publisher": "Kai",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AsakuraKai/AI_PP_project.git"
+  },
+  "homepage": "https://github.com/AsakuraKai/AI_PP_project#readme",
+  "bugs": {
+    "url": "https://github.com/AsakuraKai/AI_PP_project/issues"
+  },
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Debuggers",
+    "AI"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/vscode-extension/src/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "rca-agent",
+          "title": "RCA Agent",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "rca-agent": [
+        {
+          "type": "webview",
+          "id": "rca-agent.mainView",
+          "name": "RCA Agent"
+        }
+      ]
+    },
+    "chatParticipants": [
+      {
+        "id": "rca-agent.participant",
+        "name": "rca",
+        "description": "AI-powered root cause analysis for errors and debugging",
+        "isSticky": true
+      }
+    ],
+    "commands": [
+      {
+        "command": "rcaAgent.startConversation",
+        "title": "RCA Agent: Start Conversational Debugging"
+      },
+      {
+        "command": "rcaAgent.startGuidedDebugging",
+        "title": "RCA Agent: Start Guided Debugging Workflow"
+      },
+      {
+        "command": "rcaAgent.exportConversation",
+        "title": "RCA Agent: Export Conversation"
+      },
+      {
+        "command": "rcaAgent.clearConversations",
+        "title": "RCA Agent: Clear Conversation History"
+      },
+      {
+        "command": "rca-agent.applyFix",
+        "title": "RCA: Apply Suggested Fix",
+        "category": "RCA Agent"
+      },
+      {
+        "command": "rca-agent.explainMore",
+        "title": "RCA: Explain More",
+        "category": "RCA Agent"
+      },
+      {
+        "command": "rca-agent.searchSimilar",
+        "title": "RCA: Search Similar Errors",
+        "category": "RCA Agent"
+      },
+      {
+        "command": "rca-agent.detectErrors",
+        "title": "RCA: Scan Workspace for Errors",
+        "category": "RCA Agent",
+        "icon": "$(search)"
+      },
+      {
+        "command": "rca-agent.showErrorQueue",
+        "title": "RCA: Show Error Queue Status",
+        "category": "RCA Agent",
+        "icon": "$(list-unordered)"
+      },
+      {
+        "command": "rca-agent.addManualError",
+        "title": "RCA: Add Error from Clipboard",
+        "category": "RCA Agent",
+        "icon": "$(add)"
+      },
+      {
+        "command": "rca-agent.captureTerminalErrors",
+        "title": "RCA: Capture Terminal Errors",
+        "category": "RCA Agent",
+        "icon": "$(terminal)"
+      },
+      {
+        "command": "rca-agent.testErrorFlow",
+        "title": "RCA: Test Error Detection Flow",
+        "category": "RCA Agent",
+        "icon": "$(beaker)"
+      }
+    ],
+    "configuration": {
+      "title": "RCA Agent",
+      "properties": {
+        "rcaAgent.ollamaUrl": {
+          "type": "string",
+          "default": "http://localhost:11434",
+          "description": "Ollama server URL for LLM inference"
+        },
+        "rcaAgent.model": {
+          "type": "string",
+          "default": "deepseek-r1",
+          "description": "LLM model to use for analysis"
+        },
+        "rcaAgent.maxIterations": {
+          "type": "number",
+          "default": 5,
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Maximum number of agent iterations per analysis"
+        },
+        "rcaAgent.numHypotheses": {
+          "type": "number",
+          "default": 3,
+          "minimum": 1,
+          "maximum": 5,
+          "description": "Number of hypotheses to generate during analysis"
+        },
+        "rcaAgent.enableConsensus": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable consensus building mode for multi-hypothesis analysis"
+        },
+        "rcaAgent.chromaDbPath": {
+          "type": "string",
+          "default": "./chroma",
+          "description": "ChromaDB data directory path for caching analyses"
+        },
+        "rcaAgent.autoDetectErrors": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically detect errors from VS Code diagnostics"
+        },
+        "rcaAgent.watchBuildFiles": {
+          "type": "boolean",
+          "default": true,
+          "description": "Watch build output files (build/outputs/**/*.log) for errors"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.0.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^18.11.9",
+    "@types/vscode": "^1.80.0",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "@vscode/test-electron": "^2.2.0",
+    "eslint": "^8.28.0",
+    "glob": "^8.0.3",
+    "mocha": "^10.1.0",
+    "typescript": "^4.9.3"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "chromadb": "^1.7.1"
+  }
+}

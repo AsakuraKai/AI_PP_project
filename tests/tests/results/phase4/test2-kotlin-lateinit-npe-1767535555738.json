@@ -1,0 +1,60 @@
+{
+  "testCase": {
+    "id": 2,
+    "name": "Kotlin lateinit NPE",
+    "description": "lateinit property accessed before initialization",
+    "errorType": "kotlin-npe",
+    "complexity": "medium",
+    "targetUsability": 75,
+    "error": {
+      "type": "kotlin-npe",
+      "message": "lateinit property viewModel has not been initialized",
+      "filePath": "app/src/main/kotlin/MainActivity.kt",
+      "line": 42,
+      "column": 9,
+      "language": "kotlin",
+      "metadata": {
+        "severity": "error",
+        "context": "Accessing viewModel before onCreate() completes"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/kotlin/MainActivity.kt",
+      "lineNumber": 35,
+      "explanation": "Initialize viewModel in onCreate() before first use"
+    }
+  },
+  "timestamp": "2026-01-04T14:05:55.738Z",
+  "duration_ms": 4959,
+  "agent_response": {
+    "error": "lateinit property viewModel has not been initialized",
+    "rootCause": "Kotlin NPE due to accessing 'viewModel' before initialization at line 42 in MainActivity.kt",
+    "fixGuidelines": [
+      "1. Open MainActivity.kt and locate where 'viewModel' is first accessed (line 42).",
+      "2. Add code to initialize 'viewModel' either in onCreate() or ensure it's initialized before accessing.",
+      "3. Use 'by lazy {}' for automatic initialization if possible.",
+      "Code Example: Before:\n```kotlin\n// In onCreate(), after super.onCreate and setContentView\nvar viewModel = ViewModelProvider(this)[MainViewModel::class]\n// Access viewModel here causes NPE\n```\nAfter:\n```kotlin\n// Initialize in onCreate() before accessing\nsuper.onCreate(savedInstanceState)\nsetupscreens[screens.size - 1] // Assuming this is where initialization happens\nvar viewModel = ViewModelProvider(this)[MainViewModel::class]\nviewManager.loadData()\n",
+      "Verification: Run the app and check if 'viewModel' initializes properly without NPE.",
+      "Explanation: Ensure all properties accessed in onCreate() are initialized before any access."
+    ],
+    "confidence": 0.75,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 0,
+    "code_examples": 80,
+    "version_suggestions": 0,
+    "overall_usability": 56,
+    "confidence": 0.75,
+    "latency_ms": 4959,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": true,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false
+}

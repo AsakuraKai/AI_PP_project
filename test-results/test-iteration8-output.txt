@@ -1,0 +1,1161 @@
+﻿
+> rca-agent@2.0 test:phase4
+> ts-node scripts/phase4-test-runner.ts
+
+
+================================================================================
+≡ƒÜÇ PHASE 4: REAL-WORLD TESTING
+Testing Agent Usability on 10 Diverse Android Errors
+================================================================================
+
+≡ƒñû Initializing Ollama LLM...
+Connected to Ollama - Model: hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest
+   Γ£à LLM connection successful
+
+≡ƒ¢á∩╕Å  Initializing tools...
+   Γ£à Tools registered
+
+≡ƒñû Initializing RCA Agent...
+   Γ£à Agent initialized
+
+≡ƒº¬ Initializing Test Suite...
+   Γ£à Test Suite ready with 10 test cases
+
+Γû╢∩╕Å  Starting test execution...
+
+
+================================================================================
+≡ƒÜÇ PHASE 4 TEST SUITE - RUNNING ALL 10 TESTS
+================================================================================
+
+≡ƒº¬ Running Test 1: AGP Version Conflict
+   Error Type: gradle-dependency | Complexity: simple
+   Target Usability: 80%
+≡ƒöä Loading few-shot database...
+[FewShotService] TS examples loaded: 43 examples
+Γ£à Loaded 82 few-shot examples (39 JSON + 43 TS) v1.0.0
+   Available categories: gradle, kotlin, compose, xml, manifest, cache, proguard, navigation, network
+   Category counts: {
+  gradle: 15,
+  kotlin: 18,
+  compose: 7,
+  xml: 4,
+  manifest: 13,
+  cache: 5,
+  proguard: 10,
+  navigation: 5,
+  network: 5
+}
+[FewShotService] Looking for examples:
+  - Error type: gradle-dependency
+  - Mapped category: gradle
+  - Database loaded: true
+  - Available categories: gradle, kotlin, compose, xml, manifest, cache, proguard, navigation, network
+≡ƒôÜ Added 1 best matching example to prompt
+
+≡ƒöì PROMPT SENT TO LLM (first 1000 chars):
+You are an expert Kotlin/Android debugging assistant specializing in root cause analysis.
+
+**YOUR ROLE:**
+You help developers understand WHY errors occur and HOW to fix them properly.
+
+**ANALYSIS WORKFLOW:**
+1. **THOUGHT**: Form a specific hypothesis about the error cause
+2. **ACTION**: Use available tools to gather evidence (read_file, find_callers, etc.)
+3. **OBSERVATION**: Analyze the evidence collected
+4. **ITERATE**: Refine hypothesis based on observations
+5. **CONCLUDE**: Provide clear root cause and actionable fix steps
+
+**CRITICAL SPECIFICITY RULES (MUST FOLLOW):**
+
+1. **File Paths - MUST ALWAYS include exact line numbers:**
+   Γ¥î ULTRA BAD: "Check the gradle file"
+   Γ¥î BAD: "Update build.gradle"
+   Γ¥î BAD: "Fix the version in the configuration file"
+   Γ¥î BAD: "Check build.gradle"
+   Γ£à ACCEPTABLE: "Update gradle/libs.versions.toml"
+   Γ£à GOOD: "Update gradle/libs.versions.toml at line 5"
+   Γ£à EXCELLENT: "Update gradle/libs.versions.toml at line 5: change agp = "8.10.0" to agp = "8
+...
+(last 500 chars):
+efore:\n```kotlin\nold code here\n```\nAfter:\n```kotlin\nfixed code here\n```",
+    "3. Verification step explaining how to test the fix"
+  ] (only when action is null - NOTE: fixGuidelines is an array of STRINGS, not objects!),
+  "confidence": 0.0-1.0 (only when action is null)
+}
+
+ΓÜá∩╕Å CRITICAL RULES:
+1. fixGuidelines MUST be an array of STRINGS (not objects!)
+2. At least ONE string MUST contain a code example with Before/After blocks
+3. Use \n for newlines within strings, not actual line breaks
+
+≡ƒöä Attempt 1/4 (temp: 0)...
+≡ƒôè Quality score: 85.0%
+Γ£à Quality threshold met on attempt 1
+
+≡ƒöì RAW LLM RESPONSE (full):
+{
+
+"thought": "The error message indicates that Gradle cannot find the version 8.10.0 of com.android.tools.build:gradle:8.10.0 in Maven Central. This suggests that the AGP (Android Google Play) version specified is no longer available or has been deprecated. I should check if this version exists and what a compatible alternative would be.",
+"action": null,
+"rootCause": "Could not find com.android.tools.build:gradle:8.10.0 in Maven Central. The AGP 8.10.0 version is no longer available as it has been deprecated or removed from Maven Central.",
+"fixGuidelines": [
+  "Update gradle/libs.versions.toml line 2 to a compatible AGP version such as 8.7.3 which exists in Maven Central and is compatible with the current Kotlin and Gradle versions.",
+  "Before:\n```gradle\nagp = \"8.10.0\"\n```\nAfter:\n```gradle\nagp = \"8.7.3\"\n",
+  "Verify that after updating AGP, the build process completes without dependency issues by running './gradlew clean build'. Check Maven Central for the updated AGP version.",
+  "If the problem persists, ensure that other dependencies are compatible with AGP 8.7.3 and consider updating any deprecated APIs or libraries used in the project."
+],
+"confidence": 0.95
+}
+
+Γ£ô Agent concluded after 1 iterations
+≡ƒôè Quality score: 100.0% (threshold: 60%)
+   Breakdown: fileSpec=100% versionSpec=100% codeExamples=100%
+≡ƒöº Generating code fix...
+node.exe : [FixGenerator] File not found after resolution: gradle/libs.versions.toml
+At line:1 char:1
++ & "C:\nodejs/node.exe" "C:\Users\Admin\AppData\Roaming\npm/node_modul ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([FixGenerator] ...s.versions.toml:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[FixGenerator] Tried: 
+[FixGenerator] Could not read file: gradle/libs.versions.toml
+ΓÜá Could not generate code fix
+
+≡ƒôè Performance Metrics
+================================================================================
+
+ΓÅ▒∩╕Å  Total Time: 15941.00ms
+≡ƒôê Total Operations: 5
+ΓîÇ  Average Time: 3188.20ms
+
+≡ƒôï Operation Breakdown:
+--------------------------------------------------------------------------------
+Operation                     Mean        p50         p90         p99         Count
+--------------------------------------------------------------------------------
+prompt_generation             0.00ms      0.00ms      0.00ms      0.00ms      1
+prompt_build                  4.00ms      4.00ms      4.00ms      4.00ms      1
+llm_inference                 7965.00ms   7965.00ms   7965.00ms   7965.00ms   1
+total_analysis                7971.00ms   7971.00ms   7971.00ms   7971.00ms   1
+fix_generation                1.00ms      1.00ms      1.00ms      1.00ms      1
+================================================================================
+
+   Γ£à Completed in 7973ms
+   Overall Usability: 85%
+   Improvement: +45% over baseline
+   Status: Γ£à PASS
+   ≡ƒÆ╛ Saved result to test1-agp-version-conflict-1767535549776.json
+
+≡ƒº¬ Running Test 2: Kotlin lateinit NPE
+   Error Type: kotlin-npe | Complexity: medium
+   Target Usability: 75%
+[FewShotService] Looking for examples:
+  - Error type: kotlin-npe
+  - Mapped category: kotlin
+  - Database loaded: true
+  - Available categories: gradle, kotlin, compose, xml, manifest, cache, proguard, navigation, network
+≡ƒôÜ Added 1 best matching example to prompt
+
+≡ƒöì PROMPT SENT TO LLM (first 1000 chars):
+You are an expert Kotlin/Android debugging assistant specializing in root cause analysis.
+
+**YOUR ROLE:**
+You help developers understand WHY errors occur and HOW to fix them properly.
+
+**ANALYSIS WORKFLOW:**
+1. **THOUGHT**: Form a specific hypothesis about the error cause
+2. **ACTION**: Use available tools to gather evidence (read_file, find_callers, etc.)
+3. **OBSERVATION**: Analyze the evidence collected
+4. **ITERATE**: Refine hypothesis based on observations
+5. **CONCLUDE**: Provide clear root cause and actionable fix steps
+
+**CRITICAL SPECIFICITY RULES (MUST FOLLOW):**
+
+1. **File Paths - MUST ALWAYS include exact line numbers:**
+   Γ¥î ULTRA BAD: "Check the gradle file"
+   Γ¥î BAD: "Update build.gradle"
+   Γ¥î BAD: "Fix the version in the configuration file"
+   Γ¥î BAD: "Check build.gradle"
+   Γ£à ACCEPTABLE: "Update gradle/libs.versions.toml"
+   Γ£à GOOD: "Update gradle/libs.versions.toml at line 5"
+   Γ£à EXCELLENT: "Update gradle/libs.versions.toml at line 5: change agp = "8.10.0" to agp = "8
+...
+(last 500 chars):
+efore:\n```kotlin\nold code here\n```\nAfter:\n```kotlin\nfixed code here\n```",
+    "3. Verification step explaining how to test the fix"
+  ] (only when action is null - NOTE: fixGuidelines is an array of STRINGS, not objects!),
+  "confidence": 0.0-1.0 (only when action is null)
+}
+
+ΓÜá∩╕Å CRITICAL RULES:
+1. fixGuidelines MUST be an array of STRINGS (not objects!)
+2. At least ONE string MUST contain a code example with Before/After blocks
+3. Use \n for newlines within strings, not actual line breaks
+
+≡ƒöä Attempt 1/4 (temp: 0)...
+≡ƒôè Quality score: 100.0%
+Γ£à Quality threshold met on attempt 1
+
+≡ƒöì RAW LLM RESPONSE (full):
+{
+
+"thought": "The error is a KOTLIN_LATEINIT NPE where the property 'viewModel' has not been initialized before being accessed in onCreate(). The code accesses the viewModel before it's properly initialized, leading to an uninitialized property exception. This suggests that the initialization should happen within the onCreate() method or another appropriate lifecycle hook.",
+"action": null,
+"rootCause": "Kotlin NPE due to accessing 'viewModel' before initialization at line 42 in MainActivity.kt",
+"fixGuidelines": [
+  "1. Open MainActivity.kt and locate where 'viewModel' is first accessed (line 42).",
+  "2. Add code to initialize 'viewModel' either in onCreate() or ensure it's initialized before accessing.",
+  "3. Use 'by lazy {}' for automatic initialization if possible.",
+  "Code Example: Before:\n```kotlin\n// In onCreate(), after super.onCreate and setContentView\nvar viewModel = ViewModelProvider(this)[MainViewModel::class]\n// Access viewModel here causes NPE\n```\nAfter:\n```kotlin\n// Initialize in onCreate() before accessing\nsuper.onCreate(savedInstanceState)\nsetupscreens[screens.size - 1] // Assuming this is where initialization happens\nvar viewModel = ViewModelProvider(this)[MainViewModel::class]\nviewManager.loadData()\n",
+  "Verification: Run the app and check if 'viewModel' initializes properly without NPE.",
+  "Explanation: Ensure all properties accessed in onCreate() are initialized before any access."
+],
+"confidence": 0.75
+}
+
+Γ£ô Agent concluded after 1 iterations
+≡ƒôè Quality score: 88.0% (threshold: 60%)
+   Breakdown: fileSpec=100% versionSpec=60% codeExamples=100%
+≡ƒöº Generating code fix...
+[FixGenerator] File not found after resolution: app/src/main/kotlin/MainActivity.kt
+[FixGenerator] Tried: 
+[FixGenerator] Could not read file: app/src/main/kotlin/MainActivity.kt
+ΓÜá Could not generate code fix
+
+≡ƒôè Performance Metrics
+================================================================================
+
+ΓÅ▒∩╕Å  Total Time: 25857.00ms
+≡ƒôê Total Operations: 10
+ΓîÇ  Average Time: 2585.70ms
+
+≡ƒôï Operation Breakdown:
+--------------------------------------------------------------------------------
+Operation                     Mean        p50         p90         p99         Count
+--------------------------------------------------------------------------------
+prompt_generation             0.00ms      0.00ms      0.00ms      0.00ms      2
+prompt_build                  2.50ms      2.50ms      3.70ms      3.97ms      2
+llm_inference                 6460.50ms   6460.50ms   7664.10ms   7934.91ms   2
+total_analysis                6464.50ms   6464.50ms   7669.70ms   7940.87ms   2
+fix_generation                1.00ms      1.00ms      1.00ms      1.00ms      2
+================================================================================
+
+   Γ£à Completed in 4959ms
+   Overall Usability: 56%
+   Status: Γ¥î FAIL
+   ≡ƒÆ╛ Saved result to test2-kotlin-lateinit-npe-1767535555738.json
+
+≡ƒº¬ Running Test 3: Compose API Breakage
+   Error Type: compose-deprecation | Complexity: medium
+   Target Usability: 75%
+[FewShotService] Looking for examples:
+  - Error type: compose-deprecation
+  - Mapped category: compose
+  - Database loaded: true
+  - Available categories: gradle, kotlin, compose, xml, manifest, cache, proguard, navigation, network
+≡ƒôÜ Added 1 best matching example to prompt
+
+≡ƒöì PROMPT SENT TO LLM (first 1000 chars):
+You are an expert Kotlin/Android debugging assistant specializing in root cause analysis.
+
+**YOUR ROLE:**
+You help developers understand WHY errors occur and HOW to fix them properly.
+
+**ANALYSIS WORKFLOW:**
+1. **THOUGHT**: Form a specific hypothesis about the error cause
+2. **ACTION**: Use available tools to gather evidence (read_file, find_callers, etc.)
+3. **OBSERVATION**: Analyze the evidence collected
+4. **ITERATE**: Refine hypothesis based on observations
+5. **CONCLUDE**: Provide clear root cause and actionable fix steps
+
+**CRITICAL SPECIFICITY RULES (MUST FOLLOW):**
+
+1. **File Paths - MUST ALWAYS include exact line numbers:**
+   Γ¥î ULTRA BAD: "Check the gradle file"
+   Γ¥î BAD: "Update build.gradle"
+   Γ¥î BAD: "Fix the version in the configuration file"
+   Γ¥î BAD: "Check build.gradle"
+   Γ£à ACCEPTABLE: "Update gradle/libs.versions.toml"
+   Γ£à GOOD: "Update gradle/libs.versions.toml at line 5"
+   Γ£à EXCELLENT: "Update gradle/libs.versions.toml at line 5: change agp = "8.10.0" to agp = "8
+...
+(last 500 chars):
+efore:\n```kotlin\nold code here\n```\nAfter:\n```kotlin\nfixed code here\n```",
+    "3. Verification step explaining how to test the fix"
+  ] (only when action is null - NOTE: fixGuidelines is an array of STRINGS, not objects!),
+  "confidence": 0.0-1.0 (only when action is null)
+}
+
+ΓÜá∩╕Å CRITICAL RULES:
+1. fixGuidelines MUST be an array of STRINGS (not objects!)
+2. At least ONE string MUST contain a code example with Before/After blocks
+3. Use \n for newlines within strings, not actual line breaks
+
+≡ƒöä Attempt 1/4 (temp: 0)...
+≡ƒôè Quality score: 100.0%
+Γ£à Quality threshold met on attempt 1
+
+≡ƒöì RAW LLM RESPONSE (full):
+{
+
+"thought": "The error message indicates that MaterialTheme is unresolved and suggests using Material3 instead. This implies the project has migrated from Material2 to Material3 but hasn't updated all references yet. The issue occurs in HomeScreen.kt at line 88 where MaterialTheme is imported or used, causing a compile-time error as Material3 is the current package.",
+"action": null,
+"rootCause": "Unresolved reference: MaterialTheme. Use androidx.compose.material3.MaterialTheme",
+"fixGuidelines": [
+  "1. Update import statement from androidx.compose.material to androidx.compose.material3.",
+  "2. Replace MaterialTheme with Material3 version, e.g., MaterialTheme -> Material3.",
+  "3. Ensure all Material2 components are replaced or migrated properly in HomeScreen.kt."
+],
+"confidence": 0.7
+}
+
+Γ£ô Agent concluded after 1 iterations
+≡ƒôè Quality score: 44.5% (threshold: 60%)
+   Breakdown: fileSpec=30% versionSpec=60% codeExamples=20%
+ΓÜá∩╕Å Quality below threshold. Regenerating (attempt 1/2)...
+   Issues: File paths lack line numbers - specify exact locations; Version numbers are generic - use specific versions (e.g., 8.7.3); Missing code examples - show before/after snippets
+≡ƒöä Attempt 1/3 (temp: 0)...
+≡ƒôè Quality score: 75.0%
+Γ£à Quality threshold met on attempt 1
+≡ƒôè Regeneration 1 score: 50.5%
+   Breakdown: fileSpec=30% versionSpec=60% codeExamples=20%
+   Γ£ô New best score: 50.5%
+ΓÜá∩╕Å Quality below threshold. Regenerating (attempt 2/2)...
+   Issues: File paths lack line numbers - specify exact locations; Version numbers are generic - use specific versions (e.g., 8.7.3); Missing code examples - show before/after snippets
+≡ƒöä Attempt 1/3 (temp: 0)...
+≡ƒôè Quality score: 75.0%
+Γ£à Quality threshold met on attempt 1
+≡ƒôè Regeneration 2 score: 50.5%
+   Breakdown: fileSpec=30% versionSpec=60% codeExamples=20%
+ΓÜá∩╕Å Quality still below threshold after 2 attempts. Proceeding with best result.
+≡ƒöº Generating code fix...
+[FixGenerator] File not found after resolution: app/src/main/kotlin/ui/HomeScreen.kt
+[FixGenerator] Tried: 
+[FixGenerator] Could not read file: app/src/main/kotlin/ui/HomeScreen.kt
+ΓÜá Could not generate code fix
+
+≡ƒôè Performance Metrics
+================================================================================
+
+ΓÅ▒∩╕Å  Total Time: 41829.00ms
+≡ƒôê Total Operations: 17
+ΓîÇ  Average Time: 2460.53ms
+
+≡ƒôï Operation Breakdown:
+--------------------------------------------------------------------------------
+Operation                     Mean        p50         p90         p99         Count
+--------------------------------------------------------------------------------
+prompt_generation             0.00ms      0.00ms      0.00ms      0.00ms      3
+prompt_build                  2.00ms      1.00ms      3.40ms      3.94ms      3
+llm_inference                 5310.67ms   4956.00ms   7363.20ms   7904.82ms   3
+total_analysis                6971.67ms   7971.00ms   7983.00ms   7985.70ms   3
+fix_generation                1.00ms      1.00ms      1.00ms      1.00ms      3
+output_regeneration           2486.50ms   2486.50ms   2766.10ms   2829.01ms   2
+================================================================================
+
+   Γ£à Completed in 7987ms
+   Overall Usability: 48%
+   Status: Γ¥î FAIL
+   ≡ƒÆ╛ Saved result to test3-compose-api-breakage-1767535564738.json
+
+≡ƒº¬ Running Test 4: XML Layout Inflation
+   Error Type: xml-layout | Complexity: medium
+   Target Usability: 70%
+[FewShotService] Looking for examples:
+  - Error type: xml-layout
+  - Mapped category: xml
+  - Database loaded: true
+  - Available categories: gradle, kotlin, compose, xml, manifest, cache, proguard, navigation, network
+≡ƒôÜ Added 1 best matching example to prompt
+
+≡ƒöì PROMPT SENT TO LLM (first 1000 chars):
+You are an expert Kotlin/Android debugging assistant specializing in root cause analysis.
+
+**YOUR ROLE:**
+You help developers understand WHY errors occur and HOW to fix them properly.
+
+**ANALYSIS WORKFLOW:**
+1. **THOUGHT**: Form a specific hypothesis about the error cause
+2. **ACTION**: Use available tools to gather evidence (read_file, find_callers, etc.)
+3. **OBSERVATION**: Analyze the evidence collected
+4. **ITERATE**: Refine hypothesis based on observations
+5. **CONCLUDE**: Provide clear root cause and actionable fix steps
+
+**CRITICAL SPECIFICITY RULES (MUST FOLLOW):**
+
+1. **File Paths - MUST ALWAYS include exact line numbers:**
+   Γ¥î ULTRA BAD: "Check the gradle file"
+   Γ¥î BAD: "Update build.gradle"
+   Γ¥î BAD: "Fix the version in the configuration file"
+   Γ¥î BAD: "Check build.gradle"
+   Γ£à ACCEPTABLE: "Update gradle/libs.versions.toml"
+   Γ£à GOOD: "Update gradle/libs.versions.toml at line 5"
+   Γ£à EXCELLENT: "Update gradle/libs.versions.toml at line 5: change agp = "8.10.0" to agp = "8
+...
+(last 500 chars):
+efore:\n```kotlin\nold code here\n```\nAfter:\n```kotlin\nfixed code here\n```",
+    "3. Verification step explaining how to test the fix"
+  ] (only when action is null - NOTE: fixGuidelines is an array of STRINGS, not objects!),
+  "confidence": 0.0-1.0 (only when action is null)
+}
+
+ΓÜá∩╕Å CRITICAL RULES:
+1. fixGuidelines MUST be an array of STRINGS (not objects!)
+2. At least ONE string MUST contain a code example with Before/After blocks
+3. Use \n for newlines within strings, not actual line breaks
+
+≡ƒöä Attempt 1/4 (temp: 0)...
+≡ƒôè Quality score: 55.0%
+Γ£à Quality threshold met on attempt 1
+
+≡ƒöì RAW LLM RESPONSE (full):
+{
+
+"thought": "The error message indicates that the binary XML file is having trouble inflating class android.widget.TextView at line 12. This suggests that there's an issue with how TextView is being defined in the layout file or its corresponding Kt file. Looking at the code example provided, it seems that the problem arises when trying to read attributes from the XML using a custom view. The error message mentions 'unknown attribute android:textFontWeight', which implies that the view definition might be missing some required attributes or has an incorrect structure.",
+"action": null,
+"rootCause": "Binary XML file line #12: Error inflating class android.widget.TextView",
+"fixGuidelines": [
+  "1. Check if TextView is properly defined in the layout file with all necessary attributes.",
+  "2. Ensure that the corresponding Kt file has a proper constructor for XML inflation, including handling of all required attributes.",
+  "3. Verify that the view's XML definition matches its implementation in code and includes any necessary default styles or attributes."
+],
+"confidence": 0.7
+}
+
+Γ£ô Agent concluded after 1 iterations
+≡ƒôè Quality score: 50.5% (threshold: 60%)
+   Breakdown: fileSpec=30% versionSpec=60% codeExamples=20%
+ΓÜá∩╕Å Quality below threshold. Regenerating (attempt 1/2)...
+   Issues: File paths lack line numbers - specify exact locations; Version numbers are generic - use specific versions (e.g., 8.7.3); Missing code examples - show before/after snippets
+≡ƒöä Attempt 1/3 (temp: 0)...
+≡ƒôè Quality score: 45.0%
+ΓÜá∩╕Å Quality below threshold (rootCause too short, no file paths, no line numbers), retrying...
+≡ƒöä Attempt 2/3 (temp: 0.3)...
+≡ƒôè Quality score: 70.0%
+Γ£à Quality threshold met on attempt 2
+≡ƒôè Regeneration 1 score: 56.5%
+   Breakdown: fileSpec=30% versionSpec=60% codeExamples=20%
+   Γ£ô New best score: 56.5%
+ΓÜá∩╕Å Quality below threshold. Regenerating (attempt 2/2)...
+   Issues: File paths lack line numbers - specify exact locations; Version numbers are generic - use specific versions (e.g., 8.7.3); Missing code examples - show before/after snippets
+≡ƒöä Attempt 1/3 (temp: 0)...
+≡ƒôè Quality score: 45.0%
+ΓÜá∩╕Å Quality below threshold (rootCause too short, no file paths, no line numbers), retrying...
+≡ƒöä Attempt 2/3 (temp: 0.3)...
+≡ƒôè Quality score: 45.0%
+ΓÜá∩╕Å Quality below threshold (rootCause too short, no file paths, no line numbers), retrying...
+≡ƒöä Attempt 3/3 (temp: 0.5)...
+≡ƒôè Quality score: 45.0%
+ΓÜá∩╕Å Quality below threshold (rootCause too short, no file paths, no line numbers), retrying...
+ΓÜá∩╕Å Returning best attempt (quality: 45.0%)
+≡ƒôè Regeneration 2 score: 56.5%
+   Breakdown: fileSpec=30% versionSpec=60% codeExamples=20%
+ΓÜá∩╕Å Quality still below threshold after 2 attempts. Proceeding with best result.
+≡ƒöº Generating code fix...
+[FixGenerator] File not found after resolution: app/src/main/res/layout/activity_main.xml
+[FixGenerator] Tried: 
+[FixGenerator] Could not read file: app/src/main/res/layout/activity_main.xml
+ΓÜá Could not generate code fix
+
+≡ƒôè Performance Metrics
+================================================================================
+
+ΓÅ▒∩╕Å  Total Time: 85215.00ms
+≡ƒôê Total Operations: 24
+ΓîÇ  Average Time: 3550.63ms
+
+≡ƒôï Operation Breakdown:
+--------------------------------------------------------------------------------
+Operation                     Mean        p50         p90         p99         Count
+--------------------------------------------------------------------------------
+prompt_generation             0.00ms      0.00ms      0.00ms      0.00ms      4
+prompt_build                  1.75ms      1.00ms      3.10ms      3.91ms      4
+llm_inference                 5170.25ms   4852.50ms   7062.30ms   7874.73ms   4
+total_analysis                10647.25ms  7978.50ms   17567.60ms  21263.36ms  4
+fix_generation                10.50ms     1.00ms      27.60ms     37.86ms     4
+output_regeneration           5474.00ms   4724.00ms   9201.30ms   10200.03ms  4
+================================================================================
+
+   Γ£à Completed in 21713ms
+   Overall Usability: 48%
+   Status: Γ¥î FAIL
+   ≡ƒÆ╛ Saved result to test4-xml-layout-inflation-1767535587458.json
+
+≡ƒº¬ Running Test 5: Multi-Module Dependency Conflict
+   Error Type: gradle-dependency | Complexity: complex
+   Target Usability: 70%
+[FewShotService] Looking for examples:
+  - Error type: gradle-dependency
+  - Mapped category: gradle
+  - Database loaded: true
+  - Available categories: gradle, kotlin, compose, xml, manifest, cache, proguard, navigation, network
+≡ƒôÜ Added 1 best matching example to prompt
+
+≡ƒöì PROMPT SENT TO LLM (first 1000 chars):
+You are an expert Kotlin/Android debugging assistant specializing in root cause analysis.
+
+**YOUR ROLE:**
+You help developers understand WHY errors occur and HOW to fix them properly.
+
+**ANALYSIS WORKFLOW:**
+1. **THOUGHT**: Form a specific hypothesis about the error cause
+2. **ACTION**: Use available tools to gather evidence (read_file, find_callers, etc.)
+3. **OBSERVATION**: Analyze the evidence collected
+4. **ITERATE**: Refine hypothesis based on observations
+5. **CONCLUDE**: Provide clear root cause and actionable fix steps
+
+**CRITICAL SPECIFICITY RULES (MUST FOLLOW):**
+
+1. **File Paths - MUST ALWAYS include exact line numbers:**
+   Γ¥î ULTRA BAD: "Check the gradle file"
+   Γ¥î BAD: "Update build.gradle"
+   Γ¥î BAD: "Fix the version in the configuration file"
+   Γ¥î BAD: "Check build.gradle"
+   Γ£à ACCEPTABLE: "Update gradle/libs.versions.toml"
+   Γ£à GOOD: "Update gradle/libs.versions.toml at line 5"
+   Γ£à EXCELLENT: "Update gradle/libs.versions.toml at line 5: change agp = "8.10.0" to agp = "8
+...
+(last 500 chars):
+efore:\n```kotlin\nold code here\n```\nAfter:\n```kotlin\nfixed code here\n```",
+    "3. Verification step explaining how to test the fix"
+  ] (only when action is null - NOTE: fixGuidelines is an array of STRINGS, not objects!),
+  "confidence": 0.0-1.0 (only when action is null)
+}
+
+ΓÜá∩╕Å CRITICAL RULES:
+1. fixGuidelines MUST be an array of STRINGS (not objects!)
+2. At least ONE string MUST contain a code example with Before/After blocks
+3. Use \n for newlines within strings, not actual line breaks
+
+≡ƒöä Attempt 1/4 (temp: 0)...
+≡ƒôè Quality score: 100.0%
+Γ£à Quality threshold met on attempt 1
+
+≡ƒöì RAW LLM RESPONSE (full):
+{
+
+"thought": "The error message indicates a conflict in dependencies related to androidx.lifecycle:lifecycle-runtime-ktx and :core dependencies. The module :app requires version 2.6.0 of androidx.lifecycle:lifecycle-runtime-ktx while :core requires 2.5.0. This suggests that the versions are not compatible or there's an issue with how they're being managed in build.gradle.kts.",
+"action": null,
+"rootCause": "Error: Module :app requires 2.6.0, :core requires 2.5.0\nFile path: app/build.gradle.kt at line 45",
+"fixGuidelines": [
+  "1. Ensure that the versions of androidx.lifecycle:lifecycle-runtime-ktx and :core are compatible.",
+  "2. Check build.gradle.kts for conflicting or incorrect dependency versions.",
+  "3. Verify that lifecycle-runtime-ktx version (2.6.0) is compatible with the current Kotlin version.",
+  "4. Update build.gradle.kts to reflect correct versions of dependencies."
+],
+"confidence": 0.7
+}
+
+Γ£ô Agent concluded after 1 iterations
+≡ƒôè Quality score: 80.0% (threshold: 60%)
+   Breakdown: fileSpec=100% versionSpec=100% codeExamples=20%
+≡ƒöº Generating code fix...
+[FixGenerator] File not found after resolution: app/build.gradle.kts
+[FixGenerator] Tried: 
+[FixGenerator] Could not read file: app/build.gradle.kts
+ΓÜá Could not generate code fix
+
+≡ƒôè Performance Metrics
+================================================================================
+
+ΓÅ▒∩╕Å  Total Time: 95021.00ms
+≡ƒôê Total Operations: 29
+ΓîÇ  Average Time: 3276.59ms
+
+≡ƒôï Operation Breakdown:
+--------------------------------------------------------------------------------
+Operation                     Mean        p50         p90         p99         Count
+--------------------------------------------------------------------------------
+prompt_generation             0.00ms      0.00ms      0.00ms      0.00ms      5
+prompt_build                  1.40ms      1.00ms      2.80ms      3.88ms      5
+llm_inference                 5116.60ms   4902.00ms   6761.40ms   7844.64ms   5
+total_analysis                9498.40ms   7971.00ms   16198.80ms  21126.48ms  5
+fix_generation                8.60ms      1.00ms      23.80ms     37.48ms     5
+output_regeneration           5474.00ms   4724.00ms   9201.30ms   10200.03ms  4
+================================================================================
+
+   Γ£à Completed in 4904ms
+   Overall Usability: 63%
+   Status: Γ¥î FAIL
+   ≡ƒÆ╛ Saved result to test5-multi-module-dependency-conflict-1767535593368.json
+
+≡ƒº¬ Running Test 6: Manifest Permission Missing
+   Error Type: manifest-permission | Complexity: simple
+   Target Usability: 80%
+[FewShotService] Looking for examples:
+  - Error type: manifest-permission
+  - Mapped category: manifest
+  - Database loaded: true
+  - Available categories: gradle, kotlin, compose, xml, manifest, cache, proguard, navigation, network
+≡ƒôÜ Added 1 best matching example to prompt
+
+≡ƒöì PROMPT SENT TO LLM (first 1000 chars):
+You are an expert Kotlin/Android debugging assistant specializing in root cause analysis.
+
+**YOUR ROLE:**
+You help developers understand WHY errors occur and HOW to fix them properly.
+
+**ANALYSIS WORKFLOW:**
+1. **THOUGHT**: Form a specific hypothesis about the error cause
+2. **ACTION**: Use available tools to gather evidence (read_file, find_callers, etc.)
+3. **OBSERVATION**: Analyze the evidence collected
+4. **ITERATE**: Refine hypothesis based on observations
+5. **CONCLUDE**: Provide clear root cause and actionable fix steps
+
+**CRITICAL SPECIFICITY RULES (MUST FOLLOW):**
+
+1. **File Paths - MUST ALWAYS include exact line numbers:**
+   Γ¥î ULTRA BAD: "Check the gradle file"
+   Γ¥î BAD: "Update build.gradle"
+   Γ¥î BAD: "Fix the version in the configuration file"
+   Γ¥î BAD: "Check build.gradle"
+   Γ£à ACCEPTABLE: "Update gradle/libs.versions.toml"
+   Γ£à GOOD: "Update gradle/libs.versions.toml at line 5"
+   Γ£à EXCELLENT: "Update gradle/libs.versions.toml at line 5: change agp = "8.10.0" to agp = "8
+...
+(last 500 chars):
+efore:\n```kotlin\nold code here\n```\nAfter:\n```kotlin\nfixed code here\n```",
+    "3. Verification step explaining how to test the fix"
+  ] (only when action is null - NOTE: fixGuidelines is an array of STRINGS, not objects!),
+  "confidence": 0.0-1.0 (only when action is null)
+}
+
+ΓÜá∩╕Å CRITICAL RULES:
+1. fixGuidelines MUST be an array of STRINGS (not objects!)
+2. At least ONE string MUST contain a code example with Before/After blocks
+3. Use \n for newlines within strings, not actual line breaks
+
+≡ƒöä Attempt 1/4 (temp: 0)...
+≡ƒôè Quality score: 15.0%
+ΓÜá∩╕Å Quality below threshold (rootCause too short, no fixGuidelines, no file paths, no line numbers), retrying...
+≡ƒöä Attempt 2/4 (temp: 0.3)...
+≡ƒôè Quality score: 100.0%
+Γ£à Quality threshold met on attempt 2
+
+≡ƒöì RAW LLM RESPONSE (full):
+{ "thought": "The error message indicates that the app is requesting a permission it doesn't have in its manifest. The manifest file at app/src/main/AndroidManifest.xml shows that the application is already requesting the Internet permission, which should be sufficient for most network operations. However, since the error mentions 'camera' specifically, perhaps there's an additional permission being requested elsewhere in the code or another part of the manifest that isn't visible here.", "action": null, "rootCause": "The app requires 'CAMERA' permission but it's not listed in the AndroidManifest.xml file. The current manifest already includes 'INTERNET' permission which should cover camera access as well.", "fixGuidelines": ["1. Add <uses-permission android:name=\"android.permission.CAMERA\" /> to AndroidManifest.xml before <application> tag", "2. Ensure that all necessary permissions are included in the manifest file at app/src/main/AndroidManifest.xml:3-5", "3. Verify that the manifest is correctly signed and any required runtime permissions are added if needed"], "confidence": 0.7}
+
+Γ£ô Agent concluded after 1 iterations
+≡ƒôè Quality score: 50.3% (threshold: 60%)
+   Breakdown: fileSpec=53% versionSpec=20% codeExamples=20%
+ΓÜá∩╕Å Quality below threshold. Regenerating (attempt 1/2)...
+   Issues: File paths lack line numbers - specify exact locations; Version numbers are generic - use specific versions (e.g., 8.7.3); Missing code examples - show before/after snippets
+≡ƒöä Attempt 1/3 (temp: 0)...
+≡ƒôè Quality score: 100.0%
+Γ£à Quality threshold met on attempt 1
+≡ƒôè Regeneration 1 score: 74.0%
+   Breakdown: fileSpec=100% versionSpec=60% codeExamples=20%
+   Γ£ô New best score: 74.0%
+≡ƒöº Generating code fix...
+[FixGenerator] File not found after resolution: app/src/main/AndroidManifest.xml
+[FixGenerator] Tried: 
+[FixGenerator] Could not read file: app/src/main/AndroidManifest.xml
+ΓÜá Could not generate code fix
+
+≡ƒôè Performance Metrics
+================================================================================
+
+ΓÅ▒∩╕Å  Total Time: 108427.00ms
+≡ƒôê Total Operations: 35
+ΓîÇ  Average Time: 3097.91ms
+
+≡ƒôï Operation Breakdown:
+--------------------------------------------------------------------------------
+Operation                     Mean        p50         p90         p99         Count
+--------------------------------------------------------------------------------
+prompt_generation             0.00ms      0.00ms      0.00ms      0.00ms      6
+prompt_build                  1.17ms      1.00ms      2.50ms      3.85ms      6
+llm_inference                 5024.67ms   4825.50ms   6460.50ms   7814.55ms   6
+total_analysis                9032.50ms   7337.00ms   14830.00ms  20989.60ms  6
+fix_generation                7.33ms      1.00ms      20.00ms     37.10ms     6
+output_regeneration           4806.60ms   2836.00ms   8831.40ms   10163.04ms  5
+================================================================================
+
+   Γ£à Completed in 6704ms
+   Overall Usability: 54%
+   Improvement: +-11% over baseline
+   Status: Γ¥î FAIL
+   ≡ƒÆ╛ Saved result to test6-manifest-permission-missing-1767535601089.json
+
+≡ƒº¬ Running Test 7: Gradle Network Failure
+   Error Type: gradle-network | Complexity: medium
+   Target Usability: 75%
+[FewShotService] Looking for examples:
+  - Error type: gradle-network
+  - Mapped category: network
+  - Database loaded: true
+  - Available categories: gradle, kotlin, compose, xml, manifest, cache, proguard, navigation, network
+≡ƒôÜ Added 1 best matching example to prompt
+
+≡ƒöì PROMPT SENT TO LLM (first 1000 chars):
+You are an expert Kotlin/Android debugging assistant specializing in root cause analysis.
+
+**YOUR ROLE:**
+You help developers understand WHY errors occur and HOW to fix them properly.
+
+**ANALYSIS WORKFLOW:**
+1. **THOUGHT**: Form a specific hypothesis about the error cause
+2. **ACTION**: Use available tools to gather evidence (read_file, find_callers, etc.)
+3. **OBSERVATION**: Analyze the evidence collected
+4. **ITERATE**: Refine hypothesis based on observations
+5. **CONCLUDE**: Provide clear root cause and actionable fix steps
+
+**CRITICAL SPECIFICITY RULES (MUST FOLLOW):**
+
+1. **File Paths - MUST ALWAYS include exact line numbers:**
+   Γ¥î ULTRA BAD: "Check the gradle file"
+   Γ¥î BAD: "Update build.gradle"
+   Γ¥î BAD: "Fix the version in the configuration file"
+   Γ¥î BAD: "Check build.gradle"
+   Γ£à ACCEPTABLE: "Update gradle/libs.versions.toml"
+   Γ£à GOOD: "Update gradle/libs.versions.toml at line 5"
+   Γ£à EXCELLENT: "Update gradle/libs.versions.toml at line 5: change agp = "8.10.0" to agp = "8
+...
+(last 500 chars):
+efore:\n```kotlin\nold code here\n```\nAfter:\n```kotlin\nfixed code here\n```",
+    "3. Verification step explaining how to test the fix"
+  ] (only when action is null - NOTE: fixGuidelines is an array of STRINGS, not objects!),
+  "confidence": 0.0-1.0 (only when action is null)
+}
+
+ΓÜá∩╕Å CRITICAL RULES:
+1. fixGuidelines MUST be an array of STRINGS (not objects!)
+2. At least ONE string MUST contain a code example with Before/After blocks
+3. Use \n for newlines within strings, not actual line breaks
+
+≡ƒöä Attempt 1/4 (temp: 0)...
+≡ƒôè Quality score: 100.0%
+Γ£à Quality threshold met on attempt 1
+
+≡ƒöì RAW LLM RESPONSE (full):
+{
+
+"thought": "The error 'Could not resolve all dependencies for configuration :classpath' in settings.gradle.kts suggests that the build.gradle or settings.gradle files are missing or corrupted. This could be due to an invalid or incomplete Gradle configuration, possibly caused by incorrect paths or missing dependencies. The version of AGP (Android Guarantee Protocol) declared might be causing issues with dependency resolution. For example, if AGP is set to a non-existent version like 8.10.0, it would fail to find the necessary dependencies, leading to this error. Additionally, there could be compatibility issues between the selected AGP version and the current Kotlin or Gradle versions. It's also possible that other configuration parameters in settings.gradle are incorrect, such as missing compiler options or invalid paths.",
+"action": null,
+"rootCause": "Invalid AGP version declared in settings.gradle.kts:15 causing dependency resolution to fail",
+"fixGuidelines": [
+  "1. Open settings.gradle.kt and verify the AGP version declaration at line 15.",
+  "2. Ensure that the AGP version is valid by checking against a trusted source using version_lookup tool.",
+  "3. If an invalid version is used, replace it with a valid one that exists in the AGP repository.",
+  "4. Check for any missing compiler options or incorrect paths in settings.gradle that might be causing build issues.",
+  "5. Update Gradle to ensure compatibility with the selected AGP and Kotlin versions.",
+  "6. Verify that all necessary dependencies are included in the build.gradle.kt file."
+],
+"confidence": 0.8
+}
+
+Γ£ô Agent concluded after 1 iterations
+≡ƒôè Quality score: 69.6% (threshold: 60%)
+   Breakdown: fileSpec=83% versionSpec=60% codeExamples=20%
+≡ƒöº Generating code fix...
+[FixGenerator] File not found after resolution: settings.gradle.kts
+[FixGenerator] Tried: 
+[FixGenerator] Could not read file: settings.gradle.kts
+ΓÜá Could not generate code fix
+
+≡ƒôè Performance Metrics
+================================================================================
+
+ΓÅ▒∩╕Å  Total Time: 120725.00ms
+≡ƒôê Total Operations: 40
+ΓîÇ  Average Time: 3018.13ms
+
+≡ƒôï Operation Breakdown:
+--------------------------------------------------------------------------------
+Operation                     Mean        p50         p90         p99         Count
+--------------------------------------------------------------------------------
+prompt_generation             0.00ms      0.00ms      0.00ms      0.00ms      7
+prompt_build                  1.00ms      1.00ms      2.20ms      3.82ms      7
+llm_inference                 5185.29ms   4902.00ms   6875.40ms   7856.04ms   7
+total_analysis                8620.57ms   6703.00ms   13461.20ms  20852.72ms  7
+fix_generation                6.29ms      1.00ms      16.20ms     36.72ms     7
+output_regeneration           4806.60ms   2836.00ms   8831.40ms   10163.04ms  5
+================================================================================
+
+   Γ£à Completed in 6149ms
+   Overall Usability: 68%
+   Improvement: +8% over baseline
+   Status: Γ¥î FAIL
+   ≡ƒÆ╛ Saved result to test7-gradle-network-failure-1767535608241.json
+
+≡ƒº¬ Running Test 8: Build Cache Corruption
+   Error Type: gradle-cache | Complexity: simple
+   Target Usability: 85%
+[FewShotService] Looking for examples:
+  - Error type: gradle-cache
+  - Mapped category: cache
+  - Database loaded: true
+  - Available categories: gradle, kotlin, compose, xml, manifest, cache, proguard, navigation, network
+≡ƒôÜ Added 1 best matching example to prompt
+
+≡ƒöì PROMPT SENT TO LLM (first 1000 chars):
+You are an expert Kotlin/Android debugging assistant specializing in root cause analysis.
+
+**YOUR ROLE:**
+You help developers understand WHY errors occur and HOW to fix them properly.
+
+**ANALYSIS WORKFLOW:**
+1. **THOUGHT**: Form a specific hypothesis about the error cause
+2. **ACTION**: Use available tools to gather evidence (read_file, find_callers, etc.)
+3. **OBSERVATION**: Analyze the evidence collected
+4. **ITERATE**: Refine hypothesis based on observations
+5. **CONCLUDE**: Provide clear root cause and actionable fix steps
+
+**CRITICAL SPECIFICITY RULES (MUST FOLLOW):**
+
+1. **File Paths - MUST ALWAYS include exact line numbers:**
+   Γ¥î ULTRA BAD: "Check the gradle file"
+   Γ¥î BAD: "Update build.gradle"
+   Γ¥î BAD: "Fix the version in the configuration file"
+   Γ¥î BAD: "Check build.gradle"
+   Γ£à ACCEPTABLE: "Update gradle/libs.versions.toml"
+   Γ£à GOOD: "Update gradle/libs.versions.toml at line 5"
+   Γ£à EXCELLENT: "Update gradle/libs.versions.toml at line 5: change agp = "8.10.0" to agp = "8
+...
+(last 500 chars):
+efore:\n```kotlin\nold code here\n```\nAfter:\n```kotlin\nfixed code here\n```",
+    "3. Verification step explaining how to test the fix"
+  ] (only when action is null - NOTE: fixGuidelines is an array of STRINGS, not objects!),
+  "confidence": 0.0-1.0 (only when action is null)
+}
+
+ΓÜá∩╕Å CRITICAL RULES:
+1. fixGuidelines MUST be an array of STRINGS (not objects!)
+2. At least ONE string MUST contain a code example with Before/After blocks
+3. Use \n for newlines within strings, not actual line breaks
+
+≡ƒöä Attempt 1/4 (temp: 0)...
+≡ƒôè Quality score: 60.0%
+Γ£à Quality threshold met on attempt 1
+
+≡ƒöì RAW LLM RESPONSE (full):
+{
+
+"thought": "The error is related to the compilation cache in Gradle. The message indicates that there's an issue during the build process when compiling debug Kotlin files. This could be due to a corrupted or locked build cache. Possible causes include concurrent builds, system crashes, or incorrect cache configurations. Since it's an undefined error with no specific message, I need to gather more information by examining the relevant code and build settings.",
+"action": null,
+"rootCause": "This is not a common pattern; further investigation is needed",
+"fixGuidelines": [
+  "1. Check if the build cache is corrupted or locked: Clear the cache using gradle clean\n2. Verify the Gradle version compatibility with the current AGP and Kotlin versions\n3. Ensure that all necessary dependencies are correctly listed in the build.gradle file"
+],
+"confidence": 0.7
+}
+
+Γ£ô Agent concluded after 1 iterations
+≡ƒôè Quality score: 50.5% (threshold: 60%)
+   Breakdown: fileSpec=30% versionSpec=20% codeExamples=20%
+ΓÜá∩╕Å Quality below threshold. Regenerating (attempt 1/2)...
+   Issues: File paths lack line numbers - specify exact locations; Version numbers are generic - use specific versions (e.g., 8.7.3); Missing code examples - show before/after snippets
+≡ƒöä Attempt 1/3 (temp: 0)...
+≡ƒôè Quality score: 45.0%
+ΓÜá∩╕Å Quality below threshold (rootCause too short, no file paths, no line numbers), retrying...
+≡ƒöä Attempt 2/3 (temp: 0.3)...
+≡ƒôè Quality score: 45.0%
+ΓÜá∩╕Å Quality below threshold (rootCause too short, no file paths, no line numbers), retrying...
+≡ƒöä Attempt 3/3 (temp: 0.5)...
+≡ƒôè Quality score: 45.0%
+ΓÜá∩╕Å Quality below threshold (rootCause too short, no file paths, no line numbers), retrying...
+ΓÜá∩╕Å Returning best attempt (quality: 45.0%)
+≡ƒôè Regeneration 1 score: 56.5%
+   Breakdown: fileSpec=30% versionSpec=100% codeExamples=20%
+   Γ£ô New best score: 56.5%
+ΓÜá∩╕Å Quality below threshold. Regenerating (attempt 2/2)...
+   Issues: File paths lack line numbers - specify exact locations; Missing code examples - show before/after snippets; Missing verification steps - explain how to test the fix
+≡ƒöä Attempt 1/3 (temp: 0)...
+≡ƒôè Quality score: 45.0%
+ΓÜá∩╕Å Quality below threshold (rootCause too short, no file paths, no line numbers), retrying...
+≡ƒöä Attempt 2/3 (temp: 0.3)...
+≡ƒôè Quality score: 45.0%
+ΓÜá∩╕Å Quality below threshold (rootCause too short, no file paths, no line numbers), retrying...
+≡ƒöä Attempt 3/3 (temp: 0.5)...
+≡ƒôè Quality score: 45.0%
+ΓÜá∩╕Å Quality below threshold (rootCause too short, no file paths, no line numbers), retrying...
+ΓÜá∩╕Å Returning best attempt (quality: 45.0%)
+≡ƒôè Regeneration 2 score: 50.5%
+   Breakdown: fileSpec=30% versionSpec=60% codeExamples=20%
+ΓÜá∩╕Å Quality still below threshold after 2 attempts. Proceeding with best result.
+≡ƒöº Generating code fix...
+[FixGenerator] File not found after resolution: build.gradle.kts
+[FixGenerator] Tried: 
+[FixGenerator] Could not read file: build.gradle.kts
+ΓÜá Could not generate code fix
+
+≡ƒôè Performance Metrics
+================================================================================
+
+ΓÅ▒∩╕Å  Total Time: 158837.00ms
+≡ƒôê Total Operations: 47
+ΓîÇ  Average Time: 3379.51ms
+
+≡ƒôï Operation Breakdown:
+--------------------------------------------------------------------------------
+Operation                     Mean        p50         p90         p99         Count
+--------------------------------------------------------------------------------
+prompt_generation             0.00ms      0.00ms      0.00ms      0.00ms      8
+prompt_build                  1.00ms      1.00ms      1.90ms      3.79ms      8
+llm_inference                 4892.50ms   4825.50ms   6693.80ms   7837.88ms   8
+total_analysis                9925.00ms   7337.00ms   19841.40ms  21490.74ms  8
+fix_generation                5.63ms      1.00ms      12.40ms     36.34ms     8
+output_regeneration           5749.14ms   6612.00ms   9123.00ms   10192.20ms  7
+================================================================================
+
+   Γ£à Completed in 19057ms
+   Overall Usability: 21%
+   Improvement: +-49% over baseline
+   Status: Γ¥î FAIL
+   ≡ƒÆ╛ Saved result to test8-build-cache-corruption-1767535628311.json
+
+≡ƒº¬ Running Test 9: ProGuard Rule Missing
+   Error Type: proguard | Complexity: complex
+   Target Usability: 70%
+[FewShotService] Looking for examples:
+  - Error type: proguard
+  - Mapped category: proguard
+  - Database loaded: true
+  - Available categories: gradle, kotlin, compose, xml, manifest, cache, proguard, navigation, network
+≡ƒôÜ Added 1 best matching example to prompt
+
+≡ƒöì PROMPT SENT TO LLM (first 1000 chars):
+You are an expert Kotlin/Android debugging assistant specializing in root cause analysis.
+
+**YOUR ROLE:**
+You help developers understand WHY errors occur and HOW to fix them properly.
+
+**ANALYSIS WORKFLOW:**
+1. **THOUGHT**: Form a specific hypothesis about the error cause
+2. **ACTION**: Use available tools to gather evidence (read_file, find_callers, etc.)
+3. **OBSERVATION**: Analyze the evidence collected
+4. **ITERATE**: Refine hypothesis based on observations
+5. **CONCLUDE**: Provide clear root cause and actionable fix steps
+
+**CRITICAL SPECIFICITY RULES (MUST FOLLOW):**
+
+1. **File Paths - MUST ALWAYS include exact line numbers:**
+   Γ¥î ULTRA BAD: "Check the gradle file"
+   Γ¥î BAD: "Update build.gradle"
+   Γ¥î BAD: "Fix the version in the configuration file"
+   Γ¥î BAD: "Check build.gradle"
+   Γ£à ACCEPTABLE: "Update gradle/libs.versions.toml"
+   Γ£à GOOD: "Update gradle/libs.versions.toml at line 5"
+   Γ£à EXCELLENT: "Update gradle/libs.versions.toml at line 5: change agp = "8.10.0" to agp = "8
+...
+(last 500 chars):
+efore:\n```kotlin\nold code here\n```\nAfter:\n```kotlin\nfixed code here\n```",
+    "3. Verification step explaining how to test the fix"
+  ] (only when action is null - NOTE: fixGuidelines is an array of STRINGS, not objects!),
+  "confidence": 0.0-1.0 (only when action is null)
+}
+
+ΓÜá∩╕Å CRITICAL RULES:
+1. fixGuidelines MUST be an array of STRINGS (not objects!)
+2. At least ONE string MUST contain a code example with Before/After blocks
+3. Use \n for newlines within strings, not actual line breaks
+
+≡ƒöä Attempt 1/4 (temp: 0)...
+≡ƒôè Quality score: 85.0%
+Γ£à Quality threshold met on attempt 1
+
+≡ƒöì RAW LLM RESPONSE (full):
+{
+
+"thought": "The error is a NoSuchMethodError: No virtual method toJson. This suggests that the method toJson() is missing from an interface or class in the project. Since ProGuard is being used for minification, it's possible that ProGuard rules are removing this method. The message indicates that the method was removed by R8 (ProGuard's Obfuscation Framework) because it might be considered unsafe or unnecessary. Looking at the error location app/proguard-rules.pro:1, I suspect that a keep rule is missing for the toJson() method. ProGuard requires specific rules to retain certain methods to prevent such errors during minification. The root cause could be that no keep rule is added for interfaces or classes that use toJson(), causing it to be removed and leading to the error when the code is compiled. To fix this, I should add a keep rule in proguard-rules.pro to preserve the toJson() method along with any related methods.",
+"action": null,
+"rootCause": "No virtual method toJson could not be found for interface or class com.example.** { *; } at line 1 of app/proguard-rules.pro",
+"fixGuidelines": [
+    "Add a ProGuard keep rule to preserve the toJson() method and any related methods.",
+    "Example: -keep interface com.example.api.** { *; } if toJson is part of an interface.",
+    "Verification step: Rebuild the release APK with ./gradlew assembleRelease to check if the error persists.",
+    "If the error remains, ensure that all interfaces or classes using toJson() have corresponding keep rules."
+],
+"confidence": 0.7
+}
+
+Γ£ô Agent concluded after 1 iterations
+≡ƒôè Quality score: 56.5% (threshold: 60%)
+   Breakdown: fileSpec=30% versionSpec=60% codeExamples=20%
+ΓÜá∩╕Å Quality below threshold. Regenerating (attempt 1/2)...
+   Issues: File paths lack line numbers - specify exact locations; Version numbers are generic - use specific versions (e.g., 8.7.3); Missing code examples - show before/after snippets
+≡ƒöä Attempt 1/3 (temp: 0)...
+≡ƒôè Quality score: 100.0%
+Γ£à Quality threshold met on attempt 1
+≡ƒôè Regeneration 1 score: 74.0%
+   Breakdown: fileSpec=100% versionSpec=60% codeExamples=20%
+   Γ£ô New best score: 74.0%
+≡ƒöº Generating code fix...
+[FixGenerator] File not found after resolution: app/proguard-rules.pro
+[FixGenerator] Tried: C:\Users\Admin\OneDrive\Desktop\Nuclear Creation\AI\AI_PP_project\app\proguard-rules.pro
+[FixGenerator] Could not read file: app/proguard-rules.pro
+ΓÜá Could not generate code fix
+
+≡ƒôè Performance Metrics
+================================================================================
+
+ΓÅ▒∩╕Å  Total Time: 175722.00ms
+≡ƒôê Total Operations: 53
+ΓîÇ  Average Time: 3315.51ms
+
+≡ƒôï Operation Breakdown:
+--------------------------------------------------------------------------------
+Operation                     Mean        p50         p90         p99         Count
+--------------------------------------------------------------------------------
+prompt_generation             0.00ms      0.00ms      0.00ms      0.00ms      9
+prompt_build                  1.00ms      1.00ms      1.60ms      3.76ms      9
+llm_inference                 4937.67ms   4902.00ms   6512.20ms   7819.72ms   9
+total_analysis                9760.22ms   7971.00ms   19579.60ms  21464.56ms  9
+fix_generation                5.11ms      1.00ms      8.60ms      35.96ms     9
+output_regeneration           5423.25ms   4877.00ms   8925.00ms   10172.40ms  8
+================================================================================
+
+   Γ£à Completed in 8443ms
+   Overall Usability: 61%
+   Improvement: +6% over baseline
+   Status: Γ¥î FAIL
+   ≡ƒÆ╛ Saved result to test9-proguard-rule-missing-1767535637770.json
+
+≡ƒº¬ Running Test 10: Navigation Argument Mismatch
+   Error Type: navigation | Complexity: medium
+   Target Usability: 70%
+[FewShotService] Looking for examples:
+  - Error type: navigation
+  - Mapped category: navigation
+  - Database loaded: true
+  - Available categories: gradle, kotlin, compose, xml, manifest, cache, proguard, navigation, network
+≡ƒôÜ Added 1 best matching example to prompt
+
+≡ƒöì PROMPT SENT TO LLM (first 1000 chars):
+You are an expert Kotlin/Android debugging assistant specializing in root cause analysis.
+
+**YOUR ROLE:**
+You help developers understand WHY errors occur and HOW to fix them properly.
+
+**ANALYSIS WORKFLOW:**
+1. **THOUGHT**: Form a specific hypothesis about the error cause
+2. **ACTION**: Use available tools to gather evidence (read_file, find_callers, etc.)
+3. **OBSERVATION**: Analyze the evidence collected
+4. **ITERATE**: Refine hypothesis based on observations
+5. **CONCLUDE**: Provide clear root cause and actionable fix steps
+
+**CRITICAL SPECIFICITY RULES (MUST FOLLOW):**
+
+1. **File Paths - MUST ALWAYS include exact line numbers:**
+   Γ¥î ULTRA BAD: "Check the gradle file"
+   Γ¥î BAD: "Update build.gradle"
+   Γ¥î BAD: "Fix the version in the configuration file"
+   Γ¥î BAD: "Check build.gradle"
+   Γ£à ACCEPTABLE: "Update gradle/libs.versions.toml"
+   Γ£à GOOD: "Update gradle/libs.versions.toml at line 5"
+   Γ£à EXCELLENT: "Update gradle/libs.versions.toml at line 5: change agp = "8.10.0" to agp = "8
+...
+(last 500 chars):
+efore:\n```kotlin\nold code here\n```\nAfter:\n```kotlin\nfixed code here\n```",
+    "3. Verification step explaining how to test the fix"
+  ] (only when action is null - NOTE: fixGuidelines is an array of STRINGS, not objects!),
+  "confidence": 0.0-1.0 (only when action is null)
+}
+
+ΓÜá∩╕Å CRITICAL RULES:
+1. fixGuidelines MUST be an array of STRINGS (not objects!)
+2. At least ONE string MUST contain a code example with Before/After blocks
+3. Use \n for newlines within strings, not actual line breaks
+
+≡ƒöä Attempt 1/4 (temp: 0)...
+≡ƒôè Quality score: 70.0%
+Γ£à Quality threshold met on attempt 1
+
+≡ƒöì RAW LLM RESPONSE (full):
+{
+
+"thought": "The error is a java.lang.IllegalArgumentException stating that the required argument 'userId' is missing in the navigation call at app/src/main/kotlin/navigation/NavGraph.kt:32. This suggests that the route definition expects an argument named 'userId', but it's not being provided when navigating.",
+"action": null,
+"rootCause": "Missing required argument 'userId' in navigation call at line 32 of NavGraph.kt",
+"fixGuidelines": [
+  "1. Check the route definition in NavGraph.kt to ensure that 'userId' is declared as an Int and not a String.",
+  "2. Verify that the navigation call includes 'userId' as an argument with type Int.",
+  "3. Ensure that any variables passed are correctly typed, for example, using .getInt() instead of .getString().",
+  "4. If 'userId' is optional, update its type to Int? and adjust the route definition accordingly."
+],
+"confidence": 0.7
+}
+
+Γ£ô Agent concluded after 1 iterations
+≡ƒôè Quality score: 74.0% (threshold: 60%)
+   Breakdown: fileSpec=100% versionSpec=60% codeExamples=20%
+≡ƒöº Generating code fix...
+[FixGenerator] File not found after resolution: app/src/main/kotlin/navigation/NavGraph.kt
+[FixGenerator] Tried: 
+[FixGenerator] Could not read file: app/src/main/kotlin/navigation/NavGraph.kt
+ΓÜá Could not generate code fix
+
+≡ƒôè Performance Metrics
+================================================================================
+
+ΓÅ▒∩╕Å  Total Time: 183281.00ms
+≡ƒôê Total Operations: 58
+ΓîÇ  Average Time: 3160.02ms
+
+≡ƒôï Operation Breakdown:
+--------------------------------------------------------------------------------
+Operation                     Mean        p50         p90         p99         Count
+--------------------------------------------------------------------------------
+prompt_generation             0.00ms      0.00ms      0.00ms      0.00ms      10
+prompt_build                  0.90ms      1.00ms      1.30ms      3.73ms      10
+llm_inference                 4821.80ms   4825.50ms   6330.60ms   7801.56ms   10
+total_analysis                9162.10ms   7337.00ms   19317.80ms  21438.38ms  10
+fix_generation                4.70ms      1.00ms      4.80ms      35.58ms     10
+output_regeneration           5423.25ms   4877.00ms   8925.00ms   10172.40ms  8
+================================================================================
+
+   Γ£à Completed in 3780ms
+   Overall Usability: 51%
+   Improvement: +1% over baseline
+   Status: Γ¥î FAIL
+   ≡ƒÆ╛ Saved result to test10-navigation-argument-mismatch-1767535642560.json
+
+≡ƒÆ╛ Full report saved to phase4-test-suite-report-1767535643577.json
+
+================================================================================
+≡ƒôè TEST SUITE SUMMARY
+================================================================================
+
+≡ƒôê Overall Results:
+   Total Tests: 10
+   Passed: 1 (10%)
+   Failed: 9
+   Average Usability: 56%
+   Average Latency: 9167ms
+
+≡ƒôï By Error Type:
+   gradle-dependency: 1/2 passed (74% avg usability)
+   kotlin-npe: 0/1 passed (56% avg usability)
+   compose-deprecation: 0/1 passed (48% avg usability)
+   xml-layout: 0/1 passed (48% avg usability)
+   manifest-permission: 0/1 passed (54% avg usability)
+   gradle-network: 0/1 passed (68% avg usability)
+   gradle-cache: 0/1 passed (21% avg usability)
+   proguard: 0/1 passed (61% avg usability)
+   navigation: 0/1 passed (51% avg usability)
+
+≡ƒÄ» By Complexity:
+   simple: 1/3 passed (53% avg usability)
+   medium: 0/5 passed (54% avg usability)
+   complex: 0/2 passed (62% avg usability)
+
+≡ƒôè Improvements Over Baseline:
+   Test 1 (AGP Version Conflict): 40% ΓåÆ 85% (+45%)
+   Test 7 (Gradle Network Failure): 60% ΓåÆ 68% (+8%)
+   Test 9 (ProGuard Rule Missing): 55% ΓåÆ 61% (+6%)
+   Test 10 (Navigation Argument Mismatch): 50% ΓåÆ 51% (+1%)
+   Test 6 (Manifest Permission Missing): 65% ΓåÆ 54% (+-11%)
+   Test 8 (Build Cache Corruption): 70% ΓåÆ 21% (+-49%)
+
+================================================================================
+
+================================================================================
+Γ£à TEST EXECUTION COMPLETE
+================================================================================
+   Total Time: 102s
+   Tests Passed: 1/10
+   Average Usability: 56%
+================================================================================
+
+ΓÜá∩╕Å  Some tests failed. Review results for details.

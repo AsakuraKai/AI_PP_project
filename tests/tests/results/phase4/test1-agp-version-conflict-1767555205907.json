@@ -1,0 +1,60 @@
+{
+  "testCase": {
+    "id": 1,
+    "name": "AGP Version Conflict",
+    "description": "Invalid AGP version 8.10.0 doesn't exist in Maven Central",
+    "errorType": "gradle-dependency",
+    "complexity": "simple",
+    "baselineUsability": 40,
+    "targetUsability": 80,
+    "error": {
+      "type": "gradle-dependency",
+      "message": "Could not find com.android.tools.build:gradle:8.10.0",
+      "filePath": "gradle/libs.versions.toml",
+      "line": 2,
+      "column": 1,
+      "language": "gradle",
+      "metadata": {
+        "severity": "error",
+        "context": "AGP version 8.10.0 not found in Maven Central",
+        "raw": "Could not find com.android.tools.build:gradle:8.10.0"
+      }
+    },
+    "expectedFix": {
+      "file": "gradle/libs.versions.toml",
+      "lineNumber": 2,
+      "codeChange": "agp = \"8.7.3\"",
+      "explanation": "AGP 8.10.0 doesn't exist. Use 8.7.3 (latest stable)"
+    }
+  },
+  "timestamp": "2026-01-04T19:33:25.905Z",
+  "duration_ms": 37645,
+  "agent_response": {
+    "error": "",
+    "rootCause": "The error occurs because the AGP version specified in the gradle/libs.versions.toml file is incompatible with Gradle's current version (8.9). The correct AGP version should be 8.10.0 or higher to work seamlessly with Gradle 8.9.",
+    "fixGuidelines": [
+      "Replace the AGP version in gradle/libs.versions.toml at line 2 from '8.1.0' to '8.10.0'",
+      "Verify the fix by rebuilding the project using ./gradlew clean build"
+    ],
+    "confidence": 0.6,
+    "toolsUsed": [],
+    "codeContext": "Evidence: Root cause analysis mentions: version, gradle\nContradictions: None"
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 50,
+    "file_identification": 100,
+    "code_examples": 0,
+    "version_suggestions": 90,
+    "overall_usability": 71,
+    "confidence": 0.6,
+    "latency_ms": 37645,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": true,
+    "identified_exact_file": true
+  },
+  "passed": false,
+  "improvement_over_baseline": 31
+}

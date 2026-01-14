@@ -1,0 +1,61 @@
+{
+  "testCase": {
+    "id": 10,
+    "name": "Navigation Argument Mismatch",
+    "description": "Runtime crash due to missing/wrong navigation arguments",
+    "errorType": "navigation",
+    "complexity": "medium",
+    "baselineUsability": 50,
+    "targetUsability": 70,
+    "error": {
+      "type": "navigation",
+      "message": "java.lang.IllegalArgumentException: Required argument \"userId\" is missing",
+      "filePath": "app/src/main/kotlin/navigation/NavGraph.kt",
+      "line": 32,
+      "column": 5,
+      "language": "kotlin",
+      "metadata": {
+        "severity": "error",
+        "context": "Navigation argument not passed correctly"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/kotlin/navigation/NavGraph.kt",
+      "lineNumber": 32,
+      "explanation": "Add userId argument to navigation call"
+    }
+  },
+  "timestamp": "2026-01-04T13:42:29.318Z",
+  "duration_ms": 10119,
+  "agent_response": {
+    "error": "java.lang.IllegalArgumentException: Required argument \"userId\" is missing",
+    "rootCause": "The 'NavGraph' composable is missing the required 'userId' argument when called from another component. This could be due to either the calling code not passing 'userId', or the definition of the NavHost in 'NavGraph.kt' expecting a different type for this argument, causing a mismatch during navigation.",
+    "fixGuidelines": [
+      "1. Check if the calling component is correctly passing the 'userId' argument when invoking 'NavGraph'. Ensure that all necessary parameters are included and passed correctly.",
+      "2. Inspect the definition of 'NavHost' in 'app/src/main/kotlin/navigation/NavGraph.kt' to verify that the expected type for 'userId' matches what is being passed from the caller. Update the argument types if necessary.",
+      "3. Verify that there are no typos or syntax errors in the code where 'NavGraph' is called, such as incorrect variable names or missing parameters.",
+      "4. If using Compose's navigation calls, ensure that all required arguments are provided and match the expected types defined in the NavHost definition.",
+      "5. Consider adding logging or debugging statements to identify exactly where the argument is being omitted or mismatched."
+    ],
+    "confidence": 0.7,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 100,
+    "solution_specificity": 60,
+    "file_identification": 100,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 68,
+    "confidence": 0.7,
+    "latency_ms": 10119,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": true
+  },
+  "passed": false,
+  "improvement_over_baseline": 18
+}

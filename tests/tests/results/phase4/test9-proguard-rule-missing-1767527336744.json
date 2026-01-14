@@ -1,0 +1,59 @@
+{
+  "testCase": {
+    "id": 9,
+    "name": "ProGuard Rule Missing",
+    "description": "Runtime crash in release build due to obfuscation",
+    "errorType": "proguard",
+    "complexity": "complex",
+    "baselineUsability": 55,
+    "targetUsability": 70,
+    "error": {
+      "type": "proguard",
+      "message": "java.lang.NoSuchMethodError: No virtual method toJson",
+      "filePath": "app/proguard-rules.pro",
+      "line": 1,
+      "column": 1,
+      "language": "proguard",
+      "metadata": {
+        "severity": "error",
+        "context": "Gson reflection methods removed by R8"
+      }
+    },
+    "expectedFix": {
+      "file": "app/proguard-rules.pro",
+      "codeChange": "-keep class com.example.** { *; }",
+      "explanation": "Add ProGuard keep rule for serialization classes"
+    }
+  },
+  "timestamp": "2026-01-04T11:48:56.743Z",
+  "duration_ms": 33860,
+  "agent_response": {
+    "error": "java.lang.NoSuchMethodError: No virtual method toJson",
+    "rootCause": "ProGuard removed the method getUserName() from User class at User.kt line 45, causing NoSuchMethodError at runtime in MainActivity.kt line 102.",
+    "fixGuidelines": [
+      "1. Edit proguard-rules.pro to preserve getUserName(), add -keep method for com.example.User { public java.lang.String getUserName(); }",
+      "2. Check build.gradle.kts: ensure minification is disabled or rules are correctly set up to prevent removal of necessary methods",
+      "3. Verify by running ./gradlew assembleRelease and checking the usage.txt file for preserved method"
+    ],
+    "confidence": 0.6,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 100,
+    "solution_specificity": 70,
+    "file_identification": 30,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 57,
+    "confidence": 0.6,
+    "latency_ms": 33860,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false,
+  "improvement_over_baseline": 2
+}

@@ -1,0 +1,57 @@
+{
+  "testCase": {
+    "id": 2,
+    "name": "Kotlin lateinit NPE",
+    "description": "lateinit property accessed before initialization",
+    "errorType": "kotlin-npe",
+    "complexity": "medium",
+    "targetUsability": 75,
+    "error": {
+      "type": "kotlin-npe",
+      "message": "lateinit property viewModel has not been initialized",
+      "filePath": "app/src/main/kotlin/MainActivity.kt",
+      "line": 42,
+      "column": 9,
+      "language": "kotlin",
+      "metadata": {
+        "severity": "error",
+        "context": "Accessing viewModel before onCreate() completes"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/kotlin/MainActivity.kt",
+      "lineNumber": 35,
+      "explanation": "Initialize viewModel in onCreate() before first use"
+    }
+  },
+  "timestamp": "2026-01-04T20:22:29.025Z",
+  "duration_ms": 56234,
+  "agent_response": {
+    "error": "lateinit property viewModel has not been initialized",
+    "rootCause": "Enhanced version with file paths and line numbers",
+    "fixGuidelines": [
+      "Step 1: Identify exact file and line number where error occurs, provide BEFORE/_AFTER code snippets showing the problematic and fixed code. This will help pinpoint the issue precisely.",
+      "Step 2: Offer a specific code fix that addresses the initialization problem of 'viewModel' in MainActivity.kt at line 42. Include comments explaining each change for clarity.",
+      "Step 3: Provide verification steps with shell commands to run the corrected application and expected output demonstrating the error is resolved."
+    ],
+    "confidence": 0.85,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 0,
+    "solution_specificity": 70,
+    "file_identification": 0,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 21,
+    "confidence": 0.85,
+    "latency_ms": 56234,
+    "has_root_cause": false,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false
+}

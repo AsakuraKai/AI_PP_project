@@ -1,0 +1,62 @@
+{
+  "testCase": {
+    "id": 3,
+    "name": "Compose API Breakage",
+    "description": "Deprecated Compose API after upgrade 1.5 → 1.6",
+    "errorType": "compose-deprecation",
+    "complexity": "medium",
+    "targetUsability": 75,
+    "error": {
+      "type": "compose-deprecation",
+      "message": "Unresolved reference: MaterialTheme. Use androidx.compose.material3.MaterialTheme",
+      "filePath": "app/src/main/kotlin/ui/HomeScreen.kt",
+      "line": 88,
+      "column": 5,
+      "language": "kotlin",
+      "metadata": {
+        "severity": "error",
+        "context": "Compose Material upgraded to Material3"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/kotlin/ui/HomeScreen.kt",
+      "lineNumber": 88,
+      "codeChange": "import androidx.compose.material3.MaterialTheme",
+      "explanation": "Material2 deprecated, use Material3"
+    }
+  },
+  "timestamp": "2026-01-03T21:38:39.608Z",
+  "duration_ms": 15195,
+  "agent_response": {
+    "error": "Unresolved reference: MaterialTheme. Use androidx.compose.material3.MaterialTheme",
+    "rootCause": "MaterialTheme is not resolved in HomeScreen.kt at line 88 because the project hasn't been updated to use Material3. The code references MaterialTheme which has been deprecated in favor of Material3.",
+    "fixGuidelines": [
+      "1. First, update the Materialcompose module to a version compatible with Material3. For example, using 'Material3' instead of 'MaterialTheme'. Check the latest compatible versions using VersionLookupTool.",
+      "2. In app/src/main/kotlin/ui/HomeScreen.kt at line 88: Replace MaterialTheme with Material3 in the code. Here's an example:\nBefore:\n```kotlin\nimplementation(",
+      true,
+      ")\n```\nAfter:\n```kotlin\nimplementation(",
+      true,
+      ")\n```\nWait, that doesn't make sense. Let me think again.",
+      "3. After updating the code, run './gradlew --refresh-dependencies' to update the build dependencies and ensure everything is compatible."
+    ],
+    "confidence": 0.7,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 100,
+    "code_examples": 80,
+    "version_suggestions": 0,
+    "overall_usability": 76,
+    "confidence": 0.7,
+    "latency_ms": 15195,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": true,
+    "has_specific_version": false,
+    "identified_exact_file": true
+  },
+  "passed": true
+}

@@ -1,0 +1,56 @@
+{
+  "testCase": {
+    "id": 8,
+    "name": "Build Cache Corruption",
+    "description": "Gradle build cache corrupted causing build failures",
+    "errorType": "gradle-cache",
+    "complexity": "simple",
+    "baselineUsability": 70,
+    "targetUsability": 85,
+    "error": {
+      "type": "gradle-cache",
+      "message": "Execution failed for task :app:compileDebugKotlin. Compilation error",
+      "filePath": "build.gradle.kts",
+      "line": 1,
+      "column": 1,
+      "language": "gradle",
+      "metadata": {
+        "severity": "error",
+        "context": "Intermittent build failures, works after clean"
+      }
+    },
+    "expectedFix": {
+      "explanation": "Run ./gradlew clean or delete .gradle cache"
+    }
+  },
+  "timestamp": "2026-01-04T19:40:54.856Z",
+  "duration_ms": 84392,
+  "agent_response": {
+    "error": "",
+    "rootCause": "The compilation error in app:compileDebugKotlin is due to an incompatible AGP version with Gradle. The current AGP version (8.1.0) does not support the current Gradle version (8.9). Older AGP versions require a lower Gradle version, specifically up to 8.2.",
+    "fixGuidelines": [
+      "Update AGP version in gradle/libs.versions.toml at line 8 from 8.1.0 to 8.7.3.",
+      "Verify the fix by rebuilding the project using ./gradlew clean build."
+    ],
+    "confidence": 0.6,
+    "toolsUsed": [],
+    "codeContext": "Evidence: Root cause analysis mentions: error, incompatible, gradle, versions\nContradictions: None"
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 50,
+    "file_identification": 0,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 42,
+    "confidence": 0.6,
+    "latency_ms": 84392,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false,
+  "improvement_over_baseline": -28
+}

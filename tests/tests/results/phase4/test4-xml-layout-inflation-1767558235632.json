@@ -1,0 +1,57 @@
+{
+  "testCase": {
+    "id": 4,
+    "name": "XML Layout Inflation",
+    "description": "Runtime inflation error due to unknown attribute",
+    "errorType": "xml-layout",
+    "complexity": "medium",
+    "targetUsability": 70,
+    "error": {
+      "type": "xml-layout",
+      "message": "Binary XML file line #12: Error inflating class android.widget.TextView",
+      "filePath": "app/src/main/res/layout/activity_main.xml",
+      "line": 12,
+      "column": 5,
+      "language": "xml",
+      "metadata": {
+        "severity": "error",
+        "context": "Unknown attribute android:textFontWeight"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/res/layout/activity_main.xml",
+      "lineNumber": 12,
+      "explanation": "Remove invalid attribute or use android:textStyle=\"bold\""
+    }
+  },
+  "timestamp": "2026-01-04T20:23:55.631Z",
+  "duration_ms": 42959,
+  "agent_response": {
+    "error": "Binary XML file line #12: Error inflating class android.widget.TextView",
+    "rootCause": "Error inflating class android.widget.TextView in app/src/main/res/layout/activity_main.xml line 12 due to invalid or unsupported attribute android:textFontWeight",
+    "fixGuidelines": [
+      "1. Examine the XML file at app/src/main/res/layout/activity_main.xml and check for any attributes that might be causing issues, such as unsupported attributes like android:textFontWeight.",
+      "2. Ensure all required attributes are present in the layout elements. For example, if a TextView is being used without necessary attributes like width or height.",
+      "3. Consider removing or replacing invalid attributes to see if the error persists."
+    ],
+    "confidence": 0.7,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 100,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 68,
+    "confidence": 0.7,
+    "latency_ms": 42959,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": true
+  },
+  "passed": false
+}

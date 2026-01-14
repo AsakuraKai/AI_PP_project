@@ -1,0 +1,58 @@
+{
+  "testCase": {
+    "id": 10,
+    "name": "Navigation Argument Mismatch",
+    "description": "Runtime crash due to missing/wrong navigation arguments",
+    "errorType": "navigation",
+    "complexity": "medium",
+    "baselineUsability": 50,
+    "targetUsability": 70,
+    "error": {
+      "type": "navigation",
+      "message": "java.lang.IllegalArgumentException: Required argument \"userId\" is missing",
+      "filePath": "app/src/main/kotlin/navigation/NavGraph.kt",
+      "line": 32,
+      "column": 5,
+      "language": "kotlin",
+      "metadata": {
+        "severity": "error",
+        "context": "Navigation argument not passed correctly"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/kotlin/navigation/NavGraph.kt",
+      "lineNumber": 32,
+      "explanation": "Add userId argument to navigation call"
+    }
+  },
+  "timestamp": "2026-01-04T19:42:36.473Z",
+  "duration_ms": 23801,
+  "agent_response": {
+    "error": "",
+    "rootCause": "The error occurs in app/src/main/kotlin/navigation/NavGraph.kt at line 32 because the required 'userId' argument is missing when calling a function or method related to navigation graph setup. The application expects a user ID but it's not provided, possibly indicating an issue with how users are authenticated or tracked within the navigation stack.",
+    "fixGuidelines": [
+      "Update the version of AGP in gradle/libs.versions.toml at line 8 from '8.1.0' to '8.7.3'",
+      "Verify that the 'userId' argument is correctly passed when initializing the navigation graph in NavGraph.kt"
+    ],
+    "confidence": 0.6,
+    "toolsUsed": [],
+    "codeContext": "Evidence: Root cause analysis mentions: navigation, userid, argument, missing\nContradictions: None"
+  },
+  "metrics": {
+    "diagnosis_accuracy": 100,
+    "solution_specificity": 50,
+    "file_identification": 100,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 65,
+    "confidence": 0.6,
+    "latency_ms": 23801,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": true
+  },
+  "passed": false,
+  "improvement_over_baseline": 15
+}

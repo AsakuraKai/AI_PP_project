@@ -1,0 +1,14 @@
+{
+  "totalAnalyses": 10,
+  "passedFirstAttempt": 0,
+  "passedAfterRetry": 3,
+  "failedValidation": 7,
+  "averageAttempts": 2.7,
+  "averageScore": 48,
+  "scoreDistribution": {
+    "excellent": 0,
+    "good": 3,
+    "adequate": 1,
+    "poor": 6
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "generated": "2026-01-07T12:52:33.835Z",
+  "totalFiles": 1861,
+  "totalDirectories": 286,
+  "filesByExtension": {
+    ".js": 265,
+    ".md": 15,
+    "(no extension)": 4,
+    ".json": 374,
+    ".bin": 26,
+    ".sqlite3": 1,
+    ".xml": 3,
+    ".css": 3,
+    ".png": 2,
+    ".html": 14,
+    ".info": 1,
+    ".ts": 488,
+    ".map": 516,
+    ".modelfile": 1,
+    ".py": 1,
+    ".txt": 6,
+    ".log": 6,
+    ".lock": 32,
+    ".class": 16,
+    ".java": 2,
+    ".properties": 41,
+    ".probe": 1,
+    ".gradle": 17,
+    ".toml": 1,
+    ".kt": 14,
+    ".kts": 2,
+    ".pro": 1,
+    ".backup": 1,
+    ".vsix": 1,
+    ".svg": 6
+  },
+  "largestDirectories": [
+    {
+      "path": "tests\\tests\\results\\phase4",
+      "fileCount": 217
+    },
+    {
+      "path": "scripts",
+      "fileCount": 138
+    },
+    {
+      "path": "dist\\scripts",
+      "fileCount": 96
+    },
+    {
+      "path": "dist\\src\\agent",
+      "fileCount": 68
+    },
+    {
+      "path": "tests\\results\\chunk8",
+      "fileCount": 68
+    },
+    {
+      "path": "vscode-extension\\out\\src\\agent",
+      "fileCount": 68
+    },
+    {
+      "path": "vscode-extension\\out\\vscode-extension\\src\\services",
+      "fileCount": 48
+    },
+    {
+      "path": "dist\\src\\tools",
+      "fileCount": 44
+    },
+    {
+      "path": "vscode-extension\\out\\src\\tools",
+      "fileCount": 44
+    },
+    {
+      "path": "dist\\src\\knowledge\\few-shot-examples",
+      "fileCount": 36
+    },
+    {
+      "path": "vscode-extension\\out\\src\\knowledge\\few-shot-examples",
+      "fileCount": 36
+    },
+    {
+      "path": "tests\\results\\chunk9",
+      "fileCount": 34
+    },
+    {
+      "path": "tests\\unit",
+      "fileCount": 28
+    },
+    {
+      "path": "vscode-extension\\out\\vscode-extension\\src\\chat",
+      "fileCount": 28
+    },
+    {
+      "path": "vscode-extension\\out\\vscode-extension\\src\\panel",
+      "fileCount": 28
+    }
+  ]
+}

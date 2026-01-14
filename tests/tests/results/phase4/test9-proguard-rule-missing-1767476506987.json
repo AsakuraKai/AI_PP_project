@@ -1,0 +1,61 @@
+{
+  "testCase": {
+    "id": 9,
+    "name": "ProGuard Rule Missing",
+    "description": "Runtime crash in release build due to obfuscation",
+    "errorType": "proguard",
+    "complexity": "complex",
+    "baselineUsability": 55,
+    "targetUsability": 70,
+    "error": {
+      "type": "proguard",
+      "message": "java.lang.NoSuchMethodError: No virtual method toJson",
+      "filePath": "app/proguard-rules.pro",
+      "line": 1,
+      "column": 1,
+      "language": "proguard",
+      "metadata": {
+        "severity": "error",
+        "context": "Gson reflection methods removed by R8"
+      }
+    },
+    "expectedFix": {
+      "file": "app/proguard-rules.pro",
+      "codeChange": "-keep class com.example.** { *; }",
+      "explanation": "Add ProGuard keep rule for serialization classes"
+    }
+  },
+  "timestamp": "2026-01-03T21:41:46.986Z",
+  "duration_ms": 44799,
+  "agent_response": {
+    "error": "java.lang.NoSuchMethodError: No virtual method toJson",
+    "rootCause": "ProGuard in build.gradle.kts line 28 (minifyEnabled=true) removes method getUserName() from User class at User.kt line 45, causing NoSuchMethodError at runtime in MainActivity.kt line 102. ProGuard in proguard-rules.pro is missing the necessary JSON handling rules due to R8 changes.",
+    "fixGuidelines": [
+      "Step 1: Update build.gradle.kts to disable minification for debug builds by modifying lines 28-30. This ensures that ProGuard does not remove any methods that are essential for JSON serialization.",
+      "Step 2: Edit proguard-rules.pro at the exact location where the JSON handling rules are defined (e.g., line 15). Add the necessary JSON-specific reflection rules to retain methods like getUserName(). For example, adding a rule that keeps the User class with its public method.",
+      "Step 3: Verify the fix by running gradle assemble and checking the build output mapping file. Ensure that all required methods are preserved and no NoSuchMethodError occurs in runtime.",
+      "Before making these changes, it's crucial to review the exact ProGuard configuration files (proguard-rules.pro) to identify which specific rules need to be added or modified. This ensures that only the necessary JSON handling methods are retained while others are removed as intended.",
+      "Code Example Before:\n\nkotlin\nproguard-rules.pro: { public jsonHandling = false; }\n\nkotlin\ncom.example.User {\n    public java.lang.String getUserName();\n}\n\nCode After:\n\nkotlin\nproguard-rules.pro: { public jsonHandling = true; }\n\nkotlin\ncom.example.User {\n    public java.lang.String getUserName();\n}\n"
+    ],
+    "confidence": 0.85,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 100,
+    "solution_specificity": 70,
+    "file_identification": 30,
+    "code_examples": 40,
+    "version_suggestions": 0,
+    "overall_usability": 61,
+    "confidence": 0.85,
+    "latency_ms": 44799,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false,
+  "improvement_over_baseline": 6
+}

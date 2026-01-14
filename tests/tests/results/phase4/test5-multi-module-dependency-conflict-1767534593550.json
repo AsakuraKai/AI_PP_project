@@ -1,0 +1,56 @@
+{
+  "testCase": {
+    "id": 5,
+    "name": "Multi-Module Dependency Conflict",
+    "description": "Version conflict between :app and :core modules",
+    "errorType": "gradle-dependency",
+    "complexity": "complex",
+    "targetUsability": 70,
+    "error": {
+      "type": "gradle-dependency",
+      "message": "Conflict with dependency androidx.lifecycle:lifecycle-runtime-ktx",
+      "filePath": "app/build.gradle.kts",
+      "line": 45,
+      "column": 1,
+      "language": "gradle",
+      "metadata": {
+        "severity": "error",
+        "context": "Module :app requires 2.6.0, :core requires 2.5.0"
+      }
+    },
+    "expectedFix": {
+      "file": "gradle/libs.versions.toml",
+      "explanation": "Align lifecycle version across all modules"
+    }
+  },
+  "timestamp": "2026-01-04T13:49:53.550Z",
+  "duration_ms": 4376,
+  "agent_response": {
+    "error": "Conflict with dependency androidx.lifecycle:lifecycle-runtime-ktx",
+    "rootCause": "Conflict in dependencies: :app requires 2.6.0 and :core requires 2.5.0 at app/build.gradle.kts:45",
+    "fixGuidelines": [
+      "Update the versions of androidx.lifecycle:lifecycle-runtime-ktx to a compatible version that works with the current build.gradle file's other modules.",
+      "Check if there are any other dependencies in the build.gradle file that might conflict and update them accordingly.",
+      "Run ./gradlew --refresh-dependencies to verify the dependency resolution after making changes."
+    ],
+    "confidence": 0.7,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 60,
+    "file_identification": 30,
+    "code_examples": 0,
+    "version_suggestions": 90,
+    "overall_usability": 60,
+    "confidence": 0.7,
+    "latency_ms": 4376,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": true,
+    "identified_exact_file": false
+  },
+  "passed": false
+}

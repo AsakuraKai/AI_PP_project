@@ -1,0 +1,1251 @@
+/**
+ * FileResolver - Resolve generic file references to exact paths
+ * 
+ * This utility helps identify exact file paths from generic references like
+ * "build.gradle" by analyzing the project structure and context.
+ * 
+ * **Purpose:** Address MVP test finding where agent said "build.gradle" 
+ * but actual file was "gradle/libs.versions.toml"
+ * 
+ * **Target:** File identification accuracy 30% → 85%
+ * 
+ * @example
+ * ```typescript
+ * const resolver = new FileResolver('/path/to/project');
+ * const result = await resolver.resolve('build.gradle', { 
+ *   errorType: 'gradle-dependency',
+ *   context: 'AGP version'
+ * });
+ * // Returns: { path: 'gradle/libs.versions.toml', confidence: 0.95, reason: '...' }
+ * ```
+ */
+
+import * as fs from 'fs/promises';
+import * as path from 'path';
+import { PathUtils } from './PathUtils';
+
+/**
+ * File resolution result
+ */
+export interface FileResolutionResult {
+  /** Exact file path (absolute) */
+  path: string;
+  
+  /** Relative path from project root */
+  relativePath: string;
+  
+  /** Confidence score (0-1) */
+  confidence: number;
+  
+  /** Reason for choosing this file */
+  reason: string;
+  
+  /** Alternative candidates */
+  alternatives?: FileCandidate[];
+  
+  /** Whether file exists */
+  exists: boolean;
+  
+  /** Line number (if applicable) */
+  line?: number;
+  
+  /** Suggestion if file doesn't exist */
+  creationSuggestion?: string;
+}
+
+/**
+ * File candidate with confidence score
+ */
+export interface FileCandidate {
+  path: string;
+  relativePath: string;
+  confidence: number;
+  reason: string;
+}
+
+/**
+ * Resolution context
+ */
+export interface ResolutionContext {
+  /** Error type (e.g., 'gradle-dependency', 'kotlin-npe') */
+  errorType?: string;
+  
+  /** Context from error message (e.g., 'AGP version', 'lateinit') */
+  context?: string;
+  
+  /** Module name (for multi-module projects) */
+  module?: string;
+  
+  /** Line content (if available) */
+  lineContent?: string;
+  
+  /** Original error message */
+  errorMessage?: string;
+}
+
+/**
+ * Project structure information
+ */
+export interface ProjectStructure {
+  /** Project root directory */
+  root: string;
+  
+  /** Whether version catalog is used */
+  hasVersionCatalog: boolean;
+  
+  /** Version catalog path (if exists) */
+  versionCatalogPath?: string;
+  
+  /** Whether multi-module project */
+  isMultiModule: boolean;
+  
+  /** List of modules */
+  modules: string[];
+  
+  /** Root build.gradle path */
+  rootBuildGradle?: string;
+  
+  /** settings.gradle path */
+  settingsGradle?: string;
+  
+  /** Gradle version */
+  gradleVersion?: string;
+  
+  /** Phase 5: buildSrc convention support */
+  hasBuildSrc?: boolean;
+  buildSrcPath?: string;
+  
+  /** Phase 5: Detected build system features */
+  useKotlinDSL?: boolean; // Uses .kts files
+  useCompositeBuilds?: boolean; // Has includeBuild()
+}
+
+/**
+ * FileResolver - Intelligently resolve file paths from generic references
+ */
+export class FileResolver {
+  private projectRoot: string;
+  private structureCache: ProjectStructure | null = null;
+  private cacheTimestamp: number = 0;
+  private readonly CACHE_TTL = 30000; // 30 seconds
+
+  constructor(projectRoot: string) {
+    this.projectRoot = PathUtils.resolve(projectRoot);
+  }
+
+  /**
+   * Clear the project structure cache
+   * Phase 5: Added for testing and manual cache invalidation
+   */
+  clearCache(): void {
+    this.structureCache = null;
+    this.cacheTimestamp = 0;
+  }
+
+  /**
+   * Resolve a generic file reference to exact path
+   * 
+   * @param genericPath - Generic reference (e.g., "build.gradle", "dependencies")
+   * @param context - Resolution context
+   * @returns File resolution result
+   */
+  async resolve(
+    genericPath: string,
+    context?: ResolutionContext
+  ): Promise<FileResolutionResult> {
+    // Get project structure
+    const structure = await this.getProjectStructure();
+
+    // Determine resolution strategy based on file type
+    if (this.isGradleVersionReference(genericPath, context)) {
+      return this.resolveGradleVersion(structure, context);
+    }
+
+    if (this.isGradleDependencyReference(genericPath, context)) {
+      return this.resolveGradleDependency(structure, context);
+    }
+
+    if (this.isBuildFileReference(genericPath, context)) {
+      return this.resolveBuildFile(structure, context);
+    }
+
+    if (this.isManifestReference(genericPath, context)) {
+      return this.resolveManifest(structure, context);
+    }
+
+    // Chunk 9: New file type resolvers
+    if (this.isProguardReference(genericPath, context)) {
+      return this.resolveProguardRules(structure, context);
+    }
+
+    if (this.isNavigationReference(genericPath, context)) {
+      return this.resolveNavigationFile(structure, context);
+    }
+
+    if (this.isSourceCodeReference(genericPath, context)) {
+      return this.resolveSourceCode(structure, context, genericPath);
+    }
+
+    // Fallback: try direct path resolution
+    return this.resolveDirect(genericPath, context);
+  }
+
+  /**
+   * Resolve Gradle version reference (AGP, Kotlin, etc.)
+   */
+  private async resolveGradleVersion(
+    structure: ProjectStructure,
+    context?: ResolutionContext
+  ): Promise<FileResolutionResult> {
+    const candidates: FileCandidate[] = [];
+
+    // Priority 1: Version catalog (if exists)
+    if (structure.hasVersionCatalog && structure.versionCatalogPath) {
+      const catalogPath = structure.versionCatalogPath;
+      const exists = await this.fileExists(catalogPath);
+      
+      if (exists) {
+        // Try to find exact line number
+        const line = await this.findLineInFile(catalogPath, context);
+        
+        candidates.push({
+          path: catalogPath,
+          relativePath: PathUtils.relative(structure.root, catalogPath),
+          confidence: 0.95,
+          reason: 'Version catalog is the primary location for version declarations in modern Gradle projects'
+        });
+
+        return {
+          path: catalogPath,
+          relativePath: PathUtils.relative(structure.root, catalogPath),
+          confidence: 0.95,
+          reason: 'Version catalog (gradle/libs.versions.toml) is used for centralized version management',
+          exists: true,
+          line,
+          alternatives: []
+        };
+      }
+
+      return {
+        path: catalogPath,
+        relativePath: PathUtils.relative(structure.root, catalogPath),
+        confidence: 0.40,
+        reason: 'Version catalog was detected in cached project structure, but the file is currently missing',
+        exists: false,
+        alternatives: []
+      };
+    }
+
+    // Priority 2: Root build.gradle
+    if (structure.rootBuildGradle) {
+      const exists = await this.fileExists(structure.rootBuildGradle);
+      
+      if (exists) {
+        const line = await this.findLineInFile(structure.rootBuildGradle, context);
+        
+        candidates.push({
+          path: structure.rootBuildGradle,
+          relativePath: PathUtils.relative(structure.root, structure.rootBuildGradle),
+          confidence: 0.80,
+          reason: 'Root build.gradle typically contains plugin versions'
+        });
+
+        return {
+          path: structure.rootBuildGradle,
+          relativePath: PathUtils.relative(structure.root, structure.rootBuildGradle),
+          confidence: 0.80,
+          reason: 'Root build.gradle contains plugin version declarations',
+          exists: true,
+          line,
+          alternatives: candidates.slice(1)
+        };
+      }
+    }
+
+    // Priority 3: gradle.properties
+    const gradleProperties = path.join(structure.root, 'gradle.properties');
+    const propsExists = await this.fileExists(gradleProperties);
+    
+    if (propsExists) {
+      const line = await this.findLineInFile(gradleProperties, context);
+      
+      return {
+        path: gradleProperties,
+        relativePath: 'gradle.properties',
+        confidence: 0.60,
+        reason: 'gradle.properties may contain version properties',
+        exists: true,
+        line,
+        alternatives: candidates
+      };
+    }
+
+    // No match found
+    return this.createNotFoundResult('version declaration file', structure);
+  }
+
+  /**
+   * Resolve Gradle dependency reference
+   */
+  private async resolveGradleDependency(
+    structure: ProjectStructure,
+    context?: ResolutionContext
+  ): Promise<FileResolutionResult> {
+    const candidates: FileCandidate[] = [];
+
+    // Priority 1: Module build.gradle (if module specified) - check FIRST
+    if (context?.module) {
+      const moduleBuildGradle = path.join(structure.root, context.module, 'build.gradle');
+      const exists = await this.fileExists(moduleBuildGradle);
+      
+      if (exists) {
+        const line = await this.findLineInFile(moduleBuildGradle, context);
+        
+        return {
+          path: moduleBuildGradle,
+          relativePath: PathUtils.relative(structure.root, moduleBuildGradle),
+          confidence: 0.90, // Higher confidence when module is explicitly specified
+          reason: `Dependencies for ${context.module} module`,
+          exists: true,
+          line,
+          alternatives: []
+        };
+      }
+    }
+
+    // Priority 2: Version catalog (if exists)
+    if (structure.hasVersionCatalog && structure.versionCatalogPath) {
+      const catalogPath = structure.versionCatalogPath;
+      const exists = await this.fileExists(catalogPath);
+      
+      if (exists) {
+        const line = await this.findLineInFile(catalogPath, context);
+        
+        return {
+          path: catalogPath,
+          relativePath: PathUtils.relative(structure.root, catalogPath),
+          confidence: 0.90,
+          reason: 'Version catalog manages dependencies centrally',
+          exists: true,
+          line,
+          alternatives: []
+        };
+      }
+    }
+
+    // Priority 3: app/build.gradle (common default module)
+    const appBuildGradle = path.join(structure.root, 'app', 'build.gradle');
+    const appExists = await this.fileExists(appBuildGradle);
+    
+    if (appExists) {
+      const line = await this.findLineInFile(appBuildGradle, context);
+      
+      return {
+        path: appBuildGradle,
+        relativePath: 'app/build.gradle',
+        confidence: 0.75,
+        reason: 'App module build.gradle contains application dependencies',
+        exists: true,
+        line,
+        alternatives: candidates
+      };
+    }
+
+    // Priority 4: Root build.gradle
+    if (structure.rootBuildGradle) {
+      const exists = await this.fileExists(structure.rootBuildGradle);
+      
+      if (exists) {
+        const line = await this.findLineInFile(structure.rootBuildGradle, context);
+        
+        return {
+          path: structure.rootBuildGradle,
+          relativePath: PathUtils.relative(structure.root, structure.rootBuildGradle),
+          confidence: 0.65,
+          reason: 'Root build.gradle may contain shared dependencies',
+          exists: true,
+          line,
+          alternatives: candidates
+        };
+      }
+    }
+
+    return this.createNotFoundResult('dependency file', structure);
+  }
+
+  /**
+   * Resolve build file reference (generic "build.gradle")
+   */
+  private async resolveBuildFile(
+    structure: ProjectStructure,
+    context?: ResolutionContext
+  ): Promise<FileResolutionResult> {
+    // If context suggests version management, prefer version catalog
+    if (this.isVersionContext(context)) {
+      return this.resolveGradleVersion(structure, context);
+    }
+
+    // If context suggests dependency, prefer dependency files
+    if (this.isDependencyContext(context)) {
+      return this.resolveGradleDependency(structure, context);
+    }
+
+    // Default: root build.gradle
+    if (structure.rootBuildGradle) {
+      const exists = await this.fileExists(structure.rootBuildGradle);
+      const line = await this.findLineInFile(structure.rootBuildGradle, context);
+      
+      return {
+        path: structure.rootBuildGradle,
+        relativePath: PathUtils.relative(structure.root, structure.rootBuildGradle),
+        confidence: 0.70,
+        reason: 'Root build.gradle is the primary build configuration',
+        exists,
+        line
+      };
+    }
+
+    return this.createNotFoundResult('build.gradle', structure);
+  }
+
+  /**
+   * Resolve AndroidManifest.xml reference
+   */
+  private async resolveManifest(
+    structure: ProjectStructure,
+    context?: ResolutionContext
+  ): Promise<FileResolutionResult> {
+    // Try common locations
+    const manifestPaths = [
+      path.join(structure.root, 'app', 'src', 'main', 'AndroidManifest.xml'),
+      path.join(structure.root, 'src', 'main', 'AndroidManifest.xml'),
+    ];
+
+    // If module specified, try that first
+    if (context?.module) {
+      manifestPaths.unshift(
+        path.join(structure.root, context.module, 'src', 'main', 'AndroidManifest.xml')
+      );
+    }
+
+    for (const manifestPath of manifestPaths) {
+      const exists = await this.fileExists(manifestPath);
+      if (exists) {
+        const line = await this.findLineInFile(manifestPath, context);
+        
+        return {
+          path: manifestPath,
+          relativePath: PathUtils.relative(structure.root, manifestPath),
+          confidence: 0.95,
+          reason: 'AndroidManifest.xml found at standard location',
+          exists: true,
+          line
+        };
+      }
+    }
+
+    return this.createNotFoundResult('AndroidManifest.xml', structure);
+  }
+
+  /**
+   * Resolve ProGuard rules file reference (Chunk 9)
+   */
+  private async resolveProguardRules(
+    structure: ProjectStructure,
+    context?: ResolutionContext
+  ): Promise<FileResolutionResult> {
+    // Try common locations for proguard-rules.pro
+    const proguardPaths = [
+      path.join(structure.root, 'app', 'proguard-rules.pro'),
+      path.join(structure.root, 'proguard-rules.pro'),
+      path.join(structure.root, 'app', 'proguard.pro'),
+    ];
+
+    // If module specified, try that first
+    if (context?.module) {
+      proguardPaths.unshift(
+        path.join(structure.root, context.module, 'proguard-rules.pro')
+      );
+    }
+
+    for (const proguardPath of proguardPaths) {
+      const exists = await this.fileExists(proguardPath);
+      if (exists) {
+        return {
+          path: proguardPath,
+          relativePath: PathUtils.relative(structure.root, proguardPath),
+          confidence: 0.95,
+          reason: 'ProGuard rules file found at standard location',
+          exists: true
+        };
+      }
+    }
+
+    // File doesn't exist - suggest creation
+    const suggestedPath = path.join(structure.root, 'app', 'proguard-rules.pro');
+    return {
+      path: suggestedPath,
+      relativePath: 'app/proguard-rules.pro',
+      confidence: 0.85,
+      reason: 'ProGuard rules file does not exist but should be created here',
+      exists: false,
+      creationSuggestion: 'Create app/proguard-rules.pro and add keep rules for obfuscated classes'
+    };
+  }
+
+  /**
+   * Resolve Navigation file reference (Chunk 9)
+   */
+  private async resolveNavigationFile(
+    structure: ProjectStructure,
+    context?: ResolutionContext
+  ): Promise<FileResolutionResult> {
+    // Try to find Navigation.kt or nav_graph files
+    const searchPatterns = [
+      '**/Navigation.kt',
+      '**/NavGraph.kt',
+      '**/navigation/**/*.kt',
+      '**/nav_graph.xml',
+      '**/navigation.xml'
+    ];
+
+    // Search for navigation files
+    const navigationFiles: string[] = [];
+    for (const pattern of searchPatterns) {
+      const found = await this.findFilesByPattern(pattern, structure.root);
+      navigationFiles.push(...found);
+    }
+
+    if (navigationFiles.length > 0) {
+      // Prefer Compose Navigation.kt over XML nav graphs
+      const composeNav = navigationFiles.find(f => f.endsWith('Navigation.kt') || f.endsWith('NavGraph.kt'));
+      const targetFile = composeNav || navigationFiles[0];
+
+      const line = await this.findLineInFile(targetFile, context);
+
+      return {
+        path: targetFile,
+        relativePath: PathUtils.relative(structure.root, targetFile),
+        confidence: 0.90,
+        reason: composeNav ? 'Compose Navigation file' : 'Navigation graph file',
+        exists: true,
+        line,
+        alternatives: navigationFiles.slice(1).map(alt => ({
+          path: alt,
+          relativePath: PathUtils.relative(structure.root, alt),
+          confidence: 0.75,
+          reason: 'Alternative navigation file'
+        }))
+      };
+    }
+
+    return this.createNotFoundResult('Navigation.kt', structure);
+  }
+
+  /**
+   * Resolve source code file reference
+   */
+  private async resolveSourceCode(
+    structure: ProjectStructure,
+    context: ResolutionContext | undefined,
+    genericPath: string
+  ): Promise<FileResolutionResult> {
+    // Try to find file in project
+    const found = await this.findFileByName(genericPath, structure.root);
+    
+    if (found) {
+      const line = await this.findLineInFile(found, context);
+      
+      return {
+        path: found,
+        relativePath: PathUtils.relative(structure.root, found),
+        confidence: 0.90,
+        reason: `Found ${genericPath} in project`,
+        exists: true,
+        line
+      };
+    }
+
+    return this.createNotFoundResult(genericPath, structure);
+  }
+
+  /**
+   * Direct path resolution (fallback)
+   */
+  private async resolveDirect(
+    genericPath: string,
+    context?: ResolutionContext
+  ): Promise<FileResolutionResult> {
+    let absolutePath: string;
+    const inputWasAbsolute = path.isAbsolute(genericPath);
+    
+    // Handle absolute paths (cross-platform)
+    if (inputWasAbsolute) {
+      absolutePath = genericPath;
+    } else {
+      absolutePath = path.join(this.projectRoot, genericPath);
+    }
+    
+    // Normalize path separators
+    absolutePath = path.normalize(absolutePath);
+    
+    const exists = await this.fileExists(absolutePath);
+    const line = exists ? await this.findLineInFile(absolutePath, context) : undefined;
+
+    // For missing relative references, prefer a "not found" style result.
+    // This matches expected behavior in unit tests and avoids implying a real file path.
+    if (!exists && !inputWasAbsolute) {
+      return {
+        path: '',
+        relativePath: '',
+        confidence: 0,
+        reason: 'File reference provided but not found in project',
+        exists: false
+      };
+    }
+    
+    return {
+      path: absolutePath,
+      relativePath: PathUtils.relative(this.projectRoot, absolutePath),
+      confidence: exists ? 0.95 : 0.30,
+      reason: exists ? 'File found at specified path' : 'File path provided but not found',
+      exists,
+      line
+    };
+  }
+
+  /**
+   * Get or build project structure
+   */
+  private async getProjectStructure(): Promise<ProjectStructure> {
+    // Check cache
+    if (this.structureCache && (Date.now() - this.cacheTimestamp) < this.CACHE_TTL) {
+      return this.structureCache;
+    }
+
+    // Build structure
+    const structure: ProjectStructure = {
+      root: this.projectRoot,
+      hasVersionCatalog: false,
+      isMultiModule: false,
+      modules: [],
+      // Phase 5: Initialize new fields
+      hasBuildSrc: false,
+      useKotlinDSL: false,
+      useCompositeBuilds: false,
+    };
+
+    // Check for version catalog
+    const versionCatalogPath = path.join(this.projectRoot, 'gradle', 'libs.versions.toml');
+    structure.hasVersionCatalog = await this.fileExists(versionCatalogPath);
+    if (structure.hasVersionCatalog) {
+      structure.versionCatalogPath = versionCatalogPath;
+    }
+
+    // Phase 5: Check for buildSrc convention
+    const buildSrcPath = path.join(this.projectRoot, 'buildSrc');
+    structure.hasBuildSrc = await this.fileExists(buildSrcPath);
+    if (structure.hasBuildSrc) {
+      structure.buildSrcPath = buildSrcPath;
+    }
+
+    // Check for root build.gradle (and .kts variant)
+    const rootBuildGradle = path.join(this.projectRoot, 'build.gradle');
+    if (await this.fileExists(rootBuildGradle)) {
+      structure.rootBuildGradle = rootBuildGradle;
+    } else {
+      // Phase 5: Try Kotlin DSL variant
+      const kotlinBuildGradle = path.join(this.projectRoot, 'build.gradle.kts');
+      if (await this.fileExists(kotlinBuildGradle)) {
+        structure.rootBuildGradle = kotlinBuildGradle;
+        structure.useKotlinDSL = true;
+      }
+    }
+
+    // Check for settings.gradle
+    const settingsGradle = path.join(this.projectRoot, 'settings.gradle');
+    if (await this.fileExists(settingsGradle)) {
+      structure.settingsGradle = settingsGradle;
+      structure.modules = await this.parseModulesFromSettings(settingsGradle);
+      structure.isMultiModule = structure.modules.length > 1;
+      
+      // Phase 5: Check for composite builds
+      structure.useCompositeBuilds = await this.hasCompositeBuildsinSettings(settingsGradle);
+    } else {
+      // Phase 5: Try Kotlin DSL variant
+      const kotlinSettingsGradle = path.join(this.projectRoot, 'settings.gradle.kts');
+      if (await this.fileExists(kotlinSettingsGradle)) {
+        structure.settingsGradle = kotlinSettingsGradle;
+        structure.useKotlinDSL = true;
+        structure.modules = await this.parseModulesFromSettings(kotlinSettingsGradle);
+        structure.isMultiModule = structure.modules.length > 1;
+        structure.useCompositeBuilds = await this.hasCompositeBuildsinSettings(kotlinSettingsGradle);
+      }
+    }
+
+    // Cache and return
+    this.structureCache = structure;
+    this.cacheTimestamp = Date.now();
+    return structure;
+  }
+
+  /**
+   * Parse modules from settings.gradle
+   */
+  private async parseModulesFromSettings(settingsPath: string): Promise<string[]> {
+    try {
+      const content = await fs.readFile(settingsPath, 'utf-8');
+      const modules: string[] = [];
+      
+      // Match include ':module' patterns (various formats)
+      const includePattern = /include\s+['"]:([^'"]+)['"]/g;
+      let match;
+      
+      while ((match = includePattern.exec(content)) !== null) {
+        const moduleName = match[1];
+        // Verify module directory exists
+        const projectRoot = path.dirname(settingsPath);
+        const modulePath = path.join(projectRoot, moduleName);
+        try {
+          const stats = await fs.stat(modulePath);
+          if (stats.isDirectory()) {
+            modules.push(moduleName);
+          }
+        } catch {
+          // Module directory doesn't exist, skip it
+        }
+      }
+      
+      return modules;
+    } catch (error) {
+      return [];
+    }
+  }
+
+  /**
+   * Find line number in file based on context
+   */
+  private async findLineInFile(
+    filePath: string,
+    context?: ResolutionContext
+  ): Promise<number | undefined> {
+    if (!context?.context && !context?.lineContent && !context?.errorMessage) {
+      return undefined;
+    }
+
+    try {
+      const content = await fs.readFile(filePath, 'utf-8');
+      const lines = content.split('\n');
+      
+      // Build search terms from context with priorities
+      const exactSearchTerms: string[] = [];
+      const fuzzySearchTerms: string[] = [];
+      
+      if (context?.context) {
+        const contextLower = context.context.toLowerCase();
+        
+        // Extract exact version patterns (highest priority)
+        const versionMatch = contextLower.match(/[\d.]+/);
+        if (versionMatch) {
+          exactSearchTerms.push(versionMatch[0]);
+        }
+        
+        // Extract key variable names
+        const keywordMatch = contextLower.match(/\b(agp|kotlin|androidx|compose|core)\b/);
+        if (keywordMatch) {
+          exactSearchTerms.push(keywordMatch[0]);
+        }
+        
+        // Add full context as fuzzy term
+        fuzzySearchTerms.push(contextLower);
+      }
+      
+      if (context?.lineContent) {
+        exactSearchTerms.push(context.lineContent.toLowerCase().trim());
+      }
+      
+      if (context?.errorMessage) {
+        const errorLower = context.errorMessage.toLowerCase();
+
+        // Extract Maven/Gradle coordinates: group:artifact:version
+        const coordMatch = errorLower.match(/([a-z0-9_.-]+):([a-z0-9_.-]+):([0-9][a-z0-9+_.-]*)/i);
+        if (coordMatch) {
+          const group = coordMatch[1];
+          const artifact = coordMatch[2];
+          exactSearchTerms.push(group);
+          exactSearchTerms.push(artifact);
+          exactSearchTerms.push(`${group}:${artifact}`);
+        }
+
+        const versionMatch = errorLower.match(/[\d.]+/);
+        if (versionMatch) {
+          exactSearchTerms.push(versionMatch[0]);
+        }
+      }
+
+      // First pass: exact matches
+      for (let i = 0; i < lines.length; i++) {
+        const lineLower = lines[i].toLowerCase().trim();
+        
+        for (const term of exactSearchTerms) {
+          if (term && term.length > 1 && lineLower.includes(term)) {
+            // Return 1-indexed line number
+            return i + 1;
+          }
+        }
+      }
+      
+      // Second pass: fuzzy matches
+      for (let i = 0; i < lines.length; i++) {
+        const lineLower = lines[i].toLowerCase().trim();
+        
+        for (const term of fuzzySearchTerms) {
+          if (term && term.length > 3 && lineLower.includes(term)) {
+            return i + 1;
+          }
+        }
+      }
+    } catch (error) {
+      // File read error, return undefined
+    }
+
+    return undefined;
+  }
+
+  /**
+   * Check if file exists
+   */
+  private async fileExists(filePath: string): Promise<boolean> {
+    try {
+      await fs.access(filePath);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Find file by name recursively
+   */
+  private async findFileByName(
+    fileName: string,
+    directory: string,
+    maxDepth: number = 10,
+    currentDepth: number = 0
+  ): Promise<string | null> {
+    if (currentDepth >= maxDepth) return null;
+
+    try {
+      const entries = await fs.readdir(directory, { withFileTypes: true });
+      
+      // First pass: check files in current directory
+      for (const entry of entries) {
+        if (entry.isFile() && entry.name === fileName) {
+          return path.join(directory, entry.name);
+        }
+      }
+      
+      // Second pass: recurse into subdirectories
+      for (const entry of entries) {
+        if (entry.isDirectory() && !entry.name.startsWith('.') && 
+            entry.name !== 'node_modules' && entry.name !== 'build' && entry.name !== 'out') {
+          const fullPath = path.join(directory, entry.name);
+          const found = await this.findFileByName(fileName, fullPath, maxDepth, currentDepth + 1);
+          if (found) return found;
+        }
+      }
+    } catch (error) {
+      // Directory read error, continue
+    }
+
+    return null;
+  }
+
+  /**
+   * Find files matching pattern (Chunk 9)
+   * Simple glob pattern matching (supports ** and *)
+   */
+  private async findFilesByPattern(
+    pattern: string,
+    directory: string,
+    maxDepth: number = 5,
+    currentDepth: number = 0
+  ): Promise<string[]> {
+    if (currentDepth >= maxDepth) return [];
+
+    const results: string[] = [];
+    const patternParts = pattern.split('/').filter(p => p);
+    
+    try {
+      const entries = await fs.readdir(directory, { withFileTypes: true });
+      
+      for (const entry of entries) {
+        const fullPath = path.join(directory, entry.name);
+        
+        // Skip common ignored directories
+        if (entry.isDirectory() && (
+          entry.name.startsWith('.') ||
+          entry.name === 'node_modules' ||
+          entry.name === 'build' ||
+          entry.name === 'out'
+        )) {
+          continue;
+        }
+        
+        // Check if this entry matches the pattern
+        if (this.matchesPattern(entry.name, patternParts[patternParts.length - 1])) {
+          if (entry.isFile()) {
+            results.push(fullPath);
+          }
+        }
+        
+        // Recurse into subdirectories
+        if (entry.isDirectory()) {
+          const subResults = await this.findFilesByPattern(
+            pattern,
+            fullPath,
+            maxDepth,
+            currentDepth + 1
+          );
+          results.push(...subResults);
+        }
+      }
+    } catch (error) {
+      // Directory read error, continue
+    }
+
+    return results;
+  }
+
+  /**
+   * Simple pattern matching helper (Chunk 9)
+   */
+  private matchesPattern(fileName: string, pattern: string): boolean {
+    if (pattern === '**' || pattern === '*') return true;
+    
+    // Convert glob pattern to regex
+    const regexPattern = pattern
+      .replace(/\./g, '\\.')
+      .replace(/\*/g, '.*')
+      .replace(/\?/g, '.');
+    
+    const regex = new RegExp(`^${regexPattern}$`, 'i');
+    return regex.test(fileName);
+  }
+
+  /**
+   * Create "not found" result with suggestions
+   */
+  private createNotFoundResult(
+    fileType: string,
+    _structure: ProjectStructure
+  ): FileResolutionResult {
+    let creationSuggestion = '';
+    
+    if (fileType.includes('version')) {
+      creationSuggestion = 'Consider creating gradle/libs.versions.toml for centralized version management';
+    } else if (fileType.includes('build')) {
+      creationSuggestion = 'Create build.gradle in project root or module directory';
+    }
+
+    return {
+      path: '',
+      relativePath: '',
+      confidence: 0,
+      reason: `Could not find ${fileType} in project`,
+      exists: false,
+      creationSuggestion
+    };
+  }
+
+  // ==================== Helper Methods ====================
+
+  private isGradleVersionReference(genericPath: string, context?: ResolutionContext): boolean {
+    // Avoid overly-broad triggers like "gradle" (would match *.gradle paths and
+    // gradle-related error types, incorrectly routing dependency/source resolutions).
+    const versionKeywords = ['version', 'agp', 'kotlin', 'plugin', 'libs.versions', 'versions.toml'];
+    const lowerPath = genericPath.toLowerCase();
+    const lowerContext = context?.context?.toLowerCase() || '';
+    const lowerErrorMessage = context?.errorMessage?.toLowerCase() || '';
+    
+    return versionKeywords.some(kw => 
+      lowerPath.includes(kw) || lowerContext.includes(kw) || lowerErrorMessage.includes(kw)
+    );
+  }
+
+  private isGradleDependencyReference(genericPath: string, context?: ResolutionContext): boolean {
+    const dependencyKeywords = ['dependency', 'dependencies', 'library', 'artifact'];
+    const lowerPath = genericPath.toLowerCase();
+    const lowerContext = context?.context?.toLowerCase() || '';
+    
+    return dependencyKeywords.some(kw => 
+      lowerPath.includes(kw) || lowerContext.includes(kw)
+    );
+  }
+
+  private isBuildFileReference(genericPath: string, _context?: ResolutionContext): boolean {
+    const lowerPath = genericPath.toLowerCase();
+    return lowerPath.includes('build.gradle') || lowerPath === 'build';
+  }
+
+  private isManifestReference(genericPath: string, _context?: ResolutionContext): boolean {
+    const lowerPath = genericPath.toLowerCase();
+    return lowerPath.includes('manifest') || lowerPath.includes('androidmanifest');
+  }
+
+  /**
+   * Check if reference is to ProGuard rules file (Chunk 9)
+   */
+  private isProguardReference(genericPath: string, context?: ResolutionContext): boolean {
+    const lowerPath = genericPath.toLowerCase();
+    const lowerContext = context?.context?.toLowerCase() || '';
+    const errorType = context?.errorType?.toLowerCase() || '';
+    
+    return lowerPath.includes('proguard') || 
+           lowerPath.includes('r8') ||
+           lowerPath.includes('minification') ||
+           lowerContext.includes('proguard') ||
+           lowerContext.includes('obfuscation') ||
+           errorType.includes('proguard');
+  }
+
+  /**
+   * Check if reference is to Navigation file (Chunk 9)
+   */
+  private isNavigationReference(genericPath: string, context?: ResolutionContext): boolean {
+    const lowerPath = genericPath.toLowerCase();
+    const lowerContext = context?.context?.toLowerCase() || '';
+    const errorType = context?.errorType?.toLowerCase() || '';
+    
+    return lowerPath.includes('navigation') || 
+           lowerPath.includes('navgraph') ||
+           lowerPath.includes('nav_graph') ||
+           lowerContext.includes('navigation') ||
+           lowerContext.includes('navhost') ||
+           errorType.includes('navigation');
+  }
+  
+  // ========== Phase 5: Enhanced Build System Detection ==========
+  
+  /**
+   * Check if settings.gradle uses composite builds
+   * Phase 5: Support for includeBuild() detection
+   */
+  private async hasCompositeBuildsinSettings(settingsPath: string): Promise<boolean> {
+    try {
+      const content = await fs.readFile(settingsPath, 'utf-8');
+      // Look for includeBuild() calls
+      return /includeBuild\s*\(/.test(content);
+    } catch {
+      return false;
+    }
+  }
+  
+  /**
+   * Enhanced version catalog resolution with buildSrc fallback
+   * Phase 5: Check buildSrc conventions if version catalog not found
+   */
+  async resolveVersionDeclaration(
+    dependencyName: string,
+    context?: ResolutionContext
+  ): Promise<FileResolutionResult> {
+    const structure = await this.getProjectStructure();
+    
+    // Priority 1: Version catalog
+    if (structure.hasVersionCatalog && structure.versionCatalogPath) {
+      const line = await this.findDependencyInVersionCatalog(
+        structure.versionCatalogPath,
+        dependencyName
+      );
+      
+      if (line) {
+        return {
+          path: structure.versionCatalogPath,
+          relativePath: PathUtils.relative(structure.root, structure.versionCatalogPath),
+          confidence: 0.95,
+          reason: 'Version declared in version catalog',
+          exists: true,
+          line,
+        };
+      }
+    }
+    
+    // Priority 2: buildSrc convention
+    if (structure.hasBuildSrc && structure.buildSrcPath) {
+      const buildSrcVersionFiles = await this.findVersionFilesInBuildSrc(
+        structure.buildSrcPath,
+        dependencyName
+      );
+      
+      if (buildSrcVersionFiles.length > 0) {
+        const primaryFile = buildSrcVersionFiles[0];
+        return {
+          path: primaryFile.path,
+          relativePath: PathUtils.relative(structure.root, primaryFile.path),
+          confidence: 0.90,
+          reason: 'Version declared in buildSrc convention',
+          exists: true,
+          line: primaryFile.line,
+          alternatives: buildSrcVersionFiles.slice(1).map(f => ({
+            path: f.path,
+            relativePath: PathUtils.relative(structure.root, f.path),
+            confidence: 0.75,
+            reason: 'Alternative buildSrc version file',
+          })),
+        };
+      }
+    }
+    
+    // Fallback to standard resolution
+    return this.resolveGradleVersion(structure, context);
+  }
+  
+  /**
+   * Find dependency declaration in version catalog
+   * Phase 5: TOML parsing with section detection
+   */
+  private async findDependencyInVersionCatalog(
+    catalogPath: string,
+    dependencyName: string
+  ): Promise<number | undefined> {
+    try {
+      const content = await fs.readFile(catalogPath, 'utf-8');
+      const lines = content.split('\n');
+      
+      const searchTerms = [
+        dependencyName.toLowerCase(),
+        dependencyName.replace(/-/g, '.'),
+        dependencyName.replace(/-/g, '_'),
+      ];
+      
+      // Look in [versions], [libraries], [plugins] sections
+      let inRelevantSection = false;
+      
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].toLowerCase().trim();
+        
+        // Track sections
+        if (line.startsWith('[versions]') || 
+            line.startsWith('[libraries]') || 
+            line.startsWith('[plugins]')) {
+          inRelevantSection = true;
+          continue;
+        }
+        
+        if (line.startsWith('[') && inRelevantSection) {
+          inRelevantSection = false;
+        }
+        
+        // Search in relevant sections
+        if (inRelevantSection) {
+          for (const term of searchTerms) {
+            if (line.includes(term)) {
+              return i + 1; // 1-indexed
+            }
+          }
+        }
+      }
+    } catch {
+      // File read error
+    }
+    
+    return undefined;
+  }
+  
+  /**
+   * Find version files in buildSrc
+   * Phase 5: Support for Dependencies.kt and Versions.kt conventions
+   */
+  private async findVersionFilesInBuildSrc(
+    buildSrcPath: string,
+    dependencyName: string
+  ): Promise<Array<{ path: string; line?: number }>> {
+    const results: Array<{ path: string; line?: number }> = [];
+    
+    try {
+      // Common buildSrc convention files
+      const conventionFiles = [
+        'src/main/kotlin/Dependencies.kt',
+        'src/main/kotlin/Versions.kt',
+        'src/main/kotlin/Config.kt',
+        'src/main/java/Dependencies.java',
+        'src/main/java/Versions.java',
+      ];
+      
+      for (const conventionFile of conventionFiles) {
+        const fullPath = path.join(buildSrcPath, conventionFile);
+        if (await this.fileExists(fullPath)) {
+          const line = await this.findDependencyInKotlinFile(fullPath, dependencyName);
+          results.push({
+            path: fullPath,
+            line,
+          });
+        }
+      }
+    } catch {
+      // Error reading buildSrc
+    }
+    
+    return results;
+  }
+  
+  /**
+   * Find dependency declaration in Kotlin/Java file
+   * Phase 5: Parse const val and object declarations
+   */
+  private async findDependencyInKotlinFile(
+    filePath: string,
+    dependencyName: string
+  ): Promise<number | undefined> {
+    try {
+      const content = await fs.readFile(filePath, 'utf-8');
+      const lines = content.split('\n');
+      
+      const searchTerms = [
+        dependencyName.toLowerCase(),
+        dependencyName.replace(/-/g, '_').toUpperCase(), // ANDROIDX_CORE
+        dependencyName.replace(/-/g, ''), // androidxcore
+      ];
+      
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].toLowerCase();
+        
+        // Look for const val, val, or object property declarations
+        if (line.includes('const val') || 
+            line.includes('val ') || 
+            line.includes('var ')) {
+          for (const term of searchTerms) {
+            if (line.includes(term)) {
+              return i + 1;
+            }
+          }
+        }
+      }
+    } catch {
+      // File read error
+    }
+    
+    return undefined;
+  }
+
+  private isSourceCodeReference(genericPath: string, _context?: ResolutionContext): boolean {
+    const sourceExtensions = ['.kt', '.java', '.xml'];
+    return sourceExtensions.some(ext => genericPath.endsWith(ext));
+  }
+
+  private isVersionContext(context?: ResolutionContext): boolean {
+    const versionKeywords = ['version', 'agp', 'kotlin', 'plugin', 'libs.versions', 'versions.toml'];
+    const ctx = context?.context?.toLowerCase() || '';
+    const errMsg = context?.errorMessage?.toLowerCase() || '';
+    
+    return versionKeywords.some(kw => ctx.includes(kw) || errMsg.includes(kw));
+  }
+
+  private isDependencyContext(context?: ResolutionContext): boolean {
+    const dependencyKeywords = ['dependency', 'dependencies', 'library'];
+    const ctx = context?.context?.toLowerCase() || '';
+    
+    return dependencyKeywords.some(kw => ctx.includes(kw));
+  }
+}
+

@@ -1,0 +1,58 @@
+{
+  "testCase": {
+    "id": 3,
+    "name": "Compose API Breakage",
+    "description": "Deprecated Compose API after upgrade 1.5 → 1.6",
+    "errorType": "compose-deprecation",
+    "complexity": "medium",
+    "targetUsability": 75,
+    "error": {
+      "type": "compose-deprecation",
+      "message": "Unresolved reference: MaterialTheme. Use androidx.compose.material3.MaterialTheme",
+      "filePath": "app/src/main/kotlin/ui/HomeScreen.kt",
+      "line": 88,
+      "column": 5,
+      "language": "kotlin",
+      "metadata": {
+        "severity": "error",
+        "context": "Compose Material upgraded to Material3"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/kotlin/ui/HomeScreen.kt",
+      "lineNumber": 88,
+      "codeChange": "import androidx.compose.material3.MaterialTheme",
+      "explanation": "Material2 deprecated, use Material3"
+    }
+  },
+  "timestamp": "2026-01-04T11:44:49.647Z",
+  "duration_ms": 24402,
+  "agent_response": {
+    "error": "Unresolved reference: MaterialTheme. Use androidx.compose.material3.MaterialTheme",
+    "rootCause": "MaterialTheme at line 88: Unresolved reference - missing import or incorrect version",
+    "fixGuidelines": [
+      "1. Check if Material3 is correctly referenced in build.gradle and gradle/libs.versions.toml with a compatible AGP version.",
+      "2. Update the code to use the correct package path, e.g., implementation(\"androidx.compose.material3:material3:1.6.0\")",
+      "3. Verify that the AGP version is compatible with the current Kotlin and Gradle versions, possibly requiring an update or downgrade."
+    ],
+    "confidence": 0.7,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 30,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 54,
+    "confidence": 0.7,
+    "latency_ms": 24402,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false
+}

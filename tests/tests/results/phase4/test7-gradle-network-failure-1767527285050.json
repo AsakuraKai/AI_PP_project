@@ -1,0 +1,59 @@
+{
+  "testCase": {
+    "id": 7,
+    "name": "Gradle Network Failure",
+    "description": "Failed to resolve dependency due to network/repository issue",
+    "errorType": "gradle-network",
+    "complexity": "medium",
+    "baselineUsability": 60,
+    "targetUsability": 75,
+    "error": {
+      "type": "gradle-network",
+      "message": "Could not resolve all dependencies for configuration :classpath",
+      "filePath": "settings.gradle.kts",
+      "line": 15,
+      "column": 1,
+      "language": "gradle",
+      "metadata": {
+        "severity": "error",
+        "context": "Repository not accessible or dependency missing"
+      }
+    },
+    "expectedFix": {
+      "file": "settings.gradle.kts",
+      "explanation": "Add missing repository or check network connection"
+    }
+  },
+  "timestamp": "2026-01-04T11:48:05.049Z",
+  "duration_ms": 80493,
+  "agent_response": {
+    "error": "Could not resolve all dependencies for configuration :classpath",
+    "rootCause": "The issue is in settings.gradle.kt at line 15 where a configuration reference cannot be resolved due to missing or incorrect module versions.",
+    "fixGuidelines": [
+      "Locate the exact file and line number (e.g., src/main/java/com/example/MyApp.java, line 30) where the error occurs. Add code examples showing the changes before and after implementing the fix, including specific module versions and paths.",
+      "Include the correct module versions to include in the build.gradle file, such as 'module1@1.2.3, module2@4.5.6' within @Build('modulePath')",
+      "Test the application after making these changes by running commands like 'gradle compile' and observe if the error is resolved.",
+      "Verify that all dependencies are correctly listed in build.gradle's @ModuleBuild or @GradleBuild annotations with their respective versions to prevent similar issues in the future."
+    ],
+    "confidence": 0.85,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 30,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 54,
+    "confidence": 0.85,
+    "latency_ms": 80493,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false,
+  "improvement_over_baseline": -6
+}

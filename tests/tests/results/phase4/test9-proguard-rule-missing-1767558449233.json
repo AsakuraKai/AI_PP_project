@@ -1,0 +1,59 @@
+{
+  "testCase": {
+    "id": 9,
+    "name": "ProGuard Rule Missing",
+    "description": "Runtime crash in release build due to obfuscation",
+    "errorType": "proguard",
+    "complexity": "complex",
+    "baselineUsability": 55,
+    "targetUsability": 70,
+    "error": {
+      "type": "proguard",
+      "message": "java.lang.NoSuchMethodError: No virtual method toJson",
+      "filePath": "app/proguard-rules.pro",
+      "line": 1,
+      "column": 1,
+      "language": "proguard",
+      "metadata": {
+        "severity": "error",
+        "context": "Gson reflection methods removed by R8"
+      }
+    },
+    "expectedFix": {
+      "file": "app/proguard-rules.pro",
+      "codeChange": "-keep class com.example.** { *; }",
+      "explanation": "Add ProGuard keep rule for serialization classes"
+    }
+  },
+  "timestamp": "2026-01-04T20:27:29.232Z",
+  "duration_ms": 58074,
+  "agent_response": {
+    "error": "java.lang.NoSuchMethodError: No virtual method toJson",
+    "rootCause": "No virtual method toJson found in com.example.User class at line 28 of proguard-rules.pro",
+    "fixGuidelines": [
+      "Add the missing toJson method to com.example.User class at line 15 of User.kt file.",
+      "Verify that the method is correctly implemented with proper parameters and return type.",
+      "Check for any version mismatches or incorrect imports that might prevent the addition of the method."
+    ],
+    "confidence": 0.6,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 100,
+    "solution_specificity": 70,
+    "file_identification": 0,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 51,
+    "confidence": 0.6,
+    "latency_ms": 58074,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false,
+  "improvement_over_baseline": -4
+}

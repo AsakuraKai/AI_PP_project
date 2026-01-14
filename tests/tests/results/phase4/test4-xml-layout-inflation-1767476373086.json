@@ -1,0 +1,57 @@
+{
+  "testCase": {
+    "id": 4,
+    "name": "XML Layout Inflation",
+    "description": "Runtime inflation error due to unknown attribute",
+    "errorType": "xml-layout",
+    "complexity": "medium",
+    "targetUsability": 70,
+    "error": {
+      "type": "xml-layout",
+      "message": "Binary XML file line #12: Error inflating class android.widget.TextView",
+      "filePath": "app/src/main/res/layout/activity_main.xml",
+      "line": 12,
+      "column": 5,
+      "language": "xml",
+      "metadata": {
+        "severity": "error",
+        "context": "Unknown attribute android:textFontWeight"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/res/layout/activity_main.xml",
+      "lineNumber": 12,
+      "explanation": "Remove invalid attribute or use android:textStyle=\"bold\""
+    }
+  },
+  "timestamp": "2026-01-03T21:39:33.085Z",
+  "duration_ms": 52466,
+  "agent_response": {
+    "error": "Binary XML file line #12: Error inflating class android.widget.TextView",
+    "rootCause": "Enhanced version with file paths and line numbers",
+    "fixGuidelines": [
+      "Step 1: Verify that the textFontWeight attribute is correctly defined in the styles file associated with activity_main.xml. If it's missing or incorrectly spelled, add or correct it.",
+      "Step 2: Ensure that the attribute is properly referenced in the XML declaration of activity_main.xml to declare the attribute type and value format.",
+      "Step 3: Test the application after making these changes to confirm if the error persists and observe any improvements in behavior."
+    ],
+    "confidence": 0.6,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 0,
+    "solution_specificity": 70,
+    "file_identification": 0,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 21,
+    "confidence": 0.6,
+    "latency_ms": 52466,
+    "has_root_cause": false,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false
+}

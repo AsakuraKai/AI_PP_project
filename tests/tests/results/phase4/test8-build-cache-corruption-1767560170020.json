@@ -1,0 +1,58 @@
+{
+  "testCase": {
+    "id": 8,
+    "name": "Build Cache Corruption",
+    "description": "Gradle build cache corrupted causing build failures",
+    "errorType": "gradle-cache",
+    "complexity": "simple",
+    "baselineUsability": 70,
+    "targetUsability": 85,
+    "error": {
+      "type": "gradle-cache",
+      "message": "Execution failed for task :app:compileDebugKotlin. Compilation error",
+      "filePath": "build.gradle.kts",
+      "line": 1,
+      "column": 1,
+      "language": "gradle",
+      "metadata": {
+        "severity": "error",
+        "context": "Intermittent build failures, works after clean"
+      }
+    },
+    "expectedFix": {
+      "explanation": "Run ./gradlew clean or delete .gradle cache"
+    }
+  },
+  "timestamp": "2026-01-04T20:56:10.019Z",
+  "duration_ms": 15674,
+  "agent_response": {
+    "error": "Execution failed for task :app:compileDebugKotlin. Compilation error",
+    "rootCause": "Error occurs at specific location with detailed context about the cause and impact",
+    "fixGuidelines": [
+      "1. Verify all imports are correct and complete, adding any missing classes or updating existing ones as needed.",
+      "2. Ensure that any dependencies required by the class under test are properly included in the project's dependency management system (e.g., Maven/dependency injection)",
+      "3. Test the application after making changes to confirm if the NullPointerException is resolved",
+      "4. If the issue persists, log additional debug information to pinpoint where exactly the initialization failed and analyze the stack trace for more granular insights"
+    ],
+    "confidence": 0.85,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 60,
+    "file_identification": 0,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 45,
+    "confidence": 0.85,
+    "latency_ms": 15674,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false,
+  "improvement_over_baseline": -25
+}

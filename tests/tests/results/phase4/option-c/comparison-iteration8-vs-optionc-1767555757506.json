@@ -1,0 +1,26 @@
+{
+  "baseline": {
+    "iteration": "Iteration 8",
+    "average_usability": 54.1,
+    "tests_passed": 0,
+    "average_latency": 57914.6
+  },
+  "optionC": {
+    "iteration": "Option C (Validation)",
+    "average_usability": 54.1,
+    "tests_passed": 0,
+    "average_latency": 57914.6,
+    "validation_metrics": {
+      "first_attempt_pass_rate": 0,
+      "average_score": 48,
+      "average_attempts": 2.7
+    }
+  },
+  "improvements": {
+    "usability_delta": 0,
+    "usability_percent_change": "0.0",
+    "tests_passed_delta": 0,
+    "latency_delta": 0,
+    "latency_percent_change": "0.0"
+  }
+}

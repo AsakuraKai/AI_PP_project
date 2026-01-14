@@ -1,0 +1,59 @@
+{
+  "testCase": {
+    "id": 9,
+    "name": "ProGuard Rule Missing",
+    "description": "Runtime crash in release build due to obfuscation",
+    "errorType": "proguard",
+    "complexity": "complex",
+    "baselineUsability": 55,
+    "targetUsability": 70,
+    "error": {
+      "type": "proguard",
+      "message": "java.lang.NoSuchMethodError: No virtual method toJson",
+      "filePath": "app/proguard-rules.pro",
+      "line": 1,
+      "column": 1,
+      "language": "proguard",
+      "metadata": {
+        "severity": "error",
+        "context": "Gson reflection methods removed by R8"
+      }
+    },
+    "expectedFix": {
+      "file": "app/proguard-rules.pro",
+      "codeChange": "-keep class com.example.** { *; }",
+      "explanation": "Add ProGuard keep rule for serialization classes"
+    }
+  },
+  "timestamp": "2026-01-04T13:42:18.191Z",
+  "duration_ms": 9299,
+  "agent_response": {
+    "error": "java.lang.NoSuchMethodError: No virtual method toJson",
+    "rootCause": "ProGuard in build.gradle.kts line 28 (minifyEnabled=true) removes method getUserName() from User class at User.kt line 45, causing NoSuchMethodError at runtime in MainActivity.kt line 102.",
+    "fixGuidelines": [
+      "1. Edit proguard-rules.pro at line 15: Add -keep class com.example.User { public java.lang.String getUserName(); } to preserve method",
+      "2. Disable minification for debug builds in build.gradle.kts line 28: buildTypes { debug { isMinifyEnabled = false } release { isMinifyEnabled = true } }",
+      "3. Verify: Run ./gradlew assembleRelease and check build/outputs/mapping/release/usage.txt to confirm getUserName() is not removed, test at MainActivity.kt line 102"
+    ],
+    "confidence": 0.85,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 100,
+    "solution_specificity": 70,
+    "file_identification": 30,
+    "code_examples": 40,
+    "version_suggestions": 0,
+    "overall_usability": 61,
+    "confidence": 0.85,
+    "latency_ms": 9299,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false,
+  "improvement_over_baseline": 6
+}

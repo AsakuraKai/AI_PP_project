@@ -1,0 +1,59 @@
+{
+  "testCase": {
+    "id": 2,
+    "name": "Kotlin lateinit NPE",
+    "description": "lateinit property accessed before initialization",
+    "errorType": "kotlin-npe",
+    "complexity": "medium",
+    "targetUsability": 75,
+    "error": {
+      "type": "kotlin-npe",
+      "message": "lateinit property viewModel has not been initialized",
+      "filePath": "app/src/main/kotlin/MainActivity.kt",
+      "line": 42,
+      "column": 9,
+      "language": "kotlin",
+      "metadata": {
+        "severity": "error",
+        "context": "Accessing viewModel before onCreate() completes"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/kotlin/MainActivity.kt",
+      "lineNumber": 35,
+      "explanation": "Initialize viewModel in onCreate() before first use"
+    }
+  },
+  "timestamp": "2026-01-04T19:34:19.895Z",
+  "duration_ms": 52973,
+  "agent_response": {
+    "error": "",
+    "rootCause": "The error indicates that the `viewModel` property has not been properly initialized, specifically at the late initialization phase. This usually occurs when there is an issue with how the ViewModel is constructed or referenced within the codebase, such as a missing constructor call or incorrect reference to another class.",
+    "fixGuidelines": [
+      "Step 1: Verify if the viewModel is correctly instantiated and referenced in the build.gradle file",
+      "Step 2: Check that all dependencies for the ViewModel are properly included with their respective versions (e.g., AGP 8.7.3, Kotlin 2.0.0, Gradle 8.9)",
+      "Step 3: Ensure there is a constructor call for the ViewModel in the MainActivity.kt file and that it includes all necessary parameters",
+      "Step 4: If using a shared library or module, confirm that the correct version of the shared library is included with its appropriate version number (e.g., AGP 8.7.3)",
+      "Step 5: Verify that any dependencies are correctly specified in build.gradle and include their exact versions"
+    ],
+    "confidence": 0.725,
+    "toolsUsed": [],
+    "codeContext": "Evidence: Root cause analysis mentions: error, viewmodel, initialization, occurs\nContradictions: None"
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 60,
+    "file_identification": 30,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 51,
+    "confidence": 0.725,
+    "latency_ms": 52973,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false
+}

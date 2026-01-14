@@ -1,0 +1,28 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "out",
+    "rootDir": "..",
+    "noImplicitAny": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "baseUrl": ".",
+    "paths": {
+      "@backend/*": [
+        "../src/*"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "../src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    ".vscode-test",
+    "../node_modules",
+    "../tests",
+    "../scripts",
+    "../examples"
+  ]
+}

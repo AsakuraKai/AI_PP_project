@@ -1,0 +1,60 @@
+{
+  "testCase": {
+    "id": 10,
+    "name": "Navigation Argument Mismatch",
+    "description": "Runtime crash due to missing/wrong navigation arguments",
+    "errorType": "navigation",
+    "complexity": "medium",
+    "baselineUsability": 50,
+    "targetUsability": 70,
+    "error": {
+      "type": "navigation",
+      "message": "java.lang.IllegalArgumentException: Required argument \"userId\" is missing",
+      "filePath": "app/src/main/kotlin/navigation/NavGraph.kt",
+      "line": 32,
+      "column": 5,
+      "language": "kotlin",
+      "metadata": {
+        "severity": "error",
+        "context": "Navigation argument not passed correctly"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/kotlin/navigation/NavGraph.kt",
+      "lineNumber": 32,
+      "explanation": "Add userId argument to navigation call"
+    }
+  },
+  "timestamp": "2026-01-04T14:07:22.560Z",
+  "duration_ms": 3780,
+  "agent_response": {
+    "error": "java.lang.IllegalArgumentException: Required argument \"userId\" is missing",
+    "rootCause": "Missing required argument 'userId' in navigation call at line 32 of NavGraph.kt",
+    "fixGuidelines": [
+      "1. Check the route definition in NavGraph.kt to ensure that 'userId' is declared as an Int and not a String.",
+      "2. Verify that the navigation call includes 'userId' as an argument with type Int.",
+      "3. Ensure that any variables passed are correctly typed, for example, using .getInt() instead of .getString().",
+      "4. If 'userId' is optional, update its type to Int? and adjust the route definition accordingly."
+    ],
+    "confidence": 0.7,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 100,
+    "solution_specificity": 70,
+    "file_identification": 0,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 51,
+    "confidence": 0.7,
+    "latency_ms": 3780,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false,
+  "improvement_over_baseline": 1
+}

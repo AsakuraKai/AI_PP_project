@@ -1,0 +1,59 @@
+{
+  "testCase": {
+    "id": 10,
+    "name": "Navigation Argument Mismatch",
+    "description": "Runtime crash due to missing/wrong navigation arguments",
+    "errorType": "navigation",
+    "complexity": "medium",
+    "baselineUsability": 50,
+    "targetUsability": 70,
+    "error": {
+      "type": "navigation",
+      "message": "java.lang.IllegalArgumentException: Required argument \"userId\" is missing",
+      "filePath": "app/src/main/kotlin/navigation/NavGraph.kt",
+      "line": 32,
+      "column": 5,
+      "language": "kotlin",
+      "metadata": {
+        "severity": "error",
+        "context": "Navigation argument not passed correctly"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/kotlin/navigation/NavGraph.kt",
+      "lineNumber": 32,
+      "explanation": "Add userId argument to navigation call"
+    }
+  },
+  "timestamp": "2026-01-04T11:49:24.497Z",
+  "duration_ms": 26746,
+  "agent_response": {
+    "error": "java.lang.IllegalArgumentException: Required argument \"userId\" is missing",
+    "rootCause": "The required 'userId' argument is missing from the navigation request at line 32 of NavGraph.kt. This could be due to an issue in either the definition of the NavHost or how the argument is being passed in the navigation call.",
+    "fixGuidelines": [
+      "1. Check the definition of the NavHost in NavGraph.kt around line 32. Ensure that 'userId' is correctly typed as a parameter and that it's being passed from the Compose component.",
+      "2. In the code where the argument is passed, verify that 'userId' is correctly provided with the expected type (Int or String). If using a Compose component, ensure that the binding for 'userId' matches the expected type.",
+      "3. Before:\n```kotlin\n// Example before: possibly incorrect argument type or missing binding\nnavHost = NavHost(\n    route = "
+    ],
+    "confidence": 0.5,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 100,
+    "solution_specificity": 70,
+    "file_identification": 0,
+    "code_examples": 80,
+    "version_suggestions": 0,
+    "overall_usability": 59,
+    "confidence": 0.5,
+    "latency_ms": 26746,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": true,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false,
+  "improvement_over_baseline": 9
+}

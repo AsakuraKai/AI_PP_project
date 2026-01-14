@@ -1,6 +1,6 @@
 # Architecture Decision Records (ADRs)
 
-> **Purpose:** Document all major architectural decisions with rationale, consequences, and alternatives considered.
+**Purpose:** Document all major architectural decisions with rationale, consequences, and alternatives considered.
 
 ---
 

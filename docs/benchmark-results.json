@@ -1,0 +1,55 @@
+{
+  "totalRuns": 5,
+  "successfulRuns": 5,
+  "failedRuns": 0,
+  "averageLatency": 3908.6,
+  "p50Latency": 3426,
+  "p90Latency": 5825,
+  "p99Latency": 5825,
+  "minLatency": 2973,
+  "maxLatency": 5825,
+  "averageMemory": -11702032,
+  "runs": [
+    {
+      "testCaseId": "TC001",
+      "totalTime": 2973,
+      "parseTime": 0,
+      "analysisTime": 2973,
+      "iterations": 3,
+      "memoryUsed": -29895848
+    },
+    {
+      "testCaseId": "TC002",
+      "totalTime": 3162,
+      "parseTime": 0,
+      "analysisTime": 3162,
+      "iterations": 3,
+      "memoryUsed": 3140360
+    },
+    {
+      "testCaseId": "TC003",
+      "totalTime": 5825,
+      "parseTime": 0,
+      "analysisTime": 5825,
+      "iterations": 3,
+      "memoryUsed": -32044632
+    },
+    {
+      "testCaseId": "TC004",
+      "totalTime": 4157,
+      "parseTime": 0,
+      "analysisTime": 4157,
+      "iterations": 3,
+      "memoryUsed": -154608
+    },
+    {
+      "testCaseId": "TC005",
+      "totalTime": 3426,
+      "parseTime": 0,
+      "analysisTime": 3426,
+      "iterations": 3,
+      "memoryUsed": 444568
+    }
+  ],
+  "timestamp": "2026-01-14T08:41:52.750Z"
+}

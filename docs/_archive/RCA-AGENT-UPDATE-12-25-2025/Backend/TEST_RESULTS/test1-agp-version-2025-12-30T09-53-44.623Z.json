@@ -1,0 +1,50 @@
+{
+  "testName": "Test 1: AGP Version Error",
+  "error": {
+    "type": "gradle-dependency",
+    "message": "Could not find com.android.tools.build:gradle:8.10.0",
+    "filePath": "gradle/libs.versions.toml",
+    "line": 2,
+    "column": 1,
+    "language": "gradle",
+    "metadata": {
+      "severity": "error",
+      "context": "AGP version 8.10.0 not found in Maven Central",
+      "raw": "\n      FAILURE: Build failed with an exception.\n      \n      * What went wrong:\n      A problem occurred configuring root project 'Lab3'.\n      > Could not resolve all files for configuration ':classpath'.\n         > Could not find com.android.tools.build:gradle:8.10.0.\n           Searched in the following locations:\n             - https://repo.maven.apache.org/maven2/com/android/tools/build/gradle/8.10.0/gradle-8.10.0.pom\n           Required by:\n               project :\n    ",
+      "fullContent": "\n      [versions]\n      agp = \"8.10.0\"\n      kotlin = \"2.0.0\"\n      \n      [libraries]\n      androidx-core-ktx = { group = \"androidx.core\", name = \"core-ktx\", version.ref = \"coreKtx\" }\n    "
+    }
+  },
+  "result": {
+    "error": "Could not find com.android.tools.build:gradle:8.10.0",
+    "rootCause": "File paths lack line numbers and don't specify exact locations; code examples are missing before/after snippets; verification steps aren't detailed.",
+    "fixGuidelines": [
+      "Replace file path with exact location using a specific version number like 'gradle/libs.versions.toml line 10'",
+      "Add code example before and after the fix showing specific versions such as '8.7.3' and '9.0.4',",
+      "Explain how to test the fix by verifying the correct behavior with specific version comparisons"
+    ],
+    "confidence": 0.85,
+    "iterations": 1,
+    "toolsUsed": [],
+    "codeFix": {
+      "filePath": "gradle/libs.versions.toml",
+      "line": 2,
+      "originalCode": "     1 | [versions]\r\n→    2 | agp = \"8.10.0\"\r\n     3 | kotlin = \"2.0.0\"\r\n     4 | coreKtx = \"1.13.1\"\r\n     5 | appcompat = \"1.7.0\"\r\n     6 | material = \"1.12.0\"\r\n     7 | \r\n     8 | [libraries]\r\n     9 | androidx-core-ktx = { group = \"androidx.core\", name = \"core-ktx\", version.ref = \"coreKtx\" }\r\n    10 | androidx-appcompat = { group = \"androidx.appcompat\", name = \"appcompat\", version.ref = \"appcompat\" }\r\n    11 | material = { group = \"com.google.android.material\", name = \"material\", version.ref = \"material\" }\r\n    12 | \r",
+      "fixedCode": "{\"\":\n    10000000000000000000000000000000",
+      "diff": "**File:** `gradle/libs.versions.toml`\n\n**Before:**\n```toml\n     1 | [versions]\r\n→    2 | agp = \"8.10.0\"\r\n     3 | kotlin = \"2.0.0\"\r\n     4 | coreKtx = \"1.13.1\"\r\n     5 | appcompat = \"1.7.0\"\r\n     6 | material = \"1.12.0\"\r\n     7 | \r\n     8 | [libraries]\r\n     9 | androidx-core-ktx = { group = \"androidx.core\", name = \"core-ktx\", version.ref = \"coreKtx\" }\r\n    10 | androidx-appcompat = { group = \"androidx.appcompat\", name = \"appcompat\", version.ref = \"appcompat\" }\r\n    11 | material = { group = \"com.google.android.material\", name = \"material\", version.ref = \"material\" }\r\n    12 | \r\n```\n\n**After:**\n```toml\n{\"\":\n    10000000000000000000000000000000\n```",
+      "explanation": "Fixed the error by addressing: File paths lack line numbers and don't specify exact locations; code examples are missing before/after snippets; verification steps aren't detailed.",
+      "confidence": 90,
+      "syntaxValid": true
+    }
+  },
+  "metrics": {
+    "overallUsability": 75,
+    "diagnosisAccuracy": 0,
+    "solutionSpecificity": 100,
+    "fileIdentification": 100,
+    "codeExamples": 100,
+    "versionSuggestions": 100,
+    "confidence": 0.85,
+    "latencyMs": 47115
+  },
+  "timestamp": "2025-12-30T09:53:44.618Z"
+}

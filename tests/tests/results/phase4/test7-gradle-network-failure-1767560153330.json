@@ -1,0 +1,61 @@
+{
+  "testCase": {
+    "id": 7,
+    "name": "Gradle Network Failure",
+    "description": "Failed to resolve dependency due to network/repository issue",
+    "errorType": "gradle-network",
+    "complexity": "medium",
+    "baselineUsability": 60,
+    "targetUsability": 75,
+    "error": {
+      "type": "gradle-network",
+      "message": "Could not resolve all dependencies for configuration :classpath",
+      "filePath": "settings.gradle.kts",
+      "line": 15,
+      "column": 1,
+      "language": "gradle",
+      "metadata": {
+        "severity": "error",
+        "context": "Repository not accessible or dependency missing"
+      }
+    },
+    "expectedFix": {
+      "file": "settings.gradle.kts",
+      "explanation": "Add missing repository or check network connection"
+    }
+  },
+  "timestamp": "2026-01-04T20:55:53.329Z",
+  "duration_ms": 5105,
+  "agent_response": {
+    "error": "Could not resolve all dependencies for configuration :classpath",
+    "rootCause": "This error is not a common pattern",
+    "fixGuidelines": [
+      "1. Check if build.gradle.kts contains the correct Google Maven repositories configuration and ensure they are accessible from the project's location.",
+      "2. Before:\n```kotlin\n// Example of incorrect or missing repository configuration in build.gradle.kts\nimplementation \"com.google.android:DKM:1.5\"\nimplementation \"com.google.android:DKM:1.6\"\n```\nAfter:\n```kotlin\n// Correct Google Maven repositories configuration with alternative mirrors if necessary\nimplementation \"com.google.android:DKM:1.5\"\nimplementation \"com.google.android:DKM:1.6\"\nimplementation \"https://dl1.maven.org/dl android/maven2\"\n```\n3. Verify that all required AndroidX dependencies are included in the build.gradle.kts file and properly listed with their respective Maven repositories.",
+      "4. Check if there are any firewall rules or network restrictions blocking access to Google's Maven repositories from the project's location.",
+      "5. Ensure that the build.gradle.kts file is correctly configured with all necessary repository information, including alternative mirrors if available.",
+      "6. Test the fix by rebuilding the project and observing if the error persists.",
+      "7. If the issue remains unresolved, consider verifying the integrity of the Maven repositories or seeking alternative dependency sources."
+    ],
+    "confidence": 0.8,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 0,
+    "solution_specificity": 60,
+    "file_identification": 30,
+    "code_examples": 80,
+    "version_suggestions": 0,
+    "overall_usability": 32,
+    "confidence": 0.8,
+    "latency_ms": 5105,
+    "has_root_cause": false,
+    "has_fix_guidelines": true,
+    "has_code_diff": true,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false,
+  "improvement_over_baseline": -28
+}

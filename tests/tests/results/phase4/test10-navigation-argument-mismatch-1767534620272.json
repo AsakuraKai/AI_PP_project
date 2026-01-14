@@ -1,0 +1,61 @@
+{
+  "testCase": {
+    "id": 10,
+    "name": "Navigation Argument Mismatch",
+    "description": "Runtime crash due to missing/wrong navigation arguments",
+    "errorType": "navigation",
+    "complexity": "medium",
+    "baselineUsability": 50,
+    "targetUsability": 70,
+    "error": {
+      "type": "navigation",
+      "message": "java.lang.IllegalArgumentException: Required argument \"userId\" is missing",
+      "filePath": "app/src/main/kotlin/navigation/NavGraph.kt",
+      "line": 32,
+      "column": 5,
+      "language": "kotlin",
+      "metadata": {
+        "severity": "error",
+        "context": "Navigation argument not passed correctly"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/kotlin/navigation/NavGraph.kt",
+      "lineNumber": 32,
+      "explanation": "Add userId argument to navigation call"
+    }
+  },
+  "timestamp": "2026-01-04T13:50:20.271Z",
+  "duration_ms": 4123,
+  "agent_response": {
+    "error": "java.lang.IllegalArgumentException: Required argument \"userId\" is missing",
+    "rootCause": "Missing 'userId' argument in navigation call at app/src/main/kotlin/navigation/NavGraph.kt:32",
+    "fixGuidelines": [
+      "1. Check if the 'userId' argument is correctly passed from the controller to the NavGraph composable.",
+      "2. Ensure that the 'userId' variable exists and is non-null before passing it as an argument.",
+      "3. Verify that the argument type matches what's expected by the route definition (e.g., Int vs String).",
+      "4. Add logging or debugging statements to confirm if the 'userId' variable is being passed correctly.",
+      "5. Update the composable function in NavGraph.kt to include the correct argument types and ensure all required arguments are provided."
+    ],
+    "confidence": 0.8,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 100,
+    "solution_specificity": 60,
+    "file_identification": 100,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 68,
+    "confidence": 0.8,
+    "latency_ms": 4123,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": true
+  },
+  "passed": false,
+  "improvement_over_baseline": 18
+}

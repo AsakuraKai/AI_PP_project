@@ -1,0 +1,61 @@
+{
+  "testCase": {
+    "id": 6,
+    "name": "Manifest Permission Missing",
+    "description": "SecurityException due to missing CAMERA permission",
+    "errorType": "manifest-permission",
+    "complexity": "simple",
+    "baselineUsability": 65,
+    "targetUsability": 80,
+    "error": {
+      "type": "manifest-permission",
+      "message": "java.lang.SecurityException: Permission denial: starting Intent requires android.permission.CAMERA",
+      "filePath": "app/src/main/AndroidManifest.xml",
+      "line": 5,
+      "column": 1,
+      "language": "xml",
+      "metadata": {
+        "severity": "error",
+        "context": "Runtime permission error"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/AndroidManifest.xml",
+      "lineNumber": 5,
+      "codeChange": "<uses-permission android:name=\"android.permission.CAMERA\" />",
+      "explanation": "Add CAMERA permission to manifest"
+    }
+  },
+  "timestamp": "2026-01-04T13:59:30.979Z",
+  "duration_ms": 3968,
+  "agent_response": {
+    "error": "java.lang.SecurityException: Permission denial: starting Intent requires android.permission.CAMERA",
+    "rootCause": "Missing android.permission.CAMERA in AndroidManifest.xml at line 5",
+    "fixGuidelines": [
+      "1. Add <uses-permission android:name=\"android.permission.CAMERA\" /> to manifest before <application> tag",
+      "2. Before:\n```\n<manifest>\n    ...\n</manifest>\n```\nAfter:\n```\n<manifest xmlns:tools=\"http://schemas.android.com/tools\">\n    <!-- Required for camera access -->\n    <uses-permission android:name=\"android.permission.CAMERA\" />\n    ...\n</manifest>\n```",
+      "3. Verify by running gradle clean build and checking if the app starts without permission errors.",
+      "4. If still issues, check if any other permissions are missing or if there's a need for runtime permission handling (e.g., CAMERA, LOCATION)."
+    ],
+    "confidence": 0.95,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 30,
+    "code_examples": 80,
+    "version_suggestions": 0,
+    "overall_usability": 62,
+    "confidence": 0.95,
+    "latency_ms": 3968,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": true,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false,
+  "improvement_over_baseline": -3
+}

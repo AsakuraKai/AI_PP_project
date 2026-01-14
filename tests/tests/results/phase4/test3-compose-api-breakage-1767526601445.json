@@ -1,0 +1,58 @@
+{
+  "testCase": {
+    "id": 3,
+    "name": "Compose API Breakage",
+    "description": "Deprecated Compose API after upgrade 1.5 → 1.6",
+    "errorType": "compose-deprecation",
+    "complexity": "medium",
+    "targetUsability": 75,
+    "error": {
+      "type": "compose-deprecation",
+      "message": "Unresolved reference: MaterialTheme. Use androidx.compose.material3.MaterialTheme",
+      "filePath": "app/src/main/kotlin/ui/HomeScreen.kt",
+      "line": 88,
+      "column": 5,
+      "language": "kotlin",
+      "metadata": {
+        "severity": "error",
+        "context": "Compose Material upgraded to Material3"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/kotlin/ui/HomeScreen.kt",
+      "lineNumber": 88,
+      "codeChange": "import androidx.compose.material3.MaterialTheme",
+      "explanation": "Material2 deprecated, use Material3"
+    }
+  },
+  "timestamp": "2026-01-04T11:36:41.444Z",
+  "duration_ms": 15754,
+  "agent_response": {
+    "error": "Unresolved reference: MaterialTheme. Use androidx.compose.material3.MaterialTheme",
+    "rootCause": "Missing or incorrect Material3 dependency at app/src/main/kotlin/ui/HomeScreen.kt:88",
+    "fixGuidelines": [
+      "First, verify that the Material3 version in build.gradle.kt is correct and compatible with the current Kotlin and Gradle versions. Update it to a known stable version like 1.6.0.",
+      "Second, ensure that the required dependencies are present by adding 'implementation('androidx.compose.material3:material3:1.6.0')' to the build.gradle.kt file at line 42.",
+      "Third, run ./gradlew sync to update all dependencies and verify compatibility."
+    ],
+    "confidence": 0.7,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 100,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 68,
+    "confidence": 0.7,
+    "latency_ms": 15754,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": true
+  },
+  "passed": false
+}
