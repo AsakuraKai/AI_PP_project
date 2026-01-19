@@ -38,10 +38,10 @@ export class NetworkTimeoutHandler extends BaseService {
   private loadTimeoutConfig(): TimeoutConfig {
     return {
       connectionTimeout: this.getConfig<number>('connectionTimeout', 5000),
-      // LLM responses regularly exceed 30s; give a higher default while remaining user-configurable
-      analysisTimeout: this.getConfig<number>('analysisTimeout', 90000),
-      totalTimeout: this.getConfig<number>('totalTimeout', 180000),
-      retryAttempts: this.getConfig<number>('retryAttempts', 3),
+      // LLM responses can take time; per-iteration timeout is now generous
+      analysisTimeout: this.getConfig<number>('analysisTimeout', 180000), // 3 minutes per iteration
+      totalTimeout: this.getConfig<number>('totalTimeout', 600000), // 10 minutes total for entire analysis
+      retryAttempts: this.getConfig<number>('retryAttempts', 2), // Reduced retries since timeout is higher
       retryDelay: this.getConfig<number>('retryDelay', 1000),
       exponentialBackoff: this.getConfig<boolean>('exponentialBackoff', true),
     };
@@ -58,7 +58,7 @@ export class NetworkTimeoutHandler extends BaseService {
   ): Promise<TimeoutResult<T>> {
     const startTime = Date.now();
     let lastError: Error | undefined;
-    
+
     for (let attempt = 1; attempt <= retries + 1; attempt++) {
       try {
         // Create timeout promise
@@ -66,7 +66,7 @@ export class NetworkTimeoutHandler extends BaseService {
           const timeout = setTimeout(() => {
             reject(new Error(`Operation timed out after ${timeoutMs}ms`));
           }, timeoutMs);
-          
+
           this._activeTimeouts.set(operationId, timeout);
         });
 
@@ -78,7 +78,7 @@ export class NetworkTimeoutHandler extends BaseService {
 
         // Clear timeout on success
         this.clearTimeout(operationId);
-        
+
         return {
           success: true,
           data: result,
@@ -90,11 +90,11 @@ export class NetworkTimeoutHandler extends BaseService {
       } catch (error: any) {
         this.clearTimeout(operationId);
         lastError = error;
-        
+
         // Check if it's a timeout error
-        const isTimeout = error.message?.includes('timed out') || 
-                         error.code === 'ETIMEDOUT' ||
-                         error.code === 'ECONNABORTED';
+        const isTimeout = error.message?.includes('timed out') ||
+          error.code === 'ETIMEDOUT' ||
+          error.code === 'ECONNABORTED';
 
         // If not a timeout or last attempt, throw
         if (!isTimeout || attempt > retries) {
@@ -154,10 +154,10 @@ export class NetworkTimeoutHandler extends BaseService {
     onProgress?: (status: string) => void
   ): Promise<TimeoutResult<T>> {
     const totalStartTime = Date.now();
-    
+
     // Create abort controller for manual cancellation
     const abortController = new AbortController();
-    
+
     // Store abort controller for external cancellation
     (this as any)._abortControllers = (this as any)._abortControllers || new Map();
     (this as any)._abortControllers.set(analysisId, abortController);
@@ -165,7 +165,10 @@ export class NetworkTimeoutHandler extends BaseService {
     try {
       // Set up total timeout
       const totalTimeoutId = setTimeout(() => {
-        onProgress?.('Analysis exceeded maximum time limit');
+        const elapsedTime = Date.now() - totalStartTime;
+        const message = `Analysis exceeded maximum time limit (${elapsedTime}ms / ${this._config.totalTimeout}ms)`;
+        console.warn(`[RCA] ${message}`);
+        onProgress?.(message);
         abortController.abort();
       }, this._config.totalTimeout);
 
@@ -174,7 +177,7 @@ export class NetworkTimeoutHandler extends BaseService {
         analysisId,
         async () => {
           if (abortController.signal.aborted) {
-            throw new Error('Analysis was cancelled');
+            throw new Error('Analysis was cancelled (abort signal triggered)');
           }
           return await analysisFn();
         },
@@ -186,12 +189,17 @@ export class NetworkTimeoutHandler extends BaseService {
       return result;
 
     } catch (error: any) {
+      const elapsedTime = Date.now() - totalStartTime;
+      const isCancelledError = error?.message?.includes('cancelled');
+
+      console.error(`[RCA] Analysis failed after ${elapsedTime}ms:`, error?.message);
+
       return {
         success: false,
         error: error as Error,
-        timedOut: true,
+        timedOut: isCancelledError || (elapsedTime >= this._config.totalTimeout),
         attempt: 1,
-        duration: Date.now() - totalStartTime
+        duration: elapsedTime
       };
     } finally {
       (this as any)._abortControllers.delete(analysisId);
@@ -204,7 +212,7 @@ export class NetworkTimeoutHandler extends BaseService {
   cancelOperation(operationId: string): void {
     // Cancel timeout
     this.clearTimeout(operationId);
-    
+
     // Abort operation if abort controller exists
     const abortController = (this as any)._abortControllers?.get(operationId);
     if (abortController) {
@@ -247,27 +255,27 @@ export class NetworkTimeoutHandler extends BaseService {
   getTimeoutErrorMessage(error: Error, context: string): string {
     if (error.message.includes('timed out')) {
       return `Analysis ${context} timed out. The operation took longer than expected. Try:\n` +
-             `• Using a smaller model (e.g., 7B instead of 13B)\n` +
-             `• Checking your system resources (RAM, CPU)\n` +
-             `• Simplifying the error message\n` +
-             `• Increasing timeout in settings`;
+        `• Using a smaller model (e.g., 7B instead of 13B)\n` +
+        `• Checking your system resources (RAM, CPU)\n` +
+        `• Simplifying the error message\n` +
+        `• Increasing timeout in settings`;
     }
-    
+
     const errorCode = (error as any).code;
-    
+
     if (errorCode === 'ECONNREFUSED' || errorCode === 'ENOTFOUND') {
       return `Cannot connect to Ollama server. Please ensure:\n` +
-             `• Ollama is running (ollama serve)\n` +
-             `• Server URL is correct in settings\n` +
-             `• No firewall blocking the connection`;
+        `• Ollama is running (ollama serve)\n` +
+        `• Server URL is correct in settings\n` +
+        `• No firewall blocking the connection`;
     }
-    
+
     if (errorCode === 'ECONNRESET' || errorCode === 'EPIPE') {
       return `Connection to Ollama was interrupted. This can happen when:\n` +
-             `• Ollama server restarted\n` +
-             `• Network connection dropped\n` +
-             `• Analysis was cancelled\n` +
-             `Try analyzing again.`;
+        `• Ollama server restarted\n` +
+        `• Network connection dropped\n` +
+        `• Analysis was cancelled\n` +
+        `Try analyzing again.`;
     }
 
     return `Network error: ${error.message}`;
@@ -280,7 +288,7 @@ export class NetworkTimeoutHandler extends BaseService {
     if (!result.success && result.error) {
       const message = this.getTimeoutErrorMessage(result.error, context);
       const action = result.timedOut ? 'Increase Timeout' : 'Check Connection';
-      
+
       const selection = await vscode.window.showErrorMessage(
         `RCA Agent: ${message}`,
         action,

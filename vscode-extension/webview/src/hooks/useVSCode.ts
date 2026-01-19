@@ -34,7 +34,7 @@ function getVSCodeAPI(): VSCodeAPI {
 export function useVSCode() {
   const postMessage = useCallback((command: string, data?: any) => {
     const api = getVSCodeAPI();
-    api.postMessage({ command, ...data });
+    api.postMessage({ command, data });
   }, []);
 
   return {

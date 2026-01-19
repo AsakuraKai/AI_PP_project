@@ -8,10 +8,10 @@
  * ✓ Verify no duplicates and all required fields present
  */
 
-import { testDataset, datasetStats } from '../docs/Prof\'s-Requirement/Dataset/Others/test-dataset';
-import { androidTestDataset, androidDatasetStats } from '../docs/Prof\'s-Requirement/Dataset/Others/android-test-dataset';
-import { PERFORMANCE_TEST_CASES, TEST_STATISTICS } from '../docs/Prof\'s-Requirement/Dataset/Others/performance-test-dataset';
-import { extendedTestDataset, extendedDatasetStats } from '../docs/Prof\'s-Requirement/Dataset/Others/extended-test-dataset';
+import { testDataset, datasetStats } from '../docs/Prof's-Requirement/AI/Dataset/Others/test-dataset';
+import { androidTestDataset, androidDatasetStats } from '../docs/Prof's-Requirement/AI/Dataset/Others/android-test-dataset';
+import { PERFORMANCE_TEST_CASES, TEST_STATISTICS } from '../docs/Prof's-Requirement/AI/Dataset/Others/performance-test-dataset';
+import { extendedTestDataset, extendedDatasetStats } from '../docs/Prof's-Requirement/AI/Dataset/Others/extended-test-dataset';
 import * as fs from 'fs';
 import * as path from 'path';
 

@@ -15,7 +15,7 @@
 import { OllamaClient } from '../src/llm/OllamaClient';
 import { MinimalReactAgent } from '../src/agent/MinimalReactAgent';
 import { GradleParser } from '../src/utils/parsers/GradleParser';
-import { ResponseValidator } from '../src/agent/ResponseValidator';
+import { UnifiedValidator } from '../src/agent/UnifiedValidator';
 import { ParsedError } from '../src/types';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -27,7 +27,7 @@ import * as path from 'path';
 interface TestConfig {
   /** Output format */
   format: 'simple' | 'detailed' | 'validation';
-  /** Enable ResponseValidator specificity scoring */
+  /** Enable UnifiedValidator specificity scoring */
   validateSpecificity: boolean;
   /** Save results to file */
   saveReport: boolean;
@@ -100,7 +100,7 @@ class UnifiedMVPTestRunner {
   private parser: GradleParser;
   private ollamaClient: OllamaClient;
   private agent: MinimalReactAgent;
-  private validator?: ResponseValidator;
+  private validator?: UnifiedValidator;
   private results: TestResult[] = [];
 
   constructor(config: Partial<TestConfig> = {}) {
@@ -114,7 +114,7 @@ class UnifiedMVPTestRunner {
     this.agent = new MinimalReactAgent(this.ollamaClient);
     
     if (this.config.validateSpecificity) {
-      this.validator = new ResponseValidator();
+      this.validator = new UnifiedValidator({ mode: 'final', adaptiveThresholds: true });
     }
   }
 
@@ -213,15 +213,11 @@ BUILD FAILED in 937ms
       let specificityLevel: string | undefined;
       
       if (this.validator) {
-        validationResult = this.validator.validateResponse({
-          thought: 'Analysis complete',
-          action: null,
-          rootCause: result.rootCause,
-          fixGuidelines: result.fixGuidelines,
-          confidence: result.confidence,
-        });
-        specificityScore = validationResult.specificityScore;
-        specificityLevel = this.validator.getSpecificityLevel(specificityScore ?? 0);
+        validationResult = this.validator.validate(result, testCase.error);
+        specificityScore = Math.round(validationResult.score * 100);
+        specificityLevel = specificityScore >= 80 ? 'Excellent' : 
+                           specificityScore >= 60 ? 'Good' : 
+                           specificityScore >= 40 ? 'Fair' : 'Poor';
       }
       
       const testResult: TestResult = {

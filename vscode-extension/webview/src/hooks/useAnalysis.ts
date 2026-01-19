@@ -7,10 +7,12 @@
  * - Live hypothesis updates
  * - Result display
  * - Fix suggestion management
+ * - Proper validation and error handling
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useVSCode } from './useVSCode';
+import { useFeedback, FeedbackStatus } from './useFeedback';
 
 export interface AnalysisProgress {
   iteration: number;
@@ -55,9 +57,9 @@ export function useAnalysis() {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentErrorId, setCurrentErrorId] = useState<string | null>(null);
-  const [feedbackStatus, setFeedbackStatus] = useState<{ status: 'idle' | 'sending' | 'sent' | 'error'; message?: string }>(
-    { status: 'idle' }
-  );
+
+  // Use shared feedback hook - use a valid FeedbackMetadata or undefined
+  const { feedbackStatus, setFeedbackStatus, submitFeedback } = useFeedback(result?.feedback);
 
   // Listen for analysis updates
   useEffect(() => {
@@ -126,6 +128,22 @@ export function useAnalysis() {
   }, [postMessage]);
 
   const startManualAnalysis = useCallback((errorText: string, settings?: any) => {
+    if (!errorText || typeof errorText !== 'string') {
+      console.error('[useAnalysis] Invalid error text provided to startManualAnalysis');
+      return;
+    }
+
+    try {
+      const errorData = JSON.parse(errorText);
+      console.log('[useAnalysis] Starting manual analysis with data:', {
+        hasMessage: !!errorData.message,
+        hasPath: !!errorData.filePath,
+        projectScope: errorData.projectScope
+      });
+    } catch (e) {
+      console.warn('[useAnalysis] Could not parse error text as JSON');
+    }
+
     postMessage('startManualAnalysis', { errorText, settings });
   }, [postMessage]);
 
@@ -141,20 +159,6 @@ export function useAnalysis() {
     if (result) {
       postMessage('exportResult', { result });
     }
-  }, [postMessage, result]);
-
-  const submitFeedback = useCallback((feedbackType: 'positive' | 'negative') => {
-    if (!result?.feedback?.enabled || !result.feedback.rcaId) {
-      setFeedbackStatus({ status: 'error', message: 'Feedback unavailable (no persisted rcaId)' });
-      return;
-    }
-
-    setFeedbackStatus({ status: 'sending' });
-    postMessage('submitFeedback', {
-      feedbackType,
-      rcaId: result.feedback.rcaId,
-      errorHash: result.feedback.errorHash
-    });
   }, [postMessage, result]);
 
   const reset = useCallback(() => {

@@ -21,28 +21,28 @@ import { AdaptiveLearning } from './AdaptiveLearning';
 export interface TrainingExample {
   /** Unique example ID */
   id: string;
-  
+
   /** Error type */
   errorType: string;
-  
+
   /** Error message */
   errorMessage: string;
-  
+
   /** Expected root cause */
   expectedRootCause: string;
-  
+
   /** Expected fix guidelines */
   expectedFixGuidelines: string[];
-  
+
   /** Quality score (0-1) */
   quality: number;
-  
+
   /** User validated */
   validated: boolean;
-  
+
   /** Source RCA ID */
   sourceRcaId: string;
-  
+
   /** Created timestamp */
   createdAt: number;
 }
@@ -53,19 +53,19 @@ export interface TrainingExample {
 export interface StageResult {
   /** Stage name */
   stage: string;
-  
+
   /** Success status */
   success: boolean;
-  
+
   /** Items processed */
   itemsProcessed: number;
-  
+
   /** Items generated/modified */
   itemsOutput: number;
-  
+
   /** Duration in milliseconds */
   durationMs: number;
-  
+
   /** Optional message */
   message?: string;
 }
@@ -76,25 +76,25 @@ export interface StageResult {
 export interface PipelineResult {
   /** Pipeline run ID */
   runId: string;
-  
+
   /** Start timestamp */
   startedAt: number;
-  
+
   /** End timestamp */
   completedAt: number;
-  
+
   /** Total duration */
   totalDurationMs: number;
-  
+
   /** Stage results */
   stages: StageResult[];
-  
+
   /** Training examples generated */
   examplesGenerated: number;
-  
+
   /** Patterns identified */
   patternsIdentified: number;
-  
+
   /** Overall success */
   success: boolean;
 }
@@ -105,19 +105,19 @@ export interface PipelineResult {
 export interface LearningPipelineConfig {
   /** Minimum quality for training examples (default: 0.7) */
   minTrainingQuality?: number;
-  
+
   /** Require user validation (default: true) */
   requireValidation?: boolean;
-  
+
   /** Max examples per error type (default: 50) */
   maxExamplesPerType?: number;
-  
+
   /** Enable automatic pipeline runs (default: false) */
   enableAutoRun?: boolean;
-  
+
   /** Auto-run interval in hours (default: 24) */
   autoRunIntervalHours?: number;
-  
+
   /** Enable logging (default: true) */
   enableLogging?: boolean;
 }
@@ -159,7 +159,7 @@ export class LearningPipeline {
   // private readonly qualityScorer: QualityScorer; // Unused for now
   private autoRunTimer: NodeJS.Timeout | null = null;
   private trainingExamples: Map<string, TrainingExample> = new Map();
-  
+
   constructor(
     private readonly db: ChromaDBClient,
     _feedbackHandler: FeedbackHandler, // Removed private readonly - not stored
@@ -169,20 +169,22 @@ export class LearningPipeline {
       ...DEFAULT_CONFIG,
       ...config
     };
-    
+
     this.adaptiveLearning = new AdaptiveLearning(db, _feedbackHandler, {
       enableLogging: this.config.enableLogging
     });
-    
+
     // this.qualityScorer = new QualityScorer(); // Commented out - unused
-    
+
     if (this.config.enableAutoRun) {
       this.startAutoRun();
     }
   }
-  
+
   /**
    * Run the complete learning pipeline
+   * 
+   * Fixed: Issue #6 - Improved error diagnostics with stage-level detail
    * 
    * @returns Pipeline run result with metrics
    */
@@ -190,40 +192,42 @@ export class LearningPipeline {
     const runId = `run_${Date.now()}`;
     const startedAt = Date.now();
     const stages: StageResult[] = [];
-    
+
     if (this.config.enableLogging) {
       console.log(`[LearningPipeline] Starting pipeline run ${runId}...`);
     }
-    
+
     try {
       // Stage 1: Collect feedback data
       const collectResult = await this.stageCollect();
       stages.push(collectResult);
-      
+
       if (!collectResult.success) {
-        throw new Error(`Collection stage failed: ${collectResult.message}`);
+        // Fixed: Issue #6 - Provide diagnostic details on failure
+        const diagnostics = await this.diagnoseCollectionFailure();
+        throw new Error(`Collection stage failed: ${collectResult.message} | Diagnostics: ${JSON.stringify(diagnostics)}`);
       }
-      
+
       // Stage 2: Analyze patterns
       const analyzeResult = await this.stageAnalyze();
       stages.push(analyzeResult);
-      
+
       if (!analyzeResult.success) {
         throw new Error(`Analysis stage failed: ${analyzeResult.message}`);
       }
-      
+
       // Stage 3: Curate training examples
       const curateResult = await this.stageCurate();
       stages.push(curateResult);
-      
+
       if (!curateResult.success) {
         throw new Error(`Curation stage failed: ${curateResult.message}`);
       }
-      
+
       // Stage 4: Validate examples
       const validateResult = await this.stageValidate();
       stages.push(validateResult);
-      
+
       const completedAt = Date.now();
       const result: PipelineResult = {
         runId,
@@ -235,22 +239,22 @@ export class LearningPipeline {
         patternsIdentified: analyzeResult.itemsOutput,
         success: true
       };
-      
+
       if (this.config.enableLogging) {
         console.log(`[LearningPipeline] [OK] Pipeline completed in ${result.totalDurationMs}ms`);
         console.log(`  - Patterns identified: ${result.patternsIdentified}`);
         console.log(`  - Examples generated: ${result.examplesGenerated}`);
       }
-      
+
       return result;
-      
+
     } catch (error) {
       const completedAt = Date.now();
-      
+
       if (this.config.enableLogging) {
         console.error(`[LearningPipeline] [X] Pipeline failed: ${error}`);
       }
-      
+
       return {
         runId,
         startedAt,
@@ -263,17 +267,48 @@ export class LearningPipeline {
       };
     }
   }
-  
+
+  /**
+   * Diagnose collection stage failure
+   * 
+   * Fixed: Issue #6 - Provide detailed diagnostics for pipeline failures
+   * 
+   * @returns Diagnostic information about why collection failed
+   * @private
+   */
+  private async diagnoseCollectionFailure(): Promise<Record<string, any>> {
+    try {
+      const stats = this.db.getStats();
+
+      return {
+        totalDocumentsInDatabase: stats.totalDocuments,
+        successfulOps: stats.successfulOps,
+        failedOps: stats.failedOps,
+        message: stats.totalDocuments === 0
+          ? 'No documents in database - nothing to collect'
+          : 'Database has documents but retrieval failed',
+        timestamp: Date.now()
+      };
+    } catch (diagnosticError) {
+      return {
+        error: 'Failed to run diagnostics',
+        cause: diagnosticError instanceof Error ? diagnosticError.message : String(diagnosticError),
+        timestamp: Date.now()
+      };
+    }
+  }
+
   /**
    * Stage 1: Collect feedback data from database
    */
   private async stageCollect(): Promise<StageResult> {
     const startTime = Date.now();
-    
+
     try {
-      const allDocs = await this.db.searchSimilar('', 1000, 0.0);
+      // Fixed: Issue #3 - Use efficient getAll() method instead of searchSimilar('')
+      const allDocs = await this.db.getAll(0.0, 1000);
       const validatedDocs = allDocs.filter(d => d.user_validated !== undefined);
-      
+
       return {
         stage: 'collect',
         success: true,
@@ -293,16 +328,16 @@ export class LearningPipeline {
       };
     }
   }
-  
+
   /**
    * Stage 2: Analyze patterns with AdaptiveLearning
    */
   private async stageAnalyze(): Promise<StageResult> {
     const startTime = Date.now();
-    
+
     try {
       const patterns = await this.adaptiveLearning.analyzeFeedbackPatterns();
-      
+
       return {
         stage: 'analyze',
         success: true,
@@ -322,17 +357,18 @@ export class LearningPipeline {
       };
     }
   }
-  
+
   /**
    * Stage 3: Curate high-quality training examples
    */
   private async stageCurate(): Promise<StageResult> {
     const startTime = Date.now();
-    
+
     try {
-      const allDocs = await this.db.searchSimilar('', 1000, 0.0);
+      // Fixed: Issue #3 - Use efficient getAll() method instead of searchSimilar('')
+      const allDocs = await this.db.getAll(0.0, 1000);
       this.trainingExamples.clear();
-      
+
       // Filter high-quality, validated documents
       const candidateDocs = allDocs.filter(doc => {
         if (this.config.requireValidation && !doc.user_validated) {
@@ -343,28 +379,29 @@ export class LearningPipeline {
         }
         return true;
       });
-      
+
       // Group by error type and limit per type
       const typeGroups = new Map<string, RCADocument[]>();
       for (const doc of candidateDocs) {
-        const errorType = doc.metadata?.error_type || 'unknown';
+        // Fixed: Issue #1 - Access error_type as direct field, not from metadata
+        const errorType = doc.error_type || 'unknown';
         const existing = typeGroups.get(errorType) || [];
         existing.push(doc);
         typeGroups.set(errorType, existing);
       }
-      
+
       // Generate training examples (limited per type)
       for (const [_errorType, docs] of typeGroups.entries()) {
         const limitedDocs = docs
           .sort((a, b) => b.quality_score - a.quality_score)
           .slice(0, this.config.maxExamplesPerType);
-        
+
         for (const doc of limitedDocs) {
           const example = this.createTrainingExample(doc);
           this.trainingExamples.set(example.id, example);
         }
       }
-      
+
       return {
         stage: 'curate',
         success: true,
@@ -384,33 +421,33 @@ export class LearningPipeline {
       };
     }
   }
-  
+
   /**
    * Stage 4: Validate training examples
    */
   private async stageValidate(): Promise<StageResult> {
     const startTime = Date.now();
-    
+
     try {
       const examples = Array.from(this.trainingExamples.values());
       let validCount = 0;
-      
+
       for (const example of examples) {
         // Validate completeness
         if (!example.errorMessage || !example.expectedRootCause) {
           this.trainingExamples.delete(example.id);
           continue;
         }
-        
+
         // Validate quality
         if (example.quality < this.config.minTrainingQuality) {
           this.trainingExamples.delete(example.id);
           continue;
         }
-        
+
         validCount++;
       }
-      
+
       return {
         stage: 'validate',
         success: true,
@@ -430,15 +467,16 @@ export class LearningPipeline {
       };
     }
   }
-  
+
   /**
    * Create training example from RCA document
    */
   private createTrainingExample(doc: RCADocument): TrainingExample {
     return {
       id: `example_${doc.id}`,
-      errorType: doc.metadata?.error_type || 'unknown',
-      errorMessage: doc.metadata?.error_message || '',
+      // Fixed: Issue #1 - Access error_type and error_message as direct fields
+      errorType: doc.error_type || 'unknown',
+      errorMessage: doc.error_message || '',
       expectedRootCause: doc.root_cause,
       expectedFixGuidelines: doc.fix_guidelines,
       quality: doc.quality_score,
@@ -447,7 +485,7 @@ export class LearningPipeline {
       createdAt: doc.created_at
     };
   }
-  
+
   /**
    * Export training data for fine-tuning
    * 
@@ -456,21 +494,21 @@ export class LearningPipeline {
    */
   async exportTrainingData(format: 'json' | 'jsonl' = 'json'): Promise<string> {
     const examples = Array.from(this.trainingExamples.values());
-    
+
     if (format === 'jsonl') {
       return examples.map(ex => JSON.stringify(ex)).join('\n');
     }
-    
+
     return JSON.stringify(examples, null, 2);
   }
-  
+
   /**
    * Get current training examples
    */
   getTrainingExamples(): TrainingExample[] {
     return Array.from(this.trainingExamples.values());
   }
-  
+
   /**
    * Get training examples for specific error type
    */
@@ -478,29 +516,51 @@ export class LearningPipeline {
     return Array.from(this.trainingExamples.values())
       .filter(ex => ex.errorType === errorType);
   }
-  
+
   /**
    * Start automatic pipeline runs
+   * 
+   * Fixed: Issue #7 - Prevent overlapping runs with completion guard
    */
   private startAutoRun(): void {
     if (this.autoRunTimer) {
       return;
     }
-    
+
     const intervalMs = this.config.autoRunIntervalHours * 60 * 60 * 1000;
-    
+
+    // Fixed: Issue #7 - Use flag to prevent overlapping runs
+    let isRunning = false;
+
     this.autoRunTimer = setInterval(async () => {
-      if (this.config.enableLogging) {
-        console.log('[LearningPipeline] Starting scheduled pipeline run...');
+      // Skip if a run is already in progress
+      if (isRunning) {
+        if (this.config.enableLogging) {
+          console.warn('[LearningPipeline] Previous scheduled run still in progress, skipping this interval');
+        }
+        return;
       }
-      await this.run();
+
+      isRunning = true;
+      try {
+        if (this.config.enableLogging) {
+          console.log('[LearningPipeline] Starting scheduled pipeline run...');
+        }
+        await this.run();
+      } catch (error) {
+        if (this.config.enableLogging) {
+          console.error('[LearningPipeline] Scheduled run failed:', error);
+        }
+      } finally {
+        isRunning = false;
+      }
     }, intervalMs);
-    
+
     if (this.config.enableLogging) {
       console.log(`[LearningPipeline] Auto-run enabled (every ${this.config.autoRunIntervalHours}h)`);
     }
   }
-  
+
   /**
    * Stop automatic pipeline runs
    */
@@ -508,13 +568,13 @@ export class LearningPipeline {
     if (this.autoRunTimer) {
       clearInterval(this.autoRunTimer);
       this.autoRunTimer = null;
-      
+
       if (this.config.enableLogging) {
         console.log('[LearningPipeline] Auto-run stopped');
       }
     }
   }
-  
+
   /**
    * Cleanup resources
    */

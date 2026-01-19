@@ -97,16 +97,16 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
                 await this._handleRefreshErrorQueue();
                 break;
             case 'removeError':
-                await this._handleRemoveError(message.errorId);
+                await this._handleRemoveError(message.data?.errorId);
                 break;
             case 'pinError':
-                await this._handlePinError(message.errorId);
+                await this._handlePinError(message.data?.errorId);
                 break;
             case 'unpinError':
-                await this._handleUnpinError(message.errorId);
+                await this._handleUnpinError(message.data?.errorId);
                 break;
             case 'analyzeMultipleErrors':
-                await this._handleAnalyzeMultipleErrors(message.errorIds);
+                await this._handleAnalyzeMultipleErrors(message.data?.errorIds);
                 break;
             case 'clearCompletedErrors':
                 await this._handleClearCompletedErrors();
@@ -115,37 +115,37 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
                 await this._handleClearAllErrors();
                 break;
             case 'openErrorLocation':
-                await this._handleOpenErrorLocation(message.errorId);
+                await this._handleOpenErrorLocation(message.data?.errorId);
                 break;
 
             // Analysis commands
             case 'analyzeError':
-                await this._handleAnalyzeError(message.error);
+                await this._handleAnalyzeError(message.data?.error);
                 break;
             case 'startAnalysis':
-                await this._handleStartAnalysis(message.errorId, message.settings);
+                await this._handleStartAnalysis(message.data?.errorId, message.data?.settings);
                 break;
             case 'startManualAnalysis':
-                await this._handleStartManualAnalysis(message.errorText, message.settings);
+                await this._handleStartManualAnalysis(message.data?.errorText, message.data?.settings);
                 break;
             case 'cancelAnalysis':
                 await this._handleCancelAnalysis();
                 break;
             case 'applyFix':
-                await this._handleApplyFix(message.fix);
+                await this._handleApplyFix(message.data?.fix);
                 break;
             case 'exportResult':
-                await this._handleExportResult(message.result);
+                await this._handleExportResult(message.data?.result);
                 break;
 
             // Feedback
             case 'submitFeedback':
-                await this._handleSubmitFeedback(message);
+                await this._handleSubmitFeedback(message.data);
                 break;
 
             // Config commands
             case 'updateConfig':
-                await this._handleUpdateConfig(message.key, message.value);
+                await this._handleUpdateConfig(message.data?.key, message.data?.value);
                 break;
             case 'checkOllamaStatus':
                 await this._handleCheckOllamaStatus();
@@ -153,29 +153,29 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
 
             // Navigation
             case 'navigate':
-                this._handleNavigate(message.route);
+                this._handleNavigate(message.data?.route);
                 break;
 
             // ============================================================================
             // Phase 3: History View Handlers
             // ============================================================================
             case 'getHistory':
-                await this._handleGetHistory(message.limit);
+                await this._handleGetHistory(message.data?.limit);
                 break;
             case 'searchHistory':
-                await this._handleSearchHistory(message.query);
+                await this._handleSearchHistory(message.data?.query);
                 break;
             case 'reanalyzeFromHistory':
-                await this._handleReanalyzeFromHistory(message.historyId);
+                await this._handleReanalyzeFromHistory(message.data?.historyId);
                 break;
             case 'deleteHistoryItem':
-                await this._handleDeleteHistoryItem(message.historyId);
+                await this._handleDeleteHistoryItem(message.data?.historyId);
                 break;
             case 'clearHistory':
                 await this._handleClearHistory();
                 break;
             case 'exportHistoryItem':
-                await this._handleExportHistoryItem(message.historyId);
+                await this._handleExportHistoryItem(message.data?.historyId);
                 break;
             case 'exportAllHistory':
                 await this._handleExportAllHistory();
@@ -207,19 +207,19 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
                 await this._handleGetAppliedFixes();
                 break;
             case 'previewFix':
-                await this._handlePreviewFix(message.fixId);
+                await this._handlePreviewFix(message.data?.fixId);
                 break;
             case 'applyFixById':
-                await this._handleApplyFixById(message.fixId);
+                await this._handleApplyFixById(message.data?.fixId);
                 break;
             case 'rejectFix':
-                await this._handleRejectFix(message.fixId);
+                await this._handleRejectFix(message.data?.fixId);
                 break;
             case 'applyMultipleFixes':
-                await this._handleApplyMultipleFixes(message.fixIds);
+                await this._handleApplyMultipleFixes(message.data?.fixIds);
                 break;
             case 'rejectMultipleFixes':
-                await this._handleRejectMultipleFixes(message.fixIds);
+                await this._handleRejectMultipleFixes(message.data?.fixIds);
                 break;
             case 'clearAppliedFixes':
                 await this._handleClearAppliedFixes();
@@ -229,10 +229,23 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
             // Phase 3: Metrics View Handlers
             // ============================================================================
             case 'getMetrics':
-                await this._handleGetMetrics(message.timeRange);
+                await this._handleGetMetrics(message.data?.timeRange);
                 break;
             case 'exportMetrics':
-                await this._handleExportMetrics(message.timeRange);
+                await this._handleExportMetrics(message.data?.timeRange);
+                break;
+
+            // ============================================================================
+            // Phase 1: Conversational RCA Handlers
+            // ============================================================================
+            case 'conversation.start':
+                await this._handleConversationStart(message.data);
+                break;
+            case 'conversation.send':
+                await this._handleConversationSend(message.data);
+                break;
+            case 'conversation.getHistory':
+                await this._handleConversationGetHistory(message.data);
                 break;
 
             default:
@@ -1559,6 +1572,13 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
         const rcaId = (result as any).rcaId as string | undefined;
         const errorHash = (result as any).errorHash as string | undefined;
 
+        // Debug logging to track feedback availability
+        if (!rcaId) {
+            console.warn('[RCAWebviewProvider] Analysis result missing rcaId - feedback will be disabled. ChromaDB may not be initialized.');
+        } else {
+            console.log('[RCAWebviewProvider] Analysis persisted with rcaId:', rcaId);
+        }
+
         return {
             ...result,
             // Map fixGuidelines to fixes array if not already present
@@ -1580,5 +1600,139 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
                 errorHash
             }
         };
+    }
+
+    // ============================================================================
+    // Phase 1: Conversational RCA Handlers
+    // ============================================================================
+
+    /**
+     * Handle conversation start - Initialize or load session
+     */
+    private async _handleConversationStart(data: any) {
+        try {
+            const context = data.context;
+            console.log('[Conversation] Starting conversation with context:', context);
+
+            // Phase 1: Send a simple acknowledgment
+            // TODO: In Phase 2+, initialize ConversationManager and load session
+            this._sendMessage({
+                type: 'conversation.session',
+                data: {
+                    session: {
+                        id: 'temp-session-' + Date.now(),
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        status: 'active',
+                        messages: [],
+                        metadata: {
+                            messageCount: 0,
+                            confidenceEvolution: [],
+                            refinementCount: 0,
+                            viewsVisited: [context.viewType]
+                        }
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('[Conversation] Failed to start conversation:', error);
+            this._sendMessage({
+                type: 'conversation.error',
+                data: { error: 'Failed to start conversation' }
+            });
+        }
+    }
+
+    /**
+     * Handle conversation message send
+     */
+    private async _handleConversationSend(data: any) {
+        try {
+            const { content, context, sessionId } = data;
+            console.log('[Conversation] Received message:', content);
+
+            // Indicate typing
+            this._sendMessage({
+                type: 'conversation.typing',
+                data: { typing: true }
+            });
+
+            // Phase 1: Simple echo response with context awareness
+            // TODO: In Phase 2+, use ConversationManager for proper response generation
+
+            let responseContent = '';
+            if (context?.viewType === 'analyze') {
+                responseContent = `I understand you're asking about the analysis. Let me help you with that. You said: "${content}"`;
+            } else if (context?.viewType === 'errors') {
+                responseContent = `I can help you with the error queue. Regarding your question: "${content}"`;
+            } else if (context?.viewType === 'dashboard') {
+                responseContent = `Looking at the dashboard overview. About your question: "${content}"`;
+            } else {
+                responseContent = `I'm here to help! You asked: "${content}"`;
+            }
+
+            // Simulate processing delay
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Send assistant response
+            this._sendMessage({
+                type: 'conversation.message',
+                data: {
+                    id: 'msg-' + Date.now(),
+                    sessionId: sessionId || 'temp',
+                    role: 'assistant',
+                    content: responseContent,
+                    timestamp: new Date().toISOString(),
+                    status: 'sent',
+                    metadata: {
+                        context,
+                        confidence: 0.8,
+                        processingTime: 500
+                    }
+                }
+            });
+
+            // Stop typing indicator
+            this._sendMessage({
+                type: 'conversation.typing',
+                data: { typing: false }
+            });
+
+        } catch (error) {
+            console.error('[Conversation] Failed to send message:', error);
+            this._sendMessage({
+                type: 'conversation.typing',
+                data: { typing: false }
+            });
+            this._sendMessage({
+                type: 'conversation.error',
+                data: { error: 'Failed to process message' }
+            });
+        }
+    }
+
+    /**
+     * Handle get conversation history
+     */
+    private async _handleConversationGetHistory(data: any) {
+        try {
+            const { sessionId } = data;
+            console.log('[Conversation] Getting history for session:', sessionId);
+
+            // Phase 1: Return empty history
+            // TODO: In Phase 2+, load from ConversationStore
+            this._sendMessage({
+                type: 'conversation.history',
+                data: {
+                    messages: []
+                }
+            });
+        } catch (error) {
+            console.error('[Conversation] Failed to get history:', error);
+            this._sendMessage({
+                type: 'conversation.error',
+                data: { error: 'Failed to get conversation history' }
+            });
+        }
     }
 }

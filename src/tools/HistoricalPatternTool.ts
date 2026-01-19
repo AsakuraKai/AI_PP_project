@@ -21,15 +21,17 @@
 export interface ToolExecutionContext {
   workspacePath?: string;
 }
+import * as fs from 'fs';
+import * as path from 'path';
+
+import { Logger } from '../utils/Logger';
+import { ParsedError, RCAResult } from '../types';
 
 export abstract class Tool {
   abstract name: string;
   abstract description: string;
   abstract execute(params: any, context?: ToolExecutionContext): Promise<any>;
 }
-import { ParsedError, RCAResult } from '../types';
-import * as fs from 'fs';
-import * as path from 'path';
 
 /**
  * Historical error record
@@ -37,22 +39,22 @@ import * as path from 'path';
 export interface HistoricalError {
   /** Error identifier */
   id: string;
-  
+
   /** Original error */
   error: ParsedError;
-  
+
   /** Applied fix (if available) */
   fix?: RCAResult;
-  
+
   /** When error occurred */
   timestamp: number;
-  
+
   /** Whether fix was successful */
   fixSuccessful?: boolean;
-  
+
   /** Time to resolve (ms) */
   resolutionTime?: number;
-  
+
   /** User feedback */
   feedback?: {
     helpful: boolean;
@@ -66,26 +68,26 @@ export interface HistoricalError {
 export interface ErrorPattern {
   /** Pattern identifier */
   id: string;
-  
+
   /** Error type */
   errorType: string;
-  
+
   /** Common characteristics */
   characteristics: string[];
-  
+
   /** Frequency (number of occurrences) */
   frequency: number;
-  
+
   /** Success rate of fixes */
   successRate: number;
-  
+
   /** Most effective fix */
   bestFix?: {
     rootCause: string;
     fixGuidelines: string[];
     successCount: number;
   };
-  
+
   /** Similar historical errors */
   examples: HistoricalError[];
 }
@@ -96,13 +98,13 @@ export interface ErrorPattern {
 export interface HistoricalPatternParams {
   /** Current error to analyze */
   error: ParsedError;
-  
+
   /** Project path */
   projectPath: string;
-  
+
   /** Minimum similarity threshold (0-1) */
   minSimilarity?: number;
-  
+
   /** Maximum historical results */
   maxResults?: number;
 }
@@ -114,46 +116,47 @@ export class HistoricalPatternTool extends Tool {
   name = 'historical_pattern';
   description = 'Analyze historical error patterns and successful fixes';
 
+  private readonly logger = new Logger('HistoricalPatternTool');
   private historyPath: string = '';
 
   /**
    * Execute historical pattern analysis
    */
   async execute(params: HistoricalPatternParams, _context?: ToolExecutionContext): Promise<ErrorPattern | null> {
-    console.log('[SEARCH] Analyzing historical patterns...');
+    this.logger.info('Analyzing historical patterns');
 
     try {
       this.historyPath = path.join(params.projectPath, '.rca-agent', 'history.json');
 
       // Load historical errors
       const history = await this.loadHistory();
-      
+
       if (history.length === 0) {
-        console.log('  No historical data available');
+        this.logger.info('No historical data available');
         return null;
       }
 
-      console.log(`  Loaded ${history.length} historical errors`);
+      this.logger.info('Loaded historical errors', { count: history.length });
 
       // Find similar errors
       const similar = this.findSimilarErrors(params.error, history, params.minSimilarity || 0.6);
-      
+
       if (similar.length === 0) {
-        console.log('  No similar historical errors found');
+        this.logger.info('No similar historical errors found');
         return null;
       }
 
-      console.log(`  Found ${similar.length} similar errors`);
+      this.logger.info('Found similar historical errors', { count: similar.length });
 
       // Analyze patterns
       const pattern = this.analyzePattern(params.error, similar);
-      
-      console.log(`✓ Pattern analysis complete (success rate: ${(pattern.successRate * 100).toFixed(0)}%)`);
-      
+
+      this.logger.info('Pattern analysis complete', { successRate: pattern.successRate });
+
       return pattern;
 
     } catch (error) {
-      console.warn('[WARN] Historical pattern analysis failed:', error);
+      this.logger.error('Historical pattern analysis failed', error);
       return null;
     }
   }
@@ -186,10 +189,10 @@ export class HistoricalPatternTool extends Tool {
       // Save
       await this.saveHistory(trimmedHistory);
 
-      console.log('✓ Recorded error in history');
+      this.logger.info('Recorded error in history');
 
     } catch (error) {
-      console.warn('[WARN] Failed to record error:', error);
+      this.logger.warn('Failed to record error', { error });
     }
   }
 
@@ -206,11 +209,11 @@ export class HistoricalPatternTool extends Tool {
       if (record) {
         record.feedback = { helpful, comments };
         await this.saveHistory(history);
-        console.log('✓ Recorded user feedback');
+        this.logger.info('Recorded user feedback', { errorId });
       }
 
     } catch (error) {
-      console.warn('[WARN] Failed to record feedback:', error);
+      this.logger.warn('Failed to record feedback', { error });
     }
   }
 
@@ -227,7 +230,7 @@ export class HistoricalPatternTool extends Tool {
       return JSON.parse(content);
 
     } catch (error) {
-      console.warn('[WARN] Failed to load history:', error);
+      this.logger.warn('Failed to load history', { error });
       return [];
     }
   }
@@ -245,7 +248,7 @@ export class HistoricalPatternTool extends Tool {
       fs.writeFileSync(this.historyPath, JSON.stringify(history, null, 2));
 
     } catch (error) {
-      console.warn('[WARN] Failed to save history:', error);
+      this.logger.warn('Failed to save history', { error });
     }
   }
 
@@ -257,7 +260,7 @@ export class HistoricalPatternTool extends Tool {
 
     for (const record of history) {
       const similarity = this.calculateSimilarity(error, record.error);
-      
+
       if (similarity >= minSimilarity) {
         similar.push({ record, similarity });
       }
@@ -318,10 +321,10 @@ export class HistoricalPatternTool extends Tool {
   private analyzePattern(currentError: ParsedError, similarErrors: HistoricalError[]): ErrorPattern {
     // Extract common characteristics
     const characteristics: string[] = [];
-    
+
     // Error type
     characteristics.push(`Error type: ${currentError.type}`);
-    
+
     // Common file patterns
     const files = similarErrors.map(e => path.basename(e.error.filePath));
     const fileFreq = this.getFrequency(files);
@@ -361,20 +364,20 @@ export class HistoricalPatternTool extends Tool {
       if (!error.fix) continue;
 
       const key = error.fix.rootCause.substring(0, 100); // Group by first 100 chars
-      
+
       if (!fixGroups.has(key)) {
         fixGroups.set(key, { count: 0, fix: error.fix });
       }
-      
+
       fixGroups.get(key)!.count++;
     }
 
     // Find most common fix
     const sorted = [...fixGroups.entries()].sort((a, b) => b[1].count - a[1].count);
-    
+
     if (sorted.length > 0) {
       const [_, { count, fix }] = sorted[0];
-      
+
       return {
         rootCause: fix.rootCause,
         fixGuidelines: fix.fixGuidelines,
@@ -390,11 +393,11 @@ export class HistoricalPatternTool extends Tool {
    */
   private getFrequency(items: string[]): Map<string, number> {
     const freq = new Map<string, number>();
-    
+
     for (const item of items) {
       freq.set(item, (freq.get(item) || 0) + 1);
     }
-    
+
     return freq;
   }
 

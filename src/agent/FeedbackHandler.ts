@@ -24,28 +24,28 @@ export type FeedbackType = 'positive' | 'negative';
 export interface FeedbackResult {
   /** Whether feedback was processed successfully */
   success: boolean;
-  
+
   /** RCA document ID */
   rcaId: string;
-  
+
   /** Feedback type */
   feedbackType: FeedbackType;
-  
+
   /** Previous confidence score */
   previousConfidence: number;
-  
+
   /** New confidence score */
   newConfidence: number;
-  
+
   /** Previous quality score */
   previousQuality: number;
-  
+
   /** New quality score */
   newQuality: number;
-  
+
   /** Whether cache was invalidated */
   cacheInvalidated: boolean;
-  
+
   /** Optional message */
   message?: string;
 }
@@ -56,19 +56,19 @@ export interface FeedbackResult {
 export interface FeedbackStats {
   /** Total positive feedback received */
   totalPositive: number;
-  
+
   /** Total negative feedback received */
   totalNegative: number;
-  
+
   /** Total feedback processed */
   total: number;
-  
+
   /** Success rate (0-1) */
   successRate: number;
-  
+
   /** Average confidence boost from positive feedback */
   avgPositiveBoost: number;
-  
+
   /** Average confidence reduction from negative feedback */
   avgNegativeReduction: number;
 }
@@ -79,19 +79,19 @@ export interface FeedbackStats {
 export interface FeedbackHandlerConfig {
   /** Confidence multiplier for positive feedback (default: 1.2 = +20%) */
   positiveMultiplier?: number;
-  
+
   /** Confidence multiplier for negative feedback (default: 0.5 = -50%) */
   negativeMultiplier?: number;
-  
+
   /** Maximum confidence score (default: 1.0) */
   maxConfidence?: number;
-  
+
   /** Minimum confidence score (default: 0.1) */
   minConfidence?: number;
-  
+
   /** Whether to invalidate cache on negative feedback (default: true) */
   invalidateCacheOnNegative?: boolean;
-  
+
   /** Whether to log feedback events (default: true) */
   enableLogging?: boolean;
 }
@@ -146,14 +146,14 @@ export class FeedbackError extends Error {
 export class FeedbackHandler {
   private readonly config: Required<FeedbackHandlerConfig>;
   private readonly qualityScorer: QualityScorer;
-  
+
   // Statistics tracking
   private totalPositive: number = 0;
   private totalNegative: number = 0;
   private totalSuccessful: number = 0;
   private positiveBoosts: number[] = [];
   private negativeReductions: number[] = [];
-  
+
   /**
    * Create a new FeedbackHandler
    * 
@@ -174,13 +174,13 @@ export class FeedbackHandler {
       invalidateCacheOnNegative: config?.invalidateCacheOnNegative ?? DEFAULT_CONFIG.invalidateCacheOnNegative,
       enableLogging: config?.enableLogging ?? DEFAULT_CONFIG.enableLogging
     };
-    
+
     this.qualityScorer = new QualityScorer({
       minQuality: this.config.minConfidence,
       maxQuality: this.config.maxConfidence
     });
   }
-  
+
   /**
    * Process positive feedback (thumbs up)
    * 
@@ -195,7 +195,7 @@ export class FeedbackHandler {
    */
   async handlePositive(rcaId: string, _errorHash?: string): Promise<FeedbackResult> {
     this.totalPositive++;
-    
+
     try {
       // Get existing document
       const rca = await this.db.getById(rcaId);
@@ -206,34 +206,34 @@ export class FeedbackHandler {
           'positive'
         );
       }
-      
+
       const previousConfidence = rca.confidence;
       const previousQuality = rca.quality_score;
-      
+
       // Calculate new confidence (increase by multiplier, cap at max)
       const newConfidence = Math.min(
         rca.confidence * this.config.positiveMultiplier,
         this.config.maxConfidence
       );
-      
+
       // Calculate new quality score
       const newQuality = this.calculateQuality({
         ...rca,
         confidence: newConfidence,
         user_validated: true
       });
-      
+
       // Update document in database
       await this.db.update(rcaId, {
         confidence: newConfidence,
         user_validated: true,
         quality_score: newQuality
       });
-      
+
       // Track statistics
       this.totalSuccessful++;
       this.positiveBoosts.push(newConfidence - previousConfidence);
-      
+
       const result: FeedbackResult = {
         success: true,
         rcaId,
@@ -245,7 +245,7 @@ export class FeedbackHandler {
         cacheInvalidated: false,
         message: `RCA ${rcaId} validated positively. Confidence: ${previousConfidence.toFixed(2)} → ${newConfidence.toFixed(2)}`
       };
-      
+
       this.log(result.message!);
       return result;
     } catch (error) {
@@ -260,7 +260,7 @@ export class FeedbackHandler {
       );
     }
   }
-  
+
   /**
    * Process negative feedback (thumbs down)
    * 
@@ -268,14 +268,16 @@ export class FeedbackHandler {
    * - Recalculates quality score
    * - Invalidates cache entry (if enabled)
    * 
+   * Fixed: Issue #2 - Compute errorHash when not provided for reliable cache invalidation
+   * 
    * @param rcaId - RCA document ID
-   * @param errorHash - Error hash for cache invalidation
+   * @param errorHash - Error hash for cache invalidation (computed if not provided)
    * @returns Feedback result with before/after scores
    * @throws {FeedbackError} If document not found or update fails
    */
   async handleNegative(rcaId: string, errorHash?: string): Promise<FeedbackResult> {
     this.totalNegative++;
-    
+
     try {
       // Get existing document
       const rca = await this.db.getById(rcaId);
@@ -286,40 +288,42 @@ export class FeedbackHandler {
           'negative'
         );
       }
-      
+
       const previousConfidence = rca.confidence;
       const previousQuality = rca.quality_score;
-      
+
       // Calculate new confidence (decrease by multiplier, floor at min)
       const newConfidence = Math.max(
         rca.confidence * this.config.negativeMultiplier,
         this.config.minConfidence
       );
-      
+
       // Calculate new quality score (don't mark as validated on negative)
       const newQuality = this.calculateQuality({
         ...rca,
         confidence: newConfidence,
         user_validated: false // Negative feedback removes validation
       });
-      
+
       // Update document in database
       await this.db.update(rcaId, {
         confidence: newConfidence,
         user_validated: false,
         quality_score: newQuality
       });
-      
-      // Invalidate cache if enabled and errorHash provided
+
+      // Invalidate cache if enabled
+      // Fixed: Issue #2 - Compute errorHash from RCA if not provided
       let cacheInvalidated = false;
-      if (this.config.invalidateCacheOnNegative && errorHash) {
-        cacheInvalidated = this.cache.invalidate(errorHash);
+      if (this.config.invalidateCacheOnNegative) {
+        const hashToUse = errorHash || this.computeErrorHash(rca);
+        cacheInvalidated = this.cache.invalidate(hashToUse);
       }
-      
+
       // Track statistics
       this.totalSuccessful++;
       this.negativeReductions.push(previousConfidence - newConfidence);
-      
+
       const result: FeedbackResult = {
         success: true,
         rcaId,
@@ -331,7 +335,7 @@ export class FeedbackHandler {
         cacheInvalidated,
         message: `RCA ${rcaId} marked unhelpful. Confidence: ${previousConfidence.toFixed(2)} → ${newConfidence.toFixed(2)}${cacheInvalidated ? ' (cache invalidated)' : ''}`
       };
-      
+
       this.log(result.message!);
       return result;
     } catch (error) {
@@ -346,7 +350,7 @@ export class FeedbackHandler {
       );
     }
   }
-  
+
   /**
    * Process feedback of either type
    * 
@@ -368,7 +372,7 @@ export class FeedbackHandler {
       return this.handleNegative(rcaId, errorHash);
     }
   }
-  
+
   /**
    * Get feedback statistics
    * 
@@ -376,7 +380,7 @@ export class FeedbackHandler {
    */
   getStats(): FeedbackStats {
     const total = this.totalPositive + this.totalNegative;
-    
+
     return {
       totalPositive: this.totalPositive,
       totalNegative: this.totalNegative,
@@ -386,7 +390,7 @@ export class FeedbackHandler {
       avgNegativeReduction: this.calculateAverage(this.negativeReductions)
     };
   }
-  
+
   /**
    * Reset feedback statistics
    */
@@ -397,7 +401,7 @@ export class FeedbackHandler {
     this.positiveBoosts = [];
     this.negativeReductions = [];
   }
-  
+
   /**
    * Calculate quality score for an RCA document
    * 
@@ -411,7 +415,30 @@ export class FeedbackHandler {
       ageMs: Date.now() - rca.created_at
     });
   }
-  
+
+  /**
+   * Compute error hash from RCA document
+   * 
+   * Fixed: Issue #2 - Fallback hash computation when errorHash parameter not provided
+   * Uses ErrorHasher through cache for consistency with caching logic
+   * 
+   * @param rca - RCA document
+   * @returns SHA-256 hash of error type and message
+   * @private
+   */
+  private computeErrorHash(rca: RCADocument): string {
+    // Use ErrorHasher through cache for consistency
+    // Convert RCA document to ParsedError format for hashing
+    const pseudoError = {
+      type: rca.error_type,
+      message: rca.error_message,
+      language: rca.language,
+      filePath: '', // Not needed for cache key
+      line: 0       // Not needed for cache key
+    };
+    return this.cache.getHash(pseudoError);
+  }
+
   /**
    * Calculate average of number array
    */
@@ -419,7 +446,7 @@ export class FeedbackHandler {
     if (values.length === 0) return 0;
     return values.reduce((sum, v) => sum + v, 0) / values.length;
   }
-  
+
   /**
    * Log message if logging enabled
    */

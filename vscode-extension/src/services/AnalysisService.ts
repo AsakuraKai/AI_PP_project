@@ -10,9 +10,9 @@
  */
 
 import * as vscode from 'vscode';
-import { ErrorItem, AgentState, RCAResult } from '../types';
+import { ErrorItem, AgentState, RCAResult, ValidatedErrorItem, getProjectScope, buildScopePromptContext } from '../types';
 import { RCAResult as BackendRCAResult } from '../../../src/types';
-import { MultiPassAgent } from '../../../src/agent/MultiPassAgent';
+import { MinimalReactAgent } from '../../../src/agent/MinimalReactAgent';
 import { AgentStateStream } from '../../../src/agent/AgentStateStream';
 import { OllamaClient } from '../../../src/llm/OllamaClient';
 import { ErrorParser } from '../../../src/utils/ErrorParser';
@@ -38,7 +38,7 @@ export class AnalysisService {
   };
 
   // Backend components
-  private _agent?: MultiPassAgent;
+  private _agent?: MinimalReactAgent;
   private _parser?: ErrorParser;
   private _client?: OllamaClient;
   private _chromaDB?: ChromaDBClient;
@@ -99,11 +99,18 @@ export class AnalysisService {
       });
       console.log('[AnalysisService] RCACache initialized successfully');
 
-      // Initialize MultiPassAgent with config
-      this._agent = new MultiPassAgent(this._client, {
-        maxIterations: config.get<number>('maxIterations', 5),
-        numHypotheses: config.get<number>('numHypotheses', 3),
-        enableConsensus: config.get<boolean>('enableConsensus', false)
+      // Initialize MinimalReactAgent with config
+      // Note: MultiPassAgent disabled due to performance issues (calls analyze() multiple times)
+      // See docs/BUG_ANALYSIS_MULTIPASS_LOOPING.md for details
+      this._agent = new MinimalReactAgent(this._client, {
+        maxIterations: config.get<number>('maxIterations', 10),
+        timeout: config.get<number>('timeout', 90000),
+        usePromptEngine: true,
+        useToolRegistry: true,
+        generateFix: true,
+        projectRoot: vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || process.cwd(),
+        enableProgressivePrompting: config.get<boolean>('enableProgressivePrompting', false),
+        enableCaching: true
       });
 
       // Get state stream for real-time updates
@@ -206,6 +213,17 @@ export class AnalysisService {
   }
 
   /**
+   * Validate and normalize error item
+   * Ensures projectScope is always present with valid value
+   */
+  private _validateAndNormalizeError(error: ErrorItem): ValidatedErrorItem {
+    return {
+      ...error,
+      projectScope: getProjectScope(error.projectScope)
+    };
+  }
+
+  /**
    * Analyze an error
    */
   async analyzeError(
@@ -213,7 +231,13 @@ export class AnalysisService {
     onProgress: ProgressCallback,
     cancellationToken?: vscode.CancellationToken
   ): Promise<RCAResult> {
-    console.log('[AnalysisService] Starting analysis for:', error.id);
+    // Validate and normalize error data
+    const validatedError = this._validateAndNormalizeError(error);
+
+    console.log('[AnalysisService] Starting analysis for:', validatedError.id, {
+      projectScope: validatedError.projectScope,
+      filePath: validatedError.filePath
+    });
 
     // Ensure backend is initialized
     if (!this._agent || !this._parser || !this._client) {
@@ -236,6 +260,9 @@ export class AnalysisService {
     };
     const operationId = `analysis-${error.id}`;
 
+    // Throttle timer for progress updates (declared here so finally block can access it)
+    let throttleTimer: NodeJS.Timeout | null = null;
+
     try {
       // Check Ollama connection first
       const connection = await this.checkOllamaConnection();
@@ -246,9 +273,9 @@ export class AnalysisService {
       // Parse error text - if error already has structured data, use it
       let parsed = this._parser!.parse(error.message, error.filePath);
 
-      // If parsing fails but we have structured error data from ErrorItem, construct ParsedError
-      if (!parsed && error.message && error.filePath && error.line) {
-        console.log('[AnalysisService] Parser failed, using structured ErrorItem data');
+      // Fallback: If parsing fails, construct ParsedError from ErrorItem structured data
+      if (!parsed) {
+        console.log('[AnalysisService] Parser failed, constructing from ErrorItem data');
 
         // Convert string[] stackTrace to StackFrame[] if available
         const stackFrames = error.stackTrace?.map((frame: string, index: number) => ({
@@ -261,29 +288,17 @@ export class AnalysisService {
           type: error.type || 'runtime',
           message: error.message,
           filePath: error.filePath,
-          line: error.line,
-          language: this._detectLanguage(error.filePath),
-          column: error.column,
-          stackTrace: stackFrames,
-          metadata: error.metadata
-        };
-      }
-
-      // Final fallback: if parsing still failed, construct a minimal parsed error so analysis can proceed.
-      if (!parsed) {
-        parsed = {
-          type: error.type || 'runtime',
-          message: error.message,
-          filePath: error.filePath,
-          line: error.line,
+          line: error.line || 0,
           language: this._detectLanguage(error.filePath) || 'typescript',
           column: error.column,
-          stackTrace: [],
+          stackTrace: stackFrames,
           metadata: {
+            ...error.metadata,
+            projectScope: validatedError.projectScope,
+            scopeContext: buildScopePromptContext(validatedError.projectScope),
             fallback: true
           }
         };
-        console.warn('[AnalysisService] Using minimal fallback parser for unrecognized error message');
       }
 
       // Set up AgentStateStream event listeners for real-time progress
@@ -291,58 +306,82 @@ export class AnalysisService {
       const maxIterations = this._agent!['maxIterations'] || 5;
       const startTime = Date.now();
 
-      this._stateStream!.on('iteration', (event) => {
+      // Remove any existing listeners to prevent accumulation (defensive measure)
+      this._stateStream!.removeAllListeners('iteration');
+      this._stateStream!.removeAllListeners('thought');
+      this._stateStream!.removeAllListeners('action');
+      this._stateStream!.removeAllListeners('observation');
+
+      // Throttle mechanism to prevent UI flooding with progress updates
+      const PROGRESS_THROTTLE_MS = 200; // Only send updates every 200ms
+      let lastProgressUpdate = 0;
+      let pendingProgress: any = null;
+
+      const sendThrottledProgress = (progress: any) => {
+        pendingProgress = progress;
+        const now = Date.now();
+        const timeSinceLastUpdate = now - lastProgressUpdate;
+
+        if (timeSinceLastUpdate >= PROGRESS_THROTTLE_MS) {
+          // Send immediately if enough time has passed
+          onProgress(progress);
+          lastProgressUpdate = now;
+          if (throttleTimer) {
+            clearTimeout(throttleTimer);
+            throttleTimer = null;
+          }
+        } else {
+          // Schedule deferred send if not already scheduled
+          if (!throttleTimer) {
+            throttleTimer = setTimeout(() => {
+              if (pendingProgress) {
+                onProgress(pendingProgress);
+                lastProgressUpdate = Date.now();
+              }
+              throttleTimer = null;
+            }, PROGRESS_THROTTLE_MS - timeSinceLastUpdate);
+          }
+        }
+      };
+
+      // Helper to build progress object with common fields (DRY principle)
+      const buildProgress = (currentThought: string) => ({
+        iteration: currentIteration,
+        maxIterations,
+        progress: (currentIteration / maxIterations) * 100,
+        currentThought,
+        recentActions: [],
+        recentObservations: [],
+        elapsed: Date.now() - startTime,
+        isActive: true
+      });
+
+      const handleIteration = (event: any) => {
         currentIteration = event.iteration;
-        onProgress({
+        sendThrottledProgress({
+          ...buildProgress(''),
           iteration: event.iteration,
           maxIterations: event.maxIterations,
-          progress: event.progress * 100,
-          currentThought: '',
-          recentActions: [],
-          recentObservations: [],
-          elapsed: Date.now() - startTime,
-          isActive: true
+          progress: event.progress * 100
         });
-      });
+      };
 
-      this._stateStream!.on('thought', (event) => {
-        onProgress({
-          iteration: currentIteration,
-          maxIterations,
-          progress: (currentIteration / maxIterations) * 100,
-          currentThought: event.thought,
-          recentActions: [],
-          recentObservations: [],
-          elapsed: Date.now() - startTime,
-          isActive: true
-        });
-      });
+      const handleThought = (event: any) => {
+        sendThrottledProgress(buildProgress(event.thought));
+      };
 
-      this._stateStream!.on('action', (event) => {
-        onProgress({
-          iteration: currentIteration,
-          maxIterations,
-          progress: (currentIteration / maxIterations) * 100,
-          currentThought: `Executing tool: ${event.action.tool}`,
-          recentActions: [],
-          recentObservations: [],
-          elapsed: Date.now() - startTime,
-          isActive: true
-        });
-      });
+      const handleAction = (event: any) => {
+        sendThrottledProgress(buildProgress(`Executing tool: ${event.action.tool}`));
+      };
 
-      this._stateStream!.on('observation', (event) => {
-        onProgress({
-          iteration: currentIteration,
-          maxIterations,
-          progress: (currentIteration / maxIterations) * 100,
-          currentThought: `Received: ${event.observation.substring(0, 50)}...`,
-          recentActions: [],
-          recentObservations: [],
-          elapsed: Date.now() - startTime,
-          isActive: true
-        });
-      });
+      const handleObservation = (event: any) => {
+        sendThrottledProgress(buildProgress(`Received: ${event.observation.substring(0, 50)}...`));
+      };
+
+      this._stateStream!.on('iteration', handleIteration);
+      this._stateStream!.on('thought', handleThought);
+      this._stateStream!.on('action', handleAction);
+      this._stateStream!.on('observation', handleObservation);
 
       // Cancellation: race the analysis against a cancellation promise.
       // (MultiPassAgent doesn't accept a token; this prevents UI from waiting forever.)
@@ -367,16 +406,8 @@ export class AnalysisService {
         },
         (status) => {
           // Surface timeout warnings as progress updates so the UI reflects why we stopped
-          onProgress({
-            iteration: currentIteration,
-            maxIterations,
-            progress: (currentIteration / maxIterations) * 100,
-            currentThought: status,
-            recentActions: [],
-            recentObservations: [],
-            elapsed: Date.now() - startTime,
-            isActive: true
-          });
+          // Reuse buildProgress helper to avoid duplication
+          sendThrottledProgress(buildProgress(status));
         }
       );
 
@@ -432,6 +463,8 @@ export class AnalysisService {
             quality_score
           });
 
+          console.log('[AnalysisService] RCA persisted to ChromaDB with id:', rcaId);
+
           // Cache the stored document for fast repeat lookups.
           if (errorHash && this._cache) {
             const stored = await this._chromaDB.getById(rcaId);
@@ -443,6 +476,8 @@ export class AnalysisService {
           console.warn('[AnalysisService] Failed to persist RCA to ChromaDB:', persistError);
           rcaId = undefined;
         }
+      } else {
+        console.warn('[AnalysisService] ChromaDB not available - analysis will not be persisted, feedback will be disabled');
       }
 
       // Search for similar errors in ChromaDB
@@ -461,8 +496,19 @@ export class AnalysisService {
       console.error('[AnalysisService] Analysis failed:', error);
       throw error;
     } finally {
-      // Clean up event listeners
-      this._stateStream!.removeAllListeners();
+      // Clean up throttle timer
+      if (throttleTimer) {
+        clearTimeout(throttleTimer);
+        throttleTimer = null;
+      }
+
+      // Clean up event listeners to prevent accumulation
+      if (this._stateStream) {
+        this._stateStream.removeAllListeners('iteration');
+        this._stateStream.removeAllListeners('thought');
+        this._stateStream.removeAllListeners('action');
+        this._stateStream.removeAllListeners('observation');
+      }
 
       // Clear current analysis
       this._currentAnalysis = undefined;

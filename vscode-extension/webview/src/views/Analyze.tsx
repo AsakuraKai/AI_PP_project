@@ -12,17 +12,18 @@
  * - [OK] Screen reader support
  * - [OK] Enhanced empty state
  * - [OK] Live region for progress
+ * - [OK] Project scope validation
+ * - [OK] Centralized configuration constants
  */
 
-import { useState, useEffect } from 'react';
-import { AlertCircle, Download, Play, RefreshCw, Search, ThumbsDown, ThumbsUp, X, Sparkles } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { AlertCircle, RefreshCw, Play, X } from 'lucide-react';
 import { useAnalysis } from '../hooks/useAnalysis';
 import { Button } from '../components/ui/button';
-import { Badge } from '../components/ui/badge';
 import { AnalysisProgress } from '../components/AnalysisProgress';
-import { FixSuggestion } from '../components/FixSuggestion';
-import { EmptyState } from '../components/EmptyState';
+import { AnalysisResult } from '../components/AnalysisResult';
 import { announce } from '../lib/accessibility';
+import { ERROR_SCOPE_CONFIG, BUTTON_ACCESSIBILITY } from '../constants/ui';
 
 export function Analyze() {
   const {
@@ -42,6 +43,8 @@ export function Analyze() {
   const [errorText, setErrorText] = useState('');
   const [selectedFile, setSelectedFile] = useState('');
   const [selectedLine, setSelectedLine] = useState('');
+  const [projectScope, setProjectScope] = useState<'inside' | 'outside'>('inside');
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   // Announce state changes to screen readers
   useEffect(() => {
@@ -54,17 +57,40 @@ export function Analyze() {
     }
   }, [state, error]);
 
-  const handleAnalyze = () => {
-    if (!errorText.trim()) return;
+  /**
+   * Validate error input before submission
+   */
+  const validateErrorInput = useCallback((): boolean => {
+    if (!errorText.trim()) {
+      setValidationError('Error message is required');
+      return false;
+    }
+
+    if (errorText.trim().length < 10) {
+      setValidationError('Error message should be at least 10 characters');
+      return false;
+    }
+
+    setValidationError(null);
+    return true;
+  }, [errorText]);
+
+  const handleAnalyze = useCallback(() => {
+    if (!validateErrorInput()) {
+      announce('Validation failed: ' + validationError, 'assertive');
+      return;
+    }
 
     const errorData = {
-      message: errorText,
-      filePath: selectedFile || 'unknown',
-      line: parseInt(selectedLine) || 0
+      message: errorText.trim(),
+      filePath: selectedFile.trim() || 'unknown',
+      line: Math.max(1, parseInt(selectedLine) || 0),
+      projectScope
     };
 
+    console.log('[Analyze] Submitting error with scope:', projectScope);
     startManualAnalysis(JSON.stringify(errorData));
-  };
+  }, [errorText, selectedFile, selectedLine, projectScope, validateErrorInput, startManualAnalysis, validationError]);
 
   // Empty State - Error Input
   if (state === 'empty') {
@@ -154,12 +180,54 @@ export function Analyze() {
               </div>
             </div>
 
+            {/* Error Scope Toggle */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-zinc-200">
+                  {ERROR_SCOPE_CONFIG.label}
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setProjectScope(projectScope === 'inside' ? 'outside' : 'inside')}
+                  className="w-full h-10 flex items-center justify-between px-4 bg-zinc-800 border border-zinc-700 rounded-lg hover:border-zinc-600 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  aria-label={ERROR_SCOPE_CONFIG.options[projectScope].accessibleLabel}
+                >
+                  <span className="text-sm text-zinc-200">
+                    {ERROR_SCOPE_CONFIG.options[projectScope].label}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`flex items-center justify-center w-9 h-5 rounded-full transition-colors ${projectScope === 'inside' ? ERROR_SCOPE_CONFIG.options.inside.colorClass : ERROR_SCOPE_CONFIG.options.outside.colorClass}`}
+                    >
+                      <div
+                        className={`w-4 h-4 rounded-full bg-white transition-all transform ${projectScope === 'inside' ? 'translate-x-2' : '-translate-x-2'}`}
+                      />
+                    </div>
+                    <span className="text-xs font-mono text-zinc-400">
+                      {ERROR_SCOPE_CONFIG.options[projectScope].indicator}
+                    </span>
+                  </div>
+                </button>
+                <p className="text-xs text-zinc-500 mt-1" id="scope-hint">
+                  {ERROR_SCOPE_CONFIG.description}
+                </p>
+              </div>
+            </div>
+
+            {/* Validation Error Display */}
+            {validationError && (
+              <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 flex gap-2">
+                <AlertCircle className="h-4 w-4 text-red-400 shrink-0 mt-0.5" aria-hidden="true" />
+                <p className="text-sm text-red-300">{validationError}</p>
+              </div>
+            )}
+
             <Button
               type="submit"
-              disabled={!errorText.trim()}
+              disabled={!errorText.trim() || validationError !== null}
               className="w-full gap-2 focus-ring"
               size="lg"
-              aria-label="Start analyzing the error"
+              aria-label={BUTTON_ACCESSIBILITY.submit}
             >
               <Play className="h-4 w-4" aria-hidden="true" />
               <span>Start Analysis</span>
@@ -248,154 +316,14 @@ export function Analyze() {
     return (
       <div className="p-8 space-y-6" role="main" aria-label="Analysis Results">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-light mb-2">Analysis Complete</h1>
-            <p className="text-zinc-400">
-              Root cause identified in <time>{result.duration}ms</time>
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              onClick={exportResult}
-              className="gap-2 focus-ring"
-              aria-label="Export analysis results"
-            >
-              <Download className="h-4 w-4" aria-hidden="true" />
-              <span>Export</span>
-            </Button>
-            <Button
-              variant="outline"
-              onClick={reset}
-              className="gap-2 focus-ring"
-              aria-label="Start a new analysis"
-            >
-              <RefreshCw className="h-4 w-4" aria-hidden="true" />
-              <span>New Analysis</span>
-            </Button>
-          </div>
-        </div>
-
-        <div className="max-w-4xl mx-auto space-y-6">
-          {/* Root Cause */}
-          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6" role="article" aria-labelledby="root-cause-title">
-            <div className="flex items-start gap-3 mb-4">
-              <Search className="h-6 w-6 text-purple-400 shrink-0 mt-1" aria-hidden="true" />
-              <div>
-                <h2 id="root-cause-title" className="text-xl font-medium text-zinc-200 mb-2">
-                  Root Cause
-                </h2>
-                <p className="text-zinc-300 leading-relaxed">
-                  {result.rootCause}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 pt-4 border-t border-zinc-800">
-              <Badge variant="outline" className="text-purple-400" aria-label={`Confidence: ${Math.round(result.confidence * 100)} percent`}>
-                Confidence: {Math.round(result.confidence * 100)}%
-              </Badge>
-              {result.fixes.length > 0 && (
-                <Badge variant="outline" aria-label={`${result.fixes.length} fixes suggested`}>
-                  {result.fixes.length} fixes suggested
-                </Badge>
-              )}
-            </div>
-          </div>
-
-          {/* Feedback */}
-          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6" role="region" aria-label="Feedback">
-            <div className="flex items-center justify-between gap-4 flex-wrap">
-              <div>
-                <h3 className="text-lg font-medium text-zinc-200">Was this analysis helpful?</h3>
-                <p className="text-sm text-zinc-400">
-                  Your feedback improves future suggestions.
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  className="gap-2"
-                  disabled={!result.feedback?.enabled || feedbackStatus.status === 'sending'}
-                  onClick={() => submitFeedback('positive')}
-                  aria-label="Submit positive feedback"
-                >
-                  <ThumbsUp className="h-4 w-4" aria-hidden="true" />
-                  Helpful
-                </Button>
-                <Button
-                  variant="outline"
-                  className="gap-2"
-                  disabled={!result.feedback?.enabled || feedbackStatus.status === 'sending'}
-                  onClick={() => submitFeedback('negative')}
-                  aria-label="Submit negative feedback"
-                >
-                  <ThumbsDown className="h-4 w-4" aria-hidden="true" />
-                  Not helpful
-                </Button>
-              </div>
-            </div>
-
-            {!result.feedback?.enabled && (
-              <p className="text-xs text-zinc-500 mt-3">
-                Feedback is disabled because the analysis was not persisted (ChromaDB not available).
-              </p>
-            )}
-
-            {feedbackStatus.status === 'sent' && feedbackStatus.message && (
-              <p className="text-xs text-green-400 mt-3" role="status" aria-live="polite">
-                {feedbackStatus.message}
-              </p>
-            )}
-            {feedbackStatus.status === 'error' && feedbackStatus.message && (
-              <p className="text-xs text-red-400 mt-3" role="alert">
-                {feedbackStatus.message}
-              </p>
-            )}
-          </div>
-
-          {/* Hypothesis */}
-          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6" role="article" aria-labelledby="hypothesis-title">
-            <h3 id="hypothesis-title" className="text-lg font-medium text-zinc-200 mb-3">Hypothesis</h3>
-            <p className="text-zinc-300 leading-relaxed">{result.hypothesis}</p>
-          </div>
-
-          {/* Reasoning Steps */}
-          {result.reasoning.length > 0 && (
-            <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6" role="article" aria-labelledby="reasoning-title">
-              <h3 id="reasoning-title" className="text-lg font-medium text-zinc-200 mb-4">
-                Reasoning Steps
-              </h3>
-              <ol className="space-y-3" aria-label="Analysis reasoning steps">
-                {result.reasoning.map((step, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <span className="shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-purple-500/20 text-purple-400 text-sm font-medium" aria-hidden="true">
-                      {i + 1}
-                    </span>
-                    <span className="text-sm text-zinc-300 leading-relaxed">
-                      {step}
-                    </span>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          )}
-
-          {/* Fix Suggestions */}
-          {result.fixes.length > 0 && (
-            <div className="space-y-4" role="region" aria-labelledby="fixes-title">
-              <h3 id="fixes-title" className="text-lg font-medium text-zinc-200">
-                Suggested Fixes
-              </h3>
-              {result.fixes.map((fix) => (
-                <FixSuggestion
-                  key={fix.id}
-                  fix={fix}
-                  onApply={applyFix}
-                />
-              ))}
-            </div>
-          )}
+          <AnalysisResult
+            result={result}
+            feedbackStatus={feedbackStatus}
+            onApplyFix={applyFix}
+            onExport={exportResult}
+            onReset={reset}
+            onSubmitFeedback={submitFeedback}
+          />
         </div>
       </div>
     );

@@ -17,26 +17,29 @@
  */
 
 import { LLMError, LLMResponse, GenerateOptions, RetryConfig } from '../types';
+import { QualityChecker } from '../utils/QualityChecker';
+import { RetryUtils } from '../utils/RetryUtils';
+import { Logger } from '../utils/Logger';
 
 export interface OllamaConfig {
   /** Base URL for Ollama API (default: http://localhost:11434) */
   baseUrl?: string;
-  
+
   /** Model to use (default: hf.co/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:latest) */
   model?: string;
-  
+
   /** Request timeout in milliseconds (default: 90000) */
   timeout?: number;
-  
+
   /** Maximum retry attempts (default: 3) */
   maxRetries?: number;
-  
+
   /** Initial retry delay in milliseconds (default: 1000) */
   initialRetryDelay?: number;
-  
+
   /** Temperature for generation (default: 0.7) */
   temperature?: number;
-  
+
   /** Maximum number of tokens to predict */
   numPredict?: number;
 }
@@ -48,6 +51,8 @@ export class OllamaClient {
   private readonly maxRetries: number;
   private readonly initialRetryDelay: number;
   private connected: boolean = false;
+  private readonly qualityChecker: QualityChecker;
+  private readonly logger = new Logger('OllamaClient');
 
   constructor(config: OllamaConfig = {}) {
     this.baseUrl = config.baseUrl || 'http://localhost:11434';
@@ -56,6 +61,7 @@ export class OllamaClient {
     this.timeout = config.timeout || 90000; // 90 seconds
     this.maxRetries = config.maxRetries || 3;
     this.initialRetryDelay = config.initialRetryDelay || 1000;
+    this.qualityChecker = new QualityChecker();
   }
 
   /**
@@ -80,7 +86,7 @@ export class OllamaClient {
 
       const data = await response.json() as { models?: Array<{ name: string }> };
       const models = data.models || [];
-      
+
       const hasModel = models.some((m: any) => m.name === this.model);
       if (!hasModel) {
         throw new LLMError(
@@ -91,12 +97,12 @@ export class OllamaClient {
       }
 
       this.connected = true;
-      console.log(`Connected to Ollama - Model: ${this.model}`);
+      this.logger.info('Connected to Ollama', { model: this.model });
     } catch (error) {
       if (error instanceof LLMError) {
         throw error;
       }
-      
+
       throw new LLMError(
         `Failed to connect to Ollama at ${this.baseUrl}: ${error instanceof Error ? error.message : 'Unknown error'}`,
         undefined,
@@ -119,7 +125,7 @@ export class OllamaClient {
     }
 
     const startTime = Date.now();
-    
+
     return await this.withRetry(async () => {
       const requestBody = {
         model: this.model,
@@ -189,7 +195,7 @@ export class OllamaClient {
   ): Promise<LLMResponse> {
     const maxAttempts = config?.maxAttempts ?? 4;
     const qualityThreshold = config?.qualityThreshold ?? 0.50; // P2: Lowered from 0.6 to accept "good enough" responses
-    
+
     // Progressive temperature strategies for each attempt
     const strategies = [
       { temp: 0.0, promptSuffix: '' },  // Attempt 1: Deterministic
@@ -203,176 +209,53 @@ export class OllamaClient {
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       const strategy = strategies[Math.min(attempt, strategies.length - 1)];
-      
-      console.log(`[SYNC] Attempt ${attempt + 1}/${maxAttempts} (temp: ${strategy.temp})...`);
-      
+
+      this.logger.info('LLM sync attempt', { attempt: attempt + 1, maxAttempts, temperature: strategy.temp });
+
       try {
         const response = await this.generate(
           prompt + strategy.promptSuffix,
           { ...options, temperature: strategy.temp }
         );
 
-        // Quick quality check before validation (P3: now includes diagnostic accuracy)
-        const quality = this.quickQualityCheck(response.text, originalError);
-        
-        console.log(`[STATS] Quality score: ${(quality.score * 100).toFixed(1)}%`);
-        
+        // Quality check using shared QualityChecker (includes diagnostic accuracy)
+        const qualityResult = this.qualityChecker.check(response.text, originalError);
+
+        this.logger.info('LLM quality score', { score: qualityResult.score });
+
         // Track best response across all attempts
-        if (!bestResponse || quality.score > bestResponse.quality) {
-          bestResponse = { response, quality: quality.score };
+        if (!bestResponse || qualityResult.score > bestResponse.quality) {
+          bestResponse = { response, quality: qualityResult.score };
         }
 
         // Early exit if quality meets threshold
-        if (quality.score >= qualityThreshold) {
-          console.log(`[OK] Quality threshold met on attempt ${attempt + 1}`);
+        if (qualityResult.score >= qualityThreshold) {
+          this.logger.info('Quality threshold met', { attempt: attempt + 1 });
           return response;
         }
 
-        console.log(`[WARN] Quality below threshold (${quality.issues.join(', ')}), retrying...`);
-        
-        // Exponential backoff between attempts
+        this.logger.warn('Quality below threshold, retrying', { issues: qualityResult.issues, attempt: attempt + 1 });
+
+        // Linear backoff between attempts (500ms * attempt)
         if (attempt < maxAttempts - 1) {
-          await new Promise(resolve => setTimeout(resolve, 500 * (attempt + 1)));
+          await RetryUtils.sleep(500 * (attempt + 1));
         }
-        
+
       } catch (error) {
         lastError = error as Error;
-        console.warn(`[X] Attempt ${attempt + 1} failed: ${lastError.message}`);
+        this.logger.warn('LLM attempt failed', { attempt: attempt + 1, message: lastError.message });
       }
     }
 
     // Return best attempt if quality is reasonable (>30%)
     if (bestResponse && bestResponse.quality > 0.3) {
-      console.log(`[WARN] Returning best attempt (quality: ${(bestResponse.quality * 100).toFixed(1)}%)`);
+      this.logger.warn('Returning best attempt', { quality: bestResponse.quality });
       return bestResponse.response;
     }
 
     // Graceful degradation - return fallback response
-    console.warn(`[WARN] All attempts failed. Returning fallback response.`);
+    this.logger.error('All LLM attempts failed, returning fallback', lastError ?? new Error('Unknown error'));
     return this.createFallbackResponse(prompt, lastError);
-  }
-
-  /**
-   * Quick quality check for JSON responses (Iteration 6 Phase 2 + P3)
-   * 
-   * Evaluates response quality based on:
-   * - rootCause length and specificity
-   * - fixGuidelines presence and quality
-   * - File path references
-   * - Line number references
-   * - Diagnostic accuracy (P3: checks if diagnosis matches error domain)
-   * 
-   * @param jsonText - JSON response text to check
-   * @param originalError - Original error context for accuracy check (P3)
-   * @returns Quality score (0-1) and list of issues
-   */
-  private quickQualityCheck(jsonText: string, originalError?: string): { score: number; issues: string[] } {
-    let score = 1.0;
-    const issues: string[] = [];
-
-    try {
-      const json = JSON.parse(jsonText);
-
-      // Check rootCause quality
-      if (!json.rootCause || json.rootCause.length < 80) {
-        score -= 0.3;
-        issues.push('rootCause too short');
-      }
-
-      // Check fixGuidelines quality
-      if (!Array.isArray(json.fixGuidelines) || json.fixGuidelines.length === 0) {
-        score -= 0.3;
-        issues.push('no fixGuidelines');
-      } else if (json.fixGuidelines.every((g: string) => g.length < 40)) {
-        score -= 0.2;
-        issues.push('fixGuidelines too vague');
-      }
-
-      // Check for file paths
-      const hasFilePaths = /\.(kt|java|xml|gradle)/.test(jsonText);
-      if (!hasFilePaths) {
-        score -= 0.15;
-        issues.push('no file paths');
-      }
-
-      // Check for line numbers
-      const hasLineNumbers = /line\s*\d+|:\d+/i.test(jsonText);
-      if (!hasLineNumbers) {
-        score -= 0.1;
-        issues.push('no line numbers');
-      }
-
-      // P3: Check diagnostic accuracy (if originalError provided)
-      if (originalError && json.rootCause) {
-        const isAccurate = this.checkDiagnosticAccuracy(json.rootCause, json.thought || '', originalError);
-        if (!isAccurate) {
-          score -= 0.25; // Major penalty for wrong diagnosis
-          issues.push('diagnosis domain mismatch');
-        }
-      }
-
-    } catch (e) {
-      score = 0;
-      issues.push('invalid JSON');
-    }
-
-    return { score: Math.max(0, score), issues };
-  }
-
-  /**
-   * Check if diagnosis matches error domain (P3)
-   * 
-   * Validates that the diagnosed cause is in the same domain as the original error.
-   * Prevents regeneration from changing cache errors to permission errors, etc.
-   * 
-   * @param rootCause - Diagnosed root cause
-   * @param thought - Agent's reasoning
-   * @param originalError - Original error message and stack
-   * @returns true if diagnosis matches error domain, false if mismatch
-   */
-  private checkDiagnosticAccuracy(
-    rootCause: string,
-    thought: string,
-    originalError: string
-  ): boolean {
-    const errorLower = originalError.toLowerCase();
-    const diagnosisLower = (rootCause + ' ' + thought).toLowerCase();
-    
-    // Identify error domain from original error
-    const errorDomains: Record<string, string[]> = {
-      'permission': ['permission', 'securityexception', 'manifest'],
-      'cache': ['cache', 'corrupted', 'gradle cache'],
-      'network': ['network', 'maven', 'download', 'repository', 'timeout'],
-      'proguard': ['proguard', 'r8', 'nosuchmethod', 'minify'],
-      'navigation': ['navigation', 'argument', 'navhost'],
-      'null-pointer': ['null', 'npe', 'nullpointer', 'lateinit']
-    };
-    
-    // Find which domain the error belongs to
-    let errorDomain: string | null = null;
-    for (const [domain, keywords] of Object.entries(errorDomains)) {
-      if (keywords.some(keyword => errorLower.includes(keyword))) {
-        errorDomain = domain;
-        break;
-      }
-    }
-    
-    // If no specific domain, accept any diagnosis (can't verify)
-    if (!errorDomain) {
-      return true;
-    }
-    
-    // Check if diagnosis mentions keywords from the error domain
-    const domainKeywords = errorDomains[errorDomain];
-    const mentionsKeyTerms = domainKeywords.some(keyword => diagnosisLower.includes(keyword));
-    
-    // Check if diagnosis mentions keywords from WRONG domains
-    const mentionsWrongDomain = Object.entries(errorDomains)
-      .filter(([domain]) => domain !== errorDomain)
-      .some(([, keywords]) => keywords.some(keyword => diagnosisLower.includes(keyword)));
-    
-    // Accurate if mentions correct terms and doesn't mention wrong domain terms
-    return mentionsKeyTerms || !mentionsWrongDomain;
   }
 
   /**
@@ -473,7 +356,7 @@ export class OllamaClient {
       return response;
     } catch (error) {
       clearTimeout(timeoutId);
-      
+
       if (error instanceof Error && error.name === 'AbortError') {
         throw new LLMError(
           `Request timed out after ${timeoutMs}ms`,
@@ -481,7 +364,7 @@ export class OllamaClient {
           true
         );
       }
-      
+
       throw error;
     }
   }
@@ -490,44 +373,27 @@ export class OllamaClient {
    * Execute operation with retry logic and exponential backoff
    */
   private async withRetry<T>(operation: () => Promise<T>): Promise<T> {
-    let lastError: Error;
-    let delay = this.initialRetryDelay;
-
-    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
-      try {
-        return await operation();
-      } catch (error) {
-        lastError = error as Error;
-
+    return RetryUtils.withExponentialBackoff(operation, {
+      maxAttempts: this.maxRetries + 1,
+      initialDelay: this.initialRetryDelay,
+      maxDelay: 10000,
+      jitter: true,
+      isRetryable: (error) => {
         // Don't retry if error is not retryable
         if (error instanceof LLMError && !error.retryable) {
-          throw error;
+          return false;
         }
-
-        // Don't retry on last attempt
-        if (attempt === this.maxRetries) {
-          throw error;
-        }
-
-        console.warn(
-          `Attempt ${attempt + 1}/${this.maxRetries + 1} failed: ${lastError.message}. Retrying in ${delay}ms...`
-        );
-
-        await this.sleep(delay);
-        
-        // Exponential backoff with jitter
-        delay = Math.min(delay * 2, 10000) + Math.random() * 100;
-      }
-    }
-
-    throw lastError!;
-  }
-
-  /**
-   * Sleep utility for retry delays
-   */
-  private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+        return true;
+      },
+      onRetry: (attempt, delay, error) => {
+        this.logger.warn('Retrying LLM operation', {
+          attempt,
+          maxAttempts: this.maxRetries + 1,
+          delayMs: Number(delay.toFixed(0)),
+          message: (error as Error).message,
+        });
+      },
+    });
   }
 
   /**

@@ -19,7 +19,7 @@
  */
 
 import { MinimalReactAgent } from '../src/agent/MinimalReactAgent';
-import { ResponseValidator } from '../src/agent/ResponseValidator';
+import { UnifiedValidator } from '../src/agent/UnifiedValidator';
 import { ParsedError } from '../src/types';
 import { OllamaClient } from '../src/llm/OllamaClient';
 
@@ -91,23 +91,21 @@ async function testMVPCaseWithEnhancedPrompts() {
     console.log(`\n[UP] Confidence: ${(result.confidence * 100).toFixed(0)}%`);
     console.log(`[TIME]  Duration: ${duration}s`);
 
-    // Validate with ResponseValidator
+    // Validate with UnifiedValidator
     console.log('\n' + '='.repeat(80));
     console.log('[LIST] SPECIFICITY VALIDATION');
     console.log('='.repeat(80));
 
-    const validator = new ResponseValidator();
-    const validationResult = validator.validateResponse({
-      thought: 'Analysis complete',
-      action: null,
-      rootCause: result.rootCause,
-      fixGuidelines: result.fixGuidelines,
-      confidence: result.confidence,
-    });
+    const validator = new UnifiedValidator({ mode: 'final', adaptiveThresholds: true });
+    const validationResult = validator.validate(result, error);
 
-    const specificityLevel = validator.getSpecificityLevel(validationResult.specificityScore);
+    // Scale score to 0-100 for display
+    const specificityScore = Math.round(validationResult.score * 100);
+    const specificityLevel = specificityScore >= 80 ? 'Excellent' : 
+                             specificityScore >= 60 ? 'Good' : 
+                             specificityScore >= 40 ? 'Fair' : 'Poor';
 
-    console.log(`\n[STATS] Specificity Score: ${validationResult.specificityScore}/100 (${specificityLevel})`);
+    console.log(`\n[STATS] Specificity Score: ${specificityScore}/100 (${specificityLevel})`);
 
     console.log('\n[OK] Strengths:');
     validationResult.strengths.forEach(s => console.log(`   ${s}`));
@@ -118,12 +116,12 @@ async function testMVPCaseWithEnhancedPrompts() {
     }
 
     console.log('\n[LIST] Breakdown:');
-    console.log(`   Exact File Path: ${validationResult.breakdown.hasExactFilePath ? '[OK]' : '[X]'} (30 pts)`);
-    console.log(`   Version Validation: ${validationResult.breakdown.hasVersionValidation ? '[OK]' : '[X]'} (25 pts)`);
-    console.log(`   Code Example: ${validationResult.breakdown.hasCodeExample ? '[OK]' : '[X]'} (20 pts)`);
-    console.log(`   Actual Names: ${validationResult.breakdown.hasActualNames ? '[OK]' : '[X]'} (10 pts)`);
-    console.log(`   Verification Steps: ${validationResult.breakdown.hasVerificationSteps ? '[OK]' : '[X]'} (10 pts)`);
-    console.log(`   Compatibility Check: ${validationResult.breakdown.hasCompatibilityCheck ? '[OK]' : '[X]'} (5 pts)`);
+    console.log(`   File Path Specificity: ${(validationResult.dimensions.filePathSpecificity * 100).toFixed(0)}%`);
+    console.log(`   Version Specificity: ${(validationResult.dimensions.versionSpecificity * 100).toFixed(0)}%`);
+    console.log(`   Code Examples: ${(validationResult.dimensions.codeExamples * 100).toFixed(0)}%`);
+    console.log(`   Variable References: ${(validationResult.dimensions.variableReferences * 100).toFixed(0)}%`);
+    console.log(`   Verification Steps: ${(validationResult.dimensions.verificationSteps * 100).toFixed(0)}%`);
+    console.log(`   Completeness: ${(validationResult.dimensions.completeness * 100).toFixed(0)}%`);
 
     // Compare with MVP baseline
     console.log('\n' + '='.repeat(80));
@@ -138,29 +136,29 @@ async function testMVPCaseWithEnhancedPrompts() {
       codeExamples: 0,
     };
 
-    const improvement = validationResult.specificityScore - baseline.specificity;
+    const improvement = specificityScore - baseline.specificity;
     const percentImprovement = ((improvement / baseline.specificity) * 100).toFixed(0);
 
     console.log(`\n[STATS] Specificity:`);
     console.log(`   Baseline: ${baseline.specificity}% (Very Poor)`);
-    console.log(`   Current: ${validationResult.specificityScore}% (${specificityLevel})`);
+    console.log(`   Current: ${specificityScore}% (${specificityLevel})`);
     console.log(`   Improvement: +${improvement} points (+${percentImprovement}%)`);
-    console.log(`   Target: 70%+ ${validationResult.specificityScore >= 70 ? '[OK] MET' : '[WARN] IN PROGRESS'}`);
+    console.log(`   Target: 70%+ ${specificityScore >= 70 ? '[OK] MET' : '[WARN] IN PROGRESS'}`);
 
     console.log(`\n[FOLDER] File Identification:`);
     console.log(`   Baseline: ${baseline.fileIdentification}%`);
-    console.log(`   Current: ${validationResult.breakdown.hasExactFilePath ? '95%+ [OK]' : '< 95% [X]'}`);
-    console.log(`   Target: 95%+ ${validationResult.breakdown.hasExactFilePath ? '[OK] MET' : '[X] NOT MET'}`);
+    console.log(`   Current: ${(validationResult.dimensions.filePathSpecificity * 100).toFixed(0)}%`);
+    console.log(`   Target: 95%+ ${validationResult.dimensions.filePathSpecificity >= 0.95 ? '[OK] MET' : '[X] NOT MET'}`);
 
     console.log(`\n🔢 Version Suggestions:`);
     console.log(`   Baseline: ${baseline.versionSuggestions}%`);
-    console.log(`   Current: ${validationResult.breakdown.hasVersionValidation ? '90%+ [OK]' : '< 90% [X]'}`);
-    console.log(`   Target: 90%+ ${validationResult.breakdown.hasVersionValidation ? '[OK] MET' : '[X] NOT MET'}`);
+    console.log(`   Current: ${(validationResult.dimensions.versionSpecificity * 100).toFixed(0)}%`);
+    console.log(`   Target: 90%+ ${validationResult.dimensions.versionSpecificity >= 0.90 ? '[OK] MET' : '[X] NOT MET'}`);
 
     console.log(`\n[CODE] Code Examples:`);
     console.log(`   Baseline: ${baseline.codeExamples}%`);
-    console.log(`   Current: ${validationResult.breakdown.hasCodeExample ? '85%+ [OK]' : '< 85% [X]'}`);
-    console.log(`   Target: 85%+ ${validationResult.breakdown.hasCodeExample ? '[OK] MET' : '[X] NOT MET'}`);
+    console.log(`   Current: ${(validationResult.dimensions.codeExamples * 100).toFixed(0)}%`);
+    console.log(`   Target: 85%+ ${validationResult.dimensions.codeExamples >= 0.85 ? '[OK] MET' : '[X] NOT MET'}`);
 
     // Final assessment
     console.log('\n' + '='.repeat(80));
@@ -168,10 +166,10 @@ async function testMVPCaseWithEnhancedPrompts() {
     console.log('='.repeat(80));
 
     const allTargetsMet =
-      validationResult.specificityScore >= 70 &&
-      validationResult.breakdown.hasExactFilePath &&
-      validationResult.breakdown.hasVersionValidation &&
-      validationResult.breakdown.hasCodeExample;
+      specificityScore >= 70 &&
+      validationResult.dimensions.filePathSpecificity >= 0.95 &&
+      validationResult.dimensions.versionSpecificity >= 0.90 &&
+      validationResult.dimensions.codeExamples >= 0.85;
 
     if (allTargetsMet) {
       console.log('\n[OK] SUCCESS! All Chunk 3 targets achieved!');
@@ -180,27 +178,20 @@ async function testMVPCaseWithEnhancedPrompts() {
       console.log('   - Ready to proceed to Chunk 4');
     } else {
       console.log('\n[WARN]  PARTIAL SUCCESS - Some targets need work');
-      if (validationResult.specificityScore < 70) {
+      if (specificityScore < 70) {
         console.log('   [X] Specificity below 70% target');
       }
-      if (!validationResult.breakdown.hasExactFilePath) {
+      if (validationResult.dimensions.filePathSpecificity < 0.95) {
         console.log('   [X] Missing exact file paths');
       }
-      if (!validationResult.breakdown.hasVersionValidation) {
+      if (validationResult.dimensions.versionSpecificity < 0.90) {
         console.log('   [X] Missing specific version numbers');
       }
-      if (!validationResult.breakdown.hasCodeExample) {
+      if (validationResult.dimensions.codeExamples < 0.85) {
         console.log('   [X] Missing code examples');
       }
       console.log('\n   Recommendations:');
-      const { suggestions } = validator.validateWithSuggestions({
-        thought: 'Analysis complete',
-        action: null,
-        rootCause: result.rootCause,
-        fixGuidelines: result.fixGuidelines,
-        confidence: result.confidence,
-      });
-      suggestions.forEach(s => console.log(`   - ${s}`));
+      validationResult.issues.forEach(issue => console.log(`   - ${issue}`));
     }
 
     console.log('\n');
