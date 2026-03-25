@@ -24,6 +24,7 @@ import { ClarificationAgent, UncertaintyDetector, QuestionGenerator } from './cl
 import { RefinementService } from './refinement/RefinementService';
 import { Logger } from '../utils/Logger';
 import { v4 as uuidv4 } from 'uuid';
+import { RCADocument } from '../db/schemas/rca-collection';
 
 const logger = new Logger('ConversationManager');
 
@@ -232,10 +233,12 @@ export class ConversationManager {
 
                 if (handler) {
                     // Get current analysis if available (for refinement)
-                    const currentAnalysis = undefined;
+                    let currentAnalysis: RootCauseAnalysis | undefined = undefined;
                     if (context.activeRcaId) {
-                        // TODO: Fetch actual analysis from analysis store
-                        // For now, handlers can work without it
+                        const rcaDocument = await this.fetchRcaContext(context.activeRcaId);
+                        if (rcaDocument) {
+                            currentAnalysis = this.convertRcaDocument(rcaDocument);
+                        }
                     }
 
                     const response = await handler.handle(
@@ -435,9 +438,12 @@ export class ConversationManager {
             }
 
             // Get current analysis if available
-            const currentAnalysis = undefined;
+            let currentAnalysis: RootCauseAnalysis | undefined = undefined;
             if (context.activeRcaId) {
-                // TODO: Fetch from analysis store
+                const rcaDocument = await this.fetchRcaContext(context.activeRcaId);
+                if (rcaDocument) {
+                    currentAnalysis = this.convertRcaDocument(rcaDocument);
+                }
             }
 
             // Handle message
@@ -643,5 +649,61 @@ export class ConversationManager {
         });
 
         return `My answers:\n${formatted.join('\n')}`;
+    }
+
+    /**
+     * Fetch RCA context from ChromaDB if available
+     * @param activeRcaId - The ID of the active RCA analysis
+     * @returns RCADocument if found, null otherwise
+     */
+    private async fetchRcaContext(activeRcaId: string): Promise<RCADocument | null> {
+        try {
+            // Dynamically import AnalysisService to avoid circular dependencies
+            const { AnalysisService } = await import('../../vscode-extension/src/services/AnalysisService');
+            const analysisService = AnalysisService.getInstance();
+            const chromaDB = analysisService.getChromaDB();
+
+            if (!chromaDB) {
+                logger.warn('[ConversationManager] ChromaDB not available - context injection skipped');
+                return null;
+            }
+
+            const rcaDocument = await chromaDB.getById(activeRcaId);
+            if (rcaDocument) {
+                logger.debug(`[ConversationManager] Loaded RCA context: ${activeRcaId}`);
+            } else {
+                logger.warn(`[ConversationManager] RCA document not found: ${activeRcaId}`);
+            }
+
+            return rcaDocument;
+        } catch (error) {
+            logger.error('[ConversationManager] Failed to fetch RCA context:', error);
+            return null;
+        }
+    }
+
+    /**
+     * Convert RCADocument to RootCauseAnalysis format
+     */
+    private convertRcaDocument(doc: RCADocument): RootCauseAnalysis {
+        return {
+            rcaId: doc.id,
+            errorLogId: doc.id, // Use same ID if no separate error log ID
+            rootCause: doc.root_cause,
+            category: doc.error_type,
+            affectedFiles: doc.file_path ? [{
+                filePath: doc.file_path,
+                lineNumbers: [],
+                reason: 'Error occurred in this file',
+                relevanceScore: 1.0
+            }] : [],
+            confidence: doc.confidence * 100, // Convert 0-1 to 0-100
+            suggestedFix: {
+                guidelines: doc.fix_guidelines
+            },
+            generatedAt: new Date(doc.created_at),
+            modelVersion: 'unknown',
+            refinementCount: 0
+        };
     }
 }
