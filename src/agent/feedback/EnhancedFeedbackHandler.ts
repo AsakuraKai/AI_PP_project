@@ -10,10 +10,8 @@
 import type {
     DetailedFeedback,
     FeedbackClassification,
-    LearningSignal,
     IFeedbackStore,
-    ILearningService,
-    FeedbackCorrections
+    ILearningService
 } from '../../types/feedback';
 import { FeedbackClassifier } from './FeedbackClassifier';
 
@@ -68,9 +66,6 @@ export class EnhancedFeedbackHandler {
             // Store in database
             await this.feedbackStore.save(feedback);
 
-            // Classify feedback
-            const classification = this.classifyFeedback(feedback);
-
             // Extract and process corrections
             if (feedback.corrections) {
                 await this.learningService.processCorrections(
@@ -107,8 +102,7 @@ export class EnhancedFeedbackHandler {
      * Classify feedback to understand its nature and impact
      */
     classifyFeedback(feedback: DetailedFeedback): FeedbackClassification {
-        const { dimensions, corrections, explanation } = feedback;
-        const negativeCount = dimensions.negativeAspects.length;
+        const { dimensions, corrections } = feedback;
 
         return {
             isConstructive: this.isConstructive(feedback),

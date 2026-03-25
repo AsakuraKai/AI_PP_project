@@ -10,9 +10,7 @@
 import type {
     DetailedFeedback,
     FeedbackAnalysis,
-    LearningSignal,
-    NegativeAspect,
-    FeedbackDimensions
+    LearningSignal
 } from '../../types/feedback';
 
 /**

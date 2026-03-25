@@ -40,7 +40,7 @@ export class RefinementHandler implements IntentHandler {
     async handle(
         message: ConversationMessage,
         context: ConversationContext,
-        classification: ClassificationResult,
+        _classification: ClassificationResult,
         conversationHistory?: ConversationMessage[],
         currentAnalysis?: RootCauseAnalysis
     ): Promise<ConversationMessage> {
