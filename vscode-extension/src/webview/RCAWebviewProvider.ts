@@ -6,6 +6,7 @@ import { StateManager } from '../services/StateManager';
 import { ErrorQueueManager } from '../services/ErrorQueueManager';
 import { NetworkTimeoutHandler } from '../services/NetworkTimeoutHandler';
 import { FeedbackService } from '../services/FeedbackService';
+import { ConversationalAgent } from '../chat/ConversationalAgent';
 
 export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'rca-agent.mainView';
@@ -18,6 +19,8 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     private readonly feedbackService: FeedbackService;
     private readonly stateManager: StateManager;
     private readonly errorQueueManager: ErrorQueueManager;
+    private readonly conversationalAgent: ConversationalAgent;
+    private conversationSessions: Map<string, string> = new Map(); // Maps session IDs to agent session IDs
 
     constructor(extensionUri: vscode.Uri, extensionContext: vscode.ExtensionContext) {
         this._extensionUri = extensionUri;
@@ -31,6 +34,9 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
         // This ensures error detection is already active before webview opens
         this.stateManager = StateManager.getInstance(extensionContext);
         this.errorQueueManager = ErrorQueueManager.getInstance(extensionContext);
+
+        // Initialize ConversationalAgent for AI-powered conversations
+        this.conversationalAgent = new ConversationalAgent(this.analysisService, extensionContext);
     }
 
     public resolveWebviewView(
@@ -311,6 +317,35 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
             // Transform backend result to webview-compatible format
             const webviewResult = this._normalizeResultForWebview(result);
             webviewResult.duration = duration;
+
+            // **FIX: Add generated fixes to the pending queue**
+            // This ensures fixes can be applied via applyFixById
+            if (webviewResult.fixes && webviewResult.fixes.length > 0) {
+                for (const fix of webviewResult.fixes) {
+                    // Convert webview fix format to FixApplicationService format
+                    // The backend CodeFix has originalCode/fixedCode which map to before/after
+                    const serviceFix = {
+                        file: fix.filePath,
+                        line: result.codeFix?.line || 0,
+                        before: result.codeFix?.originalCode || '',
+                        after: result.codeFix?.fixedCode || '',
+                        explanation: fix.description
+                    };
+
+                    // Add to pending queue with the same ID used in webview
+                    const errorContext = `${error.message} at ${error.filePath}:${error.line || 0}`;
+                    const addedFixId = this.fixApplicationService.addPendingFix(
+                        serviceFix,
+                        errorContext,
+                        fix.confidence
+                    );
+
+                    // Update the fix ID to match what was added to the queue
+                    fix.id = addedFixId;
+                }
+
+                console.log('[RCAWebviewProvider] Added', webviewResult.fixes.length, 'fixes to pending queue');
+            }
 
             this._sendMessage({
                 command: 'analysisComplete',
@@ -1567,6 +1602,8 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
     /**
      * Normalize backend RCAResult to webview-compatible format
      * Ensures all expected properties exist to avoid runtime errors
+     * Note: Fix IDs are temporary placeholders - they will be replaced with real IDs
+     * when fixes are added to the pending queue in _handleAnalyzeError
      */
     private _normalizeResultForWebview(result: import('../../../src/types').RCAResult): any {
         const rcaId = (result as any).rcaId as string | undefined;
@@ -1579,16 +1616,43 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
             console.log('[RCAWebviewProvider] Analysis persisted with rcaId:', rcaId);
         }
 
+        // [DEBUG] Log codeFix presence and content
+        console.log('[RCAWebviewProvider] Normalizing result - codeFix present:', !!result.codeFix);
+        if (result.codeFix) {
+            console.log('[RCAWebviewProvider] codeFix details:', {
+                filePath: result.codeFix.filePath,
+                line: result.codeFix.line,
+                hasExplanation: !!result.codeFix.explanation,
+                hasDiff: !!result.codeFix.diff,
+                confidence: result.codeFix.confidence
+            });
+        } else {
+            console.warn('[RCAWebviewProvider] No codeFix in result - no fixes will be shown!');
+            console.log('[RCAWebviewProvider] Result keys:', Object.keys(result));
+            console.log('[RCAWebviewProvider] Full result:', JSON.stringify(result, null, 2));
+        }
+
         return {
             ...result,
-            // Map fixGuidelines to fixes array if not already present
+            // Map codeFix to fixes array if available
+            // Note: The 'id' field will be updated after adding to pending queue
             fixes: result.codeFix ? [{
-                id: 'fix-1',
+                id: 'temp-fix-1', // Temporary ID, will be replaced
                 filePath: result.codeFix.filePath,
                 description: result.codeFix.explanation || 'Apply suggested fix',
                 diff: result.codeFix.diff || '',
                 confidence: result.confidence
-            }] : [],
+            }] : (
+                // Fallback: Convert fixGuidelines to fix suggestions if codeFix not available
+                result.fixGuidelines && result.fixGuidelines.length > 0 ?
+                    result.fixGuidelines.map((guideline, index) => ({
+                        id: `guideline-fix-${index + 1}`,
+                        filePath: 'Multiple files',
+                        description: guideline,
+                        diff: '', // No diff for text-based guidelines
+                        confidence: result.confidence
+                    })) : []
+            ),
             // Extract hypothesis from rootCause if not present
             hypothesis: result.rootCause || 'No hypothesis available',
             // Map fixGuidelines to reasoning steps if not present
@@ -1614,13 +1678,25 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
             const context = data.context;
             console.log('[Conversation] Starting conversation with context:', context);
 
-            // Phase 1: Send a simple acknowledgment
-            // TODO: In Phase 2+, initialize ConversationManager and load session
+            // Create a new session using ConversationalAgent
+            const agentSessionId = this.conversationalAgent.startNewSession({
+                relevantFiles: [],
+                currentError: context?.error ? {
+                    message: context.error.message,
+                    file: context.error.file,
+                    line: context.error.line
+                } : undefined
+            });
+
+            // Map webview session to agent session
+            const webviewSessionId = 'session-' + Date.now();
+            this.conversationSessions.set(webviewSessionId, agentSessionId);
+
             this._sendMessage({
                 type: 'conversation.session',
                 data: {
                     session: {
-                        id: 'temp-session-' + Date.now(),
+                        id: webviewSessionId,
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString(),
                         status: 'active',
@@ -1634,6 +1710,7 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
                     }
                 }
             });
+            console.log('[Conversation] Session created:', webviewSessionId, '-> Agent session:', agentSessionId);
         } catch (error) {
             console.error('[Conversation] Failed to start conversation:', error);
             this._sendMessage({
@@ -1657,22 +1734,35 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
                 data: { typing: true }
             });
 
-            // Phase 1: Simple echo response with context awareness
-            // TODO: In Phase 2+, use ConversationManager for proper response generation
+            const startTime = Date.now();
 
-            let responseContent = '';
-            if (context?.viewType === 'analyze') {
-                responseContent = `I understand you're asking about the analysis. Let me help you with that. You said: "${content}"`;
-            } else if (context?.viewType === 'errors') {
-                responseContent = `I can help you with the error queue. Regarding your question: "${content}"`;
-            } else if (context?.viewType === 'dashboard') {
-                responseContent = `Looking at the dashboard overview. About your question: "${content}"`;
+            // Get or create agent session
+            let agentSessionId = this.conversationSessions.get(sessionId);
+            if (!agentSessionId) {
+                // If no session exists, create one
+                agentSessionId = this.conversationalAgent.startNewSession({
+                    relevantFiles: [],
+                    currentError: context?.error ? {
+                        message: context.error.message,
+                        file: context.error.file,
+                        line: context.error.line
+                    } : undefined
+                });
+                this.conversationSessions.set(sessionId, agentSessionId);
+                console.log('[Conversation] Created new agent session:', agentSessionId);
             } else {
-                responseContent = `I'm here to help! You asked: "${content}"`;
+                // Resume existing session
+                this.conversationalAgent.resumeSession(agentSessionId);
+                console.log('[Conversation] Resumed agent session:', agentSessionId);
             }
 
-            // Simulate processing delay
-            await new Promise(resolve => setTimeout(resolve, 500));
+            // Generate AI-powered response using ConversationalAgent
+            const responseContent = await this.conversationalAgent.chat(content, {
+                viewType: context?.viewType,
+                errorContext: context?.error
+            });
+
+            const processingTime = Date.now() - startTime;
 
             // Send assistant response
             this._sendMessage({
@@ -1686,8 +1776,8 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
                     status: 'sent',
                     metadata: {
                         context,
-                        confidence: 0.8,
-                        processingTime: 500
+                        confidence: 0.85,
+                        processingTime
                     }
                 }
             });
@@ -1698,6 +1788,8 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
                 data: { typing: false }
             });
 
+            console.log('[Conversation] AI response generated in', processingTime, 'ms');
+
         } catch (error) {
             console.error('[Conversation] Failed to send message:', error);
             this._sendMessage({
@@ -1706,7 +1798,7 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
             });
             this._sendMessage({
                 type: 'conversation.error',
-                data: { error: 'Failed to process message' }
+                data: { error: 'Failed to process message. Please try again.' }
             });
         }
     }
@@ -1719,13 +1811,44 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
             const { sessionId } = data;
             console.log('[Conversation] Getting history for session:', sessionId);
 
-            // Phase 1: Return empty history
-            // TODO: In Phase 2+, load from ConversationStore
+            // Validate sessionId
+            if (!sessionId) {
+                console.warn('[Conversation] No sessionId provided for history request');
+                this._sendMessage({
+                    type: 'conversation.history',
+                    data: { messages: [] }
+                });
+                return;
+            }
+
+            // Get session from conversational agent
+            const session = this.conversationalAgent.getSessionById(sessionId);
+
+            if (!session) {
+                console.log('[Conversation] Session not found:', sessionId);
+                this._sendMessage({
+                    type: 'conversation.history',
+                    data: { messages: [] }
+                });
+                return;
+            }
+
+            // Convert ChatMessage[] to the format expected by frontend
+            const messages = session.messages.map(msg => ({
+                id: `${msg.timestamp}`, // Use timestamp as ID if no ID exists
+                sessionId: sessionId,
+                role: msg.role,
+                content: msg.content,
+                timestamp: new Date(msg.timestamp),
+                status: 'sent',
+                metadata: msg.metadata
+            }));
+
+            console.log(`[Conversation] Loaded ${messages.length} messages for session ${sessionId}`);
+
             this._sendMessage({
                 type: 'conversation.history',
-                data: {
-                    messages: []
-                }
+                data: { messages }
             });
         } catch (error) {
             console.error('[Conversation] Failed to get history:', error);

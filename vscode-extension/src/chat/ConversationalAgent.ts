@@ -468,6 +468,13 @@ RESPONSE STYLE:
   }
 
   /**
+   * Get a specific session by ID
+   */
+  getSessionById(sessionId: string): ConversationSession | null {
+    return this.sessions.get(sessionId) || null;
+  }
+
+  /**
    * Clear all sessions
    */
   clearAllSessions(): void {
