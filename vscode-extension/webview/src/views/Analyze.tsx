@@ -32,9 +32,11 @@ export function Analyze() {
     result,
     error,
     feedbackStatus,
+    fixApplicationStatus,
     startManualAnalysis,
     cancelAnalysis,
     applyFix,
+    rejectFix,
     exportResult,
     submitFeedback,
     reset
@@ -315,11 +317,27 @@ export function Analyze() {
   if (state === 'complete' && result) {
     return (
       <div className="p-8 space-y-6" role="main" aria-label="Analysis Results">
+        {/* Success/Error Toast */}
+        {fixApplicationStatus.type && fixApplicationStatus.message && (
+          <div
+            className={`fixed top-4 right-4 z-50 max-w-md p-4 rounded-lg border ${
+              fixApplicationStatus.type === 'success'
+                ? 'bg-green-500/10 border-green-500/30 text-green-300'
+                : 'bg-red-500/10 border-red-500/30 text-red-300'
+            }`}
+            role="status"
+            aria-live="polite"
+          >
+            <p className="text-sm">{fixApplicationStatus.message}</p>
+          </div>
+        )}
+
         <div className="flex items-center justify-between">
           <AnalysisResult
             result={result}
             feedbackStatus={feedbackStatus}
             onApplyFix={applyFix}
+            onRejectFix={rejectFix}
             onExport={exportResult}
             onReset={reset}
             onSubmitFeedback={submitFeedback}

@@ -43,6 +43,7 @@ export interface AnalysisResultProps {
     result: AnalysisResultData;
     feedbackStatus: FeedbackStatus;
     onApplyFix: (fixId: string) => void;
+    onRejectFix?: (fixId: string) => void;
     onExport: () => void;
     onReset: () => void;
     onSubmitFeedback: (type: 'positive' | 'negative') => void;
@@ -52,6 +53,7 @@ export function AnalysisResult({
     result,
     feedbackStatus,
     onApplyFix,
+    onRejectFix,
     onExport,
     onReset,
     onSubmitFeedback
@@ -200,6 +202,7 @@ export function AnalysisResult({
                                 key={fix.id}
                                 fix={fix}
                                 onApply={onApplyFix}
+                                onReject={onRejectFix}
                             />
                         ))}
                     </div>

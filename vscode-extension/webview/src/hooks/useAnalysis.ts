@@ -57,6 +57,10 @@ export function useAnalysis() {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentErrorId, setCurrentErrorId] = useState<string | null>(null);
+  const [fixApplicationStatus, setFixApplicationStatus] = useState<{
+    type: 'success' | 'error' | null;
+    message: string | null;
+  }>({ type: null, message: null });
 
   // Use shared feedback hook - use a valid FeedbackMetadata or undefined
   const { feedbackStatus, setFeedbackStatus, submitFeedback } = useFeedback(result?.feedback);
@@ -116,6 +120,39 @@ export function useAnalysis() {
         case 'feedbackError':
           setFeedbackStatus({ status: 'error', message: message.error || 'Feedback failed' });
           break;
+
+        case 'fixApplied':
+          setFixApplicationStatus({
+            type: 'success',
+            message: `Fix applied successfully to ${message.file || 'file'}`
+          });
+          // Clear success message after 5 seconds
+          setTimeout(() => {
+            setFixApplicationStatus({ type: null, message: null });
+          }, 5000);
+          break;
+
+        case 'fixApplyError':
+          setFixApplicationStatus({
+            type: 'error',
+            message: message.error || 'Failed to apply fix'
+          });
+          // Clear error message after 5 seconds
+          setTimeout(() => {
+            setFixApplicationStatus({ type: null, message: null });
+          }, 5000);
+          break;
+
+        case 'fixRejected':
+          // Remove the rejected fix from the result
+          setResult((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              fixes: prev.fixes.filter(f => f.id !== message.fixId)
+            };
+          });
+          break;
       }
     };
 
@@ -155,6 +192,10 @@ export function useAnalysis() {
     postMessage('applyFixById', { fixId });
   }, [postMessage]);
 
+  const rejectFix = useCallback((fixId: string) => {
+    postMessage('rejectFix', { fixId });
+  }, [postMessage]);
+
   const exportResult = useCallback(() => {
     if (result) {
       postMessage('exportResult', { result });
@@ -177,10 +218,12 @@ export function useAnalysis() {
     error,
     currentErrorId,
     feedbackStatus,
+    fixApplicationStatus,
     startAnalysis,
     startManualAnalysis,
     cancelAnalysis,
     applyFix,
+    rejectFix,
     exportResult,
     submitFeedback,
     reset
