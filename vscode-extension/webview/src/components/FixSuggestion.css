@@ -12,8 +12,7 @@
 }
 
 .diff-add::before {
-  content: '+';
-  margin-right: 8px;
+  content: '+ ';
   font-weight: bold;
 }
 
@@ -23,19 +22,6 @@
 }
 
 .diff-remove::before {
-  content: '-';
-  margin-right: 8px;
+  content: '- ';
   font-weight: bold;
-}
-
-/* Override Prism theme for better integration */
-pre[class*="language-"] {
-  margin: 0;
-  padding: 12px 0;
-  background: transparent;
-}
-
-code[class*="language-"] {
-  background: transparent;
-  text-shadow: none;
 }

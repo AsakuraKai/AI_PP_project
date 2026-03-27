@@ -2,19 +2,11 @@
  * FixSuggestion - Component for displaying and applying fixes
  */
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Check, ChevronDown, ChevronRight, Code, FileCode } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { cn } from '../lib/utils';
-import Prism from 'prismjs';
-import 'prismjs/themes/prism-tomorrow.css';
-import 'prismjs/components/prism-typescript';
-import 'prismjs/components/prism-javascript';
-import 'prismjs/components/prism-java';
-import 'prismjs/components/prism-kotlin';
-import 'prismjs/components/prism-python';
-import 'prismjs/components/prism-diff';
 import './FixSuggestion.css';
 
 export interface CodeFix {
@@ -35,12 +27,6 @@ export function FixSuggestion({ fix, onApply, className }: FixSuggestionProps) {
   const [expanded, setExpanded] = useState(false);
   const [applied, setApplied] = useState(false);
 
-  useEffect(() => {
-    if (expanded) {
-      Prism.highlightAll();
-    }
-  }, [expanded, fix.diff]);
-
   const handleApply = () => {
     onApply(fix.id);
     setApplied(true);
@@ -51,32 +37,23 @@ export function FixSuggestion({ fix, onApply, className }: FixSuggestionProps) {
       fix.confidence >= 0.6 ? 'text-amber-400' :
         'text-red-400';
 
-  const getLanguageFromPath = (filePath: string): string => {
-    const ext = filePath.split('.').pop()?.toLowerCase();
-    const langMap: Record<string, string> = {
-      'ts': 'typescript',
-      'tsx': 'typescript',
-      'js': 'javascript',
-      'jsx': 'javascript',
-      'kt': 'kotlin',
-      'java': 'java',
-      'py': 'python',
-    };
-    return langMap[ext || ''] || 'typescript';
-  };
-
   const renderDiff = () => {
     const lines = fix.diff.split('\n');
     return lines.map((line, idx) => {
       let className = 'diff-line';
+      let content = line;
+
       if (line.startsWith('+')) {
         className += ' diff-add';
+        content = line.substring(1); // Strip leading +
       } else if (line.startsWith('-')) {
         className += ' diff-remove';
+        content = line.substring(1); // Strip leading -
       }
+
       return (
-        <div key={idx} className={className}>
-          {line}
+        <div key={idx} className={className} role="row">
+          {content}
         </div>
       );
     });
