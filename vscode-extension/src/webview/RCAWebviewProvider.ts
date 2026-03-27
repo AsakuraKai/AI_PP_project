@@ -1913,6 +1913,49 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
                 return;
             }
 
+            // Backend validation: Check message structure
+            const isValid = data.messages.every((msg: any) => {
+                return (
+                    msg &&
+                    typeof msg.id === 'string' &&
+                    typeof msg.sessionId === 'string' &&
+                    ['user', 'assistant', 'system'].includes(msg.role) &&
+                    typeof msg.content === 'string' &&
+                    typeof msg.timestamp === 'string'
+                );
+            });
+
+            if (!isValid) {
+                console.warn('[RCAWebviewProvider] Chat history contains invalid messages, skipping save');
+                return;
+            }
+
+            // Validate session structure if present
+            if (data.session) {
+                const session = data.session;
+                const sessionValid = (
+                    session &&
+                    typeof session.id === 'string' &&
+                    typeof session.createdAt === 'string' &&
+                    typeof session.updatedAt === 'string' &&
+                    ['active', 'paused', 'completed'].includes(session.status) &&
+                    session.metadata &&
+                    typeof session.metadata.messageCount === 'number'
+                );
+
+                if (!sessionValid) {
+                    console.warn('[RCAWebviewProvider] Invalid session structure, skipping save');
+                    return;
+                }
+            }
+
+            // Limit to last 100 messages to prevent unbounded growth
+            const MAX_MESSAGES = 100;
+            if (data.messages.length > MAX_MESSAGES) {
+                data.messages = data.messages.slice(-MAX_MESSAGES);
+                console.log('[RCAWebviewProvider] Trimmed chat history to last', MAX_MESSAGES, 'messages');
+            }
+
             // Save to workspace state
             await this._extensionContext.workspaceState.update('rca-chat-history', data);
             console.log('[RCAWebviewProvider] Saved', data.messages.length, 'messages to workspace state');

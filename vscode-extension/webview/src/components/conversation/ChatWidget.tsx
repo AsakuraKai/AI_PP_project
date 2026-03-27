@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ConversationContext } from '../../types/conversation';
 import { ConversationView } from './ConversationView';
 import { ContextIndicator } from './ContextIndicator';
-import { useConversationContext } from '../../contexts/ConversationContext';
+import { useConversationContext, HYDRATION_INDICATOR_DURATION_MS } from '../../contexts/ConversationContext';
 
 interface ChatWidgetProps {
     context: ConversationContext;
@@ -34,10 +34,10 @@ export function ChatWidget({ context }: ChatWidgetProps) {
     useEffect(() => {
         if (isHydrated && messages.length > 0) {
             setShowHydrationIndicator(true);
-            // Hide after 3 seconds
+            // Hide after configured duration
             const timer = setTimeout(() => {
                 setShowHydrationIndicator(false);
-            }, 3000);
+            }, HYDRATION_INDICATOR_DURATION_MS);
             return () => clearTimeout(timer);
         }
     }, [isHydrated, messages.length]);
