@@ -31,7 +31,7 @@ export type DiffFormat = 'markdown' | 'unified' | 'side-by-side';
 /**
  * Diff line type
  */
-type LineType = 'added' | 'removed' | 'unchanged' | 'modified';
+type LineType = 'added' | 'removed' | 'unchanged';
 
 /**
  * Diff line with metadata
@@ -71,7 +71,7 @@ export class DiffFormatter {
       case 'side-by-side':
         return this.formatSideBySide(original, fixed, filePath);
       default:
-        throw new Error(`Unknown diff format: ${format}`);
+        throw new Error(`Unknown diff format: ${format}. Valid formats are: 'markdown', 'unified', 'side-by-side'`);
     }
   }
 
@@ -211,7 +211,7 @@ ${fixed}
    * @param b - Fixed lines
    * @returns Edit script
    */
-  private myersDiff(a: string[], b: string[]): Array<{type: 'add' | 'remove' | 'keep', line: string, aIndex?: number, bIndex?: number}> {
+  private myersDiff(a: string[], b: string[]): Array<{type: 'add' | 'remove' | 'keep', line: string}> {
     const n = a.length;
     const m = b.length;
     const max = n + m;
@@ -257,7 +257,7 @@ ${fixed}
     }
 
     // Fallback: shouldn't reach here
-    return [];
+    throw new Error('Myers diff algorithm failed to find a solution');
   }
 
   /**
@@ -274,11 +274,11 @@ ${fixed}
     b: string[],
     trace: Array<Map<number, number>>,
     d: number
-  ): Array<{type: 'add' | 'remove' | 'keep', line: string, aIndex?: number, bIndex?: number}> {
+  ): Array<{type: 'add' | 'remove' | 'keep', line: string}> {
     let x = a.length;
     let y = b.length;
 
-    const script: Array<{type: 'add' | 'remove' | 'keep', line: string, aIndex?: number, bIndex?: number}> = [];
+    const script: Array<{type: 'add' | 'remove' | 'keep', line: string}> = [];
 
     for (let depth = d; depth >= 0; depth--) {
       const v = trace[depth];
@@ -300,9 +300,7 @@ ${fixed}
       while (x > prevX && y > prevY) {
         script.unshift({
           type: 'keep',
-          line: a[x - 1],
-          aIndex: x - 1,
-          bIndex: y - 1
+          line: a[x - 1]
         });
         x--;
         y--;
@@ -315,16 +313,14 @@ ${fixed}
         // Insertion
         script.unshift({
           type: 'add',
-          line: b[y - 1],
-          bIndex: y - 1
+          line: b[y - 1]
         });
         y--;
       } else {
         // Deletion
         script.unshift({
           type: 'remove',
-          line: a[x - 1],
-          aIndex: x - 1
+          line: a[x - 1]
         });
         x--;
       }
@@ -340,7 +336,7 @@ ${fixed}
    * @returns Array of diff lines
    */
   private convertEditScriptToDiffLines(
-    script: Array<{type: 'add' | 'remove' | 'keep', line: string, aIndex?: number, bIndex?: number}>
+    script: Array<{type: 'add' | 'remove' | 'keep', line: string}>
   ): DiffLine[] {
     const diffLines: DiffLine[] = [];
     let originalLineNum = 1;
@@ -385,54 +381,50 @@ ${fixed}
 
   /**
    * Group diff lines into hunks (sections with changes)
-   * 
+   *
    * @param diffLines - All diff lines
    * @returns Array of hunks
    */
   private groupIntoHunks(diffLines: DiffLine[]): DiffLine[][] {
     const hunks: DiffLine[][] = [];
     let currentHunk: DiffLine[] = [];
-    let contextCount = 0;
+    let unchangedCount = 0;
     const CONTEXT_LINES = 3; // Lines of context around changes
-    
+
     for (let i = 0; i < diffLines.length; i++) {
       const line = diffLines[i];
-      
+
       if (line.type === 'unchanged') {
-        contextCount++;
-        
-        // If we've seen enough context and have a current hunk, end it
-        if (contextCount > CONTEXT_LINES * 2 && currentHunk.length > 0) {
-          // Add trailing context
-          currentHunk.push(...diffLines.slice(
-            Math.max(0, i - CONTEXT_LINES),
-            i
-          ));
-          hunks.push(currentHunk);
-          currentHunk = [];
-          contextCount = 0;
-        } else if (currentHunk.length > 0) {
+        if (currentHunk.length > 0) {
           currentHunk.push(line);
+          unchangedCount++;
+
+          // If we've seen enough unchanged lines, end the hunk
+          if (unchangedCount > CONTEXT_LINES * 2) {
+            // Remove excess trailing context
+            currentHunk.splice(currentHunk.length - unchangedCount + CONTEXT_LINES);
+            hunks.push(currentHunk);
+            currentHunk = [];
+            unchangedCount = 0;
+          }
         }
       } else {
         // Changed line
         if (currentHunk.length === 0) {
           // Start new hunk with leading context
-          currentHunk.push(...diffLines.slice(
-            Math.max(0, i - CONTEXT_LINES),
-            i
-          ));
+          const contextStart = Math.max(0, i - CONTEXT_LINES);
+          currentHunk.push(...diffLines.slice(contextStart, i));
         }
         currentHunk.push(line);
-        contextCount = 0;
+        unchangedCount = 0;
       }
     }
-    
+
     // Add final hunk if exists
     if (currentHunk.length > 0) {
       hunks.push(currentHunk);
     }
-    
+
     return hunks;
   }
 
@@ -500,7 +492,7 @@ ${fixed}
 
   /**
    * Get diff statistics (lines added/removed)
-   * 
+   *
    * @param original - Original code
    * @param fixed - Fixed code
    * @returns Statistics object
@@ -508,27 +500,25 @@ ${fixed}
   getStatistics(original: string, fixed: string): {
     linesAdded: number;
     linesRemoved: number;
-    linesModified: number;
     linesUnchanged: number;
   } {
     const diffLines = this.computeDiff(original, fixed);
-    
+
     return {
       linesAdded: diffLines.filter(l => l.type === 'added').length,
       linesRemoved: diffLines.filter(l => l.type === 'removed').length,
-      linesModified: diffLines.filter(l => l.type === 'modified').length,
       linesUnchanged: diffLines.filter(l => l.type === 'unchanged').length,
     };
   }
 
   /**
    * Check if two code blocks are identical
-   * 
+   *
    * @param original - Original code
    * @param fixed - Fixed code
    * @returns True if identical
    */
   isIdentical(original: string, fixed: string): boolean {
-    return original.trim() === fixed.trim();
+    return this.normalizeWhitespace(original) === this.normalizeWhitespace(fixed);
   }
 }
