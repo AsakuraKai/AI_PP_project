@@ -88,9 +88,15 @@ export interface MinimalityMetrics {
   /** Ratio of changed to total lines (0-1) */
   changeRatio: number;
 
-  /** Whether the fix is minimal (< 30% unchanged lines) */
+  /** Whether the fix is minimal (context ratio < 30%) */
   isMinimal: boolean;
 }
+
+// Minimality thresholds
+const MINIMALITY_CONTEXT_THRESHOLD = 0.3; // 30% context lines threshold
+const MINIMALITY_CONTEXT_PENALTY_PER_LINE = 1; // Penalty per context line
+const MINIMALITY_MAX_CONTEXT_PENALTY = 20; // Maximum context penalty
+const MINIMALITY_BONUS = 10; // Bonus for minimal fixes
 
 /**
  * Fix for related files (e.g., Gradle + Kotlin)
@@ -1079,12 +1085,13 @@ Keep it clear and actionable. Output only the explanation text, no markdown form
       .join('\n');
 
     // Calculate metrics
+    const contextRatio = (minimalIndices.length - totalChangedLines) / minimalIndices.length;
     const metrics: MinimalityMetrics = {
       totalLines: minimalIndices.length,
       changedLines: totalChangedLines,
       contextLines: minimalIndices.length - totalChangedLines,
       changeRatio: totalChangedLines / minimalIndices.length,
-      isMinimal: (minimalIndices.length - totalChangedLines) / minimalIndices.length < 0.5,
+      isMinimal: contextRatio < MINIMALITY_CONTEXT_THRESHOLD,
     };
 
     return {
@@ -1193,11 +1200,14 @@ Keep it clear and actionable. Output only the explanation text, no markdown form
     // Higher ratio = higher score
     const ratioScore = metrics.changeRatio * 100;
 
-    // Penalty for too many context lines
-    const contextPenalty = Math.min(20, metrics.contextLines * 2);
+    // Penalty for context lines (1 point per line, max 20)
+    const contextPenalty = Math.min(
+      MINIMALITY_MAX_CONTEXT_PENALTY,
+      metrics.contextLines * MINIMALITY_CONTEXT_PENALTY_PER_LINE
+    );
 
     // Bonus if marked as minimal
-    const minimalBonus = metrics.isMinimal ? 10 : 0;
+    const minimalBonus = metrics.isMinimal ? MINIMALITY_BONUS : 0;
 
     return Math.max(0, Math.min(100, ratioScore - contextPenalty + minimalBonus));
   }

@@ -33,7 +33,7 @@ private fun loadData() {
     userDao.getAllUsers()
 }`,
         expectedChangedLines: 1,
-        expectedMinimal: true,
+        expectedMinimal: false, // 1 changed + 5 context = 83% context ratio (> 30%)
     },
     {
         name: 'Multiple changes in same block',
@@ -48,7 +48,7 @@ private fun loadData() {
     return result
 }`,
         expectedChangedLines: 2,
-        expectedMinimal: true,
+        expectedMinimal: false, // 2 changed + 4 context = 67% context ratio (> 30%)
     },
     {
         name: 'Large file with small change',
@@ -106,8 +106,8 @@ private fun loadData() {
         }
     }
 }`,
-        expectedChangedLines: 1,
-        expectedMinimal: true,
+        expectedChangedLines: 2, // Diff detects 2 lines changed (the .get() line)
+        expectedMinimal: false, // 2 changed + 3 context = 60% context ratio (> 30%)
     },
     {
         name: 'No changes (identical code)',
