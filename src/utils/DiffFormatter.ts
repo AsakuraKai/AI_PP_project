@@ -173,8 +173,8 @@ ${fixed}
   }
 
   /**
-   * Compute line-by-line diff
-   * 
+   * Compute line-by-line diff using Myers algorithm
+   *
    * @param original - Original code
    * @param fixed - Fixed code
    * @returns Array of diff lines
@@ -182,62 +182,190 @@ ${fixed}
   private computeDiff(original: string, fixed: string): DiffLine[] {
     const originalLines = original.split('\n');
     const fixedLines = fixed.split('\n');
-    const diffLines: DiffLine[] = [];
-    
-    // Simple line-by-line comparison
-    // TODO: Implement proper Myers diff algorithm for better results
-    const maxLines = Math.max(originalLines.length, fixedLines.length);
-    
-    for (let i = 0; i < maxLines; i++) {
-      const origLine = i < originalLines.length ? originalLines[i] : null;
-      const fixLine = i < fixedLines.length ? fixedLines[i] : null;
-      
-      if (origLine === fixLine) {
-        // Unchanged line
-        diffLines.push({
-          type: 'unchanged',
-          originalLine: origLine,
-          fixedLine: fixLine,
-          originalLineNum: i + 1,
-          fixedLineNum: i + 1,
-        });
-      } else if (origLine === null) {
-        // Added line
-        diffLines.push({
-          type: 'added',
-          originalLine: null,
-          fixedLine: fixLine,
-          originalLineNum: null,
-          fixedLineNum: i + 1,
-        });
-      } else if (fixLine === null) {
-        // Removed line
-        diffLines.push({
-          type: 'removed',
-          originalLine: origLine,
-          fixedLine: null,
-          originalLineNum: i + 1,
-          fixedLineNum: null,
-        });
-      } else {
-        // Modified line (treat as remove + add)
-        diffLines.push({
-          type: 'removed',
-          originalLine: origLine,
-          fixedLine: null,
-          originalLineNum: i + 1,
-          fixedLineNum: null,
-        });
-        diffLines.push({
-          type: 'added',
-          originalLine: null,
-          fixedLine: fixLine,
-          originalLineNum: null,
-          fixedLineNum: i + 1,
-        });
+
+    // Use Myers diff algorithm for better results
+    const editScript = this.myersDiff(originalLines, fixedLines);
+
+    return this.convertEditScriptToDiffLines(editScript);
+  }
+
+  /**
+   * Myers diff algorithm implementation
+   * Computes the shortest edit script (SES) between two sequences
+   *
+   * @param a - Original lines
+   * @param b - Fixed lines
+   * @returns Edit script
+   */
+  private myersDiff(a: string[], b: string[]): Array<{type: 'add' | 'remove' | 'keep', line: string, aIndex?: number, bIndex?: number}> {
+    const n = a.length;
+    const m = b.length;
+    const max = n + m;
+
+    // V array stores the furthest reaching path for each diagonal
+    const v: Map<number, number> = new Map();
+    v.set(1, 0);
+
+    // Trace stores the path history
+    const trace: Array<Map<number, number>> = [];
+
+    // Find the shortest edit script
+    for (let d = 0; d <= max; d++) {
+      trace.push(new Map(v));
+
+      for (let k = -d; k <= d; k += 2) {
+        let x: number;
+
+        // Determine if we should move down or right
+        const goDown = k === -d || (k !== d && (v.get(k - 1) || 0) < (v.get(k + 1) || 0));
+
+        if (goDown) {
+          x = v.get(k + 1) || 0;
+        } else {
+          x = (v.get(k - 1) || 0) + 1;
+        }
+
+        let y = x - k;
+
+        // Follow diagonal (matching lines)
+        while (x < n && y < m && a[x] === b[y]) {
+          x++;
+          y++;
+        }
+
+        v.set(k, x);
+
+        // Check if we've reached the end
+        if (x >= n && y >= m) {
+          return this.backtrackMyersDiff(a, b, trace, d);
+        }
       }
     }
-    
+
+    // Fallback: shouldn't reach here
+    return [];
+  }
+
+  /**
+   * Backtrack through Myers diff trace to build edit script
+   *
+   * @param a - Original lines
+   * @param b - Fixed lines
+   * @param trace - Trace history
+   * @param d - Final distance
+   * @returns Edit script
+   */
+  private backtrackMyersDiff(
+    a: string[],
+    b: string[],
+    trace: Array<Map<number, number>>,
+    d: number
+  ): Array<{type: 'add' | 'remove' | 'keep', line: string, aIndex?: number, bIndex?: number}> {
+    let x = a.length;
+    let y = b.length;
+
+    const script: Array<{type: 'add' | 'remove' | 'keep', line: string, aIndex?: number, bIndex?: number}> = [];
+
+    for (let depth = d; depth >= 0; depth--) {
+      const v = trace[depth];
+      const k = x - y;
+
+      let prevK: number;
+      const goDown = k === -depth || (k !== depth && (v.get(k - 1) || 0) < (v.get(k + 1) || 0));
+
+      if (goDown) {
+        prevK = k + 1;
+      } else {
+        prevK = k - 1;
+      }
+
+      const prevX = v.get(prevK) || 0;
+      const prevY = prevX - prevK;
+
+      // Add diagonal moves (matches)
+      while (x > prevX && y > prevY) {
+        script.unshift({
+          type: 'keep',
+          line: a[x - 1],
+          aIndex: x - 1,
+          bIndex: y - 1
+        });
+        x--;
+        y--;
+      }
+
+      if (depth === 0) break;
+
+      // Add the edit operation
+      if (x === prevX) {
+        // Insertion
+        script.unshift({
+          type: 'add',
+          line: b[y - 1],
+          bIndex: y - 1
+        });
+        y--;
+      } else {
+        // Deletion
+        script.unshift({
+          type: 'remove',
+          line: a[x - 1],
+          aIndex: x - 1
+        });
+        x--;
+      }
+    }
+
+    return script;
+  }
+
+  /**
+   * Convert edit script to DiffLine format
+   *
+   * @param script - Edit script from Myers diff
+   * @returns Array of diff lines
+   */
+  private convertEditScriptToDiffLines(
+    script: Array<{type: 'add' | 'remove' | 'keep', line: string, aIndex?: number, bIndex?: number}>
+  ): DiffLine[] {
+    const diffLines: DiffLine[] = [];
+    let originalLineNum = 1;
+    let fixedLineNum = 1;
+
+    for (const edit of script) {
+      switch (edit.type) {
+        case 'keep':
+          diffLines.push({
+            type: 'unchanged',
+            originalLine: edit.line,
+            fixedLine: edit.line,
+            originalLineNum: originalLineNum++,
+            fixedLineNum: fixedLineNum++
+          });
+          break;
+
+        case 'remove':
+          diffLines.push({
+            type: 'removed',
+            originalLine: edit.line,
+            fixedLine: null,
+            originalLineNum: originalLineNum++,
+            fixedLineNum: null
+          });
+          break;
+
+        case 'add':
+          diffLines.push({
+            type: 'added',
+            originalLine: null,
+            fixedLine: edit.line,
+            originalLineNum: null,
+            fixedLineNum: fixedLineNum++
+          });
+          break;
+      }
+    }
+
     return diffLines;
   }
 
