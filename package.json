@@ -17,6 +17,7 @@
     "test:phase4:optionc": "ts-node tests/real-world/run-option-c-tests.ts",
     "test:case": "ts-node scripts/run-all-tests.ts --tests",
     "test:diff": "ts-node scripts/test-diff-algorithm.ts",
+    "validate:dataset": "ts-node scripts/test-dataset-validation.ts",
     "populate:chromadb": "ts-node scripts/populate-chromadb.ts",
     "perf-test": "ts-node scripts/run-performance-tests.ts",
     "perf-test:quick": "ts-node scripts/run-performance-tests.ts -- --complexity simple",
