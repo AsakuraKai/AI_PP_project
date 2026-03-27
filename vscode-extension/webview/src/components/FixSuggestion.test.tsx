@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { FixSuggestion, CodeFix } from './FixSuggestion';
 
@@ -48,24 +48,43 @@ describe('FixSuggestion', () => {
     expect(screen.getByText(/Automatic code diff not available/i)).toBeInTheDocument();
   });
 
-  it('calls onApply when Apply button is clicked', () => {
+  it('calls onApply when Accept button is clicked', () => {
     render(<FixSuggestion fix={mockFix} onApply={mockOnApply} />);
 
-    const applyButton = screen.getByRole('button', { name: /apply/i });
-    fireEvent.click(applyButton);
+    const acceptButton = screen.getByRole('button', { name: /accept/i });
+    fireEvent.click(acceptButton);
+
+    // Should show confirmation dialog
+    expect(screen.getByText('Apply Fix?')).toBeInTheDocument();
+
+    // Confirm the application
+    const confirmButton = screen.getByRole('button', { name: /apply fix/i });
+    fireEvent.click(confirmButton);
 
     expect(mockOnApply).toHaveBeenCalledWith('test-fix-1');
     expect(mockOnApply).toHaveBeenCalledTimes(1);
   });
 
-  it('shows Applied badge after applying fix', () => {
+  it('shows Applied badge after backend confirms fix application', () => {
     render(<FixSuggestion fix={mockFix} onApply={mockOnApply} />);
 
-    const applyButton = screen.getByRole('button', { name: /apply/i });
-    fireEvent.click(applyButton);
+    const acceptButton = screen.getByRole('button', { name: /accept/i });
+    fireEvent.click(acceptButton);
+
+    // Confirm the application
+    const confirmButton = screen.getByRole('button', { name: /apply fix/i });
+    fireEvent.click(confirmButton);
+
+    // Simulate backend confirmation
+    act(() => {
+      const event = new MessageEvent('message', {
+        data: { command: 'fixApplied', fixId: 'test-fix-1' }
+      });
+      window.dispatchEvent(event);
+    });
 
     expect(screen.getByText('Applied')).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /apply/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /accept/i })).not.toBeInTheDocument();
   });
 
   it('toggles expand/collapse state', () => {

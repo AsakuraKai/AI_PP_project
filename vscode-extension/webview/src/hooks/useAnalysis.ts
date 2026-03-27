@@ -127,10 +127,10 @@ export function useAnalysis() {
             message: `Fix applied successfully to ${message.file || 'file'}`
           });
           // Clear success message after 5 seconds
-          setTimeout(() => {
+          const successTimeoutId = setTimeout(() => {
             setFixApplicationStatus({ type: null, message: null });
           }, 5000);
-          break;
+          return () => clearTimeout(successTimeoutId);
 
         case 'fixApplyError':
           setFixApplicationStatus({
@@ -138,10 +138,10 @@ export function useAnalysis() {
             message: message.error || 'Failed to apply fix'
           });
           // Clear error message after 5 seconds
-          setTimeout(() => {
+          const errorTimeoutId = setTimeout(() => {
             setFixApplicationStatus({ type: null, message: null });
           }, 5000);
-          break;
+          return () => clearTimeout(errorTimeoutId);
 
         case 'fixRejected':
           // Remove the rejected fix from the result
@@ -158,7 +158,7 @@ export function useAnalysis() {
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, []);
+  }, [setFeedbackStatus]);
 
   const startAnalysis = useCallback((errorId: string, settings?: any) => {
     postMessage('startAnalysis', { errorId, settings });

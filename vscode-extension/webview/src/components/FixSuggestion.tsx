@@ -2,7 +2,7 @@
  * FixSuggestion - Component for displaying and applying fixes
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Check, ChevronDown, ChevronRight, Code, FileCode, X } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -30,22 +30,33 @@ export function FixSuggestion({ fix, onApply, onReject, className }: FixSuggesti
   const [rejected, setRejected] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
+  const [isRejecting, setIsRejecting] = useState(false);
+
+  // Listen for backend confirmation of fix application
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      const message = event.data;
+
+      if (message.command === 'fixApplied' && message.fixId === fix.id) {
+        setApplied(true);
+        setIsApplying(false);
+      } else if (message.command === 'fixApplyError' && message.fixId === fix.id) {
+        setIsApplying(false);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [fix.id]);
 
   const handleApplyClick = () => {
     setShowConfirmDialog(true);
   };
 
-  const handleConfirmApply = async () => {
+  const handleConfirmApply = () => {
     setShowConfirmDialog(false);
     setIsApplying(true);
-    try {
-      await onApply(fix.id);
-      setApplied(true);
-    } catch (error) {
-      console.error('Failed to apply fix:', error);
-    } finally {
-      setIsApplying(false);
-    }
+    onApply(fix.id);
   };
 
   const handleCancelApply = () => {
@@ -54,6 +65,7 @@ export function FixSuggestion({ fix, onApply, onReject, className }: FixSuggesti
 
   const handleReject = () => {
     if (onReject) {
+      setIsRejecting(true);
       onReject(fix.id);
       setRejected(true);
     }
@@ -151,10 +163,10 @@ export function FixSuggestion({ fix, onApply, onReject, className }: FixSuggesti
                   size="sm"
                   onClick={handleReject}
                   className="gap-2 text-zinc-400 hover:text-red-400"
-                  disabled={isApplying}
+                  disabled={isApplying || isRejecting}
                 >
                   <X className="h-3 w-3" />
-                  Reject
+                  {isRejecting ? 'Rejecting...' : 'Reject'}
                 </Button>
                 <Button
                   size="sm"
