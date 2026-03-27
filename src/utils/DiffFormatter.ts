@@ -190,6 +190,20 @@ ${fixed}
   }
 
   /**
+   * Normalize whitespace for comparison
+   * Handles leading/trailing whitespace and collapses multiple spaces
+   *
+   * @param line - Line to normalize
+   * @returns Normalized line
+   */
+  private normalizeWhitespace(line: string): string {
+    return line
+      .trim()
+      .replace(/\t/g, '  ') // Convert tabs to 2 spaces
+      .replace(/\s+/g, ' '); // Collapse multiple spaces to single space
+  }
+
+  /**
    * Myers diff algorithm implementation
    * Computes the shortest edit script (SES) between two sequences
    *
@@ -227,8 +241,8 @@ ${fixed}
 
         let y = x - k;
 
-        // Follow diagonal (matching lines)
-        while (x < n && y < m && a[x] === b[y]) {
+        // Follow diagonal (matching lines) with whitespace normalization
+        while (x < n && y < m && this.normalizeWhitespace(a[x]) === this.normalizeWhitespace(b[y])) {
           x++;
           y++;
         }

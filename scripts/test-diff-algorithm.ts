@@ -95,6 +95,41 @@ testDiff(
   "new code\nnew line 2"
 );
 
+// Test Case 8: Whitespace - Leading/trailing spaces
+testDiff(
+  'Whitespace - Leading/Trailing',
+  "function test() {\n  console.log('hello');\n}",
+  "function test() {\n    console.log('hello');  \n}"
+);
+
+// Test Case 9: Whitespace - Tab vs spaces
+testDiff(
+  'Whitespace - Tabs vs Spaces',
+  "if (x) {\n\tdoSomething();\n}",
+  "if (x) {\n  doSomething();\n}"
+);
+
+// Test Case 10: Whitespace - Multiple spaces collapsed
+testDiff(
+  'Whitespace - Multiple Spaces',
+  "const x    =    5;",
+  "const x = 5;"
+);
+
+// Test Case 11: Whitespace - Mixed with real changes
+testDiff(
+  'Whitespace - Mixed with Real Changes',
+  "function test() {\n  const x = 1;\n  return x;\n}",
+  "function test() {\n    const y = 2;  \n  return y;\n}"
+);
+
+// Test Case 12: Whitespace - Only whitespace differences
+testDiff(
+  'Whitespace - Only Whitespace Differences',
+  "line1\n  line2\nline3",
+  "line1\n    line2  \nline3"
+);
+
 console.log('\n' + '='.repeat(60));
 console.log('All tests completed!');
 console.log('='.repeat(60));
