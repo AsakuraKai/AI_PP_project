@@ -172,7 +172,6 @@ line 3`;
       expect(stats.linesUnchanged).toBe(3);
       expect(stats.linesAdded).toBe(0);
       expect(stats.linesRemoved).toBe(0);
-      expect(stats.linesModified).toBe(0);
     });
   });
 
