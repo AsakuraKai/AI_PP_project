@@ -30,7 +30,7 @@
 
 import { OllamaClient } from '../llm/OllamaClient';
 import { ReadFileTool } from '../tools/ReadFileTool';
-import { ParsedError } from '../types';
+import { ParsedError, RootCauseAnalysis } from '../types';
 import { DiffFormatter, DiffFormat } from '../utils/DiffFormatter';
 import { FileResolver } from '../utils/FileResolver';
 
@@ -144,6 +144,7 @@ interface FixGenerationRequest {
   originalCode: string;
   analysis?: string;
   fileContext?: string;
+  rca?: RootCauseAnalysis;
 }
 
 /**
@@ -172,18 +173,20 @@ export class FixGenerator {
 
   /**
    * Generate a code fix for the given error
-   * 
+   *
    * @param error - Parsed error information
    * @param rootCause - Identified root cause
    * @param analysis - Optional: detailed analysis text
    * @param options - Fix generation options
+   * @param rca - Optional: Full root cause analysis for enhanced context
    * @returns CodeFix object with diff
    */
   async generateFix(
     error: ParsedError,
     rootCause: string,
     analysis?: string,
-    options?: FixGenerationOptions
+    options?: FixGenerationOptions,
+    rca?: RootCauseAnalysis
   ): Promise<CodeFix | null> {
     const opts = this.mergeOptions(options);
 
@@ -218,6 +221,7 @@ export class FixGenerator {
         rootCause,
         originalCode,
         analysis,
+        rca,
       });
 
       if (!fixedCode) {
@@ -439,11 +443,17 @@ export class FixGenerator {
 
   /**
    * Build prompt for fix generation
-   * 
+   *
    * @param request - Fix generation request
    * @returns LLM prompt
    */
   private buildFixPrompt(request: FixGenerationRequest): string {
+    // Build RCA section if available
+    let rcaSection = '';
+    if (request.rca) {
+      rcaSection = this.buildRCASection(request.rca);
+    }
+
     return `You are an expert code repair assistant. Generate ONLY the corrected code that fixes the error.
 
 **CRITICAL INSTRUCTIONS:**
@@ -459,6 +469,8 @@ Message: ${request.error.message}
 Root Cause: ${request.rootCause}
 File: ${request.error.filePath}:${request.error.line}
 Language: ${request.error.language}
+
+${rcaSection}
 
 **ORIGINAL CODE (CONTAINS ERROR):**
 \`\`\`${request.error.language}
@@ -484,6 +496,41 @@ Option 2 - Raw code:
 - Partial code or placeholders
 
 **NOW OUTPUT THE COMPLETE FIXED CODE:`;
+  }
+
+  /**
+   * Build RCA section for prompt
+   *
+   * @param rca - Root cause analysis
+   * @returns Formatted RCA section
+   */
+  private buildRCASection(rca: RootCauseAnalysis): string {
+    const sections: string[] = [];
+
+    sections.push('**ROOT CAUSE ANALYSIS:**');
+    sections.push(`Category: ${rca.category}`);
+    sections.push(`Confidence: ${rca.confidence}%`);
+    sections.push(`Root Cause: ${rca.rootCause}`);
+
+    // Add affected files if available
+    if (rca.affectedFiles && rca.affectedFiles.length > 0) {
+      sections.push('\nAffected Files:');
+      rca.affectedFiles.forEach(file => {
+        sections.push(`- ${file.filePath} (lines: ${file.lineNumbers.join(', ')})`);
+        sections.push(`  Reason: ${file.reason}`);
+        sections.push(`  Relevance: ${(file.relevanceScore * 100).toFixed(0)}%`);
+      });
+    }
+
+    // Add suggested fix if available
+    if (rca.suggestedFix && Object.keys(rca.suggestedFix).length > 0) {
+      sections.push('\nSuggested Fix:');
+      sections.push(JSON.stringify(rca.suggestedFix, null, 2));
+    }
+
+    sections.push(''); // Empty line for spacing
+
+    return sections.join('\n');
   }
 
   /**
@@ -1217,22 +1264,24 @@ Keep it clear and actionable. Output only the explanation text, no markdown form
   /**
    * Generate fixes for multiple related files
    * Phase 5: Support common scenarios like Gradle + Kotlin changes
-   * 
+   *
    * @param error - Parsed error
    * @param rootCause - Root cause
    * @param analysis - Additional analysis context
+   * @param rca - Optional: Full root cause analysis for enhanced context
    * @returns Array of fixes for all affected files
    */
   async generateMultiFileFix(
     error: ParsedError,
     rootCause: string,
-    analysis?: string
+    analysis?: string,
+    rca?: RootCauseAnalysis
   ): Promise<CodeFix[]> {
     const fixes: CodeFix[] = [];
 
     try {
       // Generate primary fix
-      const primaryFix = await this.generateFix(error, rootCause, analysis);
+      const primaryFix = await this.generateFix(error, rootCause, analysis, undefined, rca);
       if (primaryFix) {
         fixes.push(primaryFix);
       }
