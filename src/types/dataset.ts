@@ -137,15 +137,6 @@ export const ExtendedDatasetStatsSchema = z.object({
 });
 
 // ============================================================================
-// Array Schemas for Full Datasets
-// ============================================================================
-
-export const TestDatasetSchema = z.array(TestCaseSchema);
-export const AndroidTestDatasetSchema = z.array(AndroidTestCaseSchema);
-export const PerformanceTestDatasetSchema = z.array(PerformanceTestCaseSchema);
-export const ExtendedTestDatasetSchema = z.array(ExtendedTestCaseSchema);
-
-// ============================================================================
 // Validation Result Types
 // ============================================================================
 

@@ -32,11 +32,27 @@ import {
 import { z } from 'zod';
 
 // ============================================================================
+// Validation Constants
+// ============================================================================
+
+const MIN_TOTAL_CASES = 90;
+const MIN_REAL_PROJECTS = 8;
+const MIN_VALID_PROJECTS = 6;
+const MAX_SCAN_DEPTH = 2;
+
+// ============================================================================
 // Validation Helper Functions
 // ============================================================================
 
+/**
+ * Validates a dataset against a Zod schema
+ * @param data - The dataset to validate
+ * @param itemSchema - The Zod schema to validate against
+ * @param datasetName - Name of the dataset for reporting
+ * @returns Validation result with errors and statistics
+ */
 function validateDataset<T>(
-  data: any,
+  data: unknown,
   itemSchema: z.ZodSchema<T>,
   datasetName: string
 ): ValidationResult {
@@ -80,11 +96,22 @@ function validateDataset<T>(
   };
 }
 
-function getNestedValue(obj: any, path: (string | number)[]): any {
-  return path.reduce((current, key) => current?.[key], obj);
+/**
+ * Retrieves a nested value from an object using a path array
+ * @param obj - The object to traverse
+ * @param path - Array of keys to follow
+ * @returns The value at the nested path
+ */
+function getNestedValue(obj: unknown, path: (string | number)[]): unknown {
+  return path.reduce((current: any, key) => current?.[key], obj);
 }
 
-function checkDuplicateIds(datasets: { name: string; data: any[] }[]): ValidationError[] {
+/**
+ * Checks for duplicate IDs across multiple datasets
+ * @param datasets - Array of datasets to check
+ * @returns Array of validation errors for duplicates
+ */
+function checkDuplicateIds(datasets: { name: string; data: unknown[] }[]): ValidationError[] {
   const errors: ValidationError[] = [];
   const idMap = new Map<string, string[]>();
 
@@ -92,7 +119,7 @@ function checkDuplicateIds(datasets: { name: string; data: any[] }[]): Validatio
     if (!Array.isArray(data)) return;
 
     data.forEach((item, index) => {
-      const id = item?.id;
+      const id = (item as any)?.id;
       if (id) {
         if (!idMap.has(id)) {
           idMap.set(id, []);
@@ -115,6 +142,11 @@ function checkDuplicateIds(datasets: { name: string; data: any[] }[]): Validatio
   return errors;
 }
 
+/**
+ * Validates that all required dataset files exist
+ * @param datasetPath - Path to the dataset directory
+ * @returns Array of file validation results
+ */
 function validateFileReferences(datasetPath: string): FileValidationResult[] {
   const results: FileValidationResult[] = [];
 
@@ -136,6 +168,40 @@ function validateFileReferences(datasetPath: string): FileValidationResult[] {
   });
 
   return results;
+}
+
+/**
+ * Scans a directory for Kotlin files with depth limit
+ * @param dirPath - Directory to scan
+ * @param depth - Current depth level
+ * @param maxDepth - Maximum depth to scan
+ * @returns True if any .kt files found
+ */
+function hasKotlinFiles(dirPath: string, depth: number = 0, maxDepth: number = MAX_SCAN_DEPTH): boolean {
+    if (depth > maxDepth) return false;
+
+    try {
+        const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+
+        for (const entry of entries) {
+            if (entry.name.startsWith('.')) continue;
+
+            if (entry.isFile() && entry.name.endsWith('.kt')) {
+                return true;
+            }
+
+            if (entry.isDirectory()) {
+                const subPath = path.join(dirPath, entry.name);
+                if (hasKotlinFiles(subPath, depth + 1, maxDepth)) {
+                    return true;
+                }
+            }
+        }
+    } catch (error) {
+        // Ignore permission errors or inaccessible directories
+    }
+
+    return false;
 }
 
 function printValidationResult(result: ValidationResult): void {
@@ -258,8 +324,7 @@ try {
                 if (entry.isDirectory() && !excludeDirs.includes(entry.name) && !entry.name.startsWith('.')) {
                     const projectPath = path.join(projectsPath, entry.name);
                     const hasGradle = fs.existsSync(path.join(projectPath, 'build.gradle'));
-                    const hasKotlin = fs.readdirSync(projectPath, { recursive: true })
-                        .some((file: any) => typeof file === 'string' && file.endsWith('.kt'));
+                    const hasKotlin = hasKotlinFiles(projectPath);
                     const hasReadme = fs.existsSync(path.join(projectPath, 'README.md'));
 
                     realProjects.push({
@@ -375,31 +440,31 @@ try {
     }
 
     // Check 7: Total cases meet minimum threshold
-    if (totalCases >= 90) {
-        console.log(`✓ Total dataset size (${totalCases}) meets minimum threshold (90+)`);
+    if (totalCases >= MIN_TOTAL_CASES) {
+        console.log(`✓ Total dataset size (${totalCases}) meets minimum threshold (${MIN_TOTAL_CASES}+)`);
         passed++;
     } else {
-        console.log(`✗ Total dataset size (${totalCases}) below minimum threshold (90+)`);
+        console.log(`✗ Total dataset size (${totalCases}) below minimum threshold (${MIN_TOTAL_CASES}+)`);
         failed++;
     }
 
     // Check 8: Real projects found (if scan succeeded)
     if (projectScanSuccess) {
-        if (realProjects.length >= 8) {
+        if (realProjects.length >= MIN_REAL_PROJECTS) {
             console.log(`✓ Real test projects found (${realProjects.length})`);
             passed++;
         } else {
-            console.log(`✗ Insufficient real test projects (${realProjects.length} < 8)`);
+            console.log(`✗ Insufficient real test projects (${realProjects.length} < ${MIN_REAL_PROJECTS})`);
             failed++;
         }
 
         // Check 9: Real projects are valid
         const validProjects = realProjects.filter(p => p.hasGradle && p.hasKotlin).length;
-        if (validProjects >= 6) {
+        if (validProjects >= MIN_VALID_PROJECTS) {
             console.log(`✓ Valid buildable projects (${validProjects}/${realProjects.length})`);
             passed++;
         } else {
-            console.log(`✗ Too few valid projects (${validProjects}/${realProjects.length} < 6)`);
+            console.log(`✗ Too few valid projects (${validProjects}/${realProjects.length} < ${MIN_VALID_PROJECTS})`);
             failed++;
         }
     } else {
