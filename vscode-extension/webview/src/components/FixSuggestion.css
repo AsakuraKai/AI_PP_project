@@ -1,0 +1,41 @@
+/* Diff syntax highlighting styles */
+.diff-line {
+  display: block;
+  padding: 2px 12px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  line-height: 1.5;
+}
+
+.diff-add {
+  background-color: rgba(34, 197, 94, 0.15);
+  color: #86efac;
+}
+
+.diff-add::before {
+  content: '+';
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+.diff-remove {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+}
+
+.diff-remove::before {
+  content: '-';
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+/* Override Prism theme for better integration */
+pre[class*="language-"] {
+  margin: 0;
+  padding: 12px 0;
+  background: transparent;
+}
+
+code[class*="language-"] {
+  background: transparent;
+  text-shadow: none;
+}
