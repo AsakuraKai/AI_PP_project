@@ -254,6 +254,16 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
                 await this._handleConversationGetHistory(message.data);
                 break;
 
+            // ============================================================================
+            // Fix 5: Chat History Persistence Handlers
+            // ============================================================================
+            case 'getChatHistory':
+                await this._handleGetChatHistory();
+                break;
+            case 'saveChatHistory':
+                await this._handleSaveChatHistory(message.data);
+                break;
+
             default:
                 console.warn('Unknown command:', message.command);
         }
@@ -1856,6 +1866,58 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
                 type: 'conversation.error',
                 data: { error: 'Failed to get conversation history' }
             });
+        }
+    }
+
+    // ============================================================================
+    // Fix 5: Chat History Persistence Handlers
+    // ============================================================================
+
+    /**
+     * Handle get chat history from workspace state
+     */
+    private async _handleGetChatHistory() {
+        try {
+            const chatHistory = this._extensionContext.workspaceState.get('rca-chat-history');
+
+            if (chatHistory) {
+                console.log('[RCAWebviewProvider] Restoring chat history from workspace state');
+                this._sendMessage({
+                    command: 'chatHistoryData',
+                    data: chatHistory
+                });
+            } else {
+                console.log('[RCAWebviewProvider] No chat history found in workspace state');
+                this._sendMessage({
+                    command: 'chatHistoryData',
+                    data: null
+                });
+            }
+        } catch (error) {
+            console.error('[RCAWebviewProvider] Failed to get chat history:', error);
+            this._sendMessage({
+                command: 'chatHistoryData',
+                data: null
+            });
+        }
+    }
+
+    /**
+     * Handle save chat history to workspace state
+     */
+    private async _handleSaveChatHistory(data: any) {
+        try {
+            // Validate data structure
+            if (!data || !data.messages || !Array.isArray(data.messages)) {
+                console.warn('[RCAWebviewProvider] Invalid chat history data, skipping save');
+                return;
+            }
+
+            // Save to workspace state
+            await this._extensionContext.workspaceState.update('rca-chat-history', data);
+            console.log('[RCAWebviewProvider] Saved', data.messages.length, 'messages to workspace state');
+        } catch (error) {
+            console.error('[RCAWebviewProvider] Failed to save chat history:', error);
         }
     }
 }

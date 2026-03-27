@@ -1,13 +1,14 @@
 /**
  * ChatWidget - Floating chat widget with collapsed/expanded states
  * Phase 6: Added smooth animations and transitions
- * 
+ * Fix 5: Added hydration indicator for restored chat history
+ *
  * This is the SINGLE component instance that persists across all views.
  * It NEVER remounts during navigation.
  */
 
 import React, { useState, useEffect } from 'react';
-import { MessageCircle, Minimize2 } from 'lucide-react';
+import { MessageCircle, Minimize2, History } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ConversationContext } from '../../types/conversation';
 import { ConversationView } from './ConversationView';
@@ -26,7 +27,20 @@ export function ChatWidget({ context }: ChatWidgetProps) {
         return saved !== null ? JSON.parse(saved) : false;
     });
 
-    const { unreadCount } = useConversationContext();
+    const { unreadCount, isHydrated, messages } = useConversationContext();
+    const [showHydrationIndicator, setShowHydrationIndicator] = useState(false);
+
+    // Show hydration indicator when history is restored
+    useEffect(() => {
+        if (isHydrated && messages.length > 0) {
+            setShowHydrationIndicator(true);
+            // Hide after 3 seconds
+            const timer = setTimeout(() => {
+                setShowHydrationIndicator(false);
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [isHydrated, messages.length]);
 
     // Save state when changed
     const toggleExpanded = () => {
@@ -135,6 +149,24 @@ export function ChatWidget({ context }: ChatWidgetProps) {
 
                         {/* Context Indicator */}
                         <ContextIndicator context={context} />
+
+                        {/* Hydration Indicator */}
+                        <AnimatePresence>
+                            {showHydrationIndicator && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    transition={{ duration: 0.3 }}
+                                    className="px-4 py-2 bg-blue-500/10 border-b border-blue-500/20"
+                                >
+                                    <div className="flex items-center gap-2 text-xs text-blue-400">
+                                        <History className="h-3 w-3" />
+                                        <span>Chat history restored ({messages.length} messages)</span>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
 
                         {/* Chat Content */}
                         <div className="flex-1 overflow-hidden">
