@@ -25,17 +25,17 @@ export interface FixSuggestionProps {
 export function FixSuggestion({ fix, onApply, className }: FixSuggestionProps) {
   const [expanded, setExpanded] = useState(false);
   const [applied, setApplied] = useState(false);
-  
+
   const handleApply = () => {
     onApply(fix.id);
     setApplied(true);
   };
-  
-  const confidenceColor = 
+
+  const confidenceColor =
     fix.confidence >= 0.8 ? 'text-green-400' :
-    fix.confidence >= 0.6 ? 'text-amber-400' :
-    'text-red-400';
-  
+      fix.confidence >= 0.6 ? 'text-amber-400' :
+        'text-red-400';
+
   return (
     <div className={cn('bg-zinc-800/50 border border-zinc-700 rounded-lg overflow-hidden', className)}>
       {/* Header */}
@@ -56,7 +56,7 @@ export function FixSuggestion({ fix, onApply, className }: FixSuggestionProps) {
             </div>
             <p className="text-sm text-zinc-200">{fix.description}</p>
           </div>
-          
+
           <div className="flex items-center gap-2">
             {!applied ? (
               <Button
@@ -73,7 +73,7 @@ export function FixSuggestion({ fix, onApply, className }: FixSuggestionProps) {
                 Applied
               </Badge>
             )}
-            
+
             <Button
               variant="ghost"
               size="sm"
@@ -89,7 +89,7 @@ export function FixSuggestion({ fix, onApply, className }: FixSuggestionProps) {
           </div>
         </div>
       </div>
-      
+
       {/* Diff Preview */}
       {expanded && (
         <div className="border-t border-zinc-700 bg-zinc-900/50">
@@ -98,9 +98,24 @@ export function FixSuggestion({ fix, onApply, className }: FixSuggestionProps) {
               <Code className="h-4 w-4 text-zinc-400" />
               <span className="text-sm font-medium text-zinc-200">Code Changes</span>
             </div>
-            <pre className="text-xs bg-zinc-950 border border-zinc-800 rounded p-3 overflow-x-auto">
-              <code className="text-zinc-300">{fix.diff}</code>
-            </pre>
+
+            {fix.diff && fix.diff.trim().length > 0 ? (
+              <pre className="text-xs bg-zinc-950 border border-zinc-800 rounded p-3 overflow-x-auto">
+                <code className="text-zinc-300">{fix.diff}</code>
+              </pre>
+            ) : (
+              <div className="bg-amber-500/10 border border-amber-500/30 rounded p-3">
+                <p className="text-xs text-amber-300 mb-2">
+                  <strong>Manual fix required:</strong>
+                </p>
+                <p className="text-xs text-zinc-300">
+                  {fix.description}
+                </p>
+                <p className="text-xs text-zinc-500 mt-2 italic">
+                  Automatic code diff not available. Please apply this fix manually to your code.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}

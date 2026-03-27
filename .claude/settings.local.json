@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__stitch__create_project",
+      "mcp__stitch__generate_screen_from_text",
+      "mcp__stitch__list_screens",
+      "Bash(npx tsc:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(find . -type f \\\\\\(-name *dashboard* -o -name *Dashboard* \\\\\\) -not -path */node_modules/* -not -path */.git/*)",
+      "Bash(find . -type f -name \"*.md\" -exec wc -l {} +)",
+      "Bash(ls -lh docs/FInal_PP/*.md)",
+      "Read(//c/Users/Admin/OneDrive/Desktop/Nuclear Creation/AI/AI_PP_project/**)",
+      "Bash(rm -rf .ts-node)",
+      "Bash(rm -rf node_modules/.cache)",
+      "Bash(rm -rf dist)",
+      "Bash(ts-node --transpile-only scripts/test-compute-diff.ts)",
+      "Bash(ts-node scripts/test-compute-diff.ts)",
+      "Bash(npm run:*)",
+      "Bash(sg --pattern 'normalize' -l ts src/utils/DiffFormatter.ts)",
+      "Bash(sg --pattern 'context' -l ts src/utils/DiffFormatter.ts)",
+      "Bash(/tmp/spec_review_notes.txt:*)",
+      "Read(//tmp/**)",
+      "Bash(npm test:*)",
+      "Bash(find docs:*)",
+      "Bash(npx ts-node:*)",
+      "Bash(grep -n \"type: ''modified''\" src/utils/DiffFormatter.ts)",
+      "Bash(node -e \"const arr = [1,2,3,4,5]; console.log\\(''slice\\(2,2\\):'', arr.slice\\(2,2\\)\\); console.log\\(''slice\\(2,3\\):'', arr.slice\\(2,3\\)\\);\")",
+      "Bash(node -e \":*)",
+      "Bash(sg --pattern 'interface $NAME { $$$ }' -l ts src/utils/DiffFormatter.ts)",
+      "Bash(find /c/Users/Admin/OneDrive/Desktop/Nuclear Creation/AI/AI_PP_project -name *.json -path */data/* -o -name dataset*.json)",
+      "Bash(find /c/Users/Admin/OneDrive/Desktop/Nuclear Creation/AI/AI_PP_project/docs/Profs-Requirement -name *.ts -path *Dataset*)",
+      "Bash(grep -E \"\\\\.ts$\")",
+      "Bash(sg --pattern 'catch \\($$$\\) { $$$ }' -l ts scripts/test-dataset-validation.ts)",
+      "Bash(npx tsx:*)"
+    ]
+  }
+}
