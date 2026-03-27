@@ -88,7 +88,7 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
 
     // Track mounted state to prevent memory leaks
     const isMountedRef = useRef(true);
-    const persistenceTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const persistenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // Wrap postMessage in useCallback to stabilize dependency
     const stablePostMessage = useCallback((command: string, data: any) => {
@@ -263,5 +263,5 @@ export function useConversationContext() {
     return context;
 }
 
-// Export constants for testing
-export { HYDRATION_TIMEOUT_MS, PERSISTENCE_DEBOUNCE_MS, MAX_PERSISTED_MESSAGES };
+// Export constants for testing and usage
+export { HYDRATION_TIMEOUT_MS, PERSISTENCE_DEBOUNCE_MS, MAX_PERSISTED_MESSAGES, HYDRATION_INDICATOR_DURATION_MS };
