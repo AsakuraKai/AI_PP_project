@@ -81,61 +81,21 @@ export function Dashboard() {
 
       {/* Statistics Grid */}
       <div
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+        className="grid grid-cols-1 md:grid-cols-1 gap-4"
         role="region"
         aria-label="Statistics"
       >
         {loading ? (
-          <>
-            <StatsCardSkeleton />
-            <StatsCardSkeleton />
-            <StatsCardSkeleton />
-            <StatsCardSkeleton />
-          </>
+          <StatsCardSkeleton />
         ) : (
-          <>
-            <StatsCard
-              title="Pending Errors"
-              value={stats.pendingErrors}
-              subtitle={stats.pendingErrors === 0 ? 'All clear!' : 'Ready to analyze'}
-              icon={<AlertTriangle className="h-6 w-6" aria-hidden="true" />}
-              variant={stats.pendingErrors > 0 ? 'warning' : 'success'}
-              aria-label={`${stats.pendingErrors} pending errors, ${stats.pendingErrors === 0 ? 'all clear' : 'ready to analyze'}`}
-            />
-
-            <StatsCard
-              title="Analyses Today"
-              value={stats.analyzesPerformed}
-              subtitle="Total analyses performed"
-              icon={<Search className="h-6 w-6" aria-hidden="true" />}
-              trend={{
-                value: '+12%',
-                direction: 'up'
-              }}
-              aria-label={`${stats.analyzesPerformed} analyses today, up 12%`}
-            />
-
-            <StatsCard
-              title="Success Rate"
-              value={`${stats.successRate}%`}
-              subtitle="Analysis accuracy"
-              icon={<CheckCircle2 className="h-6 w-6" aria-hidden="true" />}
-              variant={stats.successRate >= 80 ? 'success' : 'warning'}
-              aria-label={`${stats.successRate}% success rate`}
-            />
-
-            <StatsCard
-              title="Avg Time"
-              value={`${stats.averageTime}s`}
-              subtitle="Per analysis"
-              icon={<Clock className="h-6 w-6" aria-hidden="true" />}
-              trend={{
-                value: '-8%',
-                direction: 'down'
-              }}
-              aria-label={`${stats.averageTime} seconds average time, down 8%`}
-            />
-          </>
+          <StatsCard
+            title="Pending Errors"
+            value={stats.pendingErrors}
+            subtitle={stats.pendingErrors === 0 ? 'All clear!' : 'Ready to analyze'}
+            icon={<AlertTriangle className="h-6 w-6" aria-hidden="true" />}
+            variant={stats.pendingErrors > 0 ? 'warning' : 'success'}
+            aria-label={`${stats.pendingErrors} pending errors, ${stats.pendingErrors === 0 ? 'all clear' : 'ready to analyze'}`}
+          />
         )}
       </div>
 

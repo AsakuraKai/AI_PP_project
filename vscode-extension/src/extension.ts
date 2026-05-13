@@ -290,6 +290,7 @@ async function initializeBackendServices(context: vscode.ExtensionContext): Prom
 
     // Initialize AnalysisService (singleton)
     analysisService = AnalysisService.getInstance();
+    analysisService.setExtensionContext(context); // Set context for cloud LLM support
     await analysisService.initialize();
     log('info', 'AnalysisService initialized successfully');
 

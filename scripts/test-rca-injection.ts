@@ -9,7 +9,7 @@ import { ParsedError, RootCauseAnalysis } from '../src/types';
 
 // Mock LLM client for testing
 class MockLLMClient {
-  async generate(prompt: string, options?: any) {
+  async generate(prompt: string, _options?: any) {
     console.log('\n=== GENERATED PROMPT ===');
     console.log(prompt);
     console.log('=== END PROMPT ===\n');
@@ -27,7 +27,7 @@ class MockLLMClient {
 
 // Mock ReadFileTool
 class MockReadFileTool {
-  async execute(params: any) {
+  async execute(_params: any) {
     return `Lines 1-5 of test.kt:
 fun greet(name: String) {
     println("Hello, " + name)

@@ -57,6 +57,18 @@ desktop.ini
 gemini-api-key
 start.py
 
+# Secrets / credentials (local-only)
+keys
+keys/
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+.npmrc
+.pypirc
+
 # Logs
 logs/
 *.log
@@ -71,6 +83,7 @@ test-results/
 
 # ChromaDB data (if running locally)
 chroma_data/
+chroma/
 
 # Other
 

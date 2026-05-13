@@ -7,6 +7,7 @@ import { ErrorQueueManager } from '../services/ErrorQueueManager';
 import { NetworkTimeoutHandler } from '../services/NetworkTimeoutHandler';
 import { FeedbackService } from '../services/FeedbackService';
 import { ConversationalAgent } from '../chat/ConversationalAgent';
+import { CloudLLMService } from '../services/CloudLLMService';
 
 export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'rca-agent.mainView';
@@ -20,6 +21,7 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
     private readonly stateManager: StateManager;
     private readonly errorQueueManager: ErrorQueueManager;
     private readonly conversationalAgent: ConversationalAgent;
+    private readonly cloudLLMService: CloudLLMService;
     private conversationSessions: Map<string, string> = new Map(); // Maps session IDs to agent session IDs
 
     constructor(extensionUri: vscode.Uri, extensionContext: vscode.ExtensionContext) {
@@ -37,6 +39,9 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
 
         // Initialize ConversationalAgent for AI-powered conversations
         this.conversationalAgent = new ConversationalAgent(this.analysisService, extensionContext);
+
+        // Initialize CloudLLMService for cloud provider management
+        this.cloudLLMService = new CloudLLMService(extensionContext, extensionContext.secrets);
     }
 
     public resolveWebviewView(
@@ -262,6 +267,25 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
                 break;
             case 'saveChatHistory':
                 await this._handleSaveChatHistory(message.data);
+                break;
+
+            // ============================================================================
+            // Cloud LLM Configuration Handlers
+            // ============================================================================
+            case 'detectProviderAndFetchModels':
+                await this._handleDetectProviderAndFetchModels(message.data);
+                break;
+            case 'saveCloudApiKey':
+                await this._handleSaveCloudApiKey(message.data);
+                break;
+            case 'testCloudConnection':
+                await this._handleTestCloudConnection(message.data);
+                break;
+            case 'getCloudConfig':
+                await this._handleGetCloudConfig();
+                break;
+            case 'fetchModels':
+                await this._handleFetchModels(message.data);
                 break;
 
             default:
@@ -1961,6 +1985,181 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
             console.log('[RCAWebviewProvider] Saved', data.messages.length, 'messages to workspace state');
         } catch (error) {
             console.error('[RCAWebviewProvider] Failed to save chat history:', error);
+        }
+    }
+
+    // ============================================================================
+    // Cloud LLM Configuration Handlers
+    // ============================================================================
+
+    /**
+     * Handle detect provider and fetch models
+     */
+    private async _handleDetectProviderAndFetchModels(data: any) {
+        try {
+            const { apiKey } = data;
+
+            if (!apiKey) {
+                this._sendMessage({
+                    command: 'providerDetected',
+                    data: { provider: 'unknown' }
+                });
+                return;
+            }
+
+            // Detect provider
+            const { detectProvider } = await import('../utils/detectProvider');
+            const detection = detectProvider(apiKey);
+
+            this._sendMessage({
+                command: 'providerDetected',
+                data: { provider: detection.provider }
+            });
+
+            // Fetch available models
+            if (detection.provider !== 'unknown') {
+                const models = await this.cloudLLMService.fetchAvailableModels(apiKey);
+                this._sendMessage({
+                    command: 'availableModels',
+                    data: { models, provider: detection.provider }
+                });
+            }
+        } catch (error: any) {
+            console.error('[RCAWebviewProvider] Failed to detect provider and fetch models:', error);
+            this._sendMessage({
+                command: 'modelFetchError',
+                data: { error: error.message }
+            });
+        }
+    }
+
+    /**
+     * Handle save cloud API key
+     */
+    private async _handleSaveCloudApiKey(data: any) {
+        try {
+            const { apiKey, model } = data;
+
+            if (!apiKey || !model) {
+                throw new Error('API key and model are required');
+            }
+
+            // Save configuration
+            const provider = await this.cloudLLMService.saveCloudConfig(apiKey, model);
+
+            this._sendMessage({
+                command: 'cloudConfigSaved',
+                data: {
+                    success: true,
+                    provider,
+                    model
+                }
+            });
+
+            vscode.window.showInformationMessage('Cloud LLM configuration saved successfully!');
+        } catch (error: any) {
+            console.error('[RCAWebviewProvider] Failed to save cloud API key:', error);
+            this._sendMessage({
+                command: 'cloudConfigSaved',
+                data: {
+                    success: false,
+                    error: error.message
+                }
+            });
+            vscode.window.showErrorMessage(`Failed to save configuration: ${error.message}`);
+        }
+    }
+
+    /**
+     * Handle test cloud connection
+     */
+    private async _handleTestCloudConnection(data: any) {
+        try {
+            const { apiKey, model } = data;
+
+            if (!apiKey || !model) {
+                throw new Error('API key and model are required');
+            }
+
+            // Test connection
+            const result = await this.cloudLLMService.testConnection(apiKey, model);
+
+            this._sendMessage({
+                command: 'testResult',
+                data: result
+            });
+        } catch (error: any) {
+            console.error('[RCAWebviewProvider] Failed to test cloud connection:', error);
+            this._sendMessage({
+                command: 'testResult',
+                data: {
+                    success: false,
+                    error: error.message
+                }
+            });
+        }
+    }
+
+    /**
+     * Handle get cloud config
+     */
+    private async _handleGetCloudConfig() {
+        try {
+            const config = await this.cloudLLMService.getCloudConfig();
+            const hasKey = await this.cloudLLMService.isConfigured();
+
+            if (config) {
+                const models = await this.cloudLLMService.fetchAvailableModels(
+                    await this.cloudLLMService.getApiKey() || ''
+                );
+
+                this._sendMessage({
+                    command: 'cloudConfigLoaded',
+                    data: {
+                        provider: config.provider,
+                        model: config.model,
+                        hasKey,
+                        models
+                    }
+                });
+            } else {
+                this._sendMessage({
+                    command: 'cloudConfigLoaded',
+                    data: null
+                });
+            }
+        } catch (error: any) {
+            console.error('[RCAWebviewProvider] Failed to get cloud config:', error);
+            this._sendMessage({
+                command: 'cloudConfigLoaded',
+                data: null
+            });
+        }
+    }
+
+    /**
+     * Handle fetch models
+     */
+    private async _handleFetchModels(data: any) {
+        try {
+            const { apiKey, provider } = data;
+
+            if (!apiKey) {
+                throw new Error('API key is required');
+            }
+
+            const models = await this.cloudLLMService.fetchAvailableModels(apiKey);
+
+            this._sendMessage({
+                command: 'availableModels',
+                data: { models, provider }
+            });
+        } catch (error: any) {
+            console.error('[RCAWebviewProvider] Failed to fetch models:', error);
+            this._sendMessage({
+                command: 'modelFetchError',
+                data: { error: error.message }
+            });
         }
     }
 }

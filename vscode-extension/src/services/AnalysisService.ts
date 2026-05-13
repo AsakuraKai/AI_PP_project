@@ -11,7 +11,6 @@
 
 import * as vscode from 'vscode';
 import { ErrorItem, AgentState, RCAResult, ValidatedErrorItem, getProjectScope, buildScopePromptContext } from '../types';
-import { RCAResult as BackendRCAResult } from '../../../src/types';
 import { MinimalReactAgent } from '../../../src/agent/MinimalReactAgent';
 import { AgentStateStream } from '../../../src/agent/AgentStateStream';
 import { OllamaClient } from '../../../src/llm/OllamaClient';
@@ -20,6 +19,7 @@ import { ChromaDBClient } from '../../../src/db/ChromaDBClient';
 import { RCACache } from '../../../src/cache/RCACache';
 import { NetworkTimeoutHandler } from './NetworkTimeoutHandler';
 import { calculateQualityScore } from '../../../src/db/schemas/rca-collection';
+import { CloudLLMService } from './CloudLLMService';
 
 /**
  * Progress callback for analysis updates (uses shared AgentState)
@@ -45,6 +45,8 @@ export class AnalysisService {
   private _cache?: RCACache;
   private _stateStream?: AgentStateStream;
   private _timeoutHandler: NetworkTimeoutHandler;
+  private _cloudLLMService?: CloudLLMService;
+  private _extensionContext?: vscode.ExtensionContext;
 
   private constructor() {
     // Singleton
@@ -56,6 +58,14 @@ export class AnalysisService {
       AnalysisService._instance = new AnalysisService();
     }
     return AnalysisService._instance;
+  }
+
+  /**
+   * Set extension context for cloud LLM support
+   */
+  setExtensionContext(context: vscode.ExtensionContext): void {
+    this._extensionContext = context;
+    this._cloudLLMService = new CloudLLMService(context, context.secrets);
   }
 
   /**
@@ -75,8 +85,30 @@ export class AnalysisService {
 
       console.log('[AnalysisService] Initializing with:', { ollamaUrl, model, chromaUrl });
 
-      // Initialize Ollama client
-      this._client = new OllamaClient({ baseUrl: ollamaUrl, model });
+      // Check if cloud LLM is configured
+      let useCloudLLM = false;
+      if (this._cloudLLMService) {
+        useCloudLLM = await this._cloudLLMService.isConfigured();
+        console.log('[AnalysisService] Cloud LLM configured:', useCloudLLM);
+      }
+
+      // Initialize LLM client (Ollama or Cloud)
+      if (useCloudLLM && this._cloudLLMService) {
+        const cloudClient = await this._cloudLLMService.getCloudClient();
+        if (cloudClient) {
+          // Wrap cloud client to be compatible with OllamaClient interface
+          this._client = this._createCloudClientWrapper(cloudClient);
+          console.log('[AnalysisService] Using cloud LLM client');
+        } else {
+          // Fallback to Ollama
+          this._client = new OllamaClient({ baseUrl: ollamaUrl, model });
+          console.log('[AnalysisService] Cloud client unavailable, using Ollama');
+        }
+      } else {
+        // Use Ollama client
+        this._client = new OllamaClient({ baseUrl: ollamaUrl, model });
+        console.log('[AnalysisService] Using Ollama client');
+      }
 
       // Initialize ErrorParser
       this._parser = ErrorParser.getInstance();
@@ -102,6 +134,10 @@ export class AnalysisService {
       // Initialize MinimalReactAgent with config
       // Note: MultiPassAgent disabled due to performance issues (calls analyze() multiple times)
       // See docs/BUG_ANALYSIS_MULTIPASS_LOOPING.md for details
+      if (!this._client) {
+        throw new Error('LLM client not initialized');
+      }
+
       this._agent = new MinimalReactAgent(this._client, {
         maxIterations: config.get<number>('maxIterations', 10),
         timeout: config.get<number>('timeout', 90000),
@@ -156,7 +192,7 @@ export class AnalysisService {
   /**
    * Check if model is available
    */
-  async checkModelAvailable(modelName: string): Promise<boolean> {
+  async checkModelAvailable(_modelName: string): Promise<boolean> {
     try {
       if (!this._client) {
         await this.initialize();
@@ -396,11 +432,18 @@ export class AnalysisService {
       });
 
       // Run MultiPassAgent analysis with timeout protection (configurable via rcaAgent.network settings)
+      if (!parsed) {
+        throw new Error('Failed to parse error - no valid error data available');
+      }
+
+      // TypeScript type narrowing - parsed is guaranteed to be non-null here
+      const parsedError = parsed;
+
       const analysisResult = await this._timeoutHandler.executeAnalysis(
         operationId,
         async () => {
           return await Promise.race([
-            this._agent!.analyze(parsed) as Promise<any>,
+            this._agent!.analyze(parsedError) as Promise<any>,
             cancelPromise
           ]);
         },
@@ -480,8 +523,10 @@ export class AnalysisService {
         console.warn('[AnalysisService] ChromaDB not available - analysis will not be persisted, feedback will be disabled');
       }
 
-      // Search for similar errors in ChromaDB
-      const similarErrors = await this._searchSimilarErrors(parsed);
+      // Search for similar errors in ChromaDB (for future learning/caching)
+      if (parsed) {
+        await this._searchSimilarErrors(parsed);
+      }
 
       // Return backend result directly (types are compatible)
       console.log('[AnalysisService] Analysis complete:', result);
@@ -607,5 +652,56 @@ export class AnalysisService {
     if (ext === 'gradle' || filePath.includes('build.gradle')) return 'gradle';
 
     return 'kotlin'; // default
+  }
+
+  /**
+   * Create a wrapper around cloud LLM client to make it compatible with OllamaClient interface
+   */
+  private _createCloudClientWrapper(cloudClient: any): any {
+    const config = vscode.workspace.getConfiguration('rcaAgent');
+    const cloudConfig = this._cloudLLMService ?
+      this._cloudLLMService.getCloudConfig() :
+      Promise.resolve(undefined);
+
+    return {
+      // Implement OllamaClient interface methods
+      async generate(prompt: string, options?: any): Promise<any> {
+        try {
+          const config = await cloudConfig;
+          if (!config) {
+            throw new Error('Cloud LLM not configured');
+          }
+
+          const response = await cloudClient.generateContent(config.model, prompt);
+
+          return {
+            response: response.content,
+            model: response.model,
+            done: true,
+            context: [],
+            total_duration: 0,
+            load_duration: 0,
+            prompt_eval_count: response.usage?.promptTokens || 0,
+            eval_count: response.usage?.completionTokens || 0
+          };
+        } catch (error) {
+          console.error('[AnalysisService] Cloud LLM generation failed:', error);
+          throw error;
+        }
+      },
+
+      async isHealthy(): Promise<boolean> {
+        try {
+          return await cloudClient.testConnection();
+        } catch (error) {
+          console.error('[AnalysisService] Cloud LLM health check failed:', error);
+          return false;
+        }
+      },
+
+      // Pass through other properties
+      baseUrl: 'cloud-llm',
+      model: 'cloud'
+    };
   }
 }

@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Settings, Check, X } from 'lucide-react';
+import { Settings, Check, X, Cloud } from 'lucide-react';
 import { Switch } from './ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectSeparator } from './ui/select';
 import { useVSCode } from '../hooks/useVSCode';
+import { CloudConfigSection } from './CloudConfigSection';
 
 interface SettingsSectionProps {
   collapsed: boolean;
@@ -20,6 +21,8 @@ export function SettingsSection({ collapsed }: SettingsSectionProps) {
   const [ollamaStatus, setOllamaStatus] = useState<OllamaStatus>({ available: false });
   const [educationalMode, setEducationalMode] = useState(false);
   const [realtimeDetection, setRealtimeDetection] = useState(false);
+  const [showCloudConfig, setShowCloudConfig] = useState(false);
+  const [cloudModel, setCloudModel] = useState<string | null>(null);
 
   // Listen for initial config from extension
   useEffect(() => {
@@ -68,7 +71,13 @@ export function SettingsSection({ collapsed }: SettingsSectionProps) {
 
   const handleModelChange = (value: string) => {
     console.log('[RCA Frontend - SettingsSection] Model change:', value);
+    if (value === 'cloud') {
+      // Navigate to Cloud Configuration
+      setShowCloudConfig(true);
+      return;
+    }
     setModel(value);
+    setCloudModel(null); // Clear cloud model when selecting local
     postMessage('updateConfig', { key: 'model', value });
   };
 
@@ -102,6 +111,15 @@ export function SettingsSection({ collapsed }: SettingsSectionProps) {
     );
   }
 
+  // Show Cloud Configuration Panel if user selected cloud model
+  if (showCloudConfig) {
+    return (
+      <CloudConfigSection
+        onBack={() => setShowCloudConfig(false)}
+      />
+    );
+  }
+
   return (
     <div className="p-4 space-y-4">
       <div className="flex items-center gap-2 text-zinc-400 mb-3">
@@ -112,7 +130,7 @@ export function SettingsSection({ collapsed }: SettingsSectionProps) {
       {/* Model Selector */}
       <div className="space-y-2">
         <label className="text-xs text-zinc-500">Model</label>
-        <Select value={model} onValueChange={handleModelChange}>
+        <Select value={cloudModel || model} onValueChange={handleModelChange}>
           <SelectTrigger className="bg-zinc-900 border-zinc-800 text-zinc-50">
             <SelectValue placeholder="Select model" />
           </SelectTrigger>
@@ -121,29 +139,55 @@ export function SettingsSection({ collapsed }: SettingsSectionProps) {
             <SelectItem value="llama3" className="text-zinc-50">Llama 3</SelectItem>
             <SelectItem value="qwen2.5-coder" className="text-zinc-50">Qwen 2.5 Coder</SelectItem>
             <SelectItem value="codellama" className="text-zinc-50">Code Llama</SelectItem>
+            <SelectSeparator className="bg-zinc-700" />
+            <SelectItem value="cloud" className="text-purple-400">
+              <span className="flex items-center gap-2">
+                <Cloud size={14} />
+                Use Cloud Model
+              </span>
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      {/* Ollama Status */}
-      <div className="space-y-2">
-        <label className="text-xs text-zinc-500">Ollama Status</label>
-        <div className="flex items-center gap-2 p-2 bg-zinc-900 rounded border border-zinc-800">
-          {ollamaStatus?.available ? (
+      {/* Cloud Status (shown when cloud model is active) */}
+      {cloudModel && (
+        <div className="space-y-2">
+          <label className="text-xs text-zinc-500">Cloud Status</label>
+          <div className="flex items-center gap-2 p-2 bg-zinc-900 rounded border border-zinc-800">
             <Check size={14} className="text-green-500" />
-          ) : (
-            <X size={14} className="text-red-500" />
-          )}
-          <span className="text-sm text-zinc-300">
-            {ollamaStatus?.available ? 'Connected' : 'Disconnected'}
-          </span>
-          {ollamaStatus?.latency && (
-            <span className="text-xs text-zinc-500 ml-auto">
-              {ollamaStatus.latency}ms
-            </span>
-          )}
+            <span className="text-sm text-zinc-300">Connected</span>
+            <button
+              onClick={() => setShowCloudConfig(true)}
+              className="ml-auto text-xs text-purple-400 hover:text-purple-300 transition-colors"
+            >
+              Configure
+            </button>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Ollama Status (shown when local model is active) */}
+      {!cloudModel && (
+        <div className="space-y-2">
+          <label className="text-xs text-zinc-500">Ollama Status</label>
+          <div className="flex items-center gap-2 p-2 bg-zinc-900 rounded border border-zinc-800">
+            {ollamaStatus?.available ? (
+              <Check size={14} className="text-green-500" />
+            ) : (
+              <X size={14} className="text-red-500" />
+            )}
+            <span className="text-sm text-zinc-300">
+              {ollamaStatus?.available ? 'Connected' : 'Disconnected'}
+            </span>
+            {ollamaStatus?.latency && (
+              <span className="text-xs text-zinc-500 ml-auto">
+                {ollamaStatus.latency}ms
+              </span>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Educational Mode */}
       <div className="flex items-center justify-between p-2 rounded hover:bg-zinc-900/50 transition-all duration-200 group cursor-pointer hover:scale-[1.02]">

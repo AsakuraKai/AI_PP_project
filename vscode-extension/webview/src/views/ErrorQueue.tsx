@@ -63,9 +63,27 @@ export function ErrorQueue() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResultData | null>(null);
   const [feedbackStatus, setFeedbackStatus] = useState<FeedbackStatus>({ status: 'idle' });
+  const [analysisStartTime, setAnalysisStartTime] = useState<number | null>(null);
 
   const hasSelection = selectedIds.size > 0;
   const allSelected = selectedIds.size === errors.length && errors.length > 0;
+
+  // Timer to update elapsed time during analysis
+  useEffect(() => {
+    if (!isAnalyzing || !analysisStartTime) return;
+
+    const timer = setInterval(() => {
+      setAnalysisProgress(prev => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          elapsed: Date.now() - analysisStartTime
+        };
+      });
+    }, 1000); // Update every second
+
+    return () => clearInterval(timer);
+  }, [isAnalyzing, analysisStartTime]);
 
   // Listen for analysis progress updates
   useEffect(() => {
@@ -75,19 +93,30 @@ export function ErrorQueue() {
       switch (message.command) {
         case 'analysisStarted':
           setIsAnalyzing(true);
+          setAnalysisStartTime(Date.now());
           setAnalysisProgress({
             iteration: 0,
             maxIterations: message.maxIterations || 6,
-            progress: 0
+            progress: 0,
+            elapsed: 0
           });
           break;
 
         case 'analysisProgress':
-          setAnalysisProgress(message.progress);
+          // Merge with previous state to ensure all fields are present
+          // This fixes the percentage not updating issue
+          setAnalysisProgress(prev => ({
+            iteration: prev?.iteration ?? 0,
+            maxIterations: prev?.maxIterations ?? 6,
+            progress: prev?.progress ?? 0,
+            elapsed: prev?.elapsed ?? 0,
+            ...message.progress
+          }));
           break;
 
         case 'analysisComplete':
           setIsAnalyzing(false);
+          setAnalysisStartTime(null);
           setAnalysisProgress(null);
           setAnalysisResult(message.result);
           setFeedbackStatus({ status: 'idle' });
@@ -96,6 +125,7 @@ export function ErrorQueue() {
         case 'analysisError':
         case 'analysisCancelled':
           setIsAnalyzing(false);
+          setAnalysisStartTime(null);
           setAnalysisProgress(null);
           break;
 

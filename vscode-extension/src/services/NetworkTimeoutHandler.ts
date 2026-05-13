@@ -236,7 +236,7 @@ export class NetworkTimeoutHandler extends BaseService {
    * Clear all active timeouts
    */
   clearAllTimeouts(): void {
-    for (const [id, timeout] of this._activeTimeouts.entries()) {
+    for (const [, timeout] of this._activeTimeouts.entries()) {
       clearTimeout(timeout);
     }
     this._activeTimeouts.clear();
@@ -330,7 +330,7 @@ export class NetworkTimeoutHandler extends BaseService {
   dispose(): void {
     this.clearAllTimeouts();
     if ((this as any)._abortControllers) {
-      for (const [id, controller] of (this as any)._abortControllers.entries()) {
+      for (const [, controller] of (this as any)._abortControllers.entries()) {
         controller.abort();
       }
       (this as any)._abortControllers.clear();

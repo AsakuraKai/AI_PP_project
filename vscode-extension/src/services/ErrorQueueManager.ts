@@ -11,6 +11,7 @@
 import * as vscode from 'vscode';
 import { ErrorItem } from '../types';
 import { StateManager } from './StateManager';
+import { buildDiagnosticIdentity } from './errorIdentity';
 
 /**
  * Error Queue Manager - Singleton
@@ -115,7 +116,9 @@ export class ErrorQueueManager {
         stackTrace: [],
         metadata: {
           source: diagnostic.source,
-          code: diagnostic.code
+          code: diagnostic.code,
+          endLine: diagnostic.range.end.line + 1,
+          endCharacter: diagnostic.range.end.character
         }
       };
 
@@ -128,8 +131,16 @@ export class ErrorQueueManager {
    * Generate unique ID for error
    */
   private _generateId(uri: vscode.Uri, diagnostic: vscode.Diagnostic): string {
-    const hash = `${uri.fsPath}-${diagnostic.range.start.line}-${diagnostic.message}`;
-    return Buffer.from(hash).toString('base64').slice(0, 16);
+    return buildDiagnosticIdentity({
+      filePath: uri.fsPath,
+      startLine: diagnostic.range.start.line + 1,
+      startCharacter: diagnostic.range.start.character,
+      endLine: diagnostic.range.end.line + 1,
+      endCharacter: diagnostic.range.end.character,
+      message: diagnostic.message,
+      source: diagnostic.source,
+      code: diagnostic.code
+    });
   }
 
   /**

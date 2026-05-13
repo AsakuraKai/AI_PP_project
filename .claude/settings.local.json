@@ -32,7 +32,10 @@
       "Bash(find /c/Users/Admin/OneDrive/Desktop/Nuclear Creation/AI/AI_PP_project/docs/Profs-Requirement -name *.ts -path *Dataset*)",
       "Bash(grep -E \"\\\\.ts$\")",
       "Bash(sg --pattern 'catch \\($$$\\) { $$$ }' -l ts scripts/test-dataset-validation.ts)",
-      "Bash(npx tsx:*)"
+      "Bash(npx tsx:*)",
+      "Bash(xargs grep:*)",
+      "mcp__stitch__list_projects",
+      "mcp__stitch__edit_screens"
     ]
   }
 }

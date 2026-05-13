@@ -2,6 +2,31 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "build-webview",
+      "type": "shell",
+      "command": "npm run build",
+      "options": {
+        "cwd": "${workspaceFolder}/webview"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "compile-extension",
+      "type": "npm",
+      "script": "compile",
+      "problemMatcher": "$tsc"
+    },
+    {
+      "label": "build-all",
+      "dependsOn": ["build-webview", "compile-extension"],
+      "dependsOrder": "sequence",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
       "type": "npm",
       "script": "watch",
       "problemMatcher": "$tsc-watch",
@@ -9,10 +34,7 @@
       "presentation": {
         "reveal": "never"
       },
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      }
+      "group": "build"
     }
   ]
 }

@@ -8,6 +8,7 @@ interface NavItem {
   label: string;
   route: string;
   badge?: number;
+  hidden?: boolean; // Set to true to hide from navigation
 }
 
 interface NavigationSectionProps {
@@ -21,9 +22,9 @@ const navItems: NavItem[] = [
   { id: 'errors', icon: AlertCircle, label: 'Error Queue', route: '/errors', badge: 0 },
   { id: 'analyze', icon: Search, label: 'Analyze', route: '/analyze' },
   { id: 'history', icon: History, label: 'History', route: '/history' },
-  { id: 'agent', icon: Bot, label: 'Agent State', route: '/agent' },
-  { id: 'fixes', icon: Wrench, label: 'Fix Manager', route: '/fixes' },
-  { id: 'metrics', icon: BarChart, label: 'Metrics', route: '/metrics' },
+  { id: 'agent', icon: Bot, label: 'Agent State', route: '/agent', hidden: true },
+  { id: 'fixes', icon: Wrench, label: 'Fix Manager', route: '/fixes', hidden: true },
+  { id: 'metrics', icon: BarChart, label: 'Metrics', route: '/metrics', hidden: true },
 ];
 
 export function NavigationSection({ collapsed, currentRoute, onNavigate }: NavigationSectionProps) {
@@ -34,9 +35,12 @@ export function NavigationSection({ collapsed, currentRoute, onNavigate }: Navig
     postMessage('navigate', { route });
   };
 
+  // Filter out hidden navigation items
+  const visibleNavItems = navItems.filter(item => !item.hidden);
+
   return (
     <nav className="py-2">
-      {navItems.map((item) => (
+      {visibleNavItems.map((item) => (
         <NavItem
           key={item.id}
           item={item}

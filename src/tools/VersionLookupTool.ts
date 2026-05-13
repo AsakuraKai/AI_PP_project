@@ -783,7 +783,7 @@ export class VersionLookupTool implements Tool {
 
     // Find intermediate stable versions
     const allVersions = tool === 'agp' ? this.agpVersions : this.kotlinVersions;
-    const intermediates = allVersions
+    const intermediates = (allVersions as any[])
       .filter(v =>
         v.status === 'stable' &&
         !v.deprecated &&

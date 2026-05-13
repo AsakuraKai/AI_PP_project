@@ -28,6 +28,8 @@
     "generate-stats": "ts-node scripts/generate-file-structure-stats.ts",
     "lint": "eslint \"src/**/*.ts\" --ignore-pattern \"**/*.d.ts\"",
     "format": "prettier --write src/**/*.ts",
+    "secrets:scan": "ts-node scripts/scan-secrets.ts",
+    "secrets:scan:staged": "ts-node scripts/scan-secrets.ts --cached",
     "_deprecated:phase1-old": "ts-node scripts/phase1-validation.ts",
     "_deprecated:phase1-quick": "ts-node scripts/test-phase1-quick.ts",
     "_deprecated:phase1-retest": "ts-node scripts/phase1-quick-retest.ts",

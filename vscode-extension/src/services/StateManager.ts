@@ -12,6 +12,7 @@
 
 import * as vscode from 'vscode';
 import { ErrorItem, RCAResult } from '../types';
+import { buildErrorItemIdentity } from './errorIdentity';
 
 /**
  * History item for past analyses
@@ -88,7 +89,7 @@ export class StateManager {
   }
   
   // ===== Error Queue Methods =====
-  
+
   /**
    * Get all errors in queue
    */
@@ -100,13 +101,10 @@ export class StateManager {
    * Add error to queue
    */
   async addError(error: ErrorItem): Promise<void> {
-    // Check for duplicates
-    const exists = this._errorQueue.some(e => 
-      e.filePath === error.filePath && 
-      e.line === error.line && 
-      e.message === error.message
-    );
-    
+    // Check for duplicates by deterministic identity key
+    const incomingIdentity = buildErrorItemIdentity(error);
+    const exists = this._errorQueue.some(e => buildErrorItemIdentity(e) === incomingIdentity);
+
     if (!exists) {
       this._errorQueue.push(error);
       await this._saveState();

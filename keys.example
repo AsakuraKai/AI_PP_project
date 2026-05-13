@@ -1,0 +1,17 @@
+# Local credentials template (SAFE TO COMMIT)
+#
+# Copy this file to `keys` and put real values there.
+# The `keys` file is ignored by git via the root .gitignore.
+#
+# Keep secrets out of source control and rotate any keys that were previously committed.
+
+# Google / Gemini (example)
+GOOGLE_API_KEY=
+GEMINI_API_KEY=
+
+# Other providers (examples)
+OPENAI_API_KEY=
+ANTHROPIC_API_KEY=
+
+# Generic bearer token (example)
+# AUTH_HEADER="Bearer <token>"
