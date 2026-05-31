@@ -5,60 +5,39 @@
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { CloudModel } from '../types/cloud-llm';
+import axios from 'axios';
 
 export class GeminiClient {
   private client: GoogleGenerativeAI;
+  private apiKey: string;
 
   constructor(apiKey: string) {
     if (!apiKey || typeof apiKey !== 'string' || apiKey.trim().length === 0) {
       throw new Error('Valid API key is required for GeminiClient');
     }
-    this.client = new GoogleGenerativeAI(apiKey.trim());
+    this.apiKey = apiKey.trim();
+    this.client = new GoogleGenerativeAI(this.apiKey);
   }
 
   /**
-   * Fetches available models from Google Gemini API
+   * Fetches available models from Google Gemini API dynamically
    * @returns List of available Gemini models
    * @throws Error if fetching fails
    */
   async listModels(): Promise<CloudModel[]> {
     try {
-      // Google Generative AI SDK doesn't provide a simple listModels method
-      // Return a curated list of known Gemini models
-      const knownModels: CloudModel[] = [
-        {
-          id: 'gemini-2.0-flash-exp',
-          name: 'Gemini 2.0 Flash (Experimental)',
-          contextWindow: 1000000,
-          description: 'Latest experimental Gemini 2.0 Flash model'
-        },
-        {
-          id: 'gemini-1.5-pro',
-          name: 'Gemini 1.5 Pro',
-          contextWindow: 2000000,
-          description: 'Most capable Gemini 1.5 model'
-        },
-        {
-          id: 'gemini-1.5-flash',
-          name: 'Gemini 1.5 Flash',
-          contextWindow: 1000000,
-          description: 'Fast and efficient Gemini 1.5 model'
-        },
-        {
-          id: 'gemini-1.5-flash-8b',
-          name: 'Gemini 1.5 Flash 8B',
-          contextWindow: 1000000,
-          description: 'Smaller, faster Gemini 1.5 Flash variant'
-        },
-        {
-          id: 'gemini-pro',
-          name: 'Gemini Pro',
-          contextWindow: 32000,
-          description: 'Standard Gemini Pro model'
-        }
-      ];
+      const response = await axios.get(`https://generativelanguage.googleapis.com/v1beta/models?key=${this.apiKey}`);
+      const modelsData = response.data?.models || [];
 
-      return knownModels;
+      return modelsData
+        .filter((model: any) => model.name.startsWith('models/gemini'))
+        .filter((model: any) => model.supportedGenerationMethods?.includes('generateContent'))
+        .map((model: any) => ({
+          id: model.name.replace('models/', ''),
+          name: model.displayName || this.formatModelName(model.name),
+          contextWindow: model.inputTokenLimit || 0,
+          description: model.description || ''
+        }));
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Failed to fetch Gemini models: ${error.message}`);
@@ -74,7 +53,8 @@ export class GeminiClient {
    */
   async testConnection(): Promise<boolean> {
     try {
-      const model = this.client.getGenerativeModel({ model: 'gemini-pro' });
+      // Use gemini-1.5-flash for testing as it's fast and active
+      const model = this.client.getGenerativeModel({ model: 'gemini-1.5-flash' });
       const result = await model.generateContent('test');
       return !!result.response;
     } catch (error) {

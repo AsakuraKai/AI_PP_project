@@ -197,6 +197,16 @@ export class RCACache {
     const hash = this.hasher.hash(error);
     return this.get(hash);
   }
+
+  /**
+   * Generate a hash for a parsed error using the cache's hasher
+   * 
+   * @param error - Parsed error to hash
+   * @returns SHA-256 hash string
+   */
+  getHash(error: ParsedError): string {
+    return this.hasher.hash(error);
+  }
   
   /**
    * Store RCA document in cache
@@ -342,9 +352,8 @@ export class RCACache {
    * @param error - Parsed error to hash
    * @returns The hash that would be used as cache key
    */
-  getHash(error: ParsedError): string {
-    return this.hasher.hash(error);
-  }
+  // NOTE: getHash is implemented above as `getHash(error: ParsedError): string`.
+  // Duplicate implementations caused a TypeScript error and were removed.
   
   /**
    * Get all cache entries (for debugging/export)

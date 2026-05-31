@@ -273,8 +273,14 @@ export class TestRunnerCore {
     await fs.mkdir(outputDir, { recursive: true });
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const filename = `test${testId}-${result.testName.toLowerCase().replace(/\s+/g, '-')}-${timestamp}.json`;
+    const safeTestName = result.testName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    const filename = `test${testId}-${safeTestName}-${timestamp}.json`;
     const filepath = path.join(outputDir, filename);
+
+    await fs.mkdir(path.dirname(filepath), { recursive: true });
 
     await fs.writeFile(filepath, JSON.stringify(result, null, 2));
     console.log(`   💾 Result saved: ${filename}`);

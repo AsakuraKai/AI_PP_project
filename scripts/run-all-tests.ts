@@ -10,7 +10,7 @@
  *   npx ts-node scripts/run-all-tests.ts --tests 1,6,7
  */
 
-import { TestRunnerCore, TestCase } from './shared/test-runner-core';
+import { TestRunnerCore, TestCase } from './shared/test-runner-core.ts';
 
 // All 10 test cases consolidated
 const ALL_TEST_CASES: TestCase[] = [

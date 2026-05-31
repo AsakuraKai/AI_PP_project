@@ -47,7 +47,8 @@ describe('FeedbackHandler', () => {
     mockCache = {
       invalidate: jest.fn(),
       get: jest.fn(),
-      set: jest.fn()
+      set: jest.fn(),
+      getHash: jest.fn().mockReturnValue('computedHash')
     } as unknown as jest.Mocked<RCACache>;
     
     // Create handler with logging disabled for cleaner test output
@@ -202,10 +203,13 @@ describe('FeedbackHandler', () => {
       const rca = createSampleRCA();
       mockDb.getById.mockResolvedValue(rca);
       mockDb.update.mockResolvedValue(undefined);
-      
+      // Ensure invalidate returns a boolean for the handler to surface
+      mockCache.invalidate.mockReturnValue(false);
+
       const result = await handler.handleNegative(rca.id);
-      
-      expect(mockCache.invalidate).not.toHaveBeenCalled();
+
+      expect(mockCache.getHash).toHaveBeenCalled();
+      expect(mockCache.invalidate).toHaveBeenCalledWith('computedHash');
       expect(result.cacheInvalidated).toBe(false);
     });
     

@@ -37,23 +37,36 @@ export function AnalysisProgress({
   // Animated progress value for smooth transitions
   const [displayProgress, setDisplayProgress] = useState(progress);
   const [displayIteration, setDisplayIteration] = useState(iteration);
+  const [internalElapsed, setInternalElapsed] = useState(elapsed);
   const animationRef = useRef<number | null>(null);
+  const currentProgressRef = useRef(progress);
+
+  // Sync internal elapsed with props and start ticking
+  useEffect(() => {
+    setInternalElapsed(elapsed);
+    const interval = setInterval(() => {
+      setInternalElapsed(prev => prev + 100); // tick every 100ms
+    }, 100);
+    return () => clearInterval(interval);
+  }, [elapsed]);
 
   // Smoothly animate progress changes
   useEffect(() => {
     const targetProgress = progress;
-    const startProgress = displayProgress;
+    const startProgress = currentProgressRef.current;
     const duration = 500; // 500ms animation
-    const startTime = performance.now();
+    let startTime: number | null = null;
 
     const animate = (currentTime: number) => {
+      if (!startTime) startTime = currentTime;
       const elapsed = currentTime - startTime;
       const t = Math.min(elapsed / duration, 1);
       // Ease-out cubic for smooth deceleration
       const eased = 1 - Math.pow(1 - t, 3);
-      const currentProgress = startProgress + (targetProgress - startProgress) * eased;
+      const currentVal = startProgress + (targetProgress - startProgress) * eased;
 
-      setDisplayProgress(currentProgress);
+      setDisplayProgress(currentVal);
+      currentProgressRef.current = currentVal;
 
       if (t < 1) {
         animationRef.current = requestAnimationFrame(animate);
@@ -152,13 +165,13 @@ export function AnalysisProgress({
               Analyzing Error
             </h3>
             <p className="text-sm text-zinc-400">
-              Iteration {displayIteration} of {maxIterations}
+              Iteration {Math.max(1, displayIteration)} of {maxIterations}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2 text-sm text-zinc-400">
           <Clock className="h-4 w-4" />
-          <span>{formatTime(elapsed)}</span>
+          <span>{formatTime(internalElapsed)}</span>
         </div>
       </div>
 
@@ -167,7 +180,7 @@ export function AnalysisProgress({
         <div className="h-3 bg-zinc-800 rounded-full overflow-hidden relative">
           {/* Progress fill with gradient */}
           <div
-            className="h-full bg-linear-to-r from-purple-500 via-purple-400 to-blue-500 transition-all duration-300 ease-out relative"
+            className="h-full bg-gradient-to-r from-purple-500 via-purple-400 to-blue-500 transition-all duration-300 ease-out relative"
             style={{ width: `${displayProgress}%` }}
           >
             {/* Shimmer overlay */}
@@ -267,7 +280,7 @@ export function AnalysisProgress({
         {Array.from({ length: maxIterations }).map((_, i) => (
           <div key={i} className="relative flex items-center justify-center">
             {/* Pulsing ring for current iteration */}
-            {i === displayIteration && (
+            {i === Math.max(0, displayIteration - 1) && (
               <>
                 <div className="pulse-ring" />
                 <div className="pulse-ring" style={{ animationDelay: '0.5s' }} />
@@ -276,11 +289,11 @@ export function AnalysisProgress({
             <div
               className={cn(
                 'h-2.5 w-2.5 rounded-full transition-all duration-300',
-                i < displayIteration
-                  ? 'bg-purple-500'
-                  : i === displayIteration
-                  ? 'bg-purple-400 scale-150 z-10'
-                  : 'bg-zinc-700'
+                i < Math.max(0, displayIteration - 1)
+                  ? 'bg-purple-500' // completed
+                  : i === Math.max(0, displayIteration - 1)
+                  ? 'bg-purple-400 scale-150 z-10' // current
+                  : 'bg-zinc-700' // pending
               )}
             />
           </div>

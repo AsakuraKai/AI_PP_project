@@ -112,7 +112,9 @@
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950;
   }
 
-  /* Reduced motion support */
+  /* Reduced motion support - REMOVED INTENTIONALLY 
+     In VS Code Webviews this can sometimes trigger falsely based on OS settings
+     making loading spinners freeze, which looks like a bug to the user.
   @media (prefers-reduced-motion: reduce) {
     * {
       animation-duration: 0.01ms !important;
@@ -120,4 +122,5 @@
       transition-duration: 0.01ms !important;
     }
   }
+  */
 }

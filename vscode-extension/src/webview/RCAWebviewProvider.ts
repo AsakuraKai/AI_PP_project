@@ -284,6 +284,9 @@ export class RCAWebviewProvider implements vscode.WebviewViewProvider {
             case 'getCloudConfig':
                 await this._handleGetCloudConfig();
                 break;
+            case 'clearCloudConfig':
+                await this._handleClearCloudConfig();
+                break;
             case 'fetchModels':
                 await this._handleFetchModels(message.data);
                 break;
@@ -2038,7 +2041,14 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
      */
     private async _handleSaveCloudApiKey(data: any) {
         try {
-            const { apiKey, model } = data;
+            let { apiKey, model } = data;
+
+            if (apiKey === '••••••••••••••••') {
+                const existingKey = await this.cloudLLMService.getApiKey();
+                if (existingKey) {
+                    apiKey = existingKey;
+                }
+            }
 
             if (!apiKey || !model) {
                 throw new Error('API key and model are required');
@@ -2075,7 +2085,14 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
      */
     private async _handleTestCloudConnection(data: any) {
         try {
-            const { apiKey, model } = data;
+            let { apiKey, model } = data;
+
+            if (apiKey === '••••••••••••••••') {
+                const existingKey = await this.cloudLLMService.getApiKey();
+                if (existingKey) {
+                    apiKey = existingKey;
+                }
+            }
 
             if (!apiKey || !model) {
                 throw new Error('API key and model are required');
@@ -2134,6 +2151,27 @@ ${history.map(h => `- ${new Date(h.timestamp).toLocaleString()}: ${h.error.messa
                 command: 'cloudConfigLoaded',
                 data: null
             });
+        }
+    }
+
+    /**
+     * Handle clear cloud config
+     */
+    private async _handleClearCloudConfig() {
+        try {
+            await this.cloudLLMService.clearCloudConfig();
+            this._sendMessage({
+                command: 'cloudConfigCleared',
+                data: { success: true }
+            });
+            vscode.window.showInformationMessage('Cloud LLM configuration cleared successfully!');
+        } catch (error: any) {
+            console.error('[RCAWebviewProvider] Failed to clear cloud config:', error);
+            this._sendMessage({
+                command: 'cloudConfigCleared',
+                data: { success: false, error: error.message }
+            });
+            vscode.window.showErrorMessage(`Failed to clear configuration: ${error.message}`);
         }
     }
 

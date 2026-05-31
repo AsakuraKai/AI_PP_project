@@ -136,6 +136,28 @@ export class ToolRegistry {
   }
 
   /**
+   * Backward-compatible alias for older callers.
+   */
+  registerTool(
+    nameOrTool: string | Tool,
+    toolOrSchema: Tool | z.ZodSchema,
+    schemaOrMetadata?: z.ZodSchema | Partial<ToolMetadata>,
+    metadata?: Partial<ToolMetadata>
+  ): void {
+    if (typeof nameOrTool === 'string') {
+      this.register(nameOrTool, toolOrSchema as Tool, schemaOrMetadata as z.ZodSchema, metadata);
+      return;
+    }
+
+    this.register(
+      nameOrTool.name,
+      nameOrTool,
+      toolOrSchema as z.ZodSchema,
+      schemaOrMetadata as Partial<ToolMetadata>
+    );
+  }
+
+  /**
    * Unregister a tool
    */
   unregister(name: string): boolean {
@@ -161,6 +183,13 @@ export class ToolRegistry {
   }
 
   /**
+   * Backward-compatible alias for older callers.
+   */
+  getTool(name: string): Tool | undefined {
+    return this.get(name);
+  }
+
+  /**
    * Get tool metadata
    */
   getMetadata(name: string): ToolMetadata | undefined {
@@ -172,6 +201,13 @@ export class ToolRegistry {
    */
   list(): string[] {
     return Array.from(this.tools.keys());
+  }
+
+  /**
+   * Backward-compatible alias for older callers.
+   */
+  listTools(): string[] {
+    return this.list();
   }
 
   /**

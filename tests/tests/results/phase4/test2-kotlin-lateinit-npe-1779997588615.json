@@ -1,0 +1,57 @@
+{
+  "testCase": {
+    "id": 2,
+    "name": "Kotlin lateinit NPE",
+    "description": "lateinit property accessed before initialization",
+    "errorType": "kotlin-npe",
+    "complexity": "medium",
+    "targetUsability": 75,
+    "error": {
+      "type": "kotlin-npe",
+      "message": "lateinit property viewModel has not been initialized",
+      "filePath": "app/src/main/kotlin/MainActivity.kt",
+      "line": 42,
+      "column": 9,
+      "language": "kotlin",
+      "metadata": {
+        "severity": "error",
+        "context": "Accessing viewModel before onCreate() completes"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/kotlin/MainActivity.kt",
+      "lineNumber": 35,
+      "explanation": "Initialize viewModel in onCreate() before first use"
+    }
+  },
+  "timestamp": "2026-05-28T19:46:28.614Z",
+  "duration_ms": 4050,
+  "agent_response": {
+    "error": "lateinit property viewModel has not been initialized",
+    "rootCause": "Kotlin NPE: Property 'viewModel' is accessed before being initialized. Declared as 'var', but not assigned a value before first access in onCreate().",
+    "fixGuidelines": [
+      "1. Open MainActivity.kt and locate the line where viewModel is first accessed.",
+      "2. Add initialization code (like initializing to an empty object) right before that access.",
+      "3. Verify by running the app and checking for NPEs after making these changes."
+    ],
+    "confidence": 0.7,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 0,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 48,
+    "confidence": 0.7,
+    "latency_ms": 4050,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": false
+  },
+  "passed": false
+}

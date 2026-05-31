@@ -1,0 +1,62 @@
+{
+  "testCase": {
+    "id": 4,
+    "name": "XML Layout Inflation",
+    "description": "Runtime inflation error due to unknown attribute",
+    "errorType": "xml-layout",
+    "complexity": "medium",
+    "targetUsability": 70,
+    "error": {
+      "type": "xml-layout",
+      "message": "Binary XML file line #12: Error inflating class android.widget.TextView",
+      "filePath": "app/src/main/res/layout/activity_main.xml",
+      "line": 12,
+      "column": 5,
+      "language": "xml",
+      "metadata": {
+        "severity": "error",
+        "context": "Unknown attribute android:textFontWeight"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/res/layout/activity_main.xml",
+      "lineNumber": 12,
+      "explanation": "Remove invalid attribute or use android:textStyle=\"bold\""
+    }
+  },
+  "timestamp": "2026-05-28T19:46:40.386Z",
+  "duration_ms": 3638,
+  "agent_response": {
+    "error": "Binary XML file line #12: Error inflating class android.widget.TextView",
+    "rootCause": "Error inflating class android.widget.TextView at file:app/src/main/res/layout/activity_main.xml line #12",
+    "fixGuidelines": [
+      "1. Ensure that TextView has a proper XML inflation constructor with (Context, AttributeSet?) signature.",
+      "2. Verify that the TextView is correctly defined in the layout file and its XML attributes are properly handled.",
+      "3. Check if the TextView class is public or internal and adjust accordingly.",
+      "4. Add necessary ProGuard rules to keep the TextView class during minification.",
+      "5. Ensure that the activity_main.xml file uses the correct constructor for inflating TextView.",
+      "fixGuidelines",
+      "6. Verify that all attributes in the XML layout are correctly mapped and match the expected constructors.",
+      "7. Test each change incrementally to identify which part of the fix resolves the issue."
+    ],
+    "confidence": 0.5,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 100,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 68,
+    "confidence": 0.5,
+    "latency_ms": 3638,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": true
+  },
+  "passed": false
+}

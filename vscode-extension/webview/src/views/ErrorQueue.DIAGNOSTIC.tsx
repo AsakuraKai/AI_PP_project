@@ -282,12 +282,12 @@ export function ErrorQueue() {
 
         {/* Bulk Actions */}
         {hasSelection ? (
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-zinc-400">{selectedIds.size} selected</span>
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+            <span className="text-sm text-zinc-400 w-full sm:w-auto mb-1 sm:mb-0">{selectedIds.size} selected</span>
             <Button
               size="sm"
               onClick={analyzeSelected}
-              className="gap-2"
+              className="gap-2 flex-1 sm:flex-none"
             >
               <Play className="h-3 w-3" />
               Analyze
@@ -296,17 +296,18 @@ export function ErrorQueue() {
               variant="outline"
               size="sm"
               onClick={deselectAll}
+              className="flex-1 sm:flex-none"
             >
               Clear
             </Button>
           </div>
         ) : (
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
             <Button
               size="sm"
               onClick={analyzeAll}
               disabled={stats.pending === 0}
-              className="gap-2"
+              className="gap-2 flex-1 sm:flex-none"
             >
               <Play className="h-3 w-3" />
               Analyze All
@@ -316,7 +317,7 @@ export function ErrorQueue() {
               size="sm"
               onClick={clearCompleted}
               disabled={stats.complete === 0 && stats.failed === 0}
-              className="gap-2"
+              className="gap-2 flex-1 sm:flex-none"
             >
               <Trash2 className="h-3 w-3" />
               Clear Completed
@@ -360,47 +361,51 @@ export function ErrorQueue() {
           } : undefined}
         />
       ) : (
-        <div className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden" role="table" aria-label="Error list">
-          {/* Table Header */}
-          <div className="grid grid-cols-12 gap-4 p-4 border-b border-zinc-800 bg-zinc-900/50 text-sm font-medium text-zinc-400" role="row">
-            <div className="col-span-1 flex items-center" role="columnheader">
-              <Checkbox
-                checked={allSelected}
-                onCheckedChange={() => allSelected ? deselectAll() : selectAll()}
-                aria-label={allSelected ? 'Deselect all errors' : 'Select all errors'}
-              />
-            </div>
-            <div className="col-span-1" role="columnheader">Status</div>
-            <div className="col-span-2" role="columnheader">Type</div>
-            <div className="col-span-5" role="columnheader">Message</div>
-            <div className="col-span-2" role="columnheader">File</div>
-            <div className="col-span-1" role="columnheader">Actions</div>
-          </div>
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg flex flex-col" role="table" aria-label="Error list">
+          <div className="overflow-x-auto">
+            <div className="min-w-[600px]">
+              {/* Table Header */}
+              <div className="flex items-center gap-4 p-4 border-b border-zinc-800 bg-zinc-900/50 text-sm font-medium text-zinc-400" role="row">
+                <div className="w-6 shrink-0 flex items-center" role="columnheader">
+                  <Checkbox
+                    checked={allSelected}
+                    onCheckedChange={() => allSelected ? deselectAll() : selectAll()}
+                    aria-label={allSelected ? 'Deselect all errors' : 'Select all errors'}
+                  />
+                </div>
+                <div className="w-16 shrink-0" role="columnheader">Status</div>
+                <div className="w-24 shrink-0" role="columnheader">Type</div>
+                <div className="flex-1 min-w-0" role="columnheader">Message</div>
+                <div className="w-32 shrink-0" role="columnheader">File</div>
+                <div className="w-24 shrink-0 text-right" role="columnheader">Actions</div>
+              </div>
 
-          {/* Error Rows */}
-          <div className="divide-y divide-zinc-800" role="rowgroup">
-            {errors.map((error, index) => (
-              <ErrorRow
-                key={error.id}
-                error={error}
-                selected={selectedIds.has(error.id)}
-                focused={index === focusedIndex}
-                onToggleSelection={() => diagnosticToggleSelection(error.id)}
-                onAnalyze={() => analyzeError(error.id)}
-                onRemove={() => removeError(error.id)}
-                onPin={() => error.metadata?.pinned ? unpinError(error.id) : pinError(error.id)}
-                onOpen={() => openErrorLocation(error.id)}
-                onKeyDown={(e) => {
-                  handleListKeyboard(e, {
-                    currentIndex: index,
-                    itemCount: errors.length,
-                    onNavigate: setFocusedIndex,
-                    onSelect: () => diagnosticToggleSelection(error.id),
-                    wrap: true
-                  });
-                }}
-              />
-            ))}
+              {/* Error Rows */}
+              <div className="divide-y divide-zinc-800" role="rowgroup">
+                {errors.map((error, index) => (
+                  <ErrorRow
+                    key={error.id}
+                    error={error}
+                    selected={selectedIds.has(error.id)}
+                    focused={index === focusedIndex}
+                    onToggleSelection={() => diagnosticToggleSelection(error.id)}
+                    onAnalyze={() => analyzeError(error.id)}
+                    onRemove={() => removeError(error.id)}
+                    onPin={() => error.metadata?.pinned ? unpinError(error.id) : pinError(error.id)}
+                    onOpen={() => openErrorLocation(error.id)}
+                    onKeyDown={(e) => {
+                      handleListKeyboard(e, {
+                        currentIndex: index,
+                        itemCount: errors.length,
+                        onNavigate: setFocusedIndex,
+                        onSelect: () => diagnosticToggleSelection(error.id),
+                        wrap: true
+                      });
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -455,7 +460,7 @@ function ErrorRow({ error, selected, focused, onToggleSelection, onAnalyze, onRe
   return (
     <div
       className={cn(
-        'grid grid-cols-12 gap-4 p-4 hover:bg-zinc-800/50 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-inset',
+        'flex items-center gap-4 p-4 hover:bg-zinc-800/50 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-inset',
         selected && 'bg-zinc-800/30',
         focused && 'ring-2 ring-purple-500/50'
       )}
@@ -468,51 +473,52 @@ function ErrorRow({ error, selected, focused, onToggleSelection, onAnalyze, onRe
       aria-label={`Error: ${error.message} in ${getFileName(error.filePath)} at line ${error.line}, status: ${config.label}`}
     >
       {/* Checkbox */}
-      <div className="col-span-1 flex items-center" role="cell">
+      <div className="w-6 shrink-0 flex items-center relative" role="cell">
         <Checkbox
           checked={selected}
           onCheckedChange={onToggleSelection}
           aria-label={`Select error: ${error.message}`}
         />
         {error.metadata?.pinned && (
-          <Pin className="h-3 w-3 ml-2 text-amber-400" aria-label="Pinned" />
+          <Pin className="h-3.5 w-3.5 absolute -right-3 -top-2 text-amber-400 rotate-45 drop-shadow-md" aria-label="Pinned" />
         )}
       </div>
 
       {/* Status */}
-      <div className="col-span-1 flex items-center" role="cell">
-        <div className={cn('flex items-center gap-2 px-2 py-1 rounded', config.bg)} role="status" aria-label={config.label}>
-          <StatusIcon className={cn('h-3 w-3', config.color, error.status === 'analyzing' && 'animate-spin')} aria-hidden="true" />
+      <div className="w-16 shrink-0 flex items-center" role="cell">
+        <div className={cn('flex items-center justify-center w-7 h-7 rounded-md', config.bg)} role="status" aria-label={config.label} title={config.label}>
+          <StatusIcon className={cn('h-4 w-4', config.color, error.status === 'analyzing' && 'animate-spin')} aria-hidden="true" />
           <span className="sr-only">{config.label}</span>
         </div>
       </div>
 
       {/* Type */}
-      <div className="col-span-2 flex items-center" role="cell">
-        <Badge variant="outline" className="capitalize" aria-label={`Error type: ${error.type}`}>
+      <div className="w-24 shrink-0 flex items-center" role="cell">
+        <Badge variant="outline" className="capitalize truncate max-w-full" aria-label={`Error type: ${error.type}`}>
           {error.type}
         </Badge>
       </div>
 
       {/* Message */}
-      <div className="col-span-5 flex items-center" role="cell">
-        <p className="text-sm text-zinc-200 truncate">{error.message}</p>
+      <div className="flex-1 min-w-0 flex items-center" role="cell">
+        <p className="text-sm text-zinc-200 truncate" title={error.message}>{error.message}</p>
       </div>
 
       {/* File */}
-      <div className="col-span-2 flex items-center" role="cell">
+      <div className="w-32 shrink-0 flex items-center" role="cell">
         <button
           onClick={onOpen}
-          className="text-sm text-zinc-400 hover:text-zinc-200 truncate flex items-center gap-1 transition-colors focus-ring"
+          className="text-sm text-zinc-400 hover:text-zinc-200 truncate flex items-center gap-1.5 transition-colors focus-ring max-w-full"
           aria-label={`Open ${getFileName(error.filePath)} at line ${error.line}`}
+          title={`${getFileName(error.filePath)}:${error.line}`}
         >
-          <FileText className="h-3 w-3 shrink-0" aria-hidden="true" />
+          <FileText className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
           <span className="truncate">{getFileName(error.filePath)}:{error.line}</span>
         </button>
       </div>
 
       {/* Actions */}
-      <div className="col-span-1 flex items-center justify-end" role="cell">
+      <div className="w-24 shrink-0 flex items-center justify-end" role="cell">
         {(showActions || selected) && (
           <div className="flex items-center gap-1">
             {error.status === 'pending' && (

@@ -306,39 +306,41 @@ class RAGRetrievalTest {
      * Print summary
      */
     printSummary(): void {
-        console.log(`\n${colors.bright}${colors.blue}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${colors.reset}`);
-        console.log(`${colors.bright}RAG RETRIEVAL TEST SUMMARY${colors.reset}`);
-        console.log(`${colors.blue}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${colors.reset}\n`);
+        const separator = '------------------------------------------------------';
+
+        console.log(`\n${separator}`);
+        console.log('RAG RETRIEVAL TEST SUMMARY');
+        console.log(`${separator}\n`);
 
         const stats = this.cache.getStats();
         const hitRate = stats.totalHits / Math.max(stats.totalHits + stats.totalMisses, 1) * 100;
 
-        console.log(`${colors.green}✓ L1 Cache (In-Memory):${colors.reset}`);
-        console.log(`  • Instant lookups (<1ms)`);
-        console.log(`  • Current entries: ${stats.size}`);
-        console.log(`  • Hit rate: ${hitRate.toFixed(1)}%`);
+        console.log('L1 Cache (In-Memory):');
+        console.log('  - Instant lookups (<1ms)');
+        console.log(`  - Current entries: ${stats.size}`);
+        console.log(`  - Hit rate: ${hitRate.toFixed(1)}%`);
         console.log('');
 
         if (this.db) {
-            console.log(`${colors.green}✓ L2 Vector Search (ChromaDB):${colors.reset}`);
-            console.log(`  • Semantic similarity matching`);
-            console.log(`  • 50-200ms per query`);
-            console.log(`  • Finds related errors (not just exact matches)`);
+            console.log('L2 Vector Search (ChromaDB):');
+            console.log('  - Semantic similarity matching');
+            console.log('  - 50-200ms per query');
+            console.log('  - Finds related errors (not just exact matches)');
         } else {
-            console.log(`${colors.yellow}⚠ L2 Vector Search (ChromaDB):${colors.reset}`);
-            console.log(`  • Not available (start ChromaDB server)`);
-            console.log(`  • Command: docker run -p 8000:8000 chromadb/chroma`);
+            console.log('L2 Vector Search (ChromaDB):');
+            console.log('  - Not available (start ChromaDB server)');
+            console.log('  - Command: docker run -p 8000:8000 chromadb/chroma');
         }
 
         console.log('');
-        console.log(`${colors.magenta}${colors.bright}Key Benefits:${colors.reset}`);
+        console.log('Key Benefits:');
         console.log(`  1. Eliminates redundant LLM calls for repeat errors`);
         console.log(`  2. Provides instant results from cache (<1ms)`);
         console.log(`  3. Finds similar errors through vector search (50-200ms)`);
         console.log(`  4. Falls back to full analysis only when needed`);
         console.log(`  5. Learns from user feedback and validation`);
 
-        console.log(`\n${colors.gray}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${colors.reset}\n`);
+        console.log(`\n${separator}\n`);
     }
 }
 
@@ -360,13 +362,13 @@ async function main() {
         // Print summary
         tester.printSummary();
 
-        console.log(`${colors.green}${colors.bright}✓ All RAG retrieval tests completed successfully!${colors.reset}\n`);
+        console.log(`${colors.green}${colors.bright}All RAG retrieval tests completed successfully!${colors.reset}\n`);
 
         // Clean exit
         setTimeout(() => process.exit(0), 100);
 
     } catch (error) {
-        console.error(`\n${colors.red}${colors.bright}✗ Test failed:${colors.reset}`, error);
+        console.error(`\n${colors.red}${colors.bright}Test failed:${colors.reset}`, error);
         setTimeout(() => process.exit(1), 100);
     }
 }

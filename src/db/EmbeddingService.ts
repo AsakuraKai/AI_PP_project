@@ -68,7 +68,7 @@ export class EmbeddingService {
    */
   private constructor(config?: EmbeddingConfig) {
     this.config = {
-      model: config?.model || 'all-MiniLM-L6-v2',
+      model: config?.model || 'all-minilm:l6-v2',
       batchSize: config?.batchSize || 32,
       enableCache: config?.enableCache !== false,
       endpoint: config?.endpoint || 'http://localhost:11434'
@@ -148,7 +148,7 @@ export class EmbeddingService {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'all-minilm:l6-v2',
+          model: this.config.model,
           prompt: text
         })
       });

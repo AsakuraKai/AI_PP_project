@@ -1,0 +1,64 @@
+{
+  "testCase": {
+    "id": 7,
+    "name": "Gradle Network Failure",
+    "description": "Failed to resolve dependency due to network/repository issue",
+    "errorType": "gradle-network",
+    "complexity": "medium",
+    "baselineUsability": 60,
+    "targetUsability": 75,
+    "error": {
+      "type": "gradle-network",
+      "message": "Could not resolve all dependencies for configuration :classpath",
+      "filePath": "settings.gradle.kts",
+      "line": 15,
+      "column": 1,
+      "language": "gradle",
+      "metadata": {
+        "severity": "error",
+        "context": "Repository not accessible or dependency missing"
+      }
+    },
+    "expectedFix": {
+      "file": "settings.gradle.kts",
+      "explanation": "Add missing repository or check network connection"
+    }
+  },
+  "timestamp": "2026-05-28T19:46:54.718Z",
+  "duration_ms": 3809,
+  "agent_response": {
+    "error": "Could not resolve all dependencies for configuration :classpath",
+    "rootCause": "Could not resolve all dependencies for configuration :classpath at settings.gradle.kts:15",
+    "fixGuidelines": [
+      "1. Verify network connectivity and firewall settings on the device.",
+      "2. Check if build.gradle.kt or settings.gradle.kt has correct repository configurations.",
+      "3. Ensure that required AndroidX modules are included in the build.gradle file.",
+      "4. Consider adding alternative Google Maven repositories to the build.gradle file.",
+      "5. Verify that the project's dependencies are correctly listed and not missing.",
+      "6. Check for any syntax errors or incorrect paths in the dependency resolution configuration.",
+      "7. Test by ensuring network is enabled and devices are connected to the internet.",
+      "fixGuidelines",
+      " confidence: 0.8"
+    ],
+    "confidence": 0.5,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 60,
+    "file_identification": 100,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 65,
+    "confidence": 0.5,
+    "latency_ms": 3809,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": true
+  },
+  "passed": false,
+  "improvement_over_baseline": 5
+}

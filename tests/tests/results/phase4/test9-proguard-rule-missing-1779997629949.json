@@ -1,0 +1,78 @@
+{
+  "testCase": {
+    "id": 9,
+    "name": "ProGuard Rule Missing",
+    "description": "Runtime crash in release build due to obfuscation",
+    "errorType": "proguard",
+    "complexity": "complex",
+    "baselineUsability": 55,
+    "targetUsability": 70,
+    "error": {
+      "type": "proguard",
+      "message": "java.lang.NoSuchMethodError: No virtual method toJson",
+      "filePath": "app/proguard-rules.pro",
+      "line": 1,
+      "column": 1,
+      "language": "proguard",
+      "metadata": {
+        "severity": "error",
+        "context": "Gson reflection methods removed by R8"
+      }
+    },
+    "expectedFix": {
+      "file": "app/proguard-rules.pro",
+      "codeChange": "-keep class com.example.** { *; }",
+      "explanation": "Add ProGuard keep rule for serialization classes"
+    }
+  },
+  "timestamp": "2026-05-28T19:47:09.948Z",
+  "duration_ms": 7190,
+  "agent_response": {
+    "error": "java.lang.NoSuchMethodError: No virtual method toJson",
+    "rootCause": "ProGuard removed the toJson method from com.example.** { *; } because it's used with reflection or in conjunction with Gson.",
+    "fixGuidelines": [
+      "1. Open app/proguard-rules.pro and add a new rule to keep all classes containing toJson.",
+      "2. Before: \n```proguard\n# Keep class com.example.** { *; }\n```\nAfter: \n```proguard\n# Keep class com.example.** { *; }\n# Keep method toJson from com.example.** {\n    val json = gson.fromJson(value, JsonObject)\n}\n```\n3. Verify by rebuilding the release APK.",
+      "confidence): 0.8",
+      "fixGuidelines[1]: \n```proguard\n# Keep class com.example.** { *; }\n# Keep method toJson from com.example.** {\n    val json = gson.fromJson(value, JsonObject)\n}\n```\n"
+    ],
+    "confidence": 0.5,
+    "iterations": 1,
+    "toolsUsed": [],
+    "codeFix": {
+      "filePath": "app/proguard-rules.pro",
+      "line": 1,
+      "originalCode": "→    1 | # Add project specific ProGuard rules here.\n     2 | # You can control the set of applied configuration files using the\n     3 | # proguardFiles setting in build.gradle.\n     4 | \n     5 | -keep class * {\n     6 |     public private *;\n     7 | }\n\n\n\n\n\n\n\n",
+      "fixedCode": "{\"\":\n{\n    \"code\": [\n        \"import java.util.*\",\n        \"@SuppressWarnings(\\\"unchecked\\\")\",\n        \"public class ProGuardRule {\\n\"\n        ],\n        \"// Your code here to fix the error\\n\":false,\n        \"@Override public static void main(String[] args) {\\n\":false,\n        \"    // ProGuard setup code\\n\":false,\n        \"    // ...\\n\":false,\n        \"    proguardFiles(args);\\n\":false,\n        \"}\\n\":false\n    }\n}",
+      "diff": "**File:** `app/proguard-rules.pro`\n\n**Before:**\n```\n→    1 | # Add project specific ProGuard rules here.\n     2 | # You can control the set of applied configuration files using the\n     3 | # proguardFiles setting in build.gradle.\n     4 | \n     5 | -keep class * {\n     6 |     public private *;\n     7 | }\n\n\n\n\n\n\n\n\n```\n\n**After:**\n```\n{\"\":\n{\n    \"code\": [\n        \"import java.util.*\",\n        \"@SuppressWarnings(\\\"unchecked\\\")\",\n        \"public class ProGuardRule {\\n\"\n        ],\n        \"// Your code here to fix the error\\n\":false,\n        \"@Override public static void main(String[] args) {\\n\":false,\n        \"    // ProGuard setup code\\n\":false,\n        \"    // ...\\n\":false,\n        \"    proguardFiles(args);\\n\":false,\n        \"}\\n\":false\n    }\n}\n```",
+      "explanation": "{\"\":\n{\n    \"code\": [\n        \"import java.util.*\",\n        \"@SuppressWarnings(\\\"unchecked\\\")\",\n        \"public class ProGuardRule {\\n\"\n        ],\n        \"// Your code here to fix the error\\n\":false,\n        \"@Override public static void main(String[] args) {\\n\":false,\n        \"    // ProGuard setup code\\n\":false,\n        \"    // ...\\n\":false,\n        \"    proguardFiles(args);\\n\":false,\n        \"}\\n\":false\n    }\n}",
+      "confidence": 60,
+      "syntaxValid": false,
+      "minimalityScore": 100,
+      "minimalityMetrics": {
+        "totalLines": 15,
+        "changedLines": 22,
+        "contextLines": -7,
+        "changeRatio": 1.4666666666666666,
+        "isMinimal": true
+      }
+    }
+  },
+  "metrics": {
+    "diagnosis_accuracy": 100,
+    "solution_specificity": 60,
+    "file_identification": 100,
+    "code_examples": 80,
+    "version_suggestions": 0,
+    "overall_usability": 76,
+    "confidence": 0.5,
+    "latency_ms": 7190,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": true,
+    "has_specific_version": false,
+    "identified_exact_file": true
+  },
+  "passed": true,
+  "improvement_over_baseline": 21
+}

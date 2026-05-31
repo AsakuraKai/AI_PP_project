@@ -252,10 +252,14 @@ export class MinimalReactAgent {
       // This can short-circuit the full ReAct loop for simple errors.
       if (this.enableProgressivePrompting && this.usePromptEngine) {
         const errorContext = error.message + ' ' + (error.stackTrace?.map(f => f.file).join(' ') || '');
+        
+        // Let UI know we're evaluating (can treat as iteration 1)
+        this.stream.emitIteration(1, this.maxIterations);
 
         // Level 1: Lightweight
         {
           console.log('[SEARCH] Progressive Prompting L1: Lightweight analysis...');
+          this.stream.emitThought('Checking basic logic using lightweight model...', 1);
           const l1Prompt = await this.promptEngine.buildProgressiveAnalysisPrompt({
             error,
             level: 1,
@@ -311,6 +315,7 @@ export class MinimalReactAgent {
         // Level 2: Add RAG examples (still one-shot)
         {
           console.log('[SEARCH] Progressive Prompting L2: Adding relevant examples...');
+          this.stream.emitThought('Checking deeper using context from similar errors...', 1);
           const l2Prompt = await this.promptEngine.buildProgressiveAnalysisPrompt({
             error,
             level: 2,

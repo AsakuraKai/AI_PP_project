@@ -1,0 +1,59 @@
+{
+  "testCase": {
+    "id": 3,
+    "name": "Compose API Breakage",
+    "description": "Deprecated Compose API after upgrade 1.5 → 1.6",
+    "errorType": "compose-deprecation",
+    "complexity": "medium",
+    "targetUsability": 75,
+    "error": {
+      "type": "compose-deprecation",
+      "message": "Unresolved reference: MaterialTheme. Use androidx.compose.material3.MaterialTheme",
+      "filePath": "app/src/main/kotlin/ui/HomeScreen.kt",
+      "line": 88,
+      "column": 5,
+      "language": "kotlin",
+      "metadata": {
+        "severity": "error",
+        "context": "Compose Material upgraded to Material3"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/kotlin/ui/HomeScreen.kt",
+      "lineNumber": 88,
+      "codeChange": "import androidx.compose.material3.MaterialTheme",
+      "explanation": "Material2 deprecated, use Material3"
+    }
+  },
+  "timestamp": "2026-05-28T19:46:35.731Z",
+  "duration_ms": 6083,
+  "agent_response": {
+    "error": "Unresolved reference: MaterialTheme. Use androidx.compose.material3.MaterialTheme",
+    "rootCause": "Unresolved reference: MaterialTheme. Use androidx.compose.material3.MaterialTheme at app/src/main/kotlin/ui/HomeScreen.kt:88",
+    "fixGuidelines": [
+      "1. Update import statement in HomeScreen.kt to use Material3 instead of Material2.",
+      "2. Replace all instances of MaterialTheme with the Material3 package.",
+      "3. Add the necessary dependencies for Material3.",
+      "4. Verify that all code using MaterialTheme is compatible with Material3 and update accordingly."
+    ],
+    "confidence": 1,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 60,
+    "file_identification": 100,
+    "code_examples": 0,
+    "version_suggestions": 0,
+    "overall_usability": 65,
+    "confidence": 1,
+    "latency_ms": 6083,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": false,
+    "has_specific_version": false,
+    "identified_exact_file": true
+  },
+  "passed": false
+}

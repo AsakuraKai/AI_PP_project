@@ -353,6 +353,12 @@ export class AnalysisService {
       let lastProgressUpdate = 0;
       let pendingProgress: any = null;
 
+      // State to accumulate across throttled updates
+      let lastThought = '';
+      const recentActions = [] as string[];
+      const recentObservations = [] as string[];
+      let fractionalProgress = 0; // Increases within an iteration
+
       const sendThrottledProgress = (progress: any) => {
         pendingProgress = progress;
         const now = Date.now();
@@ -381,37 +387,63 @@ export class AnalysisService {
       };
 
       // Helper to build progress object with common fields (DRY principle)
-      const buildProgress = (currentThought: string) => ({
-        iteration: currentIteration,
-        maxIterations,
-        progress: (currentIteration / maxIterations) * 100,
-        currentThought,
-        recentActions: [],
-        recentObservations: [],
-        elapsed: Date.now() - startTime,
-        isActive: true
-      });
+      const buildProgress = () => {
+        let baseProgress = ((currentIteration - 1) / maxIterations) * 100;
+        if (baseProgress < 0) baseProgress = 0;
+        
+        // Add fractional progress (each action/observation adds 2% up to a max of iteration chunk)
+        const iterationChunk = 100 / maxIterations;
+        const maxFractional = iterationChunk * 0.9; // Cap at 90% of chunk
+        let currentProgress = baseProgress + Math.min(fractionalProgress, maxFractional);
+        if (currentProgress < 0) currentProgress = 0;
+        if (currentProgress > 100) currentProgress = 100;
+
+        return {
+          iteration: currentIteration,
+          maxIterations,
+          progress: currentProgress,
+          currentThought: lastThought,
+          recentActions: [...recentActions],
+          recentObservations: [...recentObservations],
+          elapsed: Date.now() - startTime,
+          isActive: true
+        };
+      };
 
       const handleIteration = (event: any) => {
         currentIteration = event.iteration;
+        fractionalProgress = 5; // Start a bit into the chunk
+        lastThought = `Starting iteration ${event.iteration}... Analyzing context.`;
         sendThrottledProgress({
-          ...buildProgress(''),
+          ...buildProgress(),
           iteration: event.iteration,
-          maxIterations: event.maxIterations,
-          progress: event.progress * 100
+          maxIterations: event.maxIterations
         });
       };
 
       const handleThought = (event: any) => {
-        sendThrottledProgress(buildProgress(event.thought));
+        fractionalProgress += 5;
+        lastThought = event.thought;
+        sendThrottledProgress(buildProgress());
       };
 
       const handleAction = (event: any) => {
-        sendThrottledProgress(buildProgress(`Executing tool: ${event.action.tool}`));
+        fractionalProgress += 5;
+        const actionStr = `Executing tool: ${event.action.tool}`;
+        lastThought = `Executing action: ${event.action.tool}...`;
+        recentActions.push(actionStr);
+        if (recentActions.length > 5) recentActions.shift();
+        sendThrottledProgress(buildProgress());
       };
 
       const handleObservation = (event: any) => {
-        sendThrottledProgress(buildProgress(`Received: ${event.observation.substring(0, 50)}...`));
+        fractionalProgress += 5;
+        let obsStr = event.observation || '';
+        if (obsStr.length > 50) obsStr = obsStr.substring(0, 50) + '...';
+        lastThought = `Analyzing tool results...`;
+        recentObservations.push(`Received: ${obsStr}`);
+        if (recentObservations.length > 5) recentObservations.shift();
+        sendThrottledProgress(buildProgress());
       };
 
       this._stateStream!.on('iteration', handleIteration);
@@ -450,7 +482,8 @@ export class AnalysisService {
         (status) => {
           // Surface timeout warnings as progress updates so the UI reflects why we stopped
           // Reuse buildProgress helper to avoid duplication
-          sendThrottledProgress(buildProgress(status));
+          lastThought = status;
+          sendThrottledProgress(buildProgress());
         }
       );
 

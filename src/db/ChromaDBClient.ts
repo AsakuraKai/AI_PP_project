@@ -30,6 +30,12 @@ export interface ChromaDBConfig {
   /** Collection name (default: rca_solutions) */
   collectionName?: string;
 
+  /** Model for embedding generation (default: all-minilm:l6-v2) */
+  embeddingModel?: string;
+  
+  /** Endpoint for Ollama generating embeddings (default: http://localhost:11434) */
+  embeddingEndpoint?: string;
+  
   /** Whether to enable connection health checks */
   enableHealthCheck?: boolean;
 
@@ -117,6 +123,8 @@ export class ChromaDBClient {
     this.config = {
       url: config.url || 'http://localhost:8000',
       collectionName: config.collectionName || 'rca_solutions',
+      embeddingModel: config.embeddingModel || 'all-minilm:l6-v2',
+      embeddingEndpoint: config.embeddingEndpoint || 'http://localhost:11434',
       enableHealthCheck: config.enableHealthCheck ?? true,
       timeout: config.timeout || 30000
     };
@@ -141,7 +149,10 @@ export class ChromaDBClient {
 
     try {
       // Initialize embedding service
-      instance.embedder = await EmbeddingService.create();
+      instance.embedder = await EmbeddingService.create({
+        model: config.embeddingModel || process.env.EMBEDDING_MODEL || 'all-minilm:l6-v2',
+        endpoint: config.embeddingEndpoint || process.env.OLLAMA_ENDPOINT || 'http://localhost:11434'
+      });
 
       // Check connection health
       if (instance.config.enableHealthCheck) {
@@ -390,6 +401,7 @@ export class ChromaDBClient {
 
       return documents;
     } catch (error) {
+      console.error("GETALL ERROR IS:", error);
       throw new ChromaDBError(
         'Failed to retrieve all documents',
         'getAll',

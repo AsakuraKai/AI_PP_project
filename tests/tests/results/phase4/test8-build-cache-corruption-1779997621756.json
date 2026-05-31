@@ -1,0 +1,59 @@
+{
+  "testCase": {
+    "id": 8,
+    "name": "Build Cache Corruption",
+    "description": "Gradle build cache corrupted causing build failures",
+    "errorType": "gradle-cache",
+    "complexity": "simple",
+    "baselineUsability": 70,
+    "targetUsability": 85,
+    "error": {
+      "type": "gradle-cache",
+      "message": "Execution failed for task :app:compileDebugKotlin. Compilation error",
+      "filePath": "build.gradle.kts",
+      "line": 1,
+      "column": 1,
+      "language": "gradle",
+      "metadata": {
+        "severity": "error",
+        "context": "Intermittent build failures, works after clean"
+      }
+    },
+    "expectedFix": {
+      "file": "build.gradle",
+      "explanation": "Run ./gradlew clean or delete .gradle cache"
+    }
+  },
+  "timestamp": "2026-05-28T19:47:01.756Z",
+  "duration_ms": 6024,
+  "agent_response": {
+    "error": "Execution failed for task :app:compileDebugKotlin. Compilation error",
+    "rootCause": "This error is not a common pattern",
+    "fixGuidelines": [
+      "1. Clear build cache and restart the build process",
+      "2. Before:\n```\nkotlin\nimport android.Manifest\n...\n// Check for missing dependencies or manifest issues\n```\nAfter:\n```\nkotlin\nimport android.Manifest\n...\n// Ensure all required dependencies are present and up to date\n```\n3. Verify if the build cache is corrupted by clearing it with 'gradle clean' and rebuilding.",
+      "4. Another potential solution: Check for any recent changes in the project that might have affected the build state, such as new dependencies or module versions introduced before the last successful rebuild.",
+      "5. Additionally, inspect the build.gradle.kt file for any configuration issues related to app compilation."
+    ],
+    "confidence": 0.7,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 0,
+    "solution_specificity": 60,
+    "file_identification": 100,
+    "code_examples": 80,
+    "version_suggestions": 0,
+    "overall_usability": 46,
+    "confidence": 0.7,
+    "latency_ms": 6024,
+    "has_root_cause": false,
+    "has_fix_guidelines": true,
+    "has_code_diff": true,
+    "has_specific_version": false,
+    "identified_exact_file": true
+  },
+  "passed": false,
+  "improvement_over_baseline": -24
+}

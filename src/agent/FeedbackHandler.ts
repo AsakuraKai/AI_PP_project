@@ -11,6 +11,7 @@
 import { ChromaDBClient } from '../db/ChromaDBClient';
 import { RCADocument } from '../db/schemas/rca-collection';
 import { RCACache } from '../cache/RCACache';
+import { createHash } from 'crypto';
 import { QualityScorer } from '../db/QualityScorer';
 
 /**
@@ -436,7 +437,15 @@ export class FeedbackHandler {
       filePath: '', // Not needed for cache key
       line: 0       // Not needed for cache key
     };
-    return this.cache.getHash(pseudoError);
+    // Prefer cache-provided hasher when available (keeps behavior consistent
+    // with custom cache implementations used in some tests). If not present,
+    // compute a SHA-256 hex digest as a safe fallback.
+    if (this.cache && typeof (this.cache as any).getHash === 'function') {
+      return (this.cache as any).getHash(pseudoError);
+    }
+
+    const normalized = `${pseudoError.type}|${pseudoError.message}|${pseudoError.language}`;
+    return createHash('sha256').update(normalized).digest('hex');
   }
 
   /**

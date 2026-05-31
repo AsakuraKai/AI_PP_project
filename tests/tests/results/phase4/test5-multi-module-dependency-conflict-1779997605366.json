@@ -1,0 +1,58 @@
+{
+  "testCase": {
+    "id": 5,
+    "name": "Multi-Module Dependency Conflict",
+    "description": "Version conflict between :app and :core modules",
+    "errorType": "gradle-dependency",
+    "complexity": "complex",
+    "targetUsability": 70,
+    "error": {
+      "type": "gradle-dependency",
+      "message": "Conflict with dependency androidx.lifecycle:lifecycle-runtime-ktx",
+      "filePath": "app/build.gradle.kts",
+      "line": 45,
+      "column": 1,
+      "language": "gradle",
+      "metadata": {
+        "severity": "error",
+        "context": "Module :app requires 2.6.0, :core requires 2.5.0"
+      }
+    },
+    "expectedFix": {
+      "file": "gradle/libs.versions.toml",
+      "explanation": "Align lifecycle version across all modules"
+    }
+  },
+  "timestamp": "2026-05-28T19:46:45.365Z",
+  "duration_ms": 3937,
+  "agent_response": {
+    "error": "Conflict with dependency androidx.lifecycle:lifecycle-runtime-ktx",
+    "rootCause": "Conflict between dependencies: Module :app requires 2.6.0 while :lifecycle-runtime-ktx only provides 2.5.0.",
+    "fixGuidelines": [
+      "1. Open app/build.gradle.kts at line 45",
+      "2. Before:\n```\nkotlin\nmodule:app requires 2.6.0\nmodule:lifecycle-runtime-ktx 2.5.0\n```",
+      "3. After:\n```\nkotlin\n// Remove conflicting dependencies\nmodule:app requires 2.6.0\n// Ensure lifecycle version is compatible with core\nmodule:lifecycle-runtime-ktx 2.6.0\n```",
+      "4. Verify that the module :lifecycle-runtime-ktx version matches the required by :app.",
+      "5. Check if other dependencies are correctly specified and not conflicting."
+    ],
+    "confidence": 0.7,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 90,
+    "solution_specificity": 70,
+    "file_identification": 30,
+    "code_examples": 80,
+    "version_suggestions": 90,
+    "overall_usability": 71,
+    "confidence": 0.7,
+    "latency_ms": 3937,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": true,
+    "has_specific_version": true,
+    "identified_exact_file": false
+  },
+  "passed": true
+}

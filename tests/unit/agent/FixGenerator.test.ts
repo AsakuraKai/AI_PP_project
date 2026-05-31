@@ -78,8 +78,9 @@ class MainActivity : AppCompatActivity() {
       `.trim());
 
       // Mock LLM fix generation
-      mockLLM.generate.mockResolvedValue({
-        text: `\`\`\`kotlin
+      mockLLM.generate
+        .mockResolvedValueOnce({
+          text: `\`\`\`kotlin
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MyViewModel
     
@@ -92,10 +93,13 @@ class MainActivity : AppCompatActivity() {
     }
 }
 \`\`\``,
-      });
+        })
+        .mockResolvedValueOnce({
+          text: `Explanation includes the root cause: ${rootCause}`
+        });
 
       // Act
-      const fix = await fixGenerator.generateFix(error, rootCause);
+      const fix = await fixGenerator.generateFix(error, rootCause, undefined, { applyMinimalityFilter: false });
 
       // Assert
       expect(fix).not.toBeNull();
@@ -227,9 +231,13 @@ kotlin = "1.9.0"`,
       const rootCause = 'Variable not initialized';
 
       mockReadFileTool.execute.mockResolvedValue('val x: String');
-      mockLLM.generate.mockResolvedValue({
-        text: 'val x: String = ""',
-      });
+      mockLLM.generate
+        .mockResolvedValueOnce({
+          text: 'val x: String = ""',
+        })
+        .mockResolvedValueOnce({
+          text: `Explanation includes the root cause: ${rootCause}`
+        });
 
       // Act
       const fix = await fixGenerator.generateFix(error, rootCause);
@@ -278,10 +286,14 @@ kotlin = "1.9.0"`,
       const rootCause = 'Test cause';
 
       mockReadFileTool.execute.mockResolvedValue('original code');
-      mockLLM.generate
-        .mockResolvedValueOnce({ text: 'fix 1' })
-        .mockResolvedValueOnce({ text: 'fix 2' })
-        .mockResolvedValueOnce({ text: 'fix 3' });
+      let callCount = 0;
+      mockLLM.generate.mockImplementation(async (promptString) => {
+        if (typeof promptString === 'string' && promptString.includes('explaining a code fix')) {
+          return { text: 'Test explanation' };
+        }
+        callCount++;
+        return { text: `this is a valid fix ${callCount} with enough length` };
+      });
 
       // Act
       const alternatives = await fixGenerator.generateAlternatives(error, rootCause, 3);
@@ -303,10 +315,17 @@ kotlin = "1.9.0"`,
       };
 
       mockReadFileTool.execute.mockResolvedValue('original code');
-      mockLLM.generate
-        .mockResolvedValueOnce({ text: 'fix 1' })
-        .mockRejectedValueOnce(new Error('LLM failed'))
-        .mockResolvedValueOnce({ text: 'fix 3' });
+      let callCount2 = 0;
+      mockLLM.generate.mockImplementation(async (promptString) => {
+        if (typeof promptString === 'string' && promptString.includes('explaining a code fix')) {
+          return { text: 'Test explanation' };
+        }
+        callCount2++;
+        if (callCount2 === 2) {
+          throw new Error('LLM failed');
+        }
+        return { text: `this is a valid fix ${callCount2} with enough length` };
+      });
 
       // Act
       const alternatives = await fixGenerator.generateAlternatives(error, 'test', 3);

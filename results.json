@@ -1,0 +1,234 @@
+{
+  "timestamp": "2026-05-25T23:30:21.414Z",
+  "totalTests": 10,
+  "testsRun": 10,
+  "successCount": 7,
+  "failureCount": 3,
+  "successRate": 0.7,
+  "totalDurationMs": 114510,
+  "averageLatencyMs": 11451,
+  "medianLatencyMs": 9873,
+  "p90LatencyMs": 28207,
+  "p95LatencyMs": 28207,
+  "p99LatencyMs": 28207,
+  "averageConfidence": 0.807142857142857,
+  "byCategory": {
+    "kotlin": {
+      "total": 2,
+      "success": 2,
+      "failure": 0,
+      "successRate": 1,
+      "averageLatencyMs": 16983.5,
+      "averageConfidence": 0.8
+    },
+    "gradle": {
+      "total": 1,
+      "success": 1,
+      "failure": 0,
+      "successRate": 1,
+      "averageLatencyMs": 9873,
+      "averageConfidence": 0.7
+    },
+    "compose": {
+      "total": 2,
+      "success": 0,
+      "failure": 2,
+      "successRate": 0,
+      "averageLatencyMs": 3,
+      "averageConfidence": 0
+    },
+    "xml": {
+      "total": 3,
+      "success": 3,
+      "failure": 0,
+      "successRate": 1,
+      "averageLatencyMs": 20527,
+      "averageConfidence": 0.85
+    },
+    "manifest": {
+      "total": 2,
+      "success": 1,
+      "failure": 1,
+      "successRate": 0.5,
+      "averageLatencyMs": 4541.5,
+      "averageConfidence": 0.8
+    },
+    "multi-layer": {
+      "total": 0,
+      "success": 0,
+      "failure": 0,
+      "successRate": 0,
+      "averageLatencyMs": 0,
+      "averageConfidence": 0
+    }
+  },
+  "byComplexity": {
+    "simple": {
+      "total": 10,
+      "success": 7,
+      "failure": 3,
+      "successRate": 0.7,
+      "averageLatencyMs": 11451,
+      "averageConfidence": 0.807142857142857
+    },
+    "medium": {
+      "total": 0,
+      "success": 0,
+      "failure": 0,
+      "successRate": 0,
+      "averageLatencyMs": 0,
+      "averageConfidence": 0
+    },
+    "complex": {
+      "total": 0,
+      "success": 0,
+      "failure": 0,
+      "successRate": 0,
+      "averageLatencyMs": 0,
+      "averageConfidence": 0
+    },
+    "edge-case": {
+      "total": 0,
+      "success": 0,
+      "failure": 0,
+      "successRate": 0,
+      "averageLatencyMs": 0,
+      "averageConfidence": 0
+    }
+  },
+  "results": [
+    {
+      "testId": "KT-001",
+      "testName": "Simple lateinit NPE",
+      "category": "kotlin",
+      "errorType": "lateinit",
+      "complexity": "simple",
+      "success": true,
+      "latencyMs": 16202,
+      "confidence": 0.7,
+      "rootCauseFound": true,
+      "fixSuggestions": 5,
+      "timestamp": "2026-05-25T23:28:26.904Z"
+    },
+    {
+      "testId": "KT-002",
+      "testName": "Standard NullPointerException",
+      "category": "kotlin",
+      "errorType": "npe",
+      "complexity": "simple",
+      "success": true,
+      "latencyMs": 17765,
+      "confidence": 0.9,
+      "rootCauseFound": true,
+      "fixSuggestions": 4,
+      "timestamp": "2026-05-25T23:28:43.106Z"
+    },
+    {
+      "testId": "GR-002",
+      "testName": "Missing repository",
+      "category": "gradle",
+      "errorType": "dependency_resolution_error",
+      "complexity": "simple",
+      "success": true,
+      "latencyMs": 9873,
+      "confidence": 0.7,
+      "rootCauseFound": true,
+      "fixSuggestions": 6,
+      "timestamp": "2026-05-25T23:29:00.871Z"
+    },
+    {
+      "testId": "CP-001",
+      "testName": "Missing remember call",
+      "category": "compose",
+      "errorType": "compose_remember",
+      "complexity": "simple",
+      "success": false,
+      "latencyMs": 5,
+      "confidence": 0,
+      "rootCauseFound": false,
+      "fixSuggestions": 0,
+      "timestamp": "2026-05-25T23:29:10.744Z",
+      "errorMessage": "Failed to parse error"
+    },
+    {
+      "testId": "CP-005",
+      "testName": "Incorrect Modifier order",
+      "category": "compose",
+      "errorType": "compose_modifier_chain",
+      "complexity": "simple",
+      "success": false,
+      "latencyMs": 1,
+      "confidence": 0,
+      "rootCauseFound": false,
+      "fixSuggestions": 0,
+      "timestamp": "2026-05-25T23:29:10.749Z",
+      "errorMessage": "Failed to parse error"
+    },
+    {
+      "testId": "XML-001",
+      "testName": "Layout inflation error",
+      "category": "xml",
+      "errorType": "xml_inflation",
+      "complexity": "simple",
+      "success": true,
+      "latencyMs": 7357,
+      "confidence": 0.85,
+      "rootCauseFound": true,
+      "fixSuggestions": 1,
+      "timestamp": "2026-05-25T23:29:10.750Z"
+    },
+    {
+      "testId": "XML-002",
+      "testName": "Missing view ID reference",
+      "category": "xml",
+      "errorType": "xml_missing_id",
+      "complexity": "simple",
+      "success": true,
+      "latencyMs": 26017,
+      "confidence": 0.85,
+      "rootCauseFound": true,
+      "fixSuggestions": 3,
+      "timestamp": "2026-05-25T23:29:18.107Z"
+    },
+    {
+      "testId": "XML-003",
+      "testName": "Invalid attribute value",
+      "category": "xml",
+      "errorType": "xml_attribute_error",
+      "complexity": "simple",
+      "success": true,
+      "latencyMs": 28207,
+      "confidence": 0.85,
+      "rootCauseFound": true,
+      "fixSuggestions": 3,
+      "timestamp": "2026-05-25T23:29:44.124Z"
+    },
+    {
+      "testId": "MF-001",
+      "testName": "Activity not declared",
+      "category": "manifest",
+      "errorType": "manifest_undeclared_activity",
+      "complexity": "simple",
+      "success": true,
+      "latencyMs": 9082,
+      "confidence": 0.8,
+      "rootCauseFound": true,
+      "fixSuggestions": 6,
+      "timestamp": "2026-05-25T23:30:12.331Z"
+    },
+    {
+      "testId": "MF-002",
+      "testName": "Missing permission",
+      "category": "manifest",
+      "errorType": "manifest_missing_permission",
+      "complexity": "simple",
+      "success": false,
+      "latencyMs": 1,
+      "confidence": 0,
+      "rootCauseFound": false,
+      "fixSuggestions": 0,
+      "timestamp": "2026-05-25T23:30:21.413Z",
+      "errorMessage": "Failed to parse error"
+    }
+  ]
+}

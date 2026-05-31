@@ -75,7 +75,7 @@ describe('Learning System Issues Fixes', () => {
         // Setup mock documents with correct structure
         mockDocuments = [
             {
-                id: 'doc1',
+                id: '550e8400-e29b-41d4-a716-446655440001',
                 error_message: 'NullPointerException in onCreate',
                 error_type: 'null_pointer',
                 language: 'kotlin',
@@ -87,7 +87,7 @@ describe('Learning System Issues Fixes', () => {
                 created_at: Date.now() - 86400000
             },
             {
-                id: 'doc2',
+                id: '550e8400-e29b-41d4-a716-446655440002',
                 error_message: 'lateinit property user has not been initialized',
                 error_type: 'lateinit',
                 language: 'kotlin',
@@ -109,8 +109,16 @@ describe('Learning System Issues Fixes', () => {
                     const doc = mockDocuments.find(d => d.id === ids[0]);
                     return Promise.resolve({
                         ids: doc ? [doc.id] : [],
-                        documents: doc ? [`Error: ${doc.error_message}\nType: ${doc.error_type}`] : [],
-                        metadatas: doc ? [{ error_type: doc.error_type, error_message: doc.error_message }] : []
+                        documents: doc ? [`Error: ${doc.error_message}\nType: ${doc.error_type}\nRoot Cause: ${doc.root_cause}\nFix: ${doc.fix_guidelines.join('; ')}`] : [],
+                        metadatas: doc ? [{
+                            error_type: doc.error_type,
+                            error_message: doc.error_message,
+                            language: doc.language,
+                            confidence: doc.confidence,
+                            quality_score: doc.quality_score,
+                            user_validated: doc.user_validated,
+                            created_at: doc.created_at
+                        }] : []
                     });
                 }
                 // getAll case - no ids specified
@@ -168,7 +176,7 @@ describe('Learning System Issues Fixes', () => {
         test('LearningPipeline should correctly access error_type from documents', async () => {
             chromaDBClient = await ChromaDBClient.create();
             const feedbackHandler = new FeedbackHandler(chromaDBClient, mockCache);
-            const adaptiveLearning = new AdaptiveLearning(chromaDBClient, feedbackHandler);
+            const adaptiveLearning = new AdaptiveLearning(chromaDBClient, feedbackHandler, { minPatternSamples: 1 });
 
             const patterns = await adaptiveLearning.analyzeFeedbackPatterns();
 
@@ -226,7 +234,9 @@ describe('Learning System Issues Fixes', () => {
         test('LearningPipeline stageCollect should use getAll instead of searchSimilar', async () => {
             chromaDBClient = await ChromaDBClient.create();
             const feedbackHandler = new FeedbackHandler(chromaDBClient, mockCache as any);
-            new LearningPipeline(chromaDBClient, feedbackHandler);
+            const pipeline = new LearningPipeline(chromaDBClient, feedbackHandler);
+            
+            await pipeline.run();
 
             // Collection should use getAll (get without query embeddings)
             expect(mockCollection.get).toHaveBeenCalled();
@@ -240,6 +250,7 @@ describe('Learning System Issues Fixes', () => {
                 invalidate: jest.fn().mockReturnValue(true),
                 get: jest.fn(),
                 set: jest.fn(),
+                getHash: jest.fn().mockReturnValue('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'),
                 stats: { size: 0, totalHits: 0, totalMisses: 0, hitRate: 0, expiredRemoved: 0, invalidated: 0, estimatedMemoryBytes: 0 }
             };
 
@@ -247,8 +258,11 @@ describe('Learning System Issues Fixes', () => {
             // Replace cache with our mock
             (feedbackHandler as any).cache = cache;
 
+            // Ensure DB returns the expected RCA document
+            (chromaDBClient as any).getById = jest.fn().mockResolvedValue(mockDocuments[0]);
+
             // Call handleNegative without errorHash
-            await feedbackHandler.handleNegative('doc1');
+            await feedbackHandler.handleNegative('550e8400-e29b-41d4-a716-446655440001');
 
             // Cache should still be invalidated with computed hash
             expect(cache.invalidate).toHaveBeenCalled();
@@ -263,6 +277,7 @@ describe('Learning System Issues Fixes', () => {
                 invalidate: jest.fn().mockReturnValue(true),
                 get: jest.fn(),
                 set: jest.fn(),
+                getHash: jest.fn().mockReturnValue('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'),
                 stats: { size: 0, totalHits: 0, totalMisses: 0, hitRate: 0, expiredRemoved: 0, invalidated: 0, estimatedMemoryBytes: 0 }
             };
 
@@ -270,7 +285,9 @@ describe('Learning System Issues Fixes', () => {
             (feedbackHandler as any).cache = cache;
 
             const providedHash = 'abc123def456abc123def456abc123def456abc123def456abc123def456abc1';
-            await feedbackHandler.handleNegative('doc1', providedHash);
+            (chromaDBClient as any).getById = jest.fn().mockResolvedValue(mockDocuments[0]);
+
+            await feedbackHandler.handleNegative('550e8400-e29b-41d4-a716-446655440001', providedHash);
 
             // Should use provided hash
             expect(cache.invalidate).toHaveBeenCalledWith(providedHash);
@@ -282,13 +299,16 @@ describe('Learning System Issues Fixes', () => {
                 invalidate: jest.fn().mockReturnValue(true),
                 get: jest.fn(),
                 set: jest.fn(),
+                getHash: jest.fn().mockReturnValue('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'),
                 stats: { size: 0, totalHits: 0, totalMisses: 0, hitRate: 0, expiredRemoved: 0, invalidated: 0, estimatedMemoryBytes: 0 }
             };
 
             const feedbackHandler = new FeedbackHandler(chromaDBClient, cache as any);
             (feedbackHandler as any).cache = cache;
 
-            const result = await feedbackHandler.handleNegative('doc1'); // No errorHash
+            (chromaDBClient as any).getById = jest.fn().mockResolvedValue(mockDocuments[0]);
+
+            const result = await feedbackHandler.handleNegative('550e8400-e29b-41d4-a716-446655440001'); // No errorHash
 
             expect(result.cacheInvalidated).toBe(true);
             expect(cache.invalidate).toHaveBeenCalled();
@@ -416,10 +436,10 @@ describe('Learning System Issues Fixes', () => {
         test('reconstructDocument should preserve all document fields', async () => {
             chromaDBClient = await ChromaDBClient.create();
 
-            const doc = await chromaDBClient.getById('doc1');
+            const doc = await chromaDBClient.getById('550e8400-e29b-41d4-a716-446655440001');
 
             if (doc) {
-                expect(doc.id).toBe('doc1');
+                expect(doc.id).toBe('550e8400-e29b-41d4-a716-446655440001');
                 expect(doc.error_type).toBeDefined();
                 expect(doc.error_message).toBeDefined();
                 expect(doc.root_cause).toBeDefined();
@@ -432,12 +452,12 @@ describe('Learning System Issues Fixes', () => {
 
             // Mock with bad data
             mockCollection.get.mockResolvedValueOnce({
-                ids: ['bad1'],
+                ids: ['550e8400-e29b-41d4-a716-446655440bad'],
                 documents: ['Invalid: null'],
                 metadatas: [{ /* missing required fields */ }]
             });
 
-            const result = await chromaDBClient.getById('bad1');
+            const result = await chromaDBClient.getById('550e8400-e29b-41d4-a716-446655440bad');
 
             // Should return null for invalid document
             expect(result).toBeNull();
@@ -464,7 +484,9 @@ describe('Learning System Issues Fixes', () => {
             const feedbackHandler = new FeedbackHandler(chromaDBClient, mockCache as any);
             mockCollection.update.mockResolvedValue(undefined);
 
-            const result = await feedbackHandler.handleNegative('doc1');
+            (chromaDBClient as any).getById = jest.fn().mockResolvedValue(mockDocuments[0]);
+
+            const result = await feedbackHandler.handleNegative('550e8400-e29b-41d4-a716-446655440001');
 
             expect(result.success).toBe(true);
             expect(result.previousConfidence).toBeGreaterThan(result.newConfidence);

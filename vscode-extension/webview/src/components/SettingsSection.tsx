@@ -53,11 +53,27 @@ export function SettingsSection({ collapsed }: SettingsSectionProps) {
         if (key === 'educationalMode') setEducationalMode(value);
         if (key === 'realtimeDetection') setRealtimeDetection(value);
       }
-    };
 
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, []);
+        if (message.command === 'cloudConfigLoaded') {
+          if (message.data && message.data.hasKey) {
+            setCloudModel('cloud');
+          } else {
+            setCloudModel(null);
+          }
+        }
+
+        if (message.command === 'cloudConfigCleared') {
+          setCloudModel(null);
+        }
+
+        if (message.command === 'cloudConfigSaved' && message.data?.success) {
+          setCloudModel('cloud');
+        }
+      };
+
+      window.addEventListener('message', handleMessage);
+      return () => window.removeEventListener('message', handleMessage);
+    }, []);
 
   // Check Ollama status on mount and periodically
   useEffect(() => {

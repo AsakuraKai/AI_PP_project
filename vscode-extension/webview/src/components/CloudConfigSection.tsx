@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Cloud, ArrowLeft, Check, X, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
+import { Cloud, ArrowLeft, Check, X, Eye, EyeOff, Loader2, AlertCircle, Trash2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
@@ -57,6 +57,8 @@ export function CloudConfigSection({ onBack }: CloudConfigSectionProps) {
   const [isLoadingModels, setIsLoadingModels] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
+  const [hasConfig, setHasConfig] = useState(false);
 
   // Listen for cloud config messages from extension
   useEffect(() => {
@@ -64,16 +66,29 @@ export function CloudConfigSection({ onBack }: CloudConfigSectionProps) {
       const message = event.data;
       console.log('[RCA Frontend - CloudConfig] Received message:', message);
 
-      if (message.command === 'cloudConfigStatus') {
+      if (message.command === 'cloudConfigCleared') {
+        setApiKey('');
+        setProvider('unknown');
+        setModels([]);
+        setSelectedModel('');
+        setStatus({ connected: false });
+        setIsClearing(false);
+        setHasConfig(false);
+        return;
+      }
+
+      if (message.command === 'cloudConfigSaved') {
         setStatus({
           connected: message.data?.success || false,
-          latency: message.data?.latency,
           error: message.data?.error,
         });
+        if (message.data?.success) {
+          setHasConfig(true);
+        }
         setIsSaving(false);
       }
 
-      if (message.command === 'connectionTestResult') {
+      if (message.command === 'testResult') {
         setStatus({
           connected: message.data?.success || false,
           latency: message.data?.latency,
@@ -92,6 +107,7 @@ export function CloudConfigSection({ onBack }: CloudConfigSectionProps) {
       }
 
       if (message.command === 'cloudConfigLoaded' && message.data) {
+        setHasConfig(true);
         if (message.data.provider) setProvider(message.data.provider);
         if (message.data.model) setSelectedModel(message.data.model);
         if (message.data.models) setModels(message.data.models);
@@ -137,19 +153,19 @@ export function CloudConfigSection({ onBack }: CloudConfigSectionProps) {
   }, [postMessage]);
 
   const handleSaveConfig = () => {
-    if (!apiKey || apiKey.startsWith('••••') || !selectedModel) {
+    if (!apiKey || (!isKeyValid && apiKey !== '••••••••••••••••') || !selectedModel) {
       return;
     }
     setIsSaving(true);
     postMessage('saveCloudApiKey', {
       apiKey,
       model: selectedModel,
-      // Provider is auto-detected, no need to send
+      provider
     });
   };
 
   const handleTestConnection = () => {
-    if (!apiKey || apiKey.startsWith('••••') || !selectedModel) {
+    if (!apiKey || (!isKeyValid && apiKey !== '••••••••••••••••') || !selectedModel) {
       setStatus({ connected: false, error: 'Please enter an API key and select a model' });
       return;
     }
@@ -157,11 +173,17 @@ export function CloudConfigSection({ onBack }: CloudConfigSectionProps) {
     postMessage('testCloudConnection', {
       apiKey,
       model: selectedModel,
+      provider
     });
   };
 
+  const handleClearConfig = () => {
+    setIsClearing(true);
+    postMessage('clearCloudConfig');
+  };
+
   const isKeyValid = apiKey && !apiKey.startsWith('••••') && apiKey.length > 10;
-  const canSave = isKeyValid && selectedModel && provider !== 'unknown';
+  const canSave = (isKeyValid || apiKey === '••••••••••••••••') && selectedModel && provider !== 'unknown';
 
   return (
     <div className="p-4 space-y-4">
@@ -288,16 +310,16 @@ export function CloudConfigSection({ onBack }: CloudConfigSectionProps) {
           )}
         </div>
         {status.error && (
-          <p className="text-xs text-red-400">{status.error}</p>
+          <p className="text-xs text-red-400 break-words whitespace-pre-wrap">{status.error}</p>
         )}
       </div>
 
       {/* Action Buttons */}
-      <div className="flex gap-2 pt-2">
+      <div className="flex flex-col gap-2 pt-2">
         <Button
           onClick={handleSaveConfig}
           disabled={isSaving || !canSave}
-          className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
+          className="w-full bg-purple-600 hover:bg-purple-700 text-white"
         >
           {isSaving ? (
             <>
@@ -308,21 +330,37 @@ export function CloudConfigSection({ onBack }: CloudConfigSectionProps) {
             'Save Configuration'
           )}
         </Button>
-        <Button
-          onClick={handleTestConnection}
-          disabled={isTesting || !canSave}
-          variant="outline"
-          className="flex-1 border-zinc-700 hover:bg-zinc-800 text-zinc-300"
-        >
-          {isTesting ? (
-            <>
-              <Loader2 size={14} className="animate-spin" />
-              Testing...
-            </>
-          ) : (
-            'Test Connection'
-          )}
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={handleTestConnection}
+            disabled={isTesting || !canSave}
+            variant="outline"
+            className="flex-1 border-zinc-700 hover:bg-zinc-800 text-zinc-300"
+          >
+            {isTesting ? (
+              <>
+                <Loader2 size={14} className="animate-spin" />
+                Testing...
+              </>
+            ) : (
+              'Test Connection'
+            )}
+          </Button>
+          <Button
+            onClick={handleClearConfig}
+            disabled={isClearing || !hasConfig}
+            variant="outline"
+            size="icon"
+            className="shrink-0 border-red-900/50 hover:bg-red-900/20 text-red-400"
+            title="Remove Configuration"
+          >
+            {isClearing ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Trash2 size={16} />
+            )}
+          </Button>
+        </div>
       </div>
     </div>
   );

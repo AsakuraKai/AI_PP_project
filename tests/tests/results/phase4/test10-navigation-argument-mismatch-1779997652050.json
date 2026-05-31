@@ -1,0 +1,58 @@
+{
+  "testCase": {
+    "id": 10,
+    "name": "Navigation Argument Mismatch",
+    "description": "Runtime crash due to missing/wrong navigation arguments",
+    "errorType": "navigation",
+    "complexity": "medium",
+    "baselineUsability": 50,
+    "targetUsability": 70,
+    "error": {
+      "type": "navigation",
+      "message": "java.lang.IllegalArgumentException: Required argument \"userId\" is missing",
+      "filePath": "app/src/main/kotlin/navigation/NavGraph.kt",
+      "line": 32,
+      "column": 5,
+      "language": "kotlin",
+      "metadata": {
+        "severity": "error",
+        "context": "Navigation argument not passed correctly"
+      }
+    },
+    "expectedFix": {
+      "file": "app/src/main/kotlin/navigation/NavGraph.kt",
+      "lineNumber": 32,
+      "explanation": "Add userId argument to navigation call"
+    }
+  },
+  "timestamp": "2026-05-28T19:47:32.049Z",
+  "duration_ms": 21094,
+  "agent_response": {
+    "error": "java.lang.IllegalArgumentException: Required argument \"userId\" is missing",
+    "rootCause": "java.lang.IllegalArgumentException: Required argument 'userId' is missing at app/src/main/kotlin/navigation/NavGraph.kt:32",
+    "fixGuidelines": [
+      "1. Open app/src/main/kotlin/navigation/NavGraph.kt at line 32 to examine the navigation call and ensure all required arguments are provided.",
+      "2. Before:\n```kotlin\nnavController.navigate("
+    ],
+    "confidence": 0.5,
+    "iterations": 1,
+    "toolsUsed": []
+  },
+  "metrics": {
+    "diagnosis_accuracy": 100,
+    "solution_specificity": 50,
+    "file_identification": 100,
+    "code_examples": 80,
+    "version_suggestions": 0,
+    "overall_usability": 73,
+    "confidence": 0.5,
+    "latency_ms": 21094,
+    "has_root_cause": true,
+    "has_fix_guidelines": true,
+    "has_code_diff": true,
+    "has_specific_version": false,
+    "identified_exact_file": true
+  },
+  "passed": true,
+  "improvement_over_baseline": 23
+}
